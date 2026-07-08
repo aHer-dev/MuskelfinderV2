@@ -70,7 +70,6 @@ export function SearchPage() {
       </header>
 
       <div className="search-page__body">
-        {isDesktop && <FilterPanel options={options} count={count} />}
         <div className="search-page__results">
           {!isDesktop && (
             <button
@@ -85,6 +84,7 @@ export function SearchPage() {
           <ActiveFilters />
           <MuscleGrid muscles={results} query={query} />
         </div>
+        {isDesktop && <FilterPanel options={options} count={count} />}
       </div>
 
       {!isDesktop && (

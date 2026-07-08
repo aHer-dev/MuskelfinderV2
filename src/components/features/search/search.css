@@ -86,7 +86,7 @@
 /* ---- Layout: Filter + Ergebnisse ------------------------------------- */
 .search-page__body {
   display: grid;
-  grid-template-columns: minmax(220px, 260px) 1fr;
+  grid-template-columns: 1fr minmax(220px, 260px);
   gap: var(--spacing-lg);
   align-items: start;
 }
@@ -203,8 +203,12 @@
 }
 
 .active-filters__chip {
-  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
   gap: var(--spacing-xs);
+  overflow: visible;
+  max-width: none;
+  cursor: pointer;
 }
 
 .active-filters__reset {

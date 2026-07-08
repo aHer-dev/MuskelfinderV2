@@ -35,7 +35,7 @@ export function MuscleCard({ muscle, query = '' }: { muscle: Muscle; query?: str
         {chips.length > 0 && (
           <ul className="muscle-card__chips">
             {chips.map((fn) => (
-              <li key={fn} className="chip">
+              <li key={fn} className="chip" title={movementLabel(fn)}>
                 {movementLabel(fn)}
               </li>
             ))}

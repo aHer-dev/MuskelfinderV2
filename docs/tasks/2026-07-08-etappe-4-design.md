@@ -35,11 +35,16 @@ wo der funktionale Kern (Etappe 3) trägt. Nur Darstellung/Layout, keine neuen F
 - [x] Detail: ImageViewer mit Ansichts-Badge + Thumbnail-Reihe (aktiv markiert); ClinicalNote-Box
       (`icInfo`, Akzent-Tint) aus der DataList herausgelöst.
 
+## Erledigt (4. Durchgang — nach Screenshot-Review via Playwright)
+- [x] Screenshot-Abgleich der Frames `3a`/`2a` (Desktop + Mobile) mit echtem Headless-Chromium.
+- [x] Bugfix: lange Bewegungs-Chips (z. B. „Zeh V: …") liefen aus der Karte → jetzt Ellipsis + `title`.
+- [x] FilterSidebar auf **rechts** verschoben (Frame `3a`).
+
 ## Offen (braucht Browser-/Frame-Abgleich)
-- [ ] FilterSidebar **rechts** (Glas) auf Desktop (aktuell links im Content-Grid); Mobile Region-Chip-Reihe.
+- [ ] Mobile Region-Chip-Reihe über der Liste.
 - [ ] Lernkarten: 3D-Flip (`rotateY`). Quiz: QuizProgress-Segmente. Statistik: StatCard/CardBreakdown-Bento.
 - [ ] A11y-Rest §13: Listbox-Dropdowns, vollständiger Fokus-Trap/Roving-Tabindex.
-- [ ] Referenz-Frame-Abgleich (`3a` Light default, `1`/`2` Dark) — Pixel-Feinschliff.
+- [ ] Dark-Frame-Abgleich (`1`/`2`) — Pixel-Feinschliff.
 
 ## Definition of Done (Etappe gesamt)
 - [ ] Screens entsprechen den Referenz-Frames; Responsive-Checkliste §14 ✔; A11y-Pass §13 ✔.
