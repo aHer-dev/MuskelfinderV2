@@ -6,14 +6,15 @@
 ## Stand
 - Datum: 2026-07-08
 - Branch: `feat/etappe-0-fundament`
-- Status: Etappe 0–3 committet; Etappe 4 (Design) in Arbeit — Durchgang 1–5 committet
+- Status: Etappe 0–3 committet; Etappe 4 (Design) fast fertig — Durchgang 1–6 committet
   (Shell + Primitives; Highlighting, ActiveFilters, Quiz-Options, LeitnerBoxes, LevelCard;
   Sheet + mobiles FilterSheet, ImageViewer-Thumbnails, ClinicalNote; Chip-Fix + Filter rechts;
-  Lernkarte-3D-Flip, Quiz-Progress-Segmente, Statistik-CardBreakdown-Bento).
+  Lernkarte-3D-Flip, Quiz-Progress-Segmente, Statistik-CardBreakdown-Bento;
+  mobile Region-Chip-Reihe, Sheet-Fokus-Trap, Radiogroup-Roving-Tabindex).
 - Gate zuletzt gruen: `npm run lint && npm run test && npm run build`
 - Aktueller Teststand: 137 Tests gruen.
-- Offen (E4): mobile Region-Chip-Reihe, A11y-Rest (Listbox/Fokus-Trap), Dark-Frame-Abgleich;
-  danach Etappe 5 (Haertung). Visueller/Browser-Integrationscheck durch dich.
+- Offen (E4): nur noch Dark-Frame-Pixelabgleich; danach Etappe 5 (Haertung).
+  Visueller/Browser-Integrationscheck durch dich.
 
 ## Kanonische Quellen
 - V1-Original: `../Muskelfinder` (`/home/pepperboy8/Documents/Muskelfinder`)
@@ -67,9 +68,7 @@
 
 ## Naechster Schritt
 Etappe 4 abschliessen (Details/Offene Punkte: docs/tasks/2026-07-08-etappe-4-design.md):
-- SearchPage: mobile Region-Chip-Reihe ueber der Ergebnisliste (Schnellfilter).
-- A11y-Rest §13: Listbox-Dropdowns, vollstaendiger Fokus-Trap/Roving-Tabindex (Sheet/Radiogroup).
-- Dark-Frame-Abgleich (`1`/`2`) — Pixel-Feinschliff im Dunkelmodus.
+- Dark-Frame-Abgleich (`1`/`2`) — Pixel-Feinschliff im Dunkelmodus (letzter offener E4-Punkt).
 Danach Etappe 5 (Haertung): A11y-Audit, Performance/Code-Splitting/Lighthouse, Quellen-/Lizenz-
 und Datenschutz-Seite (CC-BY-4.0), Deploy-Haertung, optional PWA, Release-Tag v1.0.
 

@@ -2,7 +2,7 @@
    Sheet — Bottom-Sheet (mobil). COMPONENTS.md · Teil A.
    src/components/ui/Sheet.tsx
    Grabber, Backdrop-Klick + Esc schließen, Initial-Fokus + Fokus-Rückgabe,
-   Body-Scroll-Lock. (Vollständiger Fokus-Trap: Etappe-4-Rest.)
+   Body-Scroll-Lock, zyklischer Fokus-Trap (Tab/Shift+Tab bleiben im Panel).
    ========================================================================= */
 
 import { useEffect, useRef, type ReactNode } from 'react';
@@ -22,9 +22,35 @@ export function Sheet({ open, title, onClose, children }: SheetProps) {
   useEffect(() => {
     if (!open) return;
     const previousActive = document.activeElement as HTMLElement | null;
+
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
+      if (event.key === 'Escape') {
+        onClose();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const panel = panelRef.current;
+      if (!panel) return;
+      const focusables = panel.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      );
+      if (focusables.length === 0) {
+        event.preventDefault();
+        panel.focus();
+        return;
+      }
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement;
+      if (event.shiftKey && (active === first || active === panel)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
+
     document.addEventListener('keydown', onKey);
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';

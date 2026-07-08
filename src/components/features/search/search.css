@@ -195,6 +195,33 @@
   min-width: 0;
 }
 
+/* ---- Mobile Region-Schnellfilter -------------------------------------- */
+.region-chips {
+  display: flex;
+  gap: var(--spacing-xs);
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: 0 calc(-1 * var(--spacing-xs));
+  padding: 2px var(--spacing-xs);
+  scroll-snap-type: x proximity;
+}
+
+.region-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.region-chips__chip {
+  flex: 0 0 auto;
+  cursor: pointer;
+  scroll-snap-align: start;
+  transition: var(--transition-smooth);
+}
+
+.region-chips__chip:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
 .active-filters {
   display: flex;
   flex-wrap: wrap;

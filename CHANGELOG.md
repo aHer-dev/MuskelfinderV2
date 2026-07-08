@@ -69,5 +69,9 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   Rückseite un-gespiegelt); Quiz-`QuizProgress`-Segmentleiste (richtig/falsch/aktuell/offen) samt
   `results`-Historie im `useQuizGame`; Statistik-`CardBreakdown`-Stapelbalken (gemeistert/in Arbeit/neu
   + Legende) und Bento-Grid (`stats__bento`). Teststand 137 grün.
+- Etappe 4 (Design, 6. Durchgang, A11y + mobil, mit Screenshot-Verify): mobile Region-Chip-Reihe
+  (`RegionChips`, horizontal scrollbar, `aria-pressed`-Toggles) über der Ergebnisliste; Sheet mit
+  vollständigem Fokus-Trap (Tab/Shift+Tab zyklisch); Quiz-Radiogroup mit Roving-Tabindex +
+  Pfeiltasten/Home/End. Native `<select>` bewusst als Dropdown belassen (A11y). Teststand 137 grün.
 - `docs/PROJECT_STATE.md` als Single Source of Truth fuer Agenten angelegt und in
   `AGENTS.md` verpflichtend verlinkt.

@@ -49,10 +49,18 @@ wo der funktionale Kern (Etappe 3) trägt. Nur Darstellung/Layout, keine neuen F
 - [x] Statistik: **CardBreakdown**-Stapelbalken (gemeistert/in Arbeit/neu, Legende) + **Bento-Grid**
       (`stats__bento`, 2 Spalten Desktop → 1 mobil; Regionen `--wide` über volle Breite).
 
+## Erledigt (6. Durchgang — mit Screenshot-Verify, mobil)
+- [x] Mobile **Region-Chip-Reihe** (`RegionChips`): horizontal scrollbar, Toggle-Buttons
+      (`aria-pressed`), über der Ergebnisliste; nur im Mobile-Layout. Voller Filtersatz bleibt im Sheet.
+- [x] **Sheet-Fokus-Trap** vervollständigt: Tab/Shift+Tab zyklisch innerhalb des Panels
+      (dynamische Focusable-Query), Esc/Backdrop schließt, Fokus-Rückgabe.
+- [x] Quiz-**Radiogroup**: Roving-Tabindex (nur eine Option im Tab-Fluss) + Pfeiltasten/Home/End;
+      Enter/Space wählt (nativer Button). Reset auf erste Option je Frage.
+- [x] Listbox-Dropdowns: **bewusst nativ** (`<select>`) belassen — beste A11y & mobile Bedienung;
+      keine Custom-Listbox.
+
 ## Offen (braucht Browser-/Frame-Abgleich)
-- [ ] Mobile Region-Chip-Reihe über der Liste.
-- [ ] A11y-Rest §13: Listbox-Dropdowns, vollständiger Fokus-Trap/Roving-Tabindex.
-- [ ] Dark-Frame-Abgleich (`1`/`2`) — Pixel-Feinschliff.
+- [ ] Dark-Frame-Abgleich (`1`/`2`) — Pixel-Feinschliff im Dunkelmodus.
 
 ## Definition of Done (Etappe gesamt)
 - [ ] Screens entsprechen den Referenz-Frames; Responsive-Checkliste §14 ✔; A11y-Pass §13 ✔.

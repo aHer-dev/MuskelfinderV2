@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
 import { SearchField } from '../components/features/search/SearchField';
 import { FilterPanel } from '../components/features/search/FilterPanel';
+import { RegionChips } from '../components/features/search/RegionChips';
 import { ActiveFilters } from '../components/features/search/ActiveFilters';
 import { MuscleGrid } from '../components/features/search/MuscleGrid';
 import { Icon } from '../components/ui/Icon';
@@ -72,14 +73,17 @@ export function SearchPage() {
       <div className="search-page__body">
         <div className="search-page__results">
           {!isDesktop && (
-            <button
-              type="button"
-              className="btn btn--ghost search-page__filter-btn"
-              onClick={() => setFilterOpen(true)}
-            >
-              <Icon name="icFilter" size={18} /> Filter
-              {activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
-            </button>
+            <>
+              <button
+                type="button"
+                className="btn btn--ghost search-page__filter-btn"
+                onClick={() => setFilterOpen(true)}
+              >
+                <Icon name="icFilter" size={18} /> Filter
+                {activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+              </button>
+              <RegionChips />
+            </>
           )}
           <ActiveFilters />
           <MuscleGrid muscles={results} query={query} />
