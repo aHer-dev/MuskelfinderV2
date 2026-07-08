@@ -142,6 +142,10 @@
 
   --region-dot:      #9a9ca2;
 
+  /* Semantische Zustandsfarben auf Dunkel heller/klarer (Kontrast, distinkt vom Orange) */
+  --success: #4ecb83;
+  --danger:  #f2705f;
+
   /* Medien-Fenster ist im Dark-Modus ohnehin dunkel — gleiche Werte */
   --media-well:      radial-gradient(120% 100% at 50% 4%, #20232a 0%, #0b0c0e 70%);
   --media-fg:        #f6f6f7;
@@ -164,6 +168,7 @@
     --accent-on-surface:#ff6a00; --accent-tint:color-mix(in srgb,var(--accent) 16%,transparent);
     --accent-border:color-mix(in srgb,var(--accent) 50%,transparent); --accent-dim:color-mix(in srgb,var(--accent) 12%,transparent);
     --region-dot:#9a9ca2;
+    --success:#4ecb83; --danger:#f2705f;
   }
 }
 

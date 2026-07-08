@@ -73,5 +73,9 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   (`RegionChips`, horizontal scrollbar, `aria-pressed`-Toggles) über der Ergebnisliste; Sheet mit
   vollständigem Fokus-Trap (Tab/Shift+Tab zyklisch); Quiz-Radiogroup mit Roving-Tabindex +
   Pfeiltasten/Home/End. Native `<select>` bewusst als Dropdown belassen (A11y). Teststand 137 grün.
+- Etappe 4 (Design, 7. Durchgang, Dark-Mode-Feinschliff): alle Screens im Dunkelmodus verifiziert;
+  semantische Zustandsfarben pro Theme justiert — auf Dunkel heller/klarer (`--success #4ecb83`,
+  `--danger #f2705f`, distinkt vom Orange), Light unverändert. **Etappe 4 abgeschlossen** (DoD erfüllt:
+  Frames Light+Dark, Responsive, A11y §13; lint+test+build grün, nur Tokens).
 - `docs/PROJECT_STATE.md` als Single Source of Truth fuer Agenten angelegt und in
   `AGENTS.md` verpflichtend verlinkt.

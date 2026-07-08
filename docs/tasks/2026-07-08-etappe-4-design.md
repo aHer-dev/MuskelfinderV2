@@ -59,9 +59,14 @@ wo der funktionale Kern (Etappe 3) trägt. Nur Darstellung/Layout, keine neuen F
 - [x] Listbox-Dropdowns: **bewusst nativ** (`<select>`) belassen — beste A11y & mobile Bedienung;
       keine Custom-Listbox.
 
-## Offen (braucht Browser-/Frame-Abgleich)
-- [ ] Dark-Frame-Abgleich (`1`/`2`) — Pixel-Feinschliff im Dunkelmodus.
+## Erledigt (7. Durchgang — Dark-Mode-Feinschliff)
+- [x] Dark-Frame-Abgleich: alle Screens im Dunkelmodus gescreenshottet (Suche, Detail, Lernkarten,
+      Quiz, Statistik). Einziger Befund + Fix: semantische Zustandsfarben `--success`/`--danger`
+      pro Theme feinjustiert — auf Dunkel heller/klarer (`#4ecb83`/`#f2705f`), distinkt vom Orange;
+      Light unverändert. Sonst entsprechen die dunklen Screens dem Marken-Look.
 
-## Definition of Done (Etappe gesamt)
-- [ ] Screens entsprechen den Referenz-Frames; Responsive-Checkliste §14 ✔; A11y-Pass §13 ✔.
-- [ ] lint + test + build grün; nur Tokens.
+## Definition of Done (Etappe gesamt) — erfüllt
+- [x] Screens entsprechen den Referenz-Frames (Light `3a`/`2a` + Dark visuell verifiziert);
+      Responsive Rail⇄TabBar; A11y-Pass §13 (Fokus-Trap, Roving-Tabindex, `aria-*`, native Selects).
+- [x] lint + test (137) + build grün; ausschließlich Tokens (keine Hardcodes außer neuen Token-Werten
+      in theme.css).

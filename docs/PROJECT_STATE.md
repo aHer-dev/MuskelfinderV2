@@ -6,15 +6,15 @@
 ## Stand
 - Datum: 2026-07-08
 - Branch: `feat/etappe-0-fundament`
-- Status: Etappe 0–3 committet; Etappe 4 (Design) fast fertig — Durchgang 1–6 committet
+- Status: Etappe 0–4 committet. **Etappe 4 (Design) abgeschlossen** — Durchgang 1–7
   (Shell + Primitives; Highlighting, ActiveFilters, Quiz-Options, LeitnerBoxes, LevelCard;
   Sheet + mobiles FilterSheet, ImageViewer-Thumbnails, ClinicalNote; Chip-Fix + Filter rechts;
   Lernkarte-3D-Flip, Quiz-Progress-Segmente, Statistik-CardBreakdown-Bento;
-  mobile Region-Chip-Reihe, Sheet-Fokus-Trap, Radiogroup-Roving-Tabindex).
+  mobile Region-Chip-Reihe, Sheet-Fokus-Trap, Radiogroup-Roving-Tabindex;
+  Dark-Mode-Feinschliff der semantischen Farben). Light+Dark visuell verifiziert.
 - Gate zuletzt gruen: `npm run lint && npm run test && npm run build`
 - Aktueller Teststand: 137 Tests gruen.
-- Offen (E4): nur noch Dark-Frame-Pixelabgleich; danach Etappe 5 (Haertung).
-  Visueller/Browser-Integrationscheck durch dich.
+- Offen: Etappe 5 (Haertung). Visueller/Browser-Integrationscheck + Merge nach main durch dich.
 
 ## Kanonische Quellen
 - V1-Original: `../Muskelfinder` (`/home/pepperboy8/Documents/Muskelfinder`)
@@ -45,6 +45,11 @@
   3b Muskel-Detail (Fachlich/Einfach, ImageViewer + Attribution, Collection), 3c Lernkarten
   (Leitner-Session), 3d Quiz (4 MC-Modi, kompatible Serien-Statistik), 3e Statistik (abgeleitete
   Selektoren) + Backup-Panel (Export/Import an der UI). Geteilte Primitives in `styles/components.css`.
+- Etappe 4: Hi-Fi-Design (Durchgang 1–7). Responsive Glas-Shell (Rail⇄TabBar), Handoff-Primitives,
+  Treffer-Highlighting, ActiveFilters, Quiz-Options (A–D), LeitnerBoxes, LevelCard, Sheet + mobiles
+  FilterSheet, ImageViewer-Thumbnails, ClinicalNote, Lernkarte-3D-Flip, Quiz-Progress-Segmente,
+  Statistik-CardBreakdown-Bento, mobile Region-Chips, Sheet-Fokus-Trap, Radiogroup-Roving-Tabindex,
+  Dark-Mode-Feinschliff. Light+Dark per Screenshot verifiziert. Nur Tokens.
 
 ## Datenstand
 - Runtime-Daten: `src/data/generated/`
@@ -67,10 +72,11 @@
 - TA-Codes fehlen in V1 und bleiben optional. Nicht erfinden.
 
 ## Naechster Schritt
-Etappe 4 abschliessen (Details/Offene Punkte: docs/tasks/2026-07-08-etappe-4-design.md):
-- Dark-Frame-Abgleich (`1`/`2`) — Pixel-Feinschliff im Dunkelmodus (letzter offener E4-Punkt).
-Danach Etappe 5 (Haertung): A11y-Audit, Performance/Code-Splitting/Lighthouse, Quellen-/Lizenz-
-und Datenschutz-Seite (CC-BY-4.0), Deploy-Haertung, optional PWA, Release-Tag v1.0.
+Etappe 5 (Haertung & Feinschliff) starten (docs/migration-plan.md, ROADMAP Phase 5):
+- A11y-Audit (Lighthouse), Performance (Route-Code-Splitting via `React.lazy`, Bild-Lazy-Load, Bundle).
+- Quellen-/Lizenz- + Datenschutz-Seite (aus V1 uebernehmen, CC-BY-4.0-Attribution vollstaendig).
+- Deploy-Haertung (Deep-Link-Reload live), optional Offline/PWA, Release-Tag v1.0.
+Empfohlener Einstieg: Lizenz-/Quellen-Seite (rechtlich Pflicht) oder Route-Code-Splitting.
 
 Anschluss-Hinweis: Stores schluesseln Karten nach `nameLatin`; die UI loest Routing-`id` ueber
 die Datenschicht (`getMuscleByLatinName`) auf (ADR 0002 §2 / ADR 0006 §3). Such-/Filter-Logik,
