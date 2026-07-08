@@ -20,14 +20,20 @@ wo der funktionale Kern (Etappe 3) trägt. Nur Darstellung/Layout, keine neuen F
       Chip (radius 8, padding 5/9, 11.5px, `--active`), DifficultyDots (6px, `--hairline-strong`),
       SegmentedControl aktiv = `--accent`-Füllung.
 
+## Erledigt (2. Durchgang)
+- [x] Treffer-Highlighting im Namen (`foldText`/`highlightName`, diakritika-tolerant, getestet) +
+      orange `<mark>` in der MuscleCard.
+- [x] `ActiveFilters`-Chip-Reihe (entfernbar) über der Ergebnisliste.
+- [x] Quiz: AnswerOption mit A–D-Badges + 2×2-Grid; `role="radiogroup"`/`radio` + aria-live-Feedback.
+- [x] Lernkarten: `LeitnerBoxes`-Visual (7 Fächer, aktives Fach hervorgehoben).
+- [x] Statistik: LevelCard mit großem `ProgressRing`.
+
 ## Offen (braucht Browser-/Frame-Abgleich)
-- [ ] SearchPage: FilterSidebar **rechts** (Glas) statt In-Content-Panel; ActiveFilters-Chips-Reihe;
-      Treffer-Highlighting im Namen (`--accent-on-surface`/600); Mobile Region-Chip-Reihe + FilterSheet.
+- [ ] SearchPage: FilterSidebar **rechts** (Glas) statt In-Content-Panel; Mobile Region-Chip-Reihe.
 - [ ] `Sheet`-Primitive (Bottom-Sheet, Grabber, Fokus-Trap + Esc) für Mobile-Filter/Detail.
 - [ ] Detail: MuscleImageViewer mit Thumbnails/Zoom-Leiste + Ansichts-Badge; ClinicalNote-Box (`icInfo`).
-- [ ] Lernkarten: 3D-Flip (`rotateY`), LeitnerBoxes-Visual (7 Fächer); Quiz: AnswerOption A–D-Badges,
-      QuizProgress-Segmente; Statistik: LevelCard/StatCard/CardBreakdown-Bento.
-- [ ] A11y-Pass §13: Quiz `role="radiogroup"`/`radio`, Listbox-Dropdowns, vollständige aria-Labels.
+- [ ] Lernkarten: 3D-Flip (`rotateY`). Quiz: QuizProgress-Segmente. Statistik: StatCard/CardBreakdown-Bento.
+- [ ] A11y-Pass §13 vervollständigen: Listbox-Dropdowns, Roving-Tabindex im Radiogroup.
 - [ ] Referenz-Frame-Abgleich (`3a` Light default, `1`/`2` Dark) — Pixel-Feinschliff.
 
 ## Definition of Done (Etappe gesamt)

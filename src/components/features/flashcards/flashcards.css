@@ -147,6 +147,46 @@
   line-height: 1.45;
 }
 
+/* ---- Leitner-Fächer --------------------------------------------------- */
+.leitner-boxes {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--spacing-xs);
+}
+
+.leitner-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--spacing-xs) 0;
+  border-radius: var(--radius-sm);
+  background: var(--surface-sunken);
+  border: 1px solid var(--hairline);
+}
+
+.leitner-box--active {
+  background: var(--accent-tint);
+  border-color: var(--accent-border);
+}
+
+.leitner-box__num {
+  font-size: 0.68rem;
+  color: var(--text-faint);
+}
+
+.leitner-box--active .leitner-box__num {
+  color: var(--accent-on-surface);
+}
+
+.leitner-box__count {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
 /* ---- Bewertungsleiste ------------------------------------------------- */
 .rating-bar {
   display: grid;

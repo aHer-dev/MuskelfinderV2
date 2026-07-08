@@ -175,6 +175,43 @@
   color: var(--text-tertiary);
 }
 
+/* ---- Ergebnis-Spalte + aktive Filter ---------------------------------- */
+.search-page__results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  min-width: 0;
+}
+
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.active-filters__chip {
+  cursor: pointer;
+  gap: var(--spacing-xs);
+}
+
+.active-filters__reset {
+  border: none;
+  background: transparent;
+  color: var(--accent-on-surface);
+  font-family: var(--font-ui);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+
+.active-filters__reset:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
 /* ---- Ergebnisraster --------------------------------------------------- */
 .muscle-grid {
   list-style: none;
@@ -233,6 +270,12 @@
   font-size: 1.02rem;
   font-weight: 600;
   line-height: 1.25;
+}
+
+.muscle-card__match {
+  background: transparent;
+  color: var(--accent-on-surface);
+  font-weight: 600;
 }
 
 .muscle-card__meta {

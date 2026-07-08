@@ -1,5 +1,7 @@
 import type { QuizPhase, QuizQuestion } from '../../../types';
 
+const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'] as const;
+
 function assetUrl(url: string): string {
   return `${import.meta.env.BASE_URL}${url}`;
 }
@@ -39,17 +41,22 @@ export function QuestionCard({ question, phase, selectedId, onAnswer }: Question
         <p className="quiz-card__prompt">{question.prompt}</p>
       )}
 
-      <div className="quiz-options" role="group" aria-label={question.category}>
-        {question.options.map((option) => (
+      <div className="quiz-options" role="radiogroup" aria-label={question.category}>
+        {question.options.map((option, index) => (
           <button
             key={option.id}
             type="button"
+            role="radio"
+            aria-checked={option.id === selectedId}
+            aria-disabled={revealed}
             className={`quiz-option${optionModifier(option.id, question.correctId, selectedId, revealed)}`}
-            aria-pressed={option.id === selectedId}
             disabled={revealed}
             onClick={() => onAnswer(option.id)}
           >
-            {option.label}
+            <span className="quiz-option__badge" aria-hidden="true">
+              {LETTERS[index]}
+            </span>
+            <span className="quiz-option__label">{option.label}</span>
           </button>
         ))}
       </div>

@@ -2,6 +2,7 @@ import { getRegions } from '../data';
 import { regionLabel } from '../data/labels';
 import { useStats } from '../hooks/useStats';
 import { BackupPanel } from '../components/features/stats/BackupPanel';
+import { ProgressRing } from '../components/ui/ProgressRing';
 import type { RegionId } from '../types';
 import '../components/features/stats/stats.css';
 
@@ -36,15 +37,22 @@ export function StatsPage() {
         </div>
       </div>
 
-      <section className="stats__panel">
-        <div className="stats__panel-head">
+      <section className="stats__panel level-card">
+        <ProgressRing
+          value={stats.xp.progress}
+          size={120}
+          stroke={9}
+          centerLabel="Level"
+          centerValue={String(stats.level)}
+        />
+        <div className="level-card__body">
           <h2>Level {stats.level}</h2>
-          <span className="stats__panel-sub">
-            {stats.xp.xpThisLevel}/{stats.xp.xpNeeded} XP bis Level {stats.level + 1}
-          </span>
-        </div>
-        <div className="stat-bar">
-          <div className="stat-bar__fill" style={{ width: `${stats.xp.progress * 100}%` }} />
+          <p className="level-card__xp">{stats.xp.totalXP} XP gesamt</p>
+          <p className="stats__panel-sub">
+            {stats.level < 99
+              ? `Noch ${stats.xp.xpNeeded - stats.xp.xpThisLevel} XP bis Level ${stats.level + 1}`
+              : 'Höchstlevel erreicht'}
+          </p>
         </div>
       </section>
 

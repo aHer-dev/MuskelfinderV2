@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { EMPTY_FILTER, type Muscle, type MuscleFilter } from '../types';
-import { filterMuscles, getFilterOptions, normalizeText } from './search';
+import { filterMuscles, foldText, getFilterOptions, highlightName, normalizeText } from './search';
 
 function m(partial: Partial<Muscle> & { id: string; nameLatin: string }): Muscle {
   return {
@@ -70,6 +70,33 @@ describe('normalizeText', () => {
   it('senkt Groß-/Kleinschreibung und entfernt Diakritika', () => {
     expect(normalizeText('M. Äußere')).toBe('m aussere');
     expect(normalizeText('N. axillaris')).toBe('n axillaris');
+  });
+});
+
+describe('highlightName', () => {
+  it('markiert das erste Vorkommen der Anfrage', () => {
+    expect(highlightName('M. deltoideus', 'delt')).toEqual([
+      { text: 'M. ', match: false },
+      { text: 'delt', match: true },
+      { text: 'oideus', match: false },
+    ]);
+  });
+
+  it('ist diakritika-tolerant und erhält die Originalzeichen', () => {
+    // foldText entfernt Diakritika (Ä→a), ß bleibt.
+    expect(foldText('Äußere')).toBe('außere');
+    expect(highlightName('M. Äußere', 'au')).toEqual([
+      { text: 'M. ', match: false },
+      { text: 'Äu', match: true },
+      { text: 'ßere', match: false },
+    ]);
+  });
+
+  it('gibt bei leerer Anfrage oder ohne Treffer ein einzelnes Segment zurück', () => {
+    expect(highlightName('M. deltoideus', '')).toEqual([{ text: 'M. deltoideus', match: false }]);
+    expect(highlightName('M. deltoideus', 'xyz')).toEqual([
+      { text: 'M. deltoideus', match: false },
+    ]);
   });
 });
 

@@ -19,6 +19,8 @@ export interface MuscleSearchResult {
   options: FilterOptions;
   total: number;
   count: number;
+  /** Die (debouncte) Anfrage, die zu den Treffern führte — für Highlighting. */
+  query: string;
 }
 
 export function useMuscleSearch(): MuscleSearchResult {
@@ -46,5 +48,5 @@ export function useMuscleSearch(): MuscleSearchResult {
 
   const options = useMemo(() => getFilterOptions(MUSCLES, MOVEMENTS), []);
 
-  return { results, options, total: MUSCLES.length, count: results.length };
+  return { results, options, total: MUSCLES.length, count: results.length, query: debouncedQuery };
 }

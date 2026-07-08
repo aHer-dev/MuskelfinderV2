@@ -55,5 +55,9 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   Rezepte angeglichen (SearchField 56px + Fokus-Recipe, Chip 8px/11.5px + aktiv, DifficultyDots 6px,
   SegmentedControl aktiv = Akzent-Füllung). Pixelgenauer Frame-Abgleich pro Screen + A11y-Audit offen
   (siehe docs/tasks/2026-07-08-etappe-4-design.md).
+- Etappe 4 (Design, 2. Durchgang): Treffer-Highlighting im Muskelnamen (`foldText`/`highlightName`,
+  diakritika-tolerant, getestet, orange `<mark>`); entfernbare `ActiveFilters`-Chip-Reihe;
+  Quiz-Antworten mit A–D-Badges im 2×2-Grid + `role="radiogroup"`/`radio`; `LeitnerBoxes`-Visual
+  (7 Fächer); Statistik-LevelCard mit großem `ProgressRing`. Teststand 137 grün.
 - `docs/PROJECT_STATE.md` als Single Source of Truth fuer Agenten angelegt und in
   `AGENTS.md` verpflichtend verlinkt.

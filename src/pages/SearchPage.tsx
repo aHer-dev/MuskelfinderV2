@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
 import { SearchField } from '../components/features/search/SearchField';
 import { FilterPanel } from '../components/features/search/FilterPanel';
+import { ActiveFilters } from '../components/features/search/ActiveFilters';
 import { MuscleGrid } from '../components/features/search/MuscleGrid';
 import { filterToQueryString, searchParamsToFilter } from '../data/filterUrl';
 import { useMuscleSearch } from '../hooks/useMuscleSearch';
@@ -27,7 +28,7 @@ export function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const setFilter = useFilterStore((s) => s.setFilter);
   const filter = useFilterStore(useShallow(pickFilter));
-  const { results, options, total, count } = useMuscleSearch();
+  const { results, options, total, count, query } = useMuscleSearch();
 
   // 1) Beim ersten Rendern: Filter aus der URL übernehmen (URL ist die Wahrheit).
   const hydrated = useRef(false);
@@ -59,7 +60,10 @@ export function SearchPage() {
 
       <div className="search-page__body">
         <FilterPanel options={options} count={count} />
-        <MuscleGrid muscles={results} />
+        <div className="search-page__results">
+          <ActiveFilters />
+          <MuscleGrid muscles={results} query={query} />
+        </div>
       </div>
     </section>
   );

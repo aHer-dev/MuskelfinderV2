@@ -1,20 +1,32 @@
 import { Link } from 'react-router-dom';
 import type { Muscle } from '../../../types';
+import { highlightName } from '../../../data/search';
 import { movementLabel, regionLabel } from '../../../data/labels';
 import { DifficultyDots } from '../../ui/DifficultyDots';
 
 const MAX_CHIPS = 4;
 
 /** Ergebniskarte: verlinkt auf das Detail, zeigt Kernfakten (funktional, un-poliert). */
-export function MuscleCard({ muscle }: { muscle: Muscle }) {
+export function MuscleCard({ muscle, query = '' }: { muscle: Muscle; query?: string }) {
   const chips = muscle.functions.slice(0, MAX_CHIPS);
   const overflow = muscle.functions.length - chips.length;
+  const segments = highlightName(muscle.nameLatin, query);
 
   return (
     <li className="muscle-card">
       <Link to={`/muskel/${muscle.id}`} className="muscle-card__link">
         <div className="muscle-card__head">
-          <h2 className="muscle-card__name">{muscle.nameLatin}</h2>
+          <h2 className="muscle-card__name">
+            {segments.map((segment, i) =>
+              segment.match ? (
+                <mark key={i} className="muscle-card__match">
+                  {segment.text}
+                </mark>
+              ) : (
+                <span key={i}>{segment.text}</span>
+              ),
+            )}
+          </h2>
           <DifficultyDots level={muscle.difficulty} />
         </div>
         <p className="muscle-card__meta">

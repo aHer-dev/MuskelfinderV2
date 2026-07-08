@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getMuscleByLatinName } from '../data';
 import { Flashcard } from '../components/features/flashcards/Flashcard';
+import { LeitnerBoxes } from '../components/features/flashcards/LeitnerBoxes';
 import { RatingBar } from '../components/features/flashcards/RatingBar';
 import { useFlashcardSession } from '../hooks/useFlashcardSession';
 import { useProgressStore } from '../store/useProgressStore';
@@ -10,8 +11,16 @@ import '../components/features/flashcards/flashcards.css';
 
 export function FlashcardsPage() {
   const session = useFlashcardSession();
-  const deckSize = useProgressStore((s) => Object.keys(s.flashcards.cards).length);
+  const cards = useProgressStore((s) => s.flashcards.cards);
+  const deckSize = Object.keys(cards).length;
   const [revealed, setRevealed] = useState(false);
+
+  const byFach = useMemo(() => {
+    const acc = Array<number>(8).fill(0);
+    for (const card of Object.values(cards)) acc[card.fach]++;
+    return acc;
+  }, [cards]);
+  const activeBox = session.current ? cards[session.current]?.fach : undefined;
 
   // Beim Kartenwechsel wieder zuklappen.
   useEffect(() => setRevealed(false), [session.current]);
@@ -69,6 +78,7 @@ export function FlashcardsPage() {
           {muscle ? (
             <>
               <Flashcard muscle={muscle} revealed={revealed} onReveal={() => setRevealed(true)} />
+              <LeitnerBoxes counts={byFach} activeBox={activeBox} />
               <RatingBar onRate={handleRate} disabled={!revealed} />
             </>
           ) : (

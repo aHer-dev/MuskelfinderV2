@@ -20,6 +20,35 @@ export function normalizeText(value: string): string {
     .trim();
 }
 
+/** Längen-erhaltende Faltung (Kleinschreibung + Diakritika weg) für Treffer-Positionen. */
+export function foldText(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+}
+
+export interface HighlightSegment {
+  text: string;
+  match: boolean;
+}
+
+/**
+ * Zerlegt einen Namen in Segmente, wobei das erste Vorkommen der (diakritika-
+ * toleranten) Anfrage als Treffer markiert wird — für orange Hervorhebung.
+ */
+export function highlightName(name: string, query: string): HighlightSegment[] {
+  const needle = foldText(query).trim();
+  if (needle === '') return [{ text: name, match: false }];
+  const index = foldText(name).indexOf(needle);
+  if (index < 0) return [{ text: name, match: false }];
+  return [
+    { text: name.slice(0, index), match: false },
+    { text: name.slice(index, index + needle.length), match: true },
+    { text: name.slice(index + needle.length), match: false },
+  ].filter((segment) => segment.text.length > 0);
+}
+
 function haystack(muscle: Muscle): string {
   return [
     muscle.nameLatin,

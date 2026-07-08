@@ -2,7 +2,7 @@ import type { Muscle } from '../../../types';
 import { MuscleCard } from './MuscleCard';
 
 /** Ergebnisraster. Leerer Zustand statt einer leeren Liste. */
-export function MuscleGrid({ muscles }: { muscles: Muscle[] }) {
+export function MuscleGrid({ muscles, query = '' }: { muscles: Muscle[]; query?: string }) {
   if (muscles.length === 0) {
     return (
       <p className="muscle-grid__empty" role="status">
@@ -14,7 +14,7 @@ export function MuscleGrid({ muscles }: { muscles: Muscle[] }) {
   return (
     <ul className="muscle-grid">
       {muscles.map((muscle) => (
-        <MuscleCard key={muscle.id} muscle={muscle} />
+        <MuscleCard key={muscle.id} muscle={muscle} query={query} />
       ))}
     </ul>
   );
