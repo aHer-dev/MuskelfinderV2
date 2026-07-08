@@ -1,37 +1,59 @@
-/* App-Shell — SKELETT (Etappe 0). Tokens aus theme.css. Feinschliff → Etappe 4. */
+/* =========================================================================
+   App-Shell (Etappe 4) — schwebende Glas-Rail (Desktop) ⇄ Tab-Leiste (Mobile).
+   Ausschließlich Tokens aus theme.css. Handoff §7/§8.
+   ========================================================================= */
 
 .shell {
-  display: flex;
   min-height: 100svh;
+  background: var(--stage-gradient);
+  background-attachment: fixed;
+}
+
+.content {
+  min-width: 0;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-lg);
+}
+
+/* ---- Desktop: schwebende Icon-Rail links ------------------------------ */
+.shell--desktop .content {
+  margin-left: 108px; /* Rail 68 + 20 links + 20 Luft */
+  margin-right: auto;
+  padding: var(--spacing-xl) var(--spacing-xl);
 }
 
 .rail {
+  position: fixed;
+  left: 20px;
+  top: 20px;
+  bottom: 20px;
+  width: 68px;
+  z-index: var(--z-rail);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
-  width: 232px;
-  flex-shrink: 0;
-  padding: var(--spacing-lg) var(--spacing-md);
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) 0;
   background: var(--glass-panel);
   -webkit-backdrop-filter: var(--glass-blur);
   backdrop-filter: var(--glass-blur);
-  border-right: 1px solid var(--glass-border);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--glass-shadow);
 }
 
 .rail__brand {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  padding: 0 var(--spacing-sm);
+  justify-content: center;
 }
-.rail__wordmark {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 17px;
-  letter-spacing: -0.015em;
-  color: var(--text-primary);
+
+.rail__divider {
+  width: 36px;
+  height: 1px;
+  background: var(--hairline-strong);
 }
-.rail__wordmark strong { color: var(--accent-on-surface); font-weight: 600; }
 
 .rail__nav {
   list-style: none;
@@ -39,58 +61,114 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--spacing-sm);
 }
 
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: var(--radius-md);
-  font-family: var(--font-ui);
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--text-secondary);
-  transition: var(--transition-smooth);
-}
-.nav-item:hover { background: var(--surface-hover); color: var(--text-primary); }
-.nav-item--active { background: var(--accent-tint); color: var(--accent-on-surface); }
-
-.rail__foot { margin-top: auto; }
-.rail__icon-btn {
+.rail-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: var(--touch-min);
-  height: var(--touch-min);
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: transparent;
   border-radius: var(--radius-rail-btn);
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
+  cursor: pointer;
   transition: var(--transition-smooth);
 }
-.rail__icon-btn:hover { background: var(--surface-hover); color: var(--text-primary); }
 
-.content {
-  flex: 1;
-  min-width: 0;
-  padding: var(--spacing-xl) var(--spacing-lg);
+.rail-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
 }
 
-/* Unter lg: Rail wird zur horizontalen Leiste. Nur Skelett — echte TabBar in Etappe 4. */
-@media (max-width: 1023px) {
-  .shell { flex-direction: column; }
-  .rail {
-    flex-direction: row;
-    align-items: center;
-    width: auto;
-    gap: var(--spacing-sm);
-    border-right: none;
-    border-bottom: 1px solid var(--glass-border);
-    padding: var(--spacing-sm) var(--spacing-md);
-    overflow-x: auto;
-  }
-  .rail__nav { flex-direction: row; }
-  .nav-item span { display: none; }
-  .rail__foot { margin-top: 0; margin-left: auto; }
-  .content { padding: var(--spacing-lg) var(--spacing-md); }
+.rail-btn--active {
+  background: var(--accent-tint);
+  color: var(--accent-on-surface);
+}
+
+.rail-btn:focus-visible,
+.rail__brand:focus-visible,
+.rail__level:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-rail-btn);
+}
+
+.rail__foot {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.rail__level {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+}
+
+/* ---- Mobile: schwebende Glas-Tab-Leiste unten ------------------------- */
+.shell--mobile .content {
+  padding: var(--spacing-lg) var(--spacing-md);
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+}
+
+.tabbar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  z-index: var(--z-rail);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px;
+  max-width: calc(100vw - 32px);
+  background: var(--glass-panel);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--glass-shadow);
+}
+
+.tabbar__btn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 52px;
+  min-height: 52px;
+  padding: 0 var(--spacing-xs);
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-md);
+  color: var(--text-tertiary);
+  font-family: var(--font-ui);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.tabbar__btn--active {
+  color: var(--accent-on-surface);
+}
+
+.tabbar__btn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.tabbar__label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.tabbar__btn--toggle .tabbar__label {
+  display: none;
 }

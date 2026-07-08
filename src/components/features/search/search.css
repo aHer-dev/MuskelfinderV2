@@ -27,21 +27,28 @@
   align-items: center;
   gap: var(--spacing-sm);
   padding: 0 var(--spacing-md);
-  min-height: var(--touch-min);
+  min-height: 56px;
   background: var(--surface);
-  border: 1px solid var(--control-border);
+  border: 1.5px solid var(--control-border);
   border-radius: var(--radius-field);
   box-shadow: var(--card-shadow);
+  transition: var(--transition-smooth);
 }
 
 .search-field:focus-within {
   border-color: var(--accent-border);
-  box-shadow: 0 0 0 3px var(--accent-dim);
+  box-shadow: 0 0 0 4px var(--accent-dim);
 }
 
 .search-field__icon {
-  color: var(--text-tertiary);
+  color: var(--accent-on-surface);
   flex: 0 0 auto;
+}
+
+@media (max-width: 767px) {
+  .search-field {
+    min-height: 50px;
+  }
 }
 
 .search-field__input {

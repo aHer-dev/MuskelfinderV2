@@ -1,64 +1,22 @@
-import type { ReactNode } from 'react'
-import { NavLink } from 'react-router-dom'
-import { Icon } from '../ui/Icon'
-import type { IconName } from '../ui/Icon'
-import { ThemeToggle } from '../ui/ThemeToggle'
-import { useThemeStore } from '../../store/useThemeStore'
-import './AppShell.css'
+import type { ReactNode } from 'react';
+import { useIsDesktop } from '../../hooks/useMediaQuery';
+import { IconRail } from './IconRail';
+import { TabBar } from './TabBar';
+import './AppShell.css';
 
 /*
- * SKELETT (Etappe 0): strukturelle App-Hülle mit Navigation + Theme-Toggle.
- * Bewusst NICHT pixelgenau — Glassmorphism/Rail/TabBar-Feinschliff kommt in Etappe 4.
+ * AppShell (Etappe 4, Handoff §7): schwebende Glas-Icon-Rail links ab ≥lg,
+ * darunter mobile Glas-Tab-Leiste unten. Hintergrund = Bühnen-Radial.
+ * Umschaltung über useMediaQuery (§14). Medien-Fenster bleiben in beiden Themes dunkel.
  */
-
-interface NavItem {
-  to: string
-  label: string
-  icon: IconName
-}
-
-const NAV: NavItem[] = [
-  { to: '/suche', label: 'Suche', icon: 'icSearch' },
-  { to: '/lernkarten', label: 'Lernkarten', icon: 'icCards' },
-  { to: '/quiz', label: 'Quiz', icon: 'icQuiz' },
-  { to: '/statistik', label: 'Statistik', icon: 'icChart' },
-]
-
 export function AppShell({ children }: { children: ReactNode }) {
-  const theme = useThemeStore((state) => state.theme)
-  // Logo themeabhängig (Handoff §15): heller Grund → anthrazites Logo, dunkler Grund → helles Logo.
-  const logo = `${import.meta.env.BASE_URL}logo/${theme === 'dark' ? 'af-logo.png' : 'af-logo-dark.png'}`
+  const isDesktop = useIsDesktop();
 
   return (
-    <div className="shell">
-      <nav className="rail" aria-label="Hauptnavigation">
-        <div className="rail__brand">
-          <img src={logo} alt="Anatomie Fokus" width={28} height={28} />
-          <span className="rail__wordmark">
-            Anatomie<strong>Fokus</strong>
-          </span>
-        </div>
-
-        <ul className="rail__nav">
-          {NAV.map((item) => (
-            <li key={item.to}>
-              <NavLink
-                to={item.to}
-                className={({ isActive }) => `nav-item${isActive ? ' nav-item--active' : ''}`}
-              >
-                <Icon name={item.icon} size={22} />
-                <span>{item.label}</span>
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-
-        <div className="rail__foot">
-          <ThemeToggle className="rail__icon-btn" />
-        </div>
-      </nav>
-
+    <div className={`shell${isDesktop ? ' shell--desktop' : ' shell--mobile'}`}>
+      {isDesktop ? <IconRail /> : null}
       <main className="content">{children}</main>
+      {!isDesktop ? <TabBar /> : null}
     </div>
-  )
+  );
 }

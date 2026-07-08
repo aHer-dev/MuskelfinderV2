@@ -48,5 +48,12 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
     Etappe-2-Kern an die UI.
   - Geteilte UI-Primitives (`styles/components.css`: Button/Chip/Checkbox/Segmented/Difficulty),
     semantische Tokens `--success`/`--danger`. Teststand 132 grün.
+- Etappe 4 (Design, 1. Durchgang): responsive App-Shell nach Handoff §7 — schwebende
+  Glas-Icon-Rail (Desktop, Level-Ring + Theme-Toggle) ⇄ Glas-Tab-Leiste (Mobile), umgeschaltet
+  über `useMediaQuery`/`useIsDesktop` (lg=1024px, matchMedia-Stub im Test-Setup). Bühnen-Radial-
+  Hintergrund, Safe-Area-Insets. Neues `ProgressRing`-Primitive. Primitives an die verbindlichen
+  Rezepte angeglichen (SearchField 56px + Fokus-Recipe, Chip 8px/11.5px + aktiv, DifficultyDots 6px,
+  SegmentedControl aktiv = Akzent-Füllung). Pixelgenauer Frame-Abgleich pro Screen + A11y-Audit offen
+  (siehe docs/tasks/2026-07-08-etappe-4-design.md).
 - `docs/PROJECT_STATE.md` als Single Source of Truth fuer Agenten angelegt und in
   `AGENTS.md` verpflichtend verlinkt.

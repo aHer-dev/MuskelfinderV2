@@ -6,10 +6,10 @@
 ## Stand
 - Datum: 2026-07-08
 - Branch: `feat/etappe-0-fundament`
-- Status: Etappe 0–3 sind umgesetzt, aber noch nicht committet. Funktionaler Kern steht.
+- Status: Etappe 0–3 committet; Etappe 4 (Design) 1. Durchgang umgesetzt (Shell + Primitives).
 - Gate zuletzt gruen: `npm run lint && npm run test && npm run build`
-- Aktueller Teststand: 132 Tests gruen.
-- Offen: visueller/Browser-Integrationscheck durch dich (Workflow Schritt 6).
+- Aktueller Teststand: 134 Tests gruen.
+- Offen: E4-Screen-Feinschliff + A11y-Audit; visueller/Browser-Integrationscheck durch dich.
 
 ## Kanonische Quellen
 - V1-Original: `../Muskelfinder` (`/home/pepperboy8/Documents/Muskelfinder`)
@@ -62,14 +62,13 @@
 - TA-Codes fehlen in V1 und bleiben optional. Nicht erfinden.
 
 ## Naechster Schritt
-Etappe 4: Design-Umsetzung (Hi-Fi, pixelgenau) aus `Planung/design_handoff_muskelfinder/`.
-- Primitives pixelgenau (Button/Chip/Checkbox/Select/SearchField/ProgressRing+Bar/DifficultyDots/
-  Panel/Card/SegmentedControl/Sheet) — die tokenbasierten Etappe-3-Primitives in
-  `styles/components.css` + `components/ui/*` verfeinern, nicht neu erfinden.
-- AppShell: Desktop Icon-Rail (Glas) + optional Filter-Sidebar; Mobile Tab-Leiste + Bottom-Sheet.
-  Logo themeabhaengig. Responsive (Rail↔TabBar via `useMediaQuery`, Grid 2→1, Sidebar↔Sheet).
-- LeitnerBoxes-Visual auf 7 Faecher; Medien-Fenster in beiden Themes dunkel (bereits so).
-- A11y-Pass: aria-labels, Fokus-Ring, prefers-reduced-motion, radiogroup/aria-live im Quiz.
+Etappe 4 fortsetzen (Details/Offene Punkte: docs/tasks/2026-07-08-etappe-4-design.md):
+- SearchPage: FilterSidebar rechts (Glas) + ActiveFilters-Chips + Treffer-Highlighting im Namen;
+  Mobile Region-Chip-Reihe + FilterSheet (`Sheet`-Primitive mit Fokus-Trap/Esc).
+- Detail: ImageViewer mit Thumbnails/Zoom-Leiste + Ansichts-Badge; ClinicalNote-Box (`icInfo`).
+- Lernkarten: 3D-Flip + LeitnerBoxes-Visual (7 Faecher). Quiz: AnswerOption A–D + radiogroup-A11y.
+  Statistik: LevelCard/StatCard/CardBreakdown-Bento.
+- A11y-Pass §13; Referenz-Frame-Abgleich (`3a` Light default).
 
 Anschluss-Hinweis: Stores schluesseln Karten nach `nameLatin`; die UI loest Routing-`id` ueber
 die Datenschicht (`getMuscleByLatinName`) auf (ADR 0002 §2 / ADR 0006 §3). Such-/Filter-Logik,
