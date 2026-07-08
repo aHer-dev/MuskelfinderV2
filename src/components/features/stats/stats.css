@@ -1,0 +1,161 @@
+/* =========================================================================
+   Statistik (Etappe 3e) — funktional & tokenbasiert.
+   ========================================================================= */
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+/* ---- Kennzahl-Kacheln ------------------------------------------------- */
+.stat-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.stat-tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md);
+  background: var(--surface);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--card-shadow);
+}
+
+.stat-tile__value {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-tile__label {
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
+}
+
+/* ---- Panels ----------------------------------------------------------- */
+.stats__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background: var(--surface);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--card-shadow);
+}
+
+.stats__panel h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+}
+
+.stats__panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.stats__panel-head h2 {
+  margin: 0;
+}
+
+.stats__panel-sub {
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+.stats__breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+/* ---- Balken ----------------------------------------------------------- */
+.stat-bar {
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-sunken);
+  overflow: hidden;
+}
+
+.stat-bar__fill {
+  height: 100%;
+  background: var(--accent-gradient);
+  transition: var(--transition-smooth);
+}
+
+/* ---- Regionen --------------------------------------------------------- */
+.stats__regions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.stats__region {
+  display: grid;
+  grid-template-columns: 130px 1fr 48px;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+@media (max-width: 520px) {
+  .stats__region {
+    grid-template-columns: 96px 1fr 40px;
+    gap: var(--spacing-sm);
+  }
+}
+
+.stats__region-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.stats__region-pct {
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.stats__quiz-line {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+/* ---- Datensicherung --------------------------------------------------- */
+.backup-panel__actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.backup-panel__input {
+  display: none;
+}
+
+.backup-panel__msg {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.backup-panel__msg--ok {
+  color: var(--success);
+}
+
+.backup-panel__msg--err {
+  color: var(--danger);
+}

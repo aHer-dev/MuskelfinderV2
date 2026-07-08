@@ -1,0 +1,146 @@
+/* =========================================================================
+   Geteilte UI-Primitives (Etappe 3, funktional & tokenbasiert).
+   src/styles/components.css — global eingebunden in main.tsx.
+   Etappe 4 verfeinert diese zu pixelgenauen Marken-Primitives.
+   ========================================================================= */
+
+/* ---- Button ----------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  min-height: 38px;
+  padding: 0 var(--spacing-md);
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: var(--surface);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: var(--control-border);
+  color: var(--text-secondary);
+}
+
+.btn--ghost:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.btn--active {
+  background: var(--accent-tint);
+  border-color: var(--accent-border);
+  color: var(--accent-on-surface);
+}
+
+.btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-on);
+  font-weight: 600;
+}
+
+.btn--primary:hover {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* ---- Chip ------------------------------------------------------------- */
+.chip {
+  padding: 2px var(--spacing-sm);
+  border-radius: var(--radius-pill);
+  background: var(--surface-sunken);
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+  white-space: nowrap;
+}
+
+.chip--muted {
+  color: var(--text-muted);
+}
+
+/* ---- Checkbox-Label --------------------------------------------------- */
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.checkbox input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+
+/* ---- Schwierigkeits-Punkte -------------------------------------------- */
+.difficulty {
+  display: inline-flex;
+  gap: 3px;
+  flex: 0 0 auto;
+  align-items: center;
+  margin-top: 3px;
+}
+
+.difficulty__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-hover);
+  border: 1px solid var(--hairline-strong);
+}
+
+.difficulty__dot--on {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+/* ---- Segmented Control ------------------------------------------------ */
+.segmented {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+}
+
+.segmented__btn {
+  min-height: 34px;
+  padding: 0 var(--spacing-md);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.segmented__btn--active {
+  background: var(--surface);
+  color: var(--text-primary);
+  box-shadow: var(--card-shadow);
+}
+
+.segmented__btn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}

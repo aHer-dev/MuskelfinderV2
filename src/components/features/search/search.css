@@ -1,0 +1,245 @@
+/* =========================================================================
+   Suche & Filter (Etappe 3a) — funktional & tokenbasiert, noch nicht pixelgenau.
+   Ausschließlich Theme-Tokens (theme.css). Feinschliff/Glas kommt in Etappe 4.
+   ========================================================================= */
+
+.search-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.search-page__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.search-page__lead {
+  margin: 0;
+  color: var(--text-tertiary);
+  font-size: 0.95rem;
+}
+
+/* ---- Suchfeld --------------------------------------------------------- */
+.search-field {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 0 var(--spacing-md);
+  min-height: var(--touch-min);
+  background: var(--surface);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-field);
+  box-shadow: var(--card-shadow);
+}
+
+.search-field:focus-within {
+  border-color: var(--accent-border);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+.search-field__icon {
+  color: var(--text-tertiary);
+  flex: 0 0 auto;
+}
+
+.search-field__input {
+  flex: 1 1 auto;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  min-width: 0;
+}
+
+.search-field__input::placeholder {
+  color: var(--text-muted);
+}
+
+.search-field__clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-pill);
+}
+
+.search-field__clear:hover {
+  color: var(--text-primary);
+  background: var(--surface-hover);
+}
+
+/* ---- Layout: Filter + Ergebnisse ------------------------------------- */
+.search-page__body {
+  display: grid;
+  grid-template-columns: minmax(220px, 260px) 1fr;
+  gap: var(--spacing-lg);
+  align-items: start;
+}
+
+@media (max-width: 720px) {
+  .search-page__body {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Filter-Panel ----------------------------------------------------- */
+.filter-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--surface);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--card-shadow);
+  position: sticky;
+  top: var(--spacing-md);
+}
+
+.filter-group {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.filter-group__legend {
+  padding: 0;
+  margin-bottom: var(--spacing-sm);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.filter-group__checks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.filter-select {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.filter-select__label {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.filter-select select {
+  min-height: var(--touch-min);
+  padding: 0 var(--spacing-sm);
+  background: var(--surface-sunken);
+  color: var(--text-primary);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+}
+
+.filter-select select:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+.filter-panel__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid var(--hairline);
+}
+
+.filter-panel__count {
+  font-size: 0.9rem;
+  color: var(--text-tertiary);
+}
+
+/* ---- Ergebnisraster --------------------------------------------------- */
+.muscle-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.muscle-grid__empty {
+  padding: var(--spacing-xl) var(--spacing-md);
+  text-align: center;
+  color: var(--text-tertiary);
+}
+
+.muscle-card {
+  list-style: none;
+}
+
+.muscle-card__link {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  height: 100%;
+  padding: var(--spacing-md);
+  background: var(--surface);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--card-shadow);
+  color: var(--text-primary);
+  transition: var(--transition-smooth);
+}
+
+.muscle-card__link:hover {
+  border-color: var(--accent-border);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.muscle-card__link:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.muscle-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+}
+
+.muscle-card__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.muscle-card__meta {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+}
+
+.muscle-card__chips {
+  list-style: none;
+  margin: auto 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
