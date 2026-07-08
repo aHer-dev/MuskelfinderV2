@@ -1,0 +1,96 @@
+/* App-Shell — SKELETT (Etappe 0). Tokens aus theme.css. Feinschliff → Etappe 4. */
+
+.shell {
+  display: flex;
+  min-height: 100svh;
+}
+
+.rail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  width: 232px;
+  flex-shrink: 0;
+  padding: var(--spacing-lg) var(--spacing-md);
+  background: var(--glass-panel);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border-right: 1px solid var(--glass-border);
+}
+
+.rail__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 0 var(--spacing-sm);
+}
+.rail__wordmark {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 17px;
+  letter-spacing: -0.015em;
+  color: var(--text-primary);
+}
+.rail__wordmark strong { color: var(--accent-on-surface); font-weight: 600; }
+
+.rail__nav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-secondary);
+  transition: var(--transition-smooth);
+}
+.nav-item:hover { background: var(--surface-hover); color: var(--text-primary); }
+.nav-item--active { background: var(--accent-tint); color: var(--accent-on-surface); }
+
+.rail__foot { margin-top: auto; }
+.rail__icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch-min);
+  height: var(--touch-min);
+  border-radius: var(--radius-rail-btn);
+  color: var(--text-secondary);
+  transition: var(--transition-smooth);
+}
+.rail__icon-btn:hover { background: var(--surface-hover); color: var(--text-primary); }
+
+.content {
+  flex: 1;
+  min-width: 0;
+  padding: var(--spacing-xl) var(--spacing-lg);
+}
+
+/* Unter lg: Rail wird zur horizontalen Leiste. Nur Skelett — echte TabBar in Etappe 4. */
+@media (max-width: 1023px) {
+  .shell { flex-direction: column; }
+  .rail {
+    flex-direction: row;
+    align-items: center;
+    width: auto;
+    gap: var(--spacing-sm);
+    border-right: none;
+    border-bottom: 1px solid var(--glass-border);
+    padding: var(--spacing-sm) var(--spacing-md);
+    overflow-x: auto;
+  }
+  .rail__nav { flex-direction: row; }
+  .nav-item span { display: none; }
+  .rail__foot { margin-top: 0; margin-left: auto; }
+  .content { padding: var(--spacing-lg) var(--spacing-md); }
+}

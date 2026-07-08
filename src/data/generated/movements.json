@@ -1,0 +1,446 @@
+[
+  {
+    "id": "abduktion",
+    "label": "Abduktion"
+  },
+  {
+    "id": "abduktion-und-adduktion-des-mtp-gelenks",
+    "label": "Abduktion und Adduktion des MTP-Gelenks"
+  },
+  {
+    "id": "adduktion",
+    "label": "Adduktion"
+  },
+  {
+    "id": "annaherung-von-kehlkopf-und-zungenbein",
+    "label": "Annäherung von Kehlkopf und Zungenbein"
+  },
+  {
+    "id": "aussenrotation",
+    "label": "Außenrotation"
+  },
+  {
+    "id": "beckenkippung-ruckwarts",
+    "label": "Beckenkippung rückwärts"
+  },
+  {
+    "id": "cmc-abduktion",
+    "label": "CMC-Abduktion"
+  },
+  {
+    "id": "cmc-adduktion",
+    "label": "CMC-Adduktion"
+  },
+  {
+    "id": "cmc-extension",
+    "label": "CMC-Extension"
+  },
+  {
+    "id": "cmc-flexion",
+    "label": "CMC-Flexion"
+  },
+  {
+    "id": "cmc-opposition",
+    "label": "CMC-Opposition"
+  },
+  {
+    "id": "daumenflexion",
+    "label": "Daumenflexion"
+  },
+  {
+    "id": "depression",
+    "label": "Depression"
+  },
+  {
+    "id": "depression-der-clavicula",
+    "label": "Depression der Clavicula"
+  },
+  {
+    "id": "dip-flexion",
+    "label": "DIP-Flexion"
+  },
+  {
+    "id": "dorsalextension",
+    "label": "Dorsalextension"
+  },
+  {
+    "id": "elevation",
+    "label": "Elevation"
+  },
+  {
+    "id": "erweitert-blaht-nasenloch-pars-alaris",
+    "label": "Erweitert / bläht Nasenloch (Pars alaris)"
+  },
+  {
+    "id": "erzeugt-querfalten-der-stirn",
+    "label": "erzeugt Querfalten der Stirn"
+  },
+  {
+    "id": "erzeugt-vertikale-glabellafalten-zornesfalte",
+    "label": "erzeugt vertikale Glabellafalten (Zornesfalte)"
+  },
+  {
+    "id": "extension",
+    "label": "Extension"
+  },
+  {
+    "id": "extension-des-v-fingers",
+    "label": "Extension des V. Fingers"
+  },
+  {
+    "id": "extension-des-zeigefingers",
+    "label": "Extension des Zeigefingers"
+  },
+  {
+    "id": "fixiert-galea-aponeurotica",
+    "label": "fixiert Galea aponeurotica"
+  },
+  {
+    "id": "flexion",
+    "label": "Flexion"
+  },
+  {
+    "id": "flexion-der-hws",
+    "label": "Flexion der HWS"
+  },
+  {
+    "id": "flexion-des-kopfes-inklination",
+    "label": "Flexion des Kopfes (Inklination)"
+  },
+  {
+    "id": "fuss-dorsalextension",
+    "label": "Fuß: Dorsalextension"
+  },
+  {
+    "id": "fuss-dorsalextension-zeh-i-extension-des-mtp-und-ip-gelenks",
+    "label": "Fuß: Dorsalextension; Zeh I: Extension des MTP- und IP-Gelenks"
+  },
+  {
+    "id": "fuss-plantarflexion",
+    "label": "Fuß: Plantarflexion"
+  },
+  {
+    "id": "hebt-augenbrauen",
+    "label": "Hebt Augenbrauen"
+  },
+  {
+    "id": "huftadduktion",
+    "label": "Hüftadduktion"
+  },
+  {
+    "id": "huftextension",
+    "label": "Hüftextension"
+  },
+  {
+    "id": "huftflexion",
+    "label": "Hüftflexion"
+  },
+  {
+    "id": "inklination-bilateral",
+    "label": "Inklination (bilateral)"
+  },
+  {
+    "id": "innenrotation",
+    "label": "Innenrotation"
+  },
+  {
+    "id": "ip-extension",
+    "label": "IP-Extension"
+  },
+  {
+    "id": "kapselspannung",
+    "label": "Kapselspannung"
+  },
+  {
+    "id": "kehlkopfabsenkung",
+    "label": "Kehlkopfabsenkung"
+  },
+  {
+    "id": "kehlkopfhebung",
+    "label": "Kehlkopfhebung"
+  },
+  {
+    "id": "knie-aussenrotation",
+    "label": "Knie-Außenrotation"
+  },
+  {
+    "id": "knie-innenrotation",
+    "label": "Knie-Innenrotation"
+  },
+  {
+    "id": "knie-flexion-fuss-plantarflexion",
+    "label": "Knie: Flexion; Fuß: Plantarflexion"
+  },
+  {
+    "id": "knieextension",
+    "label": "Knieextension"
+  },
+  {
+    "id": "knieflexion",
+    "label": "Knieflexion"
+  },
+  {
+    "id": "kompression",
+    "label": "Kompression"
+  },
+  {
+    "id": "kompression-bauchpresse",
+    "label": "Kompression (Bauchpresse)"
+  },
+  {
+    "id": "kontinenz",
+    "label": "Kontinenz"
+  },
+  {
+    "id": "lateralflexion",
+    "label": "Lateralflexion"
+  },
+  {
+    "id": "lateralflexion-ipsilateral",
+    "label": "Lateralflexion ipsilateral"
+  },
+  {
+    "id": "laterorotation",
+    "label": "Laterorotation"
+  },
+  {
+    "id": "laterotrusion",
+    "label": "Laterotrusion"
+  },
+  {
+    "id": "lidschluss-willkurlich-und-reflektorisch",
+    "label": "Lidschluss (willkürlich und reflektorisch)"
+  },
+  {
+    "id": "lippenformung",
+    "label": "Lippenformung"
+  },
+  {
+    "id": "mcp-extension",
+    "label": "MCP-Extension"
+  },
+  {
+    "id": "mcp-flexion",
+    "label": "MCP-Flexion"
+  },
+  {
+    "id": "mundbodenhebung",
+    "label": "Mundbodenhebung"
+  },
+  {
+    "id": "mundoffnung",
+    "label": "Mundöffnung"
+  },
+  {
+    "id": "mundoffnung-abduktion",
+    "label": "Mundöffnung (Abduktion)"
+  },
+  {
+    "id": "mundschluss",
+    "label": "Mundschluss"
+  },
+  {
+    "id": "mundschluss-adduktion-des-unterkiefers",
+    "label": "Mundschluss (Adduktion des Unterkiefers)"
+  },
+  {
+    "id": "opposition",
+    "label": "Opposition"
+  },
+  {
+    "id": "palmarflexion",
+    "label": "Palmarflexion"
+  },
+  {
+    "id": "pip-flexion",
+    "label": "PIP-Flexion"
+  },
+  {
+    "id": "pronation",
+    "label": "Pronation"
+  },
+  {
+    "id": "pronation-zehen-ii-v-extension-der-mtp-und-ip-gelenke",
+    "label": "Pronation; Zehen II–V: Extension der MTP- und IP-Gelenke"
+  },
+  {
+    "id": "protraktion",
+    "label": "Protraktion"
+  },
+  {
+    "id": "protrusion",
+    "label": "Protrusion"
+  },
+  {
+    "id": "pusten",
+    "label": "Pusten"
+  },
+  {
+    "id": "radialabduktion",
+    "label": "Radialabduktion"
+  },
+  {
+    "id": "reposition",
+    "label": "Reposition"
+  },
+  {
+    "id": "retraktion",
+    "label": "Retraktion"
+  },
+  {
+    "id": "retrusion-des-unterkiefers",
+    "label": "Retrusion des Unterkiefers"
+  },
+  {
+    "id": "rippenhebung-inspiration",
+    "label": "Rippenhebung (Inspiration)"
+  },
+  {
+    "id": "rippensenkung",
+    "label": "Rippensenkung"
+  },
+  {
+    "id": "rippensenkung-exspiration",
+    "label": "Rippensenkung (Exspiration)"
+  },
+  {
+    "id": "rotation-ipsilateral",
+    "label": "Rotation ipsilateral"
+  },
+  {
+    "id": "rotation-kontralateral",
+    "label": "Rotation kontralateral"
+  },
+  {
+    "id": "runzeln-uber-nasenwurzel",
+    "label": "Runzeln über Nasenwurzel"
+  },
+  {
+    "id": "senken-des-medialen-augenbrauenanteils",
+    "label": "Senken des medialen Augenbrauenanteils"
+  },
+  {
+    "id": "spannt-die-haut-des-kleinfingerballens",
+    "label": "Spannt die Haut des Kleinfingerballens"
+  },
+  {
+    "id": "spannt-halshaut",
+    "label": "Spannt Halshaut"
+  },
+  {
+    "id": "spannung-der-halsfaszie",
+    "label": "Spannung der Halsfaszie"
+  },
+  {
+    "id": "sprechen",
+    "label": "Sprechen"
+  },
+  {
+    "id": "stutzt-beckeneingeweide",
+    "label": "Stützt Beckeneingeweide"
+  },
+  {
+    "id": "supination",
+    "label": "Supination"
+  },
+  {
+    "id": "supination-unterstutzung-des-fussgewolbes",
+    "label": "Supination; Unterstützung des Fußgewölbes"
+  },
+  {
+    "id": "supination-zeh-i-flexion-des-mtp-und-ip-gelenks",
+    "label": "Supination; Zeh I: Flexion des MTP- und IP-Gelenks"
+  },
+  {
+    "id": "supination-zehen-ii-v-flexion-der-mtp-und-ip-gelenke",
+    "label": "Supination; Zehen II–V: Flexion der MTP- und IP-Gelenke"
+  },
+  {
+    "id": "ulnarabduktion",
+    "label": "Ulnarabduktion"
+  },
+  {
+    "id": "unterstutzt-mandibelabsenkung",
+    "label": "unterstützt Mandibelabsenkung"
+  },
+  {
+    "id": "verengt-nasenoffnung-pars-transversa",
+    "label": "Verengt Nasenöffnung (Pars transversa)"
+  },
+  {
+    "id": "zeh-i-extension-des-mtp-gelenks",
+    "label": "Zeh I: Extension des MTP-Gelenks"
+  },
+  {
+    "id": "zeh-i-flexion",
+    "label": "Zeh I: Flexion"
+  },
+  {
+    "id": "zeh-i-flexion-und-abduktion-vom-ii-strahl-weg-des-mtp-gelenks",
+    "label": "Zeh I: Flexion und Abduktion (vom II. Strahl weg) des MTP-Gelenks"
+  },
+  {
+    "id": "zeh-i-flexion-und-adduktion-zum-ii-strahl-hin-des-mtp-gelenks",
+    "label": "Zeh I: Flexion und Adduktion (zum II. Strahl hin) des MTP-Gelenks"
+  },
+  {
+    "id": "zeh-ii-iv-extension-und-lateralabduktion-der-mtp-und-ip-gelenke",
+    "label": "Zeh II–IV: Extension und Lateralabduktion der MTP- und IP-Gelenke"
+  },
+  {
+    "id": "zeh-ii-iv-flexion-und-laterale-abduktion-im-mtp-gelenk-zeh-ii-mediale-abduktion",
+    "label": "Zeh II–IV: Flexion und laterale Abduktion im MTP-Gelenk; Zeh II: mediale Abduktion"
+  },
+  {
+    "id": "zeh-ii-v-flexion-der-mtp-und-ip-gelenke-unterstutzt-m-flexor-digitorum-longus",
+    "label": "Zeh II–V: Flexion der MTP- und IP-Gelenke (unterstützt M. flexor digitorum longus)"
+  },
+  {
+    "id": "zeh-ii-v-flexion-der-mtp-und-proximalen-ip-gelenke",
+    "label": "Zeh II–V: Flexion der MTP- und proximalen IP-Gelenke"
+  },
+  {
+    "id": "zeh-ii-v-flexion-der-mtp-gelenke-zeh-iii-v-adduktion-zeh-ii-abduktion",
+    "label": "Zeh II–V: Flexion der MTP-Gelenke; Zeh III–V: Adduktion; Zeh II: Abduktion"
+  },
+  {
+    "id": "zeh-iii-v-flexion-und-adduktion-der-mtp-gelenke-zum-ii-strahl-hin",
+    "label": "Zeh III–V: Flexion und Adduktion der MTP-Gelenke (zum II. Strahl hin)"
+  },
+  {
+    "id": "zeh-v-flexion-des-mtp-gelenks",
+    "label": "Zeh V: Flexion des MTP-Gelenks"
+  },
+  {
+    "id": "zeh-v-flexion-und-abduktion-des-mtp-gelenks",
+    "label": "Zeh V: Flexion und Abduktion des MTP-Gelenks"
+  },
+  {
+    "id": "zieht-augenbraue-medial-und-inferior",
+    "label": "Zieht Augenbraue medial und inferior"
+  },
+  {
+    "id": "zieht-kopfhaut-nach-dorsal",
+    "label": "Zieht Kopfhaut nach dorsal"
+  },
+  {
+    "id": "zieht-mundwinkel-nach-kaudolateral",
+    "label": "zieht Mundwinkel nach kaudolateral"
+  },
+  {
+    "id": "zungenbeinabsenkung",
+    "label": "Zungenbeinabsenkung"
+  },
+  {
+    "id": "zungenbeinanhebung",
+    "label": "Zungenbeinanhebung"
+  },
+  {
+    "id": "zungenbeinanhebung-und-dorsalverlagerung",
+    "label": "Zungenbeinanhebung und -dorsalverlagerung"
+  },
+  {
+    "id": "zungenbeinanhebung-und-vorverlagerung",
+    "label": "Zungenbeinanhebung und -vorverlagerung"
+  }
+]

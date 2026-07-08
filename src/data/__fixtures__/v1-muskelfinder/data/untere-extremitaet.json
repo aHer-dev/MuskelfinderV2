@@ -1,0 +1,33 @@
+{
+  "Sheet1": [
+    {
+      "Name": "M. test muscle",
+      "Joints": "Art. genus",
+      "Movements": "Knieextension",
+      "Segments": "N. femoralis, L2, L3",
+      "Origin": "Testursprung Bein",
+      "Insertion": "Testansatz Bein",
+      "Function": "Streckt das Testknie.",
+      "Image": "",
+      "region": "untere-extremitaet",
+      "subgroup": "knie",
+      "tags": ["test", "knie"],
+      "difficulty": 1,
+      "clinicalNote": "Testnotiz Bein",
+      "functionalChain": "",
+      "Attribution": {
+        "Author": "Fixture",
+        "AuthorUrl": "",
+        "License": "CC BY 4.0",
+        "LicenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "SourceUrl": ""
+      },
+      "easy": {
+        "Origin": "Einfacher Ursprung Bein",
+        "Insertion": "Einfacher Ansatz Bein",
+        "Function": "Einfache Bein-Funktion.",
+        "Segments": "N. femoralis, L2, L3"
+      }
+    }
+  ]
+}

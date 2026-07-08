@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="icSearch" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.4" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M15.9 15.9 21 21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+  <symbol id="icCards" viewBox="0 0 24 24"><rect x="3.5" y="7.5" width="12.5" height="12.5" rx="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 7.5V6a2.2 2.2 0 0 1 2.2-2.2H18A2.2 2.2 0 0 1 20.2 6v7.8A2.2 2.2 0 0 1 18 16h-1.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+  <symbol id="icList" viewBox="0 0 24 24"><g stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 6.5h2.4M4 12h2.4M4 17.5h2.4"/><path d="M9.5 6.5H20M9.5 12H20M9.5 17.5H20"/></g></symbol>
+  <symbol id="icQuiz" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1.1 1-1.1 1.9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="16.6" r="1.05" fill="currentColor"/></symbol>
+  <symbol id="icChart" viewBox="0 0 24 24"><path d="M4 4v16h16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 15v-3M12.5 15V9M17 15V6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
+  <symbol id="icCube" viewBox="0 0 24 24"><path d="M12 3 20 7.5V16.5L12 21 4 16.5V7.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 3V12M4 7.5 12 12M20 7.5 12 12" fill="none" stroke="currentColor" stroke-width="1.35"/></symbol>
+  <symbol id="icGear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.3" fill="none" stroke="currentColor" stroke-width="1.6"/><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 3V5.4M12 18.6V21M3 12H5.4M18.6 12H21M5.6 5.6 7.3 7.3M16.7 16.7 18.4 18.4M18.4 5.6 16.7 7.3M7.3 16.7 5.6 18.4"/></g></symbol>
+  <symbol id="icSun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.6" fill="none" stroke="currentColor" stroke-width="1.6"/><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 2.5V5M12 19V21.5M2.5 12H5M19 12H21.5M5.1 5.1 6.8 6.8M17.2 17.2 18.9 18.9M18.9 5.1 17.2 6.8M6.8 17.2 5.1 18.9"/></g></symbol>
+  <symbol id="icClose" viewBox="0 0 24 24"><path d="M6 6 18 18M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="icChevD" viewBox="0 0 24 24"><path d="M6 9 12 15 18 9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="icChevR" viewBox="0 0 24 24"><path d="M9 6 15 12 9 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="icCheck" viewBox="0 0 24 24"><path d="M5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="icFilter" viewBox="0 0 24 24"><g stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 7h16M7 12h10M10 17h4"/></g></symbol>
+  <symbol id="icMenu" viewBox="0 0 24 24"><g stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></g></symbol>
+  <symbol id="icArrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="icArrowL" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="icBookmark" viewBox="0 0 24 24"><path d="M6 4H18V21L12 17 6 21Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+  <symbol id="icFlip" viewBox="0 0 24 24"><path d="M4 10a8 8 0 0 1 13.5-3.5L20 9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 14a8 8 0 0 1-13.5 3.5L4 15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 5v4h-4M4 19v-4h4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="icFlame" viewBox="0 0 24 24"><path d="M12 3c.8 3 4.2 4.3 4.2 8.2A4.2 4.2 0 0 1 12 15.4a4.2 4.2 0 0 1-4.2-4.2c0-1.4.7-2.4 1.5-3.1C9.9 10.4 12 8.6 12 3Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 21a5 5 0 0 0 5-5c0-1.2-.4-2.2-1-3-.3 2.2-2 3.4-4 3.4S8.3 15.2 8 13c-.6.8-1 1.8-1 3a5 5 0 0 0 5 5Z" fill="currentColor" opacity="0"/></symbol>
+  <symbol id="icTrophy" viewBox="0 0 24 24"><path d="M7 4h10v4.5a5 5 0 0 1-10 0Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M7 6H4.5v1A3.5 3.5 0 0 0 8 10.5M17 6h2.5v1A3.5 3.5 0 0 1 16 10.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M10 15.5 9.5 20h5L14 15.5M8 20h8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="icTarget" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="4.4" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="1.1" fill="currentColor"/></symbol>
+  <symbol id="icImage" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2.4" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="8.5" cy="10" r="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M5 17l4.5-4 3 2.6L16 12l3.5 3.4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+  <symbol id="figBust" viewBox="0 0 440 640">
+    <ellipse cx="220" cy="616" rx="152" ry="20" fill="#000" opacity="0.55"/>
+    <path d="M34 640 C40 510 118 468 160 460 C184 455 200 446 208 428 L232 428 C240 446 256 455 280 460 C322 468 400 510 406 640 Z" fill="url(#afGraphite)"/>
+    <path d="M190 370 C190 406 192 426 206 442 L234 442 C248 426 250 406 250 370 C250 358 236 354 220 354 C204 354 190 358 190 370 Z" fill="url(#afGraphite)"/>
+    <path d="M220 146 C271 146 308 189 308 248 C308 299 289 344 258 366 C244 376 232 380 220 380 C208 380 196 376 182 366 C151 344 132 299 132 248 C132 189 169 146 220 146 Z" fill="url(#afRim)"/>
+    <path d="M132 248 C132 189 169 146 220 146" fill="none" stroke="#5b616b" stroke-width="3" opacity="0.4"/>
+    <path d="M220 154 V366" fill="none" stroke="#0a0b0d" stroke-width="2.5" opacity="0.22"/>
+    <path d="M178 240 C198 232 242 232 262 240" fill="none" stroke="#0a0b0d" stroke-width="2" opacity="0.18"/>
+    <path d="M206 372 C210 400 216 420 220 438 M234 372 C230 400 224 420 220 438" fill="none" stroke="#565c66" stroke-width="2" opacity="0.22"/>
+    <path d="M150 468 C185 450 255 450 290 468" fill="none" stroke="#565c66" stroke-width="2" opacity="0.18"/>
+    <path d="M220 442 V612" fill="none" stroke="#0a0b0d" stroke-width="2.5" opacity="0.18"/>
+    <path d="M150 500 C182 528 208 530 218 502 M290 500 C258 528 232 530 222 502" fill="none" stroke="#565c66" stroke-width="2" opacity="0.15"/>
+  </symbol>
+  <symbol id="icMoon" viewBox="0 0 24 24"><path d="M20 14.2A8 8 0 0 1 9.8 4 7 7 0 1 0 20 14.2Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+  <symbol id="icPlus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+  <symbol id="icInfo" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 11v5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="8" r="1.05" fill="currentColor"/></symbol>
+</svg>
