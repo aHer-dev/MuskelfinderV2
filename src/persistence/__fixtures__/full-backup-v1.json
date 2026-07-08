@@ -1,0 +1,42 @@
+{
+  "backupType": "muskelfinder-backup",
+  "version": 1,
+  "exportedAt": "2025-11-02T14:05:00.000Z",
+  "flashcards": {
+    "version": 2,
+    "cards": {
+      "M. trapezius": {
+        "fach": 2,
+        "nextDue": "2025-11-05T00:00:00.000Z",
+        "totalCorrect": 3,
+        "totalWrong": 1,
+        "lastSeen": "2025-11-02T13:40:00.000Z",
+        "difficult": false
+      },
+      "M. gluteus maximus": {
+        "fach": 5,
+        "nextDue": "2025-12-02T00:00:00.000Z",
+        "totalCorrect": 12,
+        "totalWrong": 3,
+        "lastSeen": "2025-11-01T20:10:00.000Z",
+        "difficult": true
+      }
+    }
+  },
+  "xp": {
+    "version": 2,
+    "totalXP": 1910,
+    "lastDailyBonus": "2025-11-02"
+  },
+  "quizSeries": {
+    "origin-insertion::{\"deckOnly\":false,\"regions\":[\"lower\"],\"subgroups\":[]}": {
+      "rounds": 2,
+      "answers": 16,
+      "correct": 11,
+      "history": [
+        { "pct": 62, "correct": 5, "answered": 8 },
+        { "pct": 75, "correct": 6, "answered": 8 }
+      ]
+    }
+  }
+}

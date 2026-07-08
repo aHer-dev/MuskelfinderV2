@@ -1,0 +1,40 @@
+{
+  "backupType": "muskelfinder-backup",
+  "version": 2,
+  "exportedAt": "2026-07-08T09:30:00.000Z",
+  "flashcards": {
+    "version": 2,
+    "cards": {
+      "M. soleus": {
+        "fach": 99,
+        "nextDue": "not-a-date",
+        "totalCorrect": -5,
+        "totalWrong": 2.9,
+        "lastSeen": "garbage",
+        "difficult": 1
+      },
+      "": { "fach": 3 },
+      "   ": { "fach": 4 }
+    }
+  },
+  "xp": {
+    "version": 2,
+    "totalXP": -100,
+    "lastDailyBonus": "07-2026"
+  },
+  "quizSeries": {
+    "mode::x": {
+      "rounds": -1,
+      "answers": 5,
+      "correct": 99,
+      "history": [
+        { "pct": 200, "correct": 10, "answered": 4 },
+        { "pct": 50, "correct": 2, "answered": 4 },
+        { "pct": 50, "correct": 2, "answered": 4 },
+        { "pct": 50, "correct": 2, "answered": 4 },
+        { "pct": 50, "correct": 2, "answered": 4 },
+        { "pct": 50, "correct": 2, "answered": 4 }
+      ]
+    }
+  }
+}

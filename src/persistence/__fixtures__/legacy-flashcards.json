@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "cards": {
+    "M. trapezius": {
+      "fach": 2,
+      "nextDue": "2026-07-11T00:00:00.000Z",
+      "totalCorrect": 3,
+      "totalWrong": 1,
+      "lastSeen": "2026-07-08T08:00:00.000Z",
+      "difficult": false
+    },
+    "M. sternocleidomastoideus": {
+      "fach": 4,
+      "nextDue": "2026-07-22T00:00:00.000Z",
+      "totalCorrect": 9,
+      "totalWrong": 2,
+      "lastSeen": "2026-07-08T08:05:00.000Z",
+      "difficult": false
+    }
+  }
+}

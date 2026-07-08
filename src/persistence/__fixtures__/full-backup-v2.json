@@ -1,0 +1,59 @@
+{
+  "backupType": "muskelfinder-backup",
+  "version": 2,
+  "exportedAt": "2026-07-08T09:30:00.000Z",
+  "flashcards": {
+    "version": 2,
+    "cards": {
+      "M. deltoideus": {
+        "fach": 3,
+        "nextDue": "2026-07-15T00:00:00.000Z",
+        "totalCorrect": 5,
+        "totalWrong": 1,
+        "lastSeen": "2026-07-08T09:15:00.000Z",
+        "difficult": false
+      },
+      "M. pectoralis minor": {
+        "fach": 1,
+        "nextDue": "2026-07-08T00:00:00.000Z",
+        "totalCorrect": 0,
+        "totalWrong": 2,
+        "lastSeen": "2026-07-07T18:00:00.000Z",
+        "difficult": true
+      },
+      "M. biceps brachii": {
+        "fach": 7,
+        "nextDue": "2027-01-04T00:00:00.000Z",
+        "totalCorrect": 20,
+        "totalWrong": 0,
+        "lastSeen": "2026-07-06T12:00:00.000Z",
+        "difficult": false
+      }
+    }
+  },
+  "xp": {
+    "version": 2,
+    "totalXP": 553,
+    "lastDailyBonus": "2026-07-08"
+  },
+  "quizSeries": {
+    "multiple-choice::{\"deckOnly\":false,\"regions\":[],\"subgroups\":[]}": {
+      "rounds": 3,
+      "answers": 30,
+      "correct": 24,
+      "history": [
+        { "pct": 70, "correct": 7, "answered": 10 },
+        { "pct": 80, "correct": 8, "answered": 10 },
+        { "pct": 90, "correct": 9, "answered": 10 }
+      ]
+    },
+    "image-match::{\"deckOnly\":true,\"regions\":[\"upper\"],\"subgroups\":[]}": {
+      "rounds": 1,
+      "answers": 8,
+      "correct": 6,
+      "history": [
+        { "pct": 75, "correct": 6, "answered": 8 }
+      ]
+    }
+  }
+}
