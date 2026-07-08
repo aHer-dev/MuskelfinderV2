@@ -111,6 +111,18 @@
   top: var(--spacing-md);
 }
 
+.filter-panel--bare {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  position: static;
+}
+
+.search-page__filter-btn {
+  align-self: flex-start;
+}
+
 .filter-group {
   border: none;
   margin: 0;

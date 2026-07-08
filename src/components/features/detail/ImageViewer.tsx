@@ -27,6 +27,7 @@ export function ImageViewer({ images, alt }: { images: MuscleImage[]; alt: strin
   return (
     <figure className="image-viewer">
       <div className="image-viewer__stage">
+        <span className="image-viewer__badge">{current.view}</span>
         {images.length > 1 && (
           <button
             type="button"
@@ -54,6 +55,24 @@ export function ImageViewer({ images, alt }: { images: MuscleImage[]; alt: strin
           </button>
         )}
       </div>
+
+      {images.length > 1 && (
+        <div className="image-viewer__thumbs" role="tablist" aria-label="Ansichten">
+          {images.map((image, i) => (
+            <button
+              key={image.id}
+              type="button"
+              role="tab"
+              aria-selected={i === safeIndex}
+              className={`image-viewer__thumb${i === safeIndex ? ' image-viewer__thumb--active' : ''}`}
+              aria-label={image.view}
+              onClick={() => setIndex(i)}
+            >
+              <img src={assetUrl(image.url)} alt="" loading="lazy" />
+            </button>
+          ))}
+        </div>
+      )}
 
       <figcaption className="image-viewer__caption">
         <span className="image-viewer__view">

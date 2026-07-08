@@ -28,12 +28,17 @@ wo der funktionale Kern (Etappe 3) trägt. Nur Darstellung/Layout, keine neuen F
 - [x] Lernkarten: `LeitnerBoxes`-Visual (7 Fächer, aktives Fach hervorgehoben).
 - [x] Statistik: LevelCard mit großem `ProgressRing`.
 
+## Erledigt (3. Durchgang)
+- [x] `Sheet`-Primitive (Bottom-Sheet: Grabber, Backdrop/Esc schließt, Initial-Fokus +
+      Fokus-Rückgabe, Body-Scroll-Lock) + mobiles FilterSheet (Filter-Button mit aktiv-Zähler,
+      `FilterPanel bare` im Sheet); Desktop-FilterPanel weiter inline.
+- [x] Detail: ImageViewer mit Ansichts-Badge + Thumbnail-Reihe (aktiv markiert); ClinicalNote-Box
+      (`icInfo`, Akzent-Tint) aus der DataList herausgelöst.
+
 ## Offen (braucht Browser-/Frame-Abgleich)
-- [ ] SearchPage: FilterSidebar **rechts** (Glas) statt In-Content-Panel; Mobile Region-Chip-Reihe.
-- [ ] `Sheet`-Primitive (Bottom-Sheet, Grabber, Fokus-Trap + Esc) für Mobile-Filter/Detail.
-- [ ] Detail: MuscleImageViewer mit Thumbnails/Zoom-Leiste + Ansichts-Badge; ClinicalNote-Box (`icInfo`).
+- [ ] FilterSidebar **rechts** (Glas) auf Desktop (aktuell links im Content-Grid); Mobile Region-Chip-Reihe.
 - [ ] Lernkarten: 3D-Flip (`rotateY`). Quiz: QuizProgress-Segmente. Statistik: StatCard/CardBreakdown-Bento.
-- [ ] A11y-Pass §13 vervollständigen: Listbox-Dropdowns, Roving-Tabindex im Radiogroup.
+- [ ] A11y-Rest §13: Listbox-Dropdowns, vollständiger Fokus-Trap/Roving-Tabindex.
 - [ ] Referenz-Frame-Abgleich (`3a` Light default, `1`/`2` Dark) — Pixel-Feinschliff.
 
 ## Definition of Done (Etappe gesamt)

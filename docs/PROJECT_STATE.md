@@ -6,8 +6,9 @@
 ## Stand
 - Datum: 2026-07-08
 - Branch: `feat/etappe-0-fundament`
-- Status: Etappe 0–3 committet; Etappe 4 (Design) in Arbeit — Durchgang 1+2 committet
-  (Shell + Primitives; Highlighting, ActiveFilters, Quiz-Options, LeitnerBoxes, LevelCard).
+- Status: Etappe 0–3 committet; Etappe 4 (Design) in Arbeit — Durchgang 1–3 committet
+  (Shell + Primitives; Highlighting, ActiveFilters, Quiz-Options, LeitnerBoxes, LevelCard;
+  Sheet + mobiles FilterSheet, ImageViewer-Thumbnails, ClinicalNote).
 - Gate zuletzt gruen: `npm run lint && npm run test && npm run build`
 - Aktueller Teststand: 137 Tests gruen.
 - Offen: E4-Screen-Feinschliff + A11y-Audit; visueller/Browser-Integrationscheck durch dich.

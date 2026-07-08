@@ -59,5 +59,8 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   diakritika-tolerant, getestet, orange `<mark>`); entfernbare `ActiveFilters`-Chip-Reihe;
   Quiz-Antworten mit A–D-Badges im 2×2-Grid + `role="radiogroup"`/`radio`; `LeitnerBoxes`-Visual
   (7 Fächer); Statistik-LevelCard mit großem `ProgressRing`. Teststand 137 grün.
+- Etappe 4 (Design, 3. Durchgang): `Sheet`-Primitive (Bottom-Sheet mit Grabber, Backdrop/Esc,
+  Fokus-Rückgabe, Scroll-Lock) + mobiles FilterSheet (Filter-Button mit aktiv-Zähler);
+  Detail-ImageViewer mit Ansichts-Badge + Thumbnail-Reihe; ClinicalNote-Box (`icInfo`).
 - `docs/PROJECT_STATE.md` als Single Source of Truth fuer Agenten angelegt und in
   `AGENTS.md` verpflichtend verlinkt.

@@ -4,6 +4,7 @@ import { getMuscleById } from '../data';
 import { movementLabel, regionLabel } from '../data/labels';
 import { DataList } from '../components/features/detail/DataList';
 import type { DataRow } from '../components/features/detail/DataList';
+import { ClinicalNote } from '../components/features/detail/ClinicalNote';
 import { ImageViewer } from '../components/features/detail/ImageViewer';
 import { DifficultyDots } from '../components/ui/DifficultyDots';
 import { Icon } from '../components/ui/Icon';
@@ -25,7 +26,6 @@ function buildRows(muscle: Muscle, mode: DetailMode): DataRow[] {
     { label: 'Segmente', value: src.segments },
     { label: 'Gelenke', value: muscle.joints.join(', ') },
     ...(muscle.taCode ? [{ label: 'TA-Code', value: muscle.taCode }] : []),
-    { label: 'Klinik', value: muscle.clinicalNote ?? '' },
   ];
 }
 
@@ -103,6 +103,8 @@ export function MuscleDetailPage() {
           )}
 
           <DataList rows={buildRows(muscle, mode)} />
+
+          {muscle.clinicalNote && <ClinicalNote note={muscle.clinicalNote} />}
 
           {muscle.functions.length > 0 && (
             <ul className="detail__chips">

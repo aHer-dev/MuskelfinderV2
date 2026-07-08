@@ -16,7 +16,16 @@ function selectValue(value: string | null): string {
 }
 
 /** Filter-Bedienfeld: Regionen (Mehrfach), Gelenk/Bewegung/Innervation, Sortierung. */
-export function FilterPanel({ options, count }: { options: FilterOptions; count: number }) {
+export function FilterPanel({
+  options,
+  count,
+  bare = false,
+}: {
+  options: FilterOptions;
+  count: number;
+  /** true im Bottom-Sheet: ohne eigenes Panel-Chrome (Hintergrund/Rahmen/sticky). */
+  bare?: boolean;
+}) {
   const regions = useFilterStore((s) => s.regions);
   const joint = useFilterStore((s) => s.joint);
   const movement = useFilterStore((s) => s.movement);
@@ -34,7 +43,7 @@ export function FilterPanel({ options, count }: { options: FilterOptions; count:
     regions.length > 0 || joint !== null || movement !== null || innervation !== null;
 
   return (
-    <aside className="filter-panel" aria-label="Filter">
+    <aside className={`filter-panel${bare ? ' filter-panel--bare' : ''}`} aria-label="Filter">
       <fieldset className="filter-group">
         <legend className="filter-group__legend">Region</legend>
         <div className="filter-group__checks">
