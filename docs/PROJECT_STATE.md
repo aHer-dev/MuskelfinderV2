@@ -6,12 +6,14 @@
 ## Stand
 - Datum: 2026-07-08
 - Branch: `feat/etappe-0-fundament`
-- Status: Etappe 0–3 committet; Etappe 4 (Design) in Arbeit — Durchgang 1–3 committet
+- Status: Etappe 0–3 committet; Etappe 4 (Design) in Arbeit — Durchgang 1–5 committet
   (Shell + Primitives; Highlighting, ActiveFilters, Quiz-Options, LeitnerBoxes, LevelCard;
-  Sheet + mobiles FilterSheet, ImageViewer-Thumbnails, ClinicalNote).
+  Sheet + mobiles FilterSheet, ImageViewer-Thumbnails, ClinicalNote; Chip-Fix + Filter rechts;
+  Lernkarte-3D-Flip, Quiz-Progress-Segmente, Statistik-CardBreakdown-Bento).
 - Gate zuletzt gruen: `npm run lint && npm run test && npm run build`
 - Aktueller Teststand: 137 Tests gruen.
-- Offen: E4-Screen-Feinschliff + A11y-Audit; visueller/Browser-Integrationscheck durch dich.
+- Offen (E4): mobile Region-Chip-Reihe, A11y-Rest (Listbox/Fokus-Trap), Dark-Frame-Abgleich;
+  danach Etappe 5 (Haertung). Visueller/Browser-Integrationscheck durch dich.
 
 ## Kanonische Quellen
 - V1-Original: `../Muskelfinder` (`/home/pepperboy8/Documents/Muskelfinder`)
@@ -64,13 +66,12 @@
 - TA-Codes fehlen in V1 und bleiben optional. Nicht erfinden.
 
 ## Naechster Schritt
-Etappe 4 fortsetzen (Details/Offene Punkte: docs/tasks/2026-07-08-etappe-4-design.md):
-- SearchPage: FilterSidebar rechts (Glas) + ActiveFilters-Chips + Treffer-Highlighting im Namen;
-  Mobile Region-Chip-Reihe + FilterSheet (`Sheet`-Primitive mit Fokus-Trap/Esc).
-- Detail: ImageViewer mit Thumbnails/Zoom-Leiste + Ansichts-Badge; ClinicalNote-Box (`icInfo`).
-- Lernkarten: 3D-Flip + LeitnerBoxes-Visual (7 Faecher). Quiz: AnswerOption A–D + radiogroup-A11y.
-  Statistik: LevelCard/StatCard/CardBreakdown-Bento.
-- A11y-Pass §13; Referenz-Frame-Abgleich (`3a` Light default).
+Etappe 4 abschliessen (Details/Offene Punkte: docs/tasks/2026-07-08-etappe-4-design.md):
+- SearchPage: mobile Region-Chip-Reihe ueber der Ergebnisliste (Schnellfilter).
+- A11y-Rest §13: Listbox-Dropdowns, vollstaendiger Fokus-Trap/Roving-Tabindex (Sheet/Radiogroup).
+- Dark-Frame-Abgleich (`1`/`2`) — Pixel-Feinschliff im Dunkelmodus.
+Danach Etappe 5 (Haertung): A11y-Audit, Performance/Code-Splitting/Lighthouse, Quellen-/Lizenz-
+und Datenschutz-Seite (CC-BY-4.0), Deploy-Haertung, optional PWA, Release-Tag v1.0.
 
 Anschluss-Hinweis: Stores schluesseln Karten nach `nameLatin`; die UI loest Routing-`id` ueber
 die Datenschicht (`getMuscleByLatinName`) auf (ADR 0002 §2 / ADR 0006 §3). Such-/Filter-Logik,

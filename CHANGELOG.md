@@ -64,5 +64,10 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   Detail-ImageViewer mit Ansichts-Badge + Thumbnail-Reihe; ClinicalNote-Box (`icInfo`).
 - Etappe 4 (Design, 4. Durchgang, nach Screenshot-Review): Fix — lange Bewegungs-Chips liefen
   aus der Karte, jetzt Ellipsis + `title`; FilterSidebar auf rechts verschoben (Frame `3a`).
+- Etappe 4 (Design, 5. Durchgang, mit Screenshot-Verify): Lernkarte als echter 3D-Flip
+  (`rotateY`, `perspective`, `preserve-3d`, `backface-visibility`; beide Seiten im Grid gestapelt,
+  Rückseite un-gespiegelt); Quiz-`QuizProgress`-Segmentleiste (richtig/falsch/aktuell/offen) samt
+  `results`-Historie im `useQuizGame`; Statistik-`CardBreakdown`-Stapelbalken (gemeistert/in Arbeit/neu
+  + Legende) und Bento-Grid (`stats__bento`). Teststand 137 grün.
 - `docs/PROJECT_STATE.md` als Single Source of Truth fuer Agenten angelegt und in
   `AGENTS.md` verpflichtend verlinkt.

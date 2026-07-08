@@ -40,9 +40,17 @@ wo der funktionale Kern (Etappe 3) trägt. Nur Darstellung/Layout, keine neuen F
 - [x] Bugfix: lange Bewegungs-Chips (z. B. „Zeh V: …") liefen aus der Karte → jetzt Ellipsis + `title`.
 - [x] FilterSidebar auf **rechts** verschoben (Frame `3a`).
 
+## Erledigt (5. Durchgang — mit Screenshot-Verify via Playwright)
+- [x] Lernkarten: echter **3D-Flip** (`rotateY(180deg)`, `perspective`, `transform-style: preserve-3d`,
+      `backface-visibility: hidden`). Beide Seiten im Grid gestapelt (Zellenhöhe = höhere Seite,
+      kein Clipping); Rückseite vorgedreht → un-gespiegelt lesbar. Reduced-motion springt ohne Animation.
+- [x] Quiz: **QuizProgress**-Segmentleiste (ein Stück je Frage, eingefärbt richtig/falsch/aktuell/offen);
+      `results`-Historie im `useQuizGame`-Hook. Leiste ist `aria-hidden` (Text „Frage X/Y" trägt die A11y).
+- [x] Statistik: **CardBreakdown**-Stapelbalken (gemeistert/in Arbeit/neu, Legende) + **Bento-Grid**
+      (`stats__bento`, 2 Spalten Desktop → 1 mobil; Regionen `--wide` über volle Breite).
+
 ## Offen (braucht Browser-/Frame-Abgleich)
 - [ ] Mobile Region-Chip-Reihe über der Liste.
-- [ ] Lernkarten: 3D-Flip (`rotateY`). Quiz: QuizProgress-Segmente. Statistik: StatCard/CardBreakdown-Bento.
 - [ ] A11y-Rest §13: Listbox-Dropdowns, vollständiger Fokus-Trap/Roving-Tabindex.
 - [ ] Dark-Frame-Abgleich (`1`/`2`) — Pixel-Feinschliff.
 

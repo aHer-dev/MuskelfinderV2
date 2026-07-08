@@ -78,6 +78,32 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* ---- Fortschritts-Segmente -------------------------------------------- */
+.quiz-progress {
+  display: flex;
+  gap: 4px;
+}
+
+.quiz-progress__seg {
+  flex: 1 1 0;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-sunken);
+  transition: var(--transition-smooth);
+}
+
+.quiz-progress__seg--current {
+  background: var(--accent);
+}
+
+.quiz-progress__seg--correct {
+  background: var(--success);
+}
+
+.quiz-progress__seg--wrong {
+  background: var(--danger);
+}
+
 .quiz-card {
   display: flex;
   flex-direction: column;

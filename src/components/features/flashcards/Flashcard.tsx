@@ -7,7 +7,13 @@ interface FlashcardProps {
   onReveal: () => void;
 }
 
-/** Lernkarte mit Vorder-/Rückseite. Klick/Enter/Space deckt die Rückseite auf. */
+/**
+ * Lernkarte mit echtem 3D-Flip (rotateY). Beide Seiten sind immer im DOM und
+ * werden über `backface-visibility` verdeckt; die Rückseite ist um 180° vorge-
+ * dreht. Klick/Enter/Space deckt die Rückseite auf. Bei `prefers-reduced-motion`
+ * entfällt die Drehung (theme.css schaltet Transitions global ab) — die Karte
+ * springt dann ohne Animation um.
+ */
 export function Flashcard({ muscle, revealed, onReveal }: FlashcardProps) {
   return (
     <button
@@ -18,14 +24,14 @@ export function Flashcard({ muscle, revealed, onReveal }: FlashcardProps) {
         if (!revealed) onReveal();
       }}
     >
-      <span className="flashcard__side flashcard__front">
-        <span className="flashcard__eyebrow">{regionLabel(muscle.region)}</span>
-        <span className="flashcard__name">{muscle.nameLatin}</span>
-        {!revealed && <span className="flashcard__hint">Zum Aufdecken tippen</span>}
-      </span>
+      <span className="flashcard__inner">
+        <span className="flashcard__side flashcard__front">
+          <span className="flashcard__eyebrow">{regionLabel(muscle.region)}</span>
+          <span className="flashcard__name">{muscle.nameLatin}</span>
+          {!revealed && <span className="flashcard__hint">Zum Aufdecken tippen</span>}
+        </span>
 
-      {revealed && (
-        <span className="flashcard__side flashcard__back">
+        <span className="flashcard__side flashcard__back" aria-hidden={!revealed}>
           <dl className="flashcard__facts">
             <div>
               <dt>Funktion</dt>
@@ -49,7 +55,7 @@ export function Flashcard({ muscle, revealed, onReveal }: FlashcardProps) {
             </div>
           </dl>
         </span>
-      )}
+      </span>
     </button>
   );
 }

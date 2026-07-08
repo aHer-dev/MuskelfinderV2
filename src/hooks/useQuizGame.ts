@@ -30,6 +30,8 @@ export interface QuizGameApi {
   bestStreak: number;
   score: number;
   xpEarned: number;
+  /** Ergebnis je bereits beantworteter Frage (in Reihenfolge) — für die Fortschrittsleiste. */
+  results: boolean[];
   answer: (optionId: string) => void;
   next: () => void;
   result: QuizResult | null;
@@ -50,6 +52,7 @@ export function useQuizGame(mode: QuizMode, count = 10): QuizGameApi {
   const [bestStreak, setBestStreak] = useState(0);
   const [score, setScore] = useState(0);
   const [xpEarned, setXpEarned] = useState(0);
+  const [results, setResults] = useState<boolean[]>([]);
 
   const question = questions[index] ?? null;
 
@@ -58,7 +61,10 @@ export function useQuizGame(mode: QuizMode, count = 10): QuizGameApi {
     setSelectedId(optionId);
     setPhase('revealed');
 
-    if (optionId === question.correctId) {
+    const isCorrect = optionId === question.correctId;
+    setResults((r) => [...r, isCorrect]);
+
+    if (isCorrect) {
       const newStreak = streak + 1;
       setStreak(newStreak);
       setBestStreak((best) => Math.max(best, newStreak));
@@ -99,6 +105,7 @@ export function useQuizGame(mode: QuizMode, count = 10): QuizGameApi {
     bestStreak,
     score,
     xpEarned,
+    results,
     answer,
     next,
     result,

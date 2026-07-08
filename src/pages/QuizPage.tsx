@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { QuestionCard } from '../components/features/quiz/QuestionCard';
+import { QuizProgress } from '../components/features/quiz/QuizProgress';
 import { QuizResult } from '../components/features/quiz/QuizResult';
 import { useQuizGame } from '../hooks/useQuizGame';
 import type { QuizMode } from '../types';
@@ -48,6 +49,8 @@ function QuizGame({
           Serie {game.streak} · {game.score} Pkt.
         </span>
       </div>
+
+      <QuizProgress total={game.total} index={game.index} results={game.results} />
 
       {game.question && (
         <QuestionCard

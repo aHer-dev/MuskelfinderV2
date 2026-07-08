@@ -60,22 +60,21 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* ---- Karte ------------------------------------------------------------ */
+/* ---- Karte (3D-Flip) --------------------------------------------------- */
+/* Der Button ist nur der Perspektiv-Rahmen; die sichtbare Karte sind die
+   beiden Seiten, die im Grid gestapelt liegen (Zellenhöhe = höhere Seite). */
 .flashcard {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
+  display: block;
   width: 100%;
-  min-height: 280px;
-  padding: var(--spacing-xl);
+  padding: 0;
+  border: none;
+  background: transparent;
   text-align: left;
-  background: var(--surface);
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--card-shadow);
   cursor: pointer;
   font-family: var(--font-ui);
   color: var(--text-primary);
+  border-radius: var(--radius-xl);
+  perspective: 1200px;
 }
 
 .flashcard--revealed {
@@ -84,20 +83,42 @@
 
 .flashcard:focus-visible {
   outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
+  outline-offset: 3px;
+}
+
+.flashcard__inner {
+  display: grid;
+  transform-style: preserve-3d;
+  transition: transform 0.55s var(--ease-smooth);
+}
+
+.flashcard--revealed .flashcard__inner {
+  transform: rotateY(180deg);
 }
 
 .flashcard__side {
+  grid-area: 1 / 1;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
+  min-height: 280px;
+  padding: var(--spacing-xl);
+  background: var(--surface);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--card-shadow);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .flashcard__front {
   align-items: center;
   justify-content: center;
-  flex: 1 1 auto;
   text-align: center;
+}
+
+.flashcard__back {
+  transform: rotateY(180deg);
 }
 
 .flashcard__eyebrow {
