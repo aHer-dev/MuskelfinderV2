@@ -6,16 +6,17 @@
 ## Stand
 - Datum: 2026-07-09
 - Branch: `feat/etappe-0-fundament`
-- Status: Etappe 0–4 abgeschlossen. **Etappe 5 (Haertung) begonnen** — Teil 1 umgesetzt:
-  Quellen-/Lizenz-Seite (`/quellen`) + Datenschutz-Seite (`/datenschutz`) aus V1 uebernommen
+- Status: Etappe 0–4 abgeschlossen. **Etappe 5 (Haertung) laeuft** — Teil 1+2 umgesetzt:
+  (1) Quellen-/Lizenz-Seite (`/quellen`) + Datenschutz-Seite (`/datenschutz`) aus V1 uebernommen
   (geteiltes `LegalPage`-Geruest, CC-BY-4.0-Attribution vollstaendig), globaler `SiteFooter`
   (Attribution + Legal-Links) auf jeder Route; Route-Code-Splitting via `React.lazy`/`Suspense`
   (`RouteFallback`); Bild-Lazy-Load (`loading="lazy"` + `decoding="async"`).
+  (2) A11y-Audit (axe-core, WCAG 2 A/AA + best-practice) ueber alle 7 Routen in Light+Dark: 0
+  Verstoesse. Light-Farbkontraste auf ≥4.5:1 gebracht (Text-Tokens + `--accent-on-surface` #bd4800).
+  Deep-Link-Reload live verifiziert.
 - Gate zuletzt gruen: `npm run lint && npm run test && npm run build` (Build erzeugt Per-Route-Chunks).
-- Aktueller Teststand: 139 Tests gruen.
-- Offen (Etappe 5 Rest): A11y-Audit (Lighthouse), Deploy-Haertung (Deep-Link-Reload live),
-  optional Offline/PWA, Release-Tag v1.0. Visueller/Browser-Integrationscheck + Merge nach main
-  durch dich (lokal kein Browser-Treiber verfuegbar).
+- Aktueller Teststand: 139 Tests gruen. A11y: axe 0 Verstoesse (Playwright+Chromium+axe-core lokal).
+- Offen (Etappe 5 Rest): optional Offline/PWA; Merge nach main + Release-Tag v1.0 durch dich.
 
 ## Kanonische Quellen
 - V1-Original: `../Muskelfinder` (`/home/pepperboy8/Documents/Muskelfinder`)
@@ -74,12 +75,13 @@
 
 ## Naechster Schritt
 Etappe 5 (Haertung & Feinschliff) fortsetzen (docs/migration-plan.md, ROADMAP Phase 5).
-Erledigt: Quellen-/Lizenz- + Datenschutz-Seite, Route-Code-Splitting (`React.lazy`), Bild-Lazy-Load.
+Erledigt: Quellen-/Lizenz- + Datenschutz-Seite, Route-Code-Splitting, Bild-Lazy-Load,
+A11y-Audit (axe 0 Verstoesse Light+Dark), Deep-Link-Reload verifiziert.
 Offen:
-- A11y-Audit (Lighthouse) + Best-Practices, ggf. weitere Bundle-Optimierung.
-- Deploy-Haertung: Deep-Link-Reload live gegen GitHub Pages pruefen.
-- Optional Offline/PWA. Danach Release-Tag `v1.0`.
-Task-Briefing: `docs/tasks/2026-07-09-etappe-5-haertung.md`.
+- Optional Offline/PWA (Service-Worker, Manifest) — nur wenn ohne Risiko.
+- Merge nach main + Release-Tag `v1.0` (durch dich).
+A11y-Reaudit-Werkzeug: Playwright+Chromium+axe-core lokal installiert (Skript ad hoc,
+Preview auf Port 4319). Task-Briefing: `docs/tasks/2026-07-09-etappe-5-haertung.md`.
 
 Anschluss-Hinweis: Stores schluesseln Karten nach `nameLatin`; die UI loest Routing-`id` ueber
 die Datenschicht (`getMuscleByLatinName`) auf (ADR 0002 §2 / ADR 0006 §3). Such-/Filter-Logik,

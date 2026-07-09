@@ -82,12 +82,12 @@
   /* Text */
   --text-primary:    #1c1b18;   /* warmes Anthrazit */
   --text-secondary:  #55524c;
-  --text-tertiary:   #86827a;
-  --text-muted:      #8a8680;
-  --text-faint:      #9a968d;   /* Uppercase-Labels */
+  --text-tertiary:   #6f6c64;   /* AA-Kontrast ≥4.5:1 auf Surface/Sunken (Etappe 5 A11y) */
+  --text-muted:      #6f6b64;
+  --text-faint:      #6f6b63;   /* Uppercase-Labels */
 
-  /* Akzent auf heller Fläche — DUNKLER (Kontrast!) für Text/Icons/Links */
-  --accent-on-surface: #e05500;
+  /* Akzent auf heller Fläche — DUNKLER (Kontrast!) für Text/Icons/Links; AA ≥4.5:1 */
+  --accent-on-surface: #bd4800;
   --accent-tint:       color-mix(in srgb, var(--accent) 13%, transparent);  /* aktive Fläche */
   --accent-border:     color-mix(in srgb, var(--accent) 52%, transparent);  /* Outline-CTA / Fokus-Feld */
   --accent-dim:        color-mix(in srgb, var(--accent) 11%, transparent);  /* Zeilen-Highlight */

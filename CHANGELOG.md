@@ -86,3 +86,9 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   Route-Code-Splitting via `React.lazy`/`Suspense` (`RouteFallback`, respektiert reduced-motion) —
   Build erzeugt separate Chunks pro Seite. Muskel-/Quizbilder mit `loading="lazy"` + `decoding="async"`.
   Smoke-Tests für beide Legal-Seiten; App-Smoke-Test auf Lazy-Load umgestellt (139 Tests grün).
+- Etappe 5 (Härtung, Teil 2): A11y-Audit mit axe-core (WCAG 2 A/AA + best-practice) über alle
+  sieben Routen in Light **und** Dark — 0 Verstöße. Behoben: fünf Farbkontrast-Verstöße im
+  Light-Theme durch Abdunkeln der Text-Tokens (`--text-tertiary/-muted/-faint`) und des
+  Link-/Icon-Akzents (`--accent-on-surface` → `#bd4800`) auf ≥4.5:1; Dark unverändert (war grün).
+  Deep-Link-Reload live verifiziert (direkter Load + Reload auf `/muskel/:id`, keine Fehler);
+  `.nojekyll` + HashRouter tragen den statischen Deploy.
