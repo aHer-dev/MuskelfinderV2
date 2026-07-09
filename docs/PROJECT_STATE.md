@@ -28,10 +28,12 @@
   - Teil 3: **Quiz „Ursprung & Ansatz"** (Modi `origin-insertion`/`insertion-origin`) +
     **Bereichsfilter** (Pool-Einschraenkung). `quizSeriesKey(mode, regions)` ohne Filter =
     exakt V1-Key (ADR 0002); Innervations-Modus (V2-Extra) bleibt.
+  - Teil 4: **Statistik** um „Quiz-Bilanz je Modus" (mit Beste-Quote) + „Ziele/Meilensteine"
+    erweitert (`quizByMode`/`nextMasteryMilestone`).
 - Gate zuletzt gruen: `npm run lint && npm run test && npm run build` (Per-Route-Chunks + SW/Manifest).
-- Aktueller Teststand: 151 Tests gruen. A11y: axe 0 Verstoesse (Playwright+Chromium+axe-core lokal).
+- Aktueller Teststand: 154 Tests gruen. A11y: axe 0 Verstoesse (Playwright+Chromium+axe-core lokal).
 - Offen: Etappe 5 fertig (nur Merge+Tag durch dich). Etappe 6 Rest laut Gap-Analyse:
-  Statistik-Ziele/Quote-je-Typ (§4), Menue-Eintrag „Muskeln verwalten" (§5), Kleinkram (§6/§7).
+  Menue-Eintrag „Muskeln verwalten" (§5), Kleinkram functionalChain/XP-Toasts (§6/§7).
 
 ## Kanonische Quellen
 - V1-Original: `../Muskelfinder` (`/home/pepperboy8/Documents/Muskelfinder`)

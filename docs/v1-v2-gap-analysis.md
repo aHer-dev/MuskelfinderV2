@@ -18,8 +18,8 @@ Legende Schweregrad: 🔴 großer Funktionsverlust · 🟠 spürbar · 🟡 klei
 
 ---
 
-> **Fortschritt:** §1 ✅ (Teil 1) · §2 ✅ (Teil 2) · §3 ✅ (Teil 3) ·
-> offen: §4 Statistik, §5 Menü, §6/§7 klein.
+> **Fortschritt:** §1 ✅ · §2 ✅ · §3 ✅ · §4 ✅ ·
+> offen: §5 Menü, §6/§7 klein.
 
 ## 1. ✅ Karteikasten-Verwaltung / Muskelauswahl — ERLEDIGT (war: fehlt komplett)
 **V1:** Eigene Seite `quizzes/muscle-selection.html` (+ `muscle-selection.js`, `package-selector.js`):
@@ -91,7 +91,7 @@ Der Typ [`FlashcardSession.regionScope`](../src/types/index.ts) ist als Gerüst 
 
 ---
 
-## 4. 🟠 Statistik — reduzierte Panels
+## 4. ✅ Statistik: Quote je Modus + Ziele — ERLEDIGT (war: reduzierte Panels)
 **V1** (`stats-dashboard.js`): Hero „Lernstand auf einen Blick", Level-Panel, **Quiz-Bilanz je
 Quiztyp** (Trefferquote, „Beste Quote"-Chip, Mini-Stats), **Deck & Wiederholung**, **Lernfortschritt**,
 **Ziele/Meilensteine** („Noch X Karten bis Y in F5–F7", Quiz-Ziele).

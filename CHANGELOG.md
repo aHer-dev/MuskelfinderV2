@@ -120,3 +120,8 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   auf Regionen ein. Serien-Key `quizSeriesKey(mode, regions)` bleibt ohne Filter exakt V1-kompatibel
   (ADR 0002), mit Filter ein zusätzlicher, sortierter Schlüssel. V2-Extra „Innervation"-Modus bleibt.
   Quiz-Datentests erweitert (151 Tests grün); Ursprung/Ansatz-Runde im Browser verifiziert.
+- V1-Parität (Etappe 6, Teil 4): **Statistik erweitert** (V1 `stats-dashboard`). Neue Selektoren
+  `quizByMode` (Quiz-Bilanz je Modus, Serien gleichen Modus zusammengefasst) und
+  `nextMasteryMilestone` (Meilensteine 1/5/10/25/50/100). Neue Panels: **„Quiz-Bilanz je Modus"**
+  (Quote-Balken je Modus + „Beste Quote"-Badge nach Genauigkeit) und **„Ziele"** (nächster
+  Karten-Meilenstein in F5–F7 + XP bis nächstes Level). 154 Tests grün; Light verifiziert.

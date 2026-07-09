@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { cardBreakdown, computeStats, quizSummary, regionMastery } from './stats';
+import {
+  cardBreakdown,
+  computeStats,
+  nextMasteryMilestone,
+  quizByMode,
+  quizSummary,
+  regionMastery,
+} from './stats';
 import type { FlashcardCard, QuizSeriesSection } from '../persistence/types';
 import type { RegionId } from '../types';
 
@@ -65,6 +72,36 @@ describe('quizSummary', () => {
 
   it('leere Serien ergeben 0% ohne Division durch 0', () => {
     expect(quizSummary({})).toEqual({ rounds: 0, answers: 0, correct: 0, accuracy: 0 });
+  });
+});
+
+describe('quizByMode', () => {
+  it('fasst Serien mit gleichem Modus (versch. Filter) zusammen, sortiert nach Antworten', () => {
+    const series: QuizSeriesSection = {
+      'innervation::{"deckOnly":false,"regions":[],"subgroups":[]}': { rounds: 1, answers: 4, correct: 4, history: [] },
+      'innervation::{"deckOnly":false,"regions":["upper"],"subgroups":[]}': { rounds: 1, answers: 6, correct: 3, history: [] },
+      'origin-insertion::{"deckOnly":false,"regions":[],"subgroups":[]}': { rounds: 2, answers: 20, correct: 10, history: [] },
+    };
+    const byMode = quizByMode(series);
+    expect(byMode).toHaveLength(2);
+    // origin-insertion hat mehr Antworten → zuerst.
+    expect(byMode[0]).toMatchObject({ mode: 'origin-insertion', label: 'Ursprung → Ansatz', answers: 20, correct: 10, accuracy: 50 });
+    // innervation zusammengefasst: 10 Antworten, 7 richtig → 70%.
+    expect(byMode[1]).toMatchObject({ mode: 'innervation', answers: 10, correct: 7, accuracy: 70 });
+  });
+
+  it('unbekannter Modus fällt auf den rohen Key zurück', () => {
+    const series: QuizSeriesSection = { 'image-match::foo': { rounds: 1, answers: 2, correct: 1, history: [] } };
+    expect(quizByMode(series)[0].label).toBe('image-match');
+  });
+});
+
+describe('nextMasteryMilestone', () => {
+  it('liefert den nächsten Meilenstein oder null', () => {
+    expect(nextMasteryMilestone(0)).toBe(1);
+    expect(nextMasteryMilestone(1)).toBe(5);
+    expect(nextMasteryMilestone(7)).toBe(10);
+    expect(nextMasteryMilestone(100)).toBeNull();
   });
 });
 
