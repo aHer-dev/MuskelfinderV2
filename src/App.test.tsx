@@ -3,10 +3,11 @@ import { render, screen } from '@testing-library/react'
 import App from './App'
 
 describe('App (Smoke)', () => {
-  it('rendert und leitet die Wurzel auf die Suche um', () => {
+  it('rendert und leitet die Wurzel auf die Suche um', async () => {
     render(<App />)
+    // Seiten werden lazy geladen (Etappe 5) — auf den aufgelösten Chunk warten.
     expect(
-      screen.getByRole('heading', { level: 1, name: /^Muskulatur$/i }),
+      await screen.findByRole('heading', { level: 1, name: /^Muskulatur$/i }),
     ).toBeInTheDocument()
   })
 

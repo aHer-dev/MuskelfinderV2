@@ -14,6 +14,14 @@
   max-width: 1160px;
   margin: 0 auto;
   padding: var(--spacing-xl) var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+}
+
+.content__main {
+  flex: 1 0 auto;
+  min-width: 0;
 }
 
 /* ---- Desktop: schwebende Icon-Rail links ------------------------------ */
@@ -171,4 +179,84 @@
 
 .tabbar__btn--toggle .tabbar__label {
   display: none;
+}
+
+/* ---- Globaler Footer (Etappe 5) --------------------------------------- */
+.site-footer {
+  flex-shrink: 0;
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--hairline);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  color: var(--text-faint);
+}
+
+.site-footer__attr {
+  margin: 0;
+}
+
+.site-footer__links {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.site-footer__link {
+  color: var(--text-tertiary);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+}
+
+.site-footer__link:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+
+.site-footer__link:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.site-footer__link.active {
+  color: var(--accent-on-surface);
+}
+
+/* ---- Route-Suspense-Fallback (Etappe 5) ------------------------------- */
+.route-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  min-height: 40svh;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--text-tertiary);
+}
+
+.route-fallback__spinner {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--hairline-strong);
+  border-top-color: var(--accent);
+  animation: route-fallback-spin 0.7s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-fallback__spinner {
+    animation: none;
+  }
+}
+
+@keyframes route-fallback-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

@@ -55,7 +55,12 @@ export function QuestionCard({ question, phase, selectedId, onAnswer }: Question
 
       {question.imageUrl ? (
         <div className="quiz-card__media">
-          <img src={assetUrl(question.imageUrl)} alt="Anatomie-Ansicht zum Erraten" loading="lazy" />
+          <img
+            src={assetUrl(question.imageUrl)}
+            alt="Anatomie-Ansicht zum Erraten"
+            loading="lazy"
+            decoding="async"
+          />
         </div>
       ) : (
         <p className="quiz-card__prompt">{question.prompt}</p>

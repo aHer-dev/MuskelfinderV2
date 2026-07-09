@@ -79,3 +79,10 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   Frames Light+Dark, Responsive, A11y §13; lint+test+build grün, nur Tokens).
 - `docs/PROJECT_STATE.md` als Single Source of Truth fuer Agenten angelegt und in
   `AGENTS.md` verpflichtend verlinkt.
+- Etappe 5 (Härtung, Teil 1): Rechts-/Transparenz-Seiten aus V1 übernommen —
+  `SourcesPage` (Quellen & Lizenzen, BodyParts3D/DBCLS CC BY 4.0 vollständig sichtbar) unter
+  `/quellen` und `PrivacyPage` (Datenschutz, an V2-localStorage angepasst) unter `/datenschutz`,
+  geteiltes `LegalPage`-Gerüst; globaler `SiteFooter` (Attribution + Legal-Links) auf jeder Route.
+  Route-Code-Splitting via `React.lazy`/`Suspense` (`RouteFallback`, respektiert reduced-motion) —
+  Build erzeugt separate Chunks pro Seite. Muskel-/Quizbilder mit `loading="lazy"` + `decoding="async"`.
+  Smoke-Tests für beide Legal-Seiten; App-Smoke-Test auf Lazy-Load umgestellt (139 Tests grün).

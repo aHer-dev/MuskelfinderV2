@@ -4,17 +4,18 @@
 > Details stehen in ROADMAP.md, docs/migration-plan.md, docs/architecture.md und den ADRs.
 
 ## Stand
-- Datum: 2026-07-08
+- Datum: 2026-07-09
 - Branch: `feat/etappe-0-fundament`
-- Status: Etappe 0–4 committet. **Etappe 4 (Design) abgeschlossen** — Durchgang 1–7
-  (Shell + Primitives; Highlighting, ActiveFilters, Quiz-Options, LeitnerBoxes, LevelCard;
-  Sheet + mobiles FilterSheet, ImageViewer-Thumbnails, ClinicalNote; Chip-Fix + Filter rechts;
-  Lernkarte-3D-Flip, Quiz-Progress-Segmente, Statistik-CardBreakdown-Bento;
-  mobile Region-Chip-Reihe, Sheet-Fokus-Trap, Radiogroup-Roving-Tabindex;
-  Dark-Mode-Feinschliff der semantischen Farben). Light+Dark visuell verifiziert.
-- Gate zuletzt gruen: `npm run lint && npm run test && npm run build`
-- Aktueller Teststand: 137 Tests gruen.
-- Offen: Etappe 5 (Haertung). Visueller/Browser-Integrationscheck + Merge nach main durch dich.
+- Status: Etappe 0–4 abgeschlossen. **Etappe 5 (Haertung) begonnen** — Teil 1 umgesetzt:
+  Quellen-/Lizenz-Seite (`/quellen`) + Datenschutz-Seite (`/datenschutz`) aus V1 uebernommen
+  (geteiltes `LegalPage`-Geruest, CC-BY-4.0-Attribution vollstaendig), globaler `SiteFooter`
+  (Attribution + Legal-Links) auf jeder Route; Route-Code-Splitting via `React.lazy`/`Suspense`
+  (`RouteFallback`); Bild-Lazy-Load (`loading="lazy"` + `decoding="async"`).
+- Gate zuletzt gruen: `npm run lint && npm run test && npm run build` (Build erzeugt Per-Route-Chunks).
+- Aktueller Teststand: 139 Tests gruen.
+- Offen (Etappe 5 Rest): A11y-Audit (Lighthouse), Deploy-Haertung (Deep-Link-Reload live),
+  optional Offline/PWA, Release-Tag v1.0. Visueller/Browser-Integrationscheck + Merge nach main
+  durch dich (lokal kein Browser-Treiber verfuegbar).
 
 ## Kanonische Quellen
 - V1-Original: `../Muskelfinder` (`/home/pepperboy8/Documents/Muskelfinder`)
@@ -72,11 +73,13 @@
 - TA-Codes fehlen in V1 und bleiben optional. Nicht erfinden.
 
 ## Naechster Schritt
-Etappe 5 (Haertung & Feinschliff) starten (docs/migration-plan.md, ROADMAP Phase 5):
-- A11y-Audit (Lighthouse), Performance (Route-Code-Splitting via `React.lazy`, Bild-Lazy-Load, Bundle).
-- Quellen-/Lizenz- + Datenschutz-Seite (aus V1 uebernehmen, CC-BY-4.0-Attribution vollstaendig).
-- Deploy-Haertung (Deep-Link-Reload live), optional Offline/PWA, Release-Tag v1.0.
-Empfohlener Einstieg: Lizenz-/Quellen-Seite (rechtlich Pflicht) oder Route-Code-Splitting.
+Etappe 5 (Haertung & Feinschliff) fortsetzen (docs/migration-plan.md, ROADMAP Phase 5).
+Erledigt: Quellen-/Lizenz- + Datenschutz-Seite, Route-Code-Splitting (`React.lazy`), Bild-Lazy-Load.
+Offen:
+- A11y-Audit (Lighthouse) + Best-Practices, ggf. weitere Bundle-Optimierung.
+- Deploy-Haertung: Deep-Link-Reload live gegen GitHub Pages pruefen.
+- Optional Offline/PWA. Danach Release-Tag `v1.0`.
+Task-Briefing: `docs/tasks/2026-07-09-etappe-5-haertung.md`.
 
 Anschluss-Hinweis: Stores schluesseln Karten nach `nameLatin`; die UI loest Routing-`id` ueber
 die Datenschicht (`getMuscleByLatinName`) auf (ADR 0002 §2 / ADR 0006 §3). Such-/Filter-Logik,

@@ -42,6 +42,7 @@ export function ImageViewer({ images, alt }: { images: MuscleImage[]; alt: strin
           src={assetUrl(current.url)}
           alt={`${alt} — ${current.view}`}
           loading="lazy"
+          decoding="async"
           className="image-viewer__img"
         />
         {images.length > 1 && (
@@ -68,7 +69,7 @@ export function ImageViewer({ images, alt }: { images: MuscleImage[]; alt: strin
               aria-label={image.view}
               onClick={() => setIndex(i)}
             >
-              <img src={assetUrl(image.url)} alt="" loading="lazy" />
+              <img src={assetUrl(image.url)} alt="" loading="lazy" decoding="async" />
             </button>
           ))}
         </div>
