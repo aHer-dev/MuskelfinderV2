@@ -14,9 +14,12 @@
   (2) A11y-Audit (axe-core, WCAG 2 A/AA + best-practice) ueber alle 7 Routen in Light+Dark: 0
   Verstoesse. Light-Farbkontraste auf ≥4.5:1 gebracht (Text-Tokens + `--accent-on-surface` #bd4800).
   Deep-Link-Reload live verifiziert.
-- Gate zuletzt gruen: `npm run lint && npm run test && npm run build` (Build erzeugt Per-Route-Chunks).
+  (3) Offline/PWA via `vite-plugin-pwa`: Service-Worker (Workbox, autoUpdate), Precache der
+  App-Shell/Daten, CacheFirst fuer Muskelbilder, Manifest + Marken-Icons (192/512/maskable).
+  Offline im Browser verifiziert (Suche + Detail laden ohne Netz).
+- Gate zuletzt gruen: `npm run lint && npm run test && npm run build` (Per-Route-Chunks + SW/Manifest).
 - Aktueller Teststand: 139 Tests gruen. A11y: axe 0 Verstoesse (Playwright+Chromium+axe-core lokal).
-- Offen (Etappe 5 Rest): optional Offline/PWA; Merge nach main + Release-Tag v1.0 durch dich.
+- Offen (Etappe 5 Rest): NUR noch Merge nach main + Release-Tag v1.0 durch dich. Technisch fertig.
 
 ## Kanonische Quellen
 - V1-Original: `../Muskelfinder` (`/home/pepperboy8/Documents/Muskelfinder`)
@@ -76,12 +79,13 @@
 ## Naechster Schritt
 Etappe 5 (Haertung & Feinschliff) fortsetzen (docs/migration-plan.md, ROADMAP Phase 5).
 Erledigt: Quellen-/Lizenz- + Datenschutz-Seite, Route-Code-Splitting, Bild-Lazy-Load,
-A11y-Audit (axe 0 Verstoesse Light+Dark), Deep-Link-Reload verifiziert.
-Offen:
-- Optional Offline/PWA (Service-Worker, Manifest) — nur wenn ohne Risiko.
-- Merge nach main + Release-Tag `v1.0` (durch dich).
-A11y-Reaudit-Werkzeug: Playwright+Chromium+axe-core lokal installiert (Skript ad hoc,
-Preview auf Port 4319). Task-Briefing: `docs/tasks/2026-07-09-etappe-5-haertung.md`.
+A11y-Audit (axe 0 Verstoesse Light+Dark), Deep-Link-Reload verifiziert, Offline/PWA (SW +
+Manifest + Icons, offline verifiziert). **Etappe 5 technisch abgeschlossen.**
+Offen — nur noch durch dich:
+- Merge `feat/etappe-0-fundament` → `main`.
+- Release-Tag `v1.0` setzen.
+Werkzeuge lokal: Playwright+Chromium+axe-core (visuelle/A11y-Verifikation, Preview Port 4319).
+Task-Briefing: `docs/tasks/2026-07-09-etappe-5-haertung.md`.
 
 Anschluss-Hinweis: Stores schluesseln Karten nach `nameLatin`; die UI loest Routing-`id` ueber
 die Datenschicht (`getMuscleByLatinName`) auf (ADR 0002 §2 / ADR 0006 §3). Such-/Filter-Logik,

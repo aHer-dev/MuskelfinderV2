@@ -92,3 +92,9 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   Link-/Icon-Akzents (`--accent-on-surface` → `#bd4800`) auf ≥4.5:1; Dark unverändert (war grün).
   Deep-Link-Reload live verifiziert (direkter Load + Reload auf `/muskel/:id`, keine Fehler);
   `.nojekyll` + HashRouter tragen den statischen Deploy.
+- Etappe 5 (Härtung, Teil 3): Offline/PWA via `vite-plugin-pwa` (Workbox, `registerType:
+  autoUpdate`). App-Shell + Code + Daten-Chunk + Sprite werden vorab gecacht (33 Einträge),
+  Muskelbilder laufzeit-gecacht (CacheFirst). Web-App-Manifest (Name, Standalone, Theme-Farbe)
+  + Marken-Icons 192/512/maskable (aus `favicon.svg` gerendert) + `apple-touch-icon`. Bleibt
+  statisch/lokal — der SW greift nur auf Repo-Assets zu. Offline verifiziert: `/suche` (150 Karten)
+  und Muskel-Detail laden ohne Netz, keine Fehler.
