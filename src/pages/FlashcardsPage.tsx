@@ -37,14 +37,18 @@ export function FlashcardsPage() {
       <header className="flashcards__header">
         <p className="page__eyebrow">Spaced Repetition</p>
         <h1 className="page__title">Lernkarten</h1>
+        <Link to="/karteikasten" className="flashcards__manage">
+          📋 Muskeln im Karteikasten verwalten{deckSize > 0 ? ` (${deckSize})` : ''} →
+        </Link>
       </header>
 
       {session.total === 0 ? (
         <div className="flashcards__empty">
           {deckSize === 0 ? (
             <p>
-              Dein Karteikasten ist leer. Öffne einen Muskel in der{' '}
-              <Link to="/suche">Suche</Link> und lege ihn über „Zu Lernkarten" ab.
+              Dein Karteikasten ist leer. Lege über{' '}
+              <Link to="/karteikasten">Muskeln verwalten</Link> Karten an — einzeln oder
+              ganze Bereiche auf einmal.
             </p>
           ) : (
             <p>Heute ist nichts fällig — {deckSize} Karten im Kasten. Komm später wieder.</p>

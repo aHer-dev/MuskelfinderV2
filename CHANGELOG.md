@@ -98,3 +98,11 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   + Marken-Icons 192/512/maskable (aus `favicon.svg` gerendert) + `apple-touch-icon`. Bleibt
   statisch/lokal — der SW greift nur auf Repo-Assets zu. Offline verifiziert: `/suche` (150 Karten)
   und Muskel-Detail laden ohne Netz, keine Fehler.
+- V1-Parität (Etappe 6, Teil 1): **Karteikasten-Verwaltung** wieder eingeführt (aus V1
+  `muscle-selection.html` nachgebaut). Neue Seite/Route `/karteikasten` ([DeckManagerPage]):
+  Tabelle „Im Karteikasten" (Muskel · Bereich · Fach · Fällig · Entfernen) + Bulk-Hinzufügen
+  („Ausgewählte hinzufügen", „Alle sichtbaren hinzufügen") mit Suche + Region-Tabs + Checkboxen.
+  Verlinkt aus der Lernkarten-Seite; behebt die faktisch leere Lernkartei (bisher nur Einzel-Add
+  im Detail). Nutzt die vorhandene Deck-API (`addCards`/`removeCard`/`isDue`). 4 Smoke-Tests.
+- Gap-Analyse V1↔V2 dokumentiert (`docs/v1-v2-gap-analysis.md`): offene Lücken (Lernkarten-Setup/
+  Summary, Quiz „Ursprung & Ansatz" + Pool-Filter, Statistik-Ziele, Menü) priorisiert.

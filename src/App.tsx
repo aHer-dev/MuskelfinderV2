@@ -15,6 +15,9 @@ const MuscleDetailPage = lazy(() =>
 const FlashcardsPage = lazy(() =>
   import('./pages/FlashcardsPage').then((m) => ({ default: m.FlashcardsPage })),
 )
+const DeckManagerPage = lazy(() =>
+  import('./pages/DeckManagerPage').then((m) => ({ default: m.DeckManagerPage })),
+)
 const QuizPage = lazy(() => import('./pages/QuizPage').then((m) => ({ default: m.QuizPage })))
 const StatsPage = lazy(() => import('./pages/StatsPage').then((m) => ({ default: m.StatsPage })))
 const SourcesPage = lazy(() =>
@@ -43,6 +46,7 @@ function App() {
             <Route path="/suche" element={<SearchPage />} />
             <Route path="/muskel/:id" element={<MuscleDetailPage />} />
             <Route path="/lernkarten" element={<FlashcardsPage />} />
+            <Route path="/karteikasten" element={<DeckManagerPage />} />
             <Route path="/quiz" element={<QuizPage />} />
             <Route path="/statistik" element={<StatsPage />} />
             <Route path="/quellen" element={<SourcesPage />} />

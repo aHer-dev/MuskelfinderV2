@@ -17,6 +17,19 @@
   margin: 0 auto;
 }
 
+.flashcards__manage {
+  display: inline-block;
+  margin-top: var(--spacing-sm);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-on-surface);
+  text-decoration: none;
+}
+.flashcards__manage:hover {
+  text-decoration: underline;
+}
+
 .flashcards__empty,
 .flashcards__done {
   padding: var(--spacing-xl) var(--spacing-md);
