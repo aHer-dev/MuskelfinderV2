@@ -25,24 +25,39 @@ describe('useFlashcardSession (gegen useProgressStore)', () => {
     useProgressStore.getState().resetProgress();
   });
 
-  it('startet mit allen fälligen Karten', () => {
+  it('beginnt im Setup (nicht gestartet) und startet erst über start()', () => {
     useProgressStore.getState().addCards(['A', 'B']);
     const { result } = renderHook(() => useFlashcardSession());
+    expect(result.current.started).toBe(false);
+    expect(result.current.current).toBeNull();
+
+    act(() => result.current.start({ limit: 0, scope: 'all' }));
+    expect(result.current.started).toBe(true);
     expect(result.current.total).toBe(2);
     expect(result.current.current).toBe('A');
     expect(result.current.done).toBe(false);
   });
 
+  it('Kartenlimit kürzt die Sitzung', () => {
+    useProgressStore.getState().addCards(['A', 'B', 'C', 'D']);
+    const { result } = renderHook(() => useFlashcardSession());
+    act(() => result.current.start({ limit: 2, scope: 'all' }));
+    expect(result.current.total).toBe(2);
+  });
+
   it('Bewertung verschiebt Fach + vergibt XP, unsicher re-queued', () => {
     useProgressStore.getState().addCards(['A', 'B']);
     const { result } = renderHook(() => useFlashcardSession());
+    act(() => result.current.start({ limit: 0, scope: 'all' }));
 
     act(() => result.current.rate('correct')); // A: Fach 1→2 (+3 XP)
     expect(result.current.reviewed).toBe(1);
+    expect(result.current.correct).toBe(1);
     expect(result.current.current).toBe('B');
 
     act(() => result.current.rate('unsure')); // B bleibt, ans Ende (+2 XP)
     expect(result.current.reviewed).toBe(1);
+    expect(result.current.unsure).toBe(1);
     expect(result.current.current).toBe('B');
 
     act(() => result.current.rate('correct')); // B: Fach 1→2 (+3 XP)
@@ -54,5 +69,15 @@ describe('useFlashcardSession (gegen useProgressStore)', () => {
     expect(store.getCardState('B')?.fach).toBe(2);
     expect(store.xp.totalXP).toBe(8); // 3 + 2 + 3
     expect(result.current.xpEarned).toBe(8);
+  });
+
+  it('exit() kehrt ins Setup zurück', () => {
+    useProgressStore.getState().addCards(['A']);
+    const { result } = renderHook(() => useFlashcardSession());
+    act(() => result.current.start({ limit: 0, scope: 'all' }));
+    expect(result.current.started).toBe(true);
+    act(() => result.current.exit());
+    expect(result.current.started).toBe(false);
+    expect(result.current.current).toBeNull();
   });
 });

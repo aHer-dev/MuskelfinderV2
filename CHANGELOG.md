@@ -106,3 +106,10 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   im Detail). Nutzt die vorhandene Deck-API (`addCards`/`removeCard`/`isDue`). 4 Smoke-Tests.
 - Gap-Analyse V1↔V2 dokumentiert (`docs/v1-v2-gap-analysis.md`): offene Lücken (Lernkarten-Setup/
   Summary, Quiz „Ursprung & Ansatz" + Pool-Filter, Statistik-Ziele, Menü) priorisiert.
+- V1-Parität (Etappe 6, Teil 2): **Lernkarten-Ablauf** wieder vollständig (V1 `flashcards.js`).
+  `useFlashcardSession` startet jetzt explizit über `start({ limit, scope })` statt Auto-Start.
+  Drei Screens: **Setup** (Fällig-Zähler, Bereich- + Kartenlimit-Auswahl, „Lernen starten",
+  Fächer-Übersicht, Zurücksetzen) · **Card** (Zurück-Button, „Schwierig"-Flag ⚑, Bild-Zuschalten,
+  Tastatur `Space`/`1`/`2`/`3`/`F` + Swipe mobil) · **Summary** (Sitzungsstatistik gelernt/richtig/
+  falsch/XP, „Fächer nach der Sitzung", Weiter lernen / Zur Übersicht). `btn--danger`/`btn--block`
+  als Primitives ergänzt. Hook- + Page-Tests (148 Tests grün); Light/Dark/Mobile verifiziert.

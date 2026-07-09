@@ -18,7 +18,10 @@ Legende Schweregrad: 🔴 großer Funktionsverlust · 🟠 spürbar · 🟡 klei
 
 ---
 
-## 1. 🔴 Karteikasten-Verwaltung / Muskelauswahl — fehlt komplett
+> **Fortschritt:** §1 ✅ erledigt (Etappe 6 Teil 1) · §2 ✅ erledigt (Etappe 6 Teil 2) ·
+> offen: §3 Quiz, §4 Statistik, §5 Menü, §6/§7 klein.
+
+## 1. ✅ Karteikasten-Verwaltung / Muskelauswahl — ERLEDIGT (war: fehlt komplett)
 **V1:** Eigene Seite `quizzes/muscle-selection.html` (+ `muscle-selection.js`, `package-selector.js`):
 - Zwei Bereiche: **„Im Karteikasten"** (Tabelle: Muskel · Bereich · Fach · Fällig · Entfernen) und
   **„Noch nicht im Karteikasten"**.
@@ -36,7 +39,7 @@ eine neue Seite/Route `/karteikasten` (oder `/muskeln-verwalten`) + Bulk-Aktione
 
 ---
 
-## 2. 🔴 Lernkarten-Ablauf — stark reduziert
+## 2. ✅ Lernkarten-Ablauf — ERLEDIGT (war: stark reduziert)
 **V1** (`quizzes/flashcards.html` + `flashcards.js`) hat **drei Screens**:
 
 **a) Setup-Screen** (fehlt in V2 komplett):

@@ -50,6 +50,26 @@
   border-color: var(--accent-strong);
 }
 
+.btn--danger {
+  background: transparent;
+  border-color: var(--control-border);
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.btn--danger:hover {
+  border-color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+}
+
+.btn--block {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  min-height: 46px;
+  font-size: 1rem;
+}
+
 .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;

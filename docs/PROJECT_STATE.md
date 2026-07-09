@@ -17,16 +17,18 @@
   (3) Offline/PWA via `vite-plugin-pwa`: Service-Worker (Workbox, autoUpdate), Precache der
   App-Shell/Daten, CacheFirst fuer Muskelbilder, Manifest + Marken-Icons (192/512/maskable).
   Offline im Browser verifiziert (Suche + Detail laden ohne Netz).
-- **Etappe 6 (V1-Paritaet) begonnen:** Gap-Analyse V1↔V2 (`docs/v1-v2-gap-analysis.md`) zeigte
-  reduzierte Lern-Features. Teil 1 umgesetzt: **Karteikasten-Verwaltung** neu (`/karteikasten`,
-  `DeckManagerPage`) — In-Deck-Tabelle + Bulk-Add (Suche/Region-Tabs/Checkboxen), aus Lernkarten
-  verlinkt. Behebt die faktisch leere Lernkartei. Entscheidung: V1-Funktionen zurueck, V2-Extras
-  (z. B. Innervations-Quiz) behalten.
+- **Etappe 6 (V1-Paritaet) laeuft:** Gap-Analyse V1↔V2 (`docs/v1-v2-gap-analysis.md`) zeigte
+  reduzierte Lern-Features. Entscheidung: V1-Funktionen zurueck, V2-Extras (z. B. Innervations-Quiz)
+  behalten. Umgesetzt:
+  - Teil 1: **Karteikasten-Verwaltung** (`/karteikasten`, `DeckManagerPage`) — In-Deck-Tabelle +
+    Bulk-Add (Suche/Region-Tabs/Checkboxen), aus Lernkarten verlinkt. Behebt die leere Lernkartei.
+  - Teil 2: **Lernkarten-Ablauf** wieder vollstaendig — `useFlashcardSession` mit explizitem
+    `start({limit,scope})`; Setup-/Card-/Summary-Screen inkl. Kartenlimit, Bereich, Schwierig-Flag,
+    Bild-Zuschalten, Tastatur/Swipe.
 - Gate zuletzt gruen: `npm run lint && npm run test && npm run build` (Per-Route-Chunks + SW/Manifest).
-- Aktueller Teststand: 143 Tests gruen. A11y: axe 0 Verstoesse (Playwright+Chromium+axe-core lokal).
+- Aktueller Teststand: 148 Tests gruen. A11y: axe 0 Verstoesse (Playwright+Chromium+axe-core lokal).
 - Offen: Etappe 5 fertig (nur Merge+Tag durch dich). Etappe 6 Rest laut Gap-Analyse:
-  Lernkarten-Setup/Summary + Kartenlimit/Bereich/Flag/Bild/Keyboard, Quiz „Ursprung & Ansatz"
-  + Pool-Filter, Statistik-Ziele/Quote-je-Typ, Menue-Eintrag „Muskeln verwalten".
+  Quiz „Ursprung & Ansatz" + Pool-Filter, Statistik-Ziele/Quote-je-Typ, Menue-Eintrag „Muskeln verwalten".
 
 ## Kanonische Quellen
 - V1-Original: `../Muskelfinder` (`/home/pepperboy8/Documents/Muskelfinder`)
