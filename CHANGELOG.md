@@ -113,3 +113,10 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   Tastatur `Space`/`1`/`2`/`3`/`F` + Swipe mobil) · **Summary** (Sitzungsstatistik gelernt/richtig/
   falsch/XP, „Fächer nach der Sitzung", Weiter lernen / Zur Übersicht). `btn--danger`/`btn--block`
   als Primitives ergänzt. Hook- + Page-Tests (148 Tests grün); Light/Dark/Mobile verifiziert.
+- V1-Parität (Etappe 6, Teil 3): **Quiz „Ursprung & Ansatz"** wieder da (V1 `origin-insertion-quiz`).
+  Zwei Modi ergänzt — `origin-insertion` (Ursprung → Ansatz) und `insertion-origin`
+  (Ansatz → Ursprung); nutzen die vorhandenen `origin`/`insertion`-Daten. Zusätzlich
+  **Bereichsfilter** (V1 „Quiz-Filter"): Chip-Reihe auf dem Quiz-Start schränkt den Muskel-Pool
+  auf Regionen ein. Serien-Key `quizSeriesKey(mode, regions)` bleibt ohne Filter exakt V1-kompatibel
+  (ADR 0002), mit Filter ein zusätzlicher, sortierter Schlüssel. V2-Extra „Innervation"-Modus bleibt.
+  Quiz-Datentests erweitert (151 Tests grün); Ursprung/Ansatz-Runde im Browser verifiziert.

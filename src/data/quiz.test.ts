@@ -9,8 +9,8 @@ function m(partial: Partial<Muscle> & { id: string; nameLatin: string }): Muscle
     region: partial.region ?? 'upper',
     subregion: '',
     joints: [],
-    origin: '',
-    insertion: '',
+    origin: partial.origin ?? '',
+    insertion: partial.insertion ?? '',
     functions: [],
     functionDescription: partial.functionDescription ?? `Funktion ${partial.id}`,
     innervation: partial.innervation ?? `N. ${partial.id}`,
@@ -25,12 +25,25 @@ const MUSCLES: Muscle[] = Array.from({ length: 8 }, (_, i) =>
   m({ id: `m${i}`, nameLatin: `M. nummer-${i}` }),
 );
 
-const MODES: QuizMode[] = ['function-to-muscle', 'muscle-to-function', 'innervation', 'image'];
+const MODES: QuizMode[] = [
+  'function-to-muscle',
+  'muscle-to-function',
+  'innervation',
+  'origin-insertion',
+  'insertion-origin',
+  'image',
+];
 
 describe('quizSeriesKey', () => {
-  it('folgt der V1-Form <mode>::<filterSignatur>', () => {
+  it('folgt der V1-Form <mode>::<filterSignatur> (ohne Filter = V1-kompatibel)', () => {
     expect(quizSeriesKey('innervation')).toBe(
       'innervation::{"deckOnly":false,"regions":[],"subgroups":[]}',
+    );
+  });
+
+  it('kodiert einen Bereichsfilter als eigenen (sortierten) Schlüssel', () => {
+    expect(quizSeriesKey('innervation', ['lower', 'head'])).toBe(
+      'innervation::{"deckOnly":false,"regions":["head","lower"],"subgroups":[]}',
     );
   });
 });
@@ -84,6 +97,24 @@ describe('generateQuiz', () => {
     const quiz = generateQuiz(withImg, 'image', 10, createRng(2));
     expect(quiz).toHaveLength(1);
     expect(quiz[0].imageUrl).toBe('x.jpg');
+  });
+
+  it('Ursprung → Ansatz: Prompt = Ursprung, richtige Antwort = Ansatz', () => {
+    const withOI = Array.from({ length: 5 }, (_, i) =>
+      m({ id: `oi${i}`, nameLatin: `M. oi-${i}`, origin: `Ursprung ${i}`, insertion: `Ansatz ${i}` }),
+    );
+    const quiz = generateQuiz(withOI, 'origin-insertion', 5, createRng(11));
+    expect(quiz).toHaveLength(5);
+    for (const q of quiz) {
+      const source = withOI.find((mm) => mm.origin === q.prompt);
+      const correct = q.options.find((o) => o.id === q.correctId);
+      expect(correct?.label).toBe(source?.insertion);
+    }
+  });
+
+  it('Ursprung/Ansatz-Modi brauchen beide Felder (leere werden ausgelassen)', () => {
+    // MUSCLES haben leere origin/insertion → kein tauglicher Kandidat.
+    expect(generateQuiz(MUSCLES, 'origin-insertion', 5, createRng(5))).toHaveLength(0);
   });
 
   it('funktioniert für alle Modi ohne Absturz', () => {

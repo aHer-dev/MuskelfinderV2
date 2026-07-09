@@ -25,10 +25,13 @@
   - Teil 2: **Lernkarten-Ablauf** wieder vollstaendig — `useFlashcardSession` mit explizitem
     `start({limit,scope})`; Setup-/Card-/Summary-Screen inkl. Kartenlimit, Bereich, Schwierig-Flag,
     Bild-Zuschalten, Tastatur/Swipe.
+  - Teil 3: **Quiz „Ursprung & Ansatz"** (Modi `origin-insertion`/`insertion-origin`) +
+    **Bereichsfilter** (Pool-Einschraenkung). `quizSeriesKey(mode, regions)` ohne Filter =
+    exakt V1-Key (ADR 0002); Innervations-Modus (V2-Extra) bleibt.
 - Gate zuletzt gruen: `npm run lint && npm run test && npm run build` (Per-Route-Chunks + SW/Manifest).
-- Aktueller Teststand: 148 Tests gruen. A11y: axe 0 Verstoesse (Playwright+Chromium+axe-core lokal).
+- Aktueller Teststand: 151 Tests gruen. A11y: axe 0 Verstoesse (Playwright+Chromium+axe-core lokal).
 - Offen: Etappe 5 fertig (nur Merge+Tag durch dich). Etappe 6 Rest laut Gap-Analyse:
-  Quiz „Ursprung & Ansatz" + Pool-Filter, Statistik-Ziele/Quote-je-Typ, Menue-Eintrag „Muskeln verwalten".
+  Statistik-Ziele/Quote-je-Typ (§4), Menue-Eintrag „Muskeln verwalten" (§5), Kleinkram (§6/§7).
 
 ## Kanonische Quellen
 - V1-Original: `../Muskelfinder` (`/home/pepperboy8/Documents/Muskelfinder`)

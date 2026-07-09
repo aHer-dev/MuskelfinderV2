@@ -7,7 +7,7 @@
    persistierte Serien-Statistik zu ADR 0002 kompatibel bleibt.
    ========================================================================= */
 
-import type { Muscle, QuizMode, QuizQuestion } from '../types';
+import type { Muscle, QuizMode, QuizQuestion, RegionId } from '../types';
 
 /** Deterministischer PRNG (mulberry32) — für reproduzierbare Tests. */
 export function createRng(seed: number): () => number {
@@ -44,12 +44,23 @@ const MODE_CATEGORY: Record<QuizMode, string> = {
   'function-to-muscle': 'Funktion → Muskel',
   'muscle-to-function': 'Muskel → Funktion',
   innervation: 'Innervation',
+  'origin-insertion': 'Ursprung → Ansatz',
+  'insertion-origin': 'Ansatz → Ursprung',
   image: 'Bild → Muskel',
 };
 
-/** Serien-Key im V1-Format (ohne aktive Filter). */
-export function quizSeriesKey(mode: QuizMode): string {
-  return `${mode}::{"deckOnly":false,"regions":[],"subgroups":[]}`;
+/**
+ * Serien-Key im V1-Format `<mode>::{"deckOnly":…,"regions":…,"subgroups":…}`.
+ * Ohne Bereichsfilter (`regions = []`) exakt der bisherige Key → ADR-0002-kompatibel;
+ * ein Bereichsfilter erzeugt einen zusätzlichen (neuen) Serien-Schlüssel.
+ */
+export function quizSeriesKey(mode: QuizMode, regions: RegionId[] = []): string {
+  const signature = JSON.stringify({
+    deckOnly: false,
+    regions: [...regions].sort(),
+    subgroups: [],
+  });
+  return `${mode}::${signature}`;
 }
 
 interface QuestionSpec {
@@ -64,6 +75,9 @@ function eligible(muscles: readonly Muscle[], mode: QuizMode): Muscle[] {
   if (mode === 'innervation') return muscles.filter((m) => m.innervation.trim() !== '');
   if (mode === 'muscle-to-function') return muscles.filter((m) => m.functionDescription.trim() !== '');
   if (mode === 'image') return muscles.filter((m) => m.images.length > 0);
+  if (mode === 'origin-insertion' || mode === 'insertion-origin') {
+    return muscles.filter((m) => m.origin.trim() !== '' && m.insertion.trim() !== '');
+  }
   return [...muscles];
 }
 
@@ -80,6 +94,18 @@ function specFor(muscle: Muscle, mode: QuizMode, all: readonly Muscle[]): Questi
         prompt: muscle.nameLatin,
         correctLabel: muscle.innervation,
         distractorPool: all.map((m) => m.innervation),
+      };
+    case 'origin-insertion':
+      return {
+        prompt: muscle.origin,
+        correctLabel: muscle.insertion,
+        distractorPool: all.map((m) => m.insertion),
+      };
+    case 'insertion-origin':
+      return {
+        prompt: muscle.insertion,
+        correctLabel: muscle.origin,
+        distractorPool: all.map((m) => m.origin),
       };
     case 'image':
       return {

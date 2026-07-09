@@ -18,8 +18,8 @@ Legende Schweregrad: 🔴 großer Funktionsverlust · 🟠 spürbar · 🟡 klei
 
 ---
 
-> **Fortschritt:** §1 ✅ erledigt (Etappe 6 Teil 1) · §2 ✅ erledigt (Etappe 6 Teil 2) ·
-> offen: §3 Quiz, §4 Statistik, §5 Menü, §6/§7 klein.
+> **Fortschritt:** §1 ✅ (Teil 1) · §2 ✅ (Teil 2) · §3 ✅ (Teil 3) ·
+> offen: §4 Statistik, §5 Menü, §6/§7 klein.
 
 ## 1. ✅ Karteikasten-Verwaltung / Muskelauswahl — ERLEDIGT (war: fehlt komplett)
 **V1:** Eigene Seite `quizzes/muscle-selection.html` (+ `muscle-selection.js`, `package-selector.js`):
@@ -71,7 +71,7 @@ Der Typ [`FlashcardSession.regionScope`](../src/types/index.ts) ist als Gerüst 
 
 ---
 
-## 3. 🟠 Quiz — anderer Zuschnitt
+## 3. ✅ Quiz „Ursprung & Ansatz" + Pool-Filter — ERLEDIGT (war: anderer Zuschnitt)
 **V1** (`quiz.html`) = **3 Quiztypen mit je Submodi** + geteilter Filter:
 - **🖼 Bildzuordnung:** Bild→Name · Name→Bild · Gemischt (`image-match-quiz.js`).
 - **📍 Ursprung & Ansatz:** Ursprung→Ansatz · Ansatz→Ursprung · Gemischt (`origin-insertion-quiz.js`).

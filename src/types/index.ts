@@ -125,6 +125,8 @@ export type QuizMode =
   | 'function-to-muscle'   // „Welcher Muskel …?"
   | 'muscle-to-function'
   | 'innervation'
+  | 'origin-insertion'     // Ursprung → Ansatz
+  | 'insertion-origin'     // Ansatz → Ursprung
   | 'image';               // Bild → Muskel
 
 export interface QuizOption {

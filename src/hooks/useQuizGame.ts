@@ -13,7 +13,7 @@ import { MUSCLES } from '../data';
 import { generateQuiz, quizSeriesKey } from '../data/quiz';
 import { useProgressStore } from '../store/useProgressStore';
 import { useQuizStore } from '../store/useQuizStore';
-import type { QuizMode, QuizPhase, QuizQuestion, QuizResult } from '../types';
+import type { QuizMode, QuizPhase, QuizQuestion, QuizResult, RegionId } from '../types';
 
 /** XP je richtiger MC-Antwort (V1: multiple-choice = 2). */
 const XP_PER_CORRECT = 2;
@@ -37,12 +37,18 @@ export interface QuizGameApi {
   result: QuizResult | null;
 }
 
-export function useQuizGame(mode: QuizMode, count = 10): QuizGameApi {
+export function useQuizGame(mode: QuizMode, count = 10, regions: RegionId[] = []): QuizGameApi {
   const awardXp = useProgressStore((s) => s.awardXp);
   const awardStreak = useProgressStore((s) => s.awardStreak);
   const commitRound = useQuizStore((s) => s.commitRound);
 
-  const questions = useMemo(() => generateQuiz(MUSCLES, mode, count), [mode, count]);
+  // Bereichsfilter (V1 „Quiz-Filter"): leer = alle Muskeln.
+  const regionKey = [...regions].sort().join(',');
+  const questions = useMemo(() => {
+    const pool = regions.length ? MUSCLES.filter((m) => regions.includes(m.region)) : MUSCLES;
+    return generateQuiz(pool, mode, count);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, count, regionKey]);
 
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<QuizPhase>('answering');
@@ -85,7 +91,7 @@ export function useQuizGame(mode: QuizMode, count = 10): QuizGameApi {
       setSelectedId(null);
     } else {
       setPhase('finished');
-      commitRound(quizSeriesKey(mode), correctCount, questions.length);
+      commitRound(quizSeriesKey(mode, regions), correctCount, questions.length);
     }
   }
 
