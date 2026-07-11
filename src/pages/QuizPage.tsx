@@ -10,13 +10,46 @@ import '../components/features/quiz/quiz.css';
 
 const REGION_ORDER = getRegions().map((r) => r.id) as RegionId[];
 
-const MODES: Array<{ mode: QuizMode; label: string; desc: string }> = [
-  { mode: 'function-to-muscle', label: 'Funktion → Muskel', desc: 'Welcher Muskel leistet das?' },
-  { mode: 'muscle-to-function', label: 'Muskel → Funktion', desc: 'Was macht dieser Muskel?' },
-  { mode: 'origin-insertion', label: 'Ursprung → Ansatz', desc: 'Welcher Ansatz gehört zum Ursprung?' },
-  { mode: 'insertion-origin', label: 'Ansatz → Ursprung', desc: 'Welcher Ursprung gehört zum Ansatz?' },
-  { mode: 'innervation', label: 'Innervation', desc: 'Welcher Nerv versorgt ihn?' },
-  { mode: 'image', label: 'Bild → Muskel', desc: 'Erkenne den Muskel am Bild.' },
+interface QuizFamily {
+  title: string;
+  desc: string;
+  directions: Array<{ mode: QuizMode; label: string }>;
+}
+
+/** Quiz-Typen wie in V1 (`quiz.html`): je Karte Richtungs-Buttons inkl. „Gemischt". */
+const FAMILIES: QuizFamily[] = [
+  {
+    title: 'Bildzuordnung',
+    desc: 'Erkenne den Muskel am Bild — oder das Bild zum Namen.',
+    directions: [
+      { mode: 'image', label: 'Bild → Muskel' },
+      { mode: 'name-image', label: 'Name → Bild' },
+      { mode: 'image-mixed', label: 'Gemischt' },
+    ],
+  },
+  {
+    title: 'Ursprung & Ansatz',
+    desc: 'Ordne Ansätze und Ursprünge einander zu.',
+    directions: [
+      { mode: 'origin-insertion', label: 'Ursprung → Ansatz' },
+      { mode: 'insertion-origin', label: 'Ansatz → Ursprung' },
+      { mode: 'origin-insertion-mixed', label: 'Gemischt' },
+    ],
+  },
+  {
+    title: 'Funktions-Quiz',
+    desc: 'Ordne Muskeln ihren Funktionen zu — oder umgekehrt.',
+    directions: [
+      { mode: 'function-to-muscle', label: 'Funktion → Muskel' },
+      { mode: 'muscle-to-function', label: 'Muskel → Funktion' },
+      { mode: 'function-mixed', label: 'Gemischt' },
+    ],
+  },
+  {
+    title: 'Innervation',
+    desc: 'Welcher Nerv versorgt den Muskel?',
+    directions: [{ mode: 'innervation', label: 'Starten' }],
+  },
 ];
 
 function QuizGame({
@@ -132,12 +165,22 @@ export function QuizPage() {
           </div>
 
           <ul className="quiz-modes">
-            {MODES.map((item) => (
-              <li key={item.mode}>
-                <button type="button" className="quiz-mode" onClick={() => setMode(item.mode)}>
-                  <span className="quiz-mode__label">{item.label}</span>
-                  <span className="quiz-mode__desc">{item.desc}</span>
-                </button>
+            {FAMILIES.map((family) => (
+              <li key={family.title} className="quiz-family">
+                <h2 className="quiz-family__title">{family.title}</h2>
+                <p className="quiz-family__desc">{family.desc}</p>
+                <div className="quiz-family__dirs">
+                  {family.directions.map((dir) => (
+                    <button
+                      key={dir.mode}
+                      type="button"
+                      className="quiz-dir-btn"
+                      onClick={() => setMode(dir.mode)}
+                    >
+                      {dir.label}
+                    </button>
+                  ))}
+                </div>
               </li>
             ))}
           </ul>

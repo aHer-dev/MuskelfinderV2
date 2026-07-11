@@ -124,14 +124,20 @@ export interface FlashcardSession {
 export type QuizMode =
   | 'function-to-muscle'   // „Welcher Muskel …?"
   | 'muscle-to-function'
+  | 'function-mixed'       // Funktion↔Muskel gemischt
   | 'innervation'
   | 'origin-insertion'     // Ursprung → Ansatz
   | 'insertion-origin'     // Ansatz → Ursprung
-  | 'image';               // Bild → Muskel
+  | 'origin-insertion-mixed'
+  | 'image'                // Bild → Muskel
+  | 'name-image'           // Name → Bild (Bild-Optionen)
+  | 'image-mixed';         // Bild↔Name gemischt
 
 export interface QuizOption {
   id: string;              // = muscleId oder optionId
   label: string;
+  /** Gesetzt → Option wird als Bild dargestellt (Modi mit Bild-Antworten). */
+  imageUrl?: string;
 }
 
 export interface QuizQuestion {

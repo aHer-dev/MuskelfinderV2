@@ -41,21 +41,25 @@ Nach Umsetzung §1–§7 wurde **jede V1-Seite und jedes JS-Modul** gegen V2 gep
 | `datenschutz.html` | `PrivacyPage` (`/datenschutz`) | ✅ |
 | — (V1 hatte keine) | Offline/PWA | 🟢 V2-Extra |
 
-### Bewusst nicht übernommen (Architektur-Entscheidung)
-- **„In 3D ansehen" + externe 3D-Anatomie-App** (`details.js` `build3DAnatomyUrl`,
-  `data/muskelfinder-map.json`-Fetch, Menü-Link, `get3DAnatomyUrl`). Erfordert **externe
-  Laufzeit-Requests** und **fremde 3D-Modelle mit ungeklärter Lizenz** — beides durch die harten
-  V2-Regeln ausgeschlossen (CLAUDE.md: „Statische App, keine externen Laufzeit-Requests"; „Keine
-  fremden Modelle/Bilder ohne geklärte Lizenz"). **Bei Bedarf bewusst als eigene Entscheidung
-  wieder aufnehmen** (dann als externer Link ohne Laufzeit-Fetch).
+### 3D-Anatomie-Verknüpfung — ✅ ERLEDIGT (regelkonform gelöst)
+V1 fetchte das Support-Mapping zur **Laufzeit** von der externen 3D-App — das ist in V2 verboten.
+Gelöst ohne Architektur-Bruch: die unterstützten Muskel-Keys sind als **Repo-Daten** gebündelt
+(`src/data/generated/three-d-support.json`, aus der eigenen 3DAnatomy-App), sodass das Support-Gate
+**lokal** läuft (kein Laufzeit-Request). Umgesetzt:
+- **„In 3D ansehen"**-Button auf der Detailseite (nur für unterstützte Muskeln) → externer,
+  nutzerinitiierter Link (`?muscleKey=…&muscle=…&source=muskelfinder&returnTo=…`).
+- **„3D Anatomie ↗"**-Link im globalen Footer (V1-Menü-Parität).
+- Datenschutz-Seite um den V1-Abschnitt zur optionalen 3D-App ergänzt.
+Es werden **keine 3D-Modelle eingebettet** — nur auf die eigene externe App verlinkt.
 
-### Kleine, optionale Rest-Verfeinerungen (kein Funktionsverlust im Kern)
-- **Quiz-Submodus „Gemischt"**: V1 bot je Quiztyp einen „Gemischt"-Modus (Richtungen zufällig
-  gemischt). V2 hat die diskreten Richtungen einzeln, aber keinen kombinierten „Gemischt"-Modus.
-- **Quiz-Submodus „Name → Bild"**: V1 konnte im Bildquiz auch Name→Bild (aus 4 Bildern das richtige
-  wählen). V2 hat nur Bild→Muskel. Bräuchte ein Bild-Optionen-UI.
+### Quiz-Submodi — ✅ ERLEDIGT (volle V1-Parität)
+- **„Name → Bild"**: neuer Modus mit **Bild-Optionen** (aus 4 Muskelbildern das richtige wählen).
+- **„Gemischt"** je Quiztyp (`function-mixed`, `origin-insertion-mixed`, `image-mixed`): lösen je
+  Frage zufällig auf eine konkrete Richtung auf.
+- QuizPage in **V1-Struktur** umgebaut (Quiz-Typ-Karten mit Richtungs-Buttons statt flacher Liste).
 
-Diese zwei Punkte sind Komfort-Varianten bestehender Modi; alle **Inhalte/Daten** dafür sind da.
+**Damit sind alle V1-Funktionen übernommen** — bis auf das *Einbetten* fremder 3D-Modelle (nie
+Teil von V1; V1 verlinkte ebenfalls nur nach außen).
 
 ---
 

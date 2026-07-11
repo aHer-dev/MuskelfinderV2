@@ -28,11 +28,17 @@ const MUSCLES: Muscle[] = Array.from({ length: 8 }, (_, i) =>
 const MODES: QuizMode[] = [
   'function-to-muscle',
   'muscle-to-function',
+  'function-mixed',
   'innervation',
   'origin-insertion',
   'insertion-origin',
+  'origin-insertion-mixed',
   'image',
+  'name-image',
+  'image-mixed',
 ];
+
+const IMG = { id: 'i1', url: 'pic.jpg', view: 'Ventral', attribution: 'X', license: 'CC BY 4.0' };
 
 describe('quizSeriesKey', () => {
   it('folgt der V1-Form <mode>::<filterSignatur> (ohne Filter = V1-kompatibel)', () => {
@@ -115,6 +121,35 @@ describe('generateQuiz', () => {
   it('Ursprung/Ansatz-Modi brauchen beide Felder (leere werden ausgelassen)', () => {
     // MUSCLES haben leere origin/insertion → kein tauglicher Kandidat.
     expect(generateQuiz(MUSCLES, 'origin-insertion', 5, createRng(5))).toHaveLength(0);
+  });
+
+  it('Name → Bild: Bild-Optionen mit correctId auf dem Zielmuskel', () => {
+    const withImg = Array.from({ length: 5 }, (_, i) =>
+      m({ id: `ni${i}`, nameLatin: `M. ni-${i}`, images: [{ ...IMG, id: `i${i}`, url: `pic-${i}.jpg` }] }),
+    );
+    const quiz = generateQuiz(withImg, 'name-image', 5, createRng(4));
+    expect(quiz).toHaveLength(5);
+    for (const q of quiz) {
+      // Optionen tragen Bild-URLs, Prompt ist ein Muskelname.
+      expect(q.options.every((o) => typeof o.imageUrl === 'string')).toBe(true);
+      const target = withImg.find((mm) => mm.nameLatin === q.prompt)!;
+      const correct = q.options.find((o) => o.id === q.correctId)!;
+      expect(correct.imageUrl).toBe(target.images[0].url);
+    }
+  });
+
+  it('Gemischt (image-mixed) mischt Bild→Muskel und Name→Bild', () => {
+    const withImg = Array.from({ length: 12 }, (_, i) =>
+      m({ id: `mx${i}`, nameLatin: `M. mx-${i}`, images: [{ ...IMG, id: `i${i}`, url: `pic-${i}.jpg` }] }),
+    );
+    const quiz = generateQuiz(withImg, 'image-mixed', 12, createRng(123));
+    // Alle Fragen tragen den Anzeige-Modus des Familien-Modus (für den Serien-Key).
+    expect(quiz.every((q) => q.mode === 'image-mixed')).toBe(true);
+    const withImageOptions = quiz.filter((q) => q.options.some((o) => o.imageUrl));
+    const withTextPrompt = quiz.filter((q) => q.imageUrl);
+    // Beide Richtungen kommen vor (Bild-Prompt bzw. Bild-Optionen).
+    expect(withImageOptions.length).toBeGreaterThan(0);
+    expect(withTextPrompt.length).toBeGreaterThan(0);
   });
 
   it('funktioniert für alle Modi ohne Absturz', () => {

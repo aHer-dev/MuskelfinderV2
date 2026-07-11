@@ -132,3 +132,11 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   — vergibt V1s 10 XP einmal täglich beim App-Start (war zuvor implementiert, aber nie aufgerufen).
   Hinweis: V1-Feld `functionalChain` ist in allen 150 Datensätzen leer → bewusst nicht übernommen.
   Toast-Store-Tests (157 Tests grün); Toast/Rail/TabBar im Browser verifiziert.
+- V1-Parität (Etappe 6, Teil 6 — Abschluss): **3D-Anatomie-Verknüpfung** regelkonform (ohne
+  Laufzeit-Request): unterstützte Muskel-Keys als Repo-Daten gebündelt
+  (`data/generated/three-d-support.json`), `src/data/threeD.ts` (`isSupportedIn3D`/`threeDUrl`),
+  „In 3D ansehen"-Button auf der Detailseite (unterstützte Muskeln) + „3D Anatomie ↗" im Footer +
+  Datenschutz-Abschnitt. **Quiz-Submodi** vervollständigt: neuer Modus **„Name → Bild"**
+  (Bild-Optionen) und **„Gemischt"** je Quiztyp (`function-mixed`/`origin-insertion-mixed`/
+  `image-mixed`, lösen je Frage zufällig auf eine Richtung auf). QuizPage in V1-Struktur (Quiz-Typ-
+  Karten mit Richtungs-Buttons). 163 Tests grün; alle neuen Flows im Browser verifiziert.

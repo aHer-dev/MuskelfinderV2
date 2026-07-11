@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getMuscleById } from '../data';
 import { movementLabel, regionLabel } from '../data/labels';
+import { isSupportedIn3D, threeDUrl } from '../data/threeD';
 import { DataList } from '../components/features/detail/DataList';
 import type { DataRow } from '../components/features/detail/DataList';
 import { ClinicalNote } from '../components/features/detail/ClinicalNote';
@@ -85,6 +86,16 @@ export function MuscleDetailPage() {
           >
             <Icon name="icCards" size={18} /> {inDeck ? 'In Lernkarten' : 'Zu Lernkarten'}
           </button>
+          {isSupportedIn3D(muscle.nameLatin) && (
+            <a
+              className="btn btn--ghost"
+              href={threeDUrl(muscle.nameLatin, window.location.href)}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Icon name="icCube" size={18} /> In 3D ansehen
+            </a>
+          )}
         </div>
       </header>
 

@@ -68,6 +68,16 @@ export function PrivacyPage() {
       </section>
 
       <section className="legal-card">
+        <h2>Optionale Verlinkung zur 3D-Anatomie-App</h2>
+        <p>
+          Der Muskelfinder verlinkt optional auf eine separate 3D-Anatomie-App. Erst beim Wechsel
+          dorthin gelten zusätzlich deren Datenschutz- und Lizenzhinweise. Die 3D-App kann weitere
+          technisch notwendige externe Abrufe verwenden. Der Muskelfinder selbst lädt zur Laufzeit
+          keine Inhalte von dort — die Verlinkung erfolgt nur bei aktivem Klick.
+        </p>
+      </section>
+
+      <section className="legal-card">
         <h2>Hinweis zum Rechtsstand</h2>
         <p>
           Diese Seite dient der transparenten Projektinformation und ersetzt keine individuelle

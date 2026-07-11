@@ -41,10 +41,14 @@ export interface QuizModeStat {
 const QUIZ_MODE_LABELS: Record<string, string> = {
   'function-to-muscle': 'Funktion → Muskel',
   'muscle-to-function': 'Muskel → Funktion',
+  'function-mixed': 'Funktion ↔ Muskel',
   innervation: 'Innervation',
   'origin-insertion': 'Ursprung → Ansatz',
   'insertion-origin': 'Ansatz → Ursprung',
+  'origin-insertion-mixed': 'Ursprung ↔ Ansatz',
   image: 'Bild → Muskel',
+  'name-image': 'Name → Bild',
+  'image-mixed': 'Bild ↔ Name',
 };
 
 function quizModeLabel(mode: string): string {

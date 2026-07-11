@@ -32,10 +32,13 @@
     erweitert (`quizByMode`/`nextMasteryMilestone`).
   - Teil 5: **Nav-Eintrag „Karteikasten"** (Desktop-Rail), **XP-/Level-Up-Toasts**
     (`useToastStore`/`ToastHost`) und **Tagesbonus verdrahtet** (`useDailyBonus`).
-    `functionalChain` in V1 durchgaengig leer → bewusst ausgelassen.
-  **Alle in der Gap-Analyse (§1–§7) identifizierten V1-Luecken sind geschlossen.**
+  - Teil 6: **3D-Anatomie-Verknüpfung** regelkonform (lokales Mapping `three-d-support.json`,
+    `data/threeD.ts`; Detail-Button + Footer-Link + Datenschutz-Abschnitt) und **Quiz-Submodi**
+    komplett (`name-image` Bild-Optionen + `*-mixed` „Gemischt"; QuizPage in V1-Typ-Karten-Struktur).
+  **Volle V1-Paritaet erreicht** — alle Seiten/Funktionen uebernommen; nur das *Einbetten* fremder
+  3D-Modelle bleibt aussen vor (war nie Teil von V1; nur Verlinkung).
 - Gate zuletzt gruen: `npm run lint && npm run test && npm run build` (Per-Route-Chunks + SW/Manifest).
-- Aktueller Teststand: 157 Tests gruen. A11y: axe 0 Verstoesse (Playwright+Chromium+axe-core lokal).
+- Aktueller Teststand: 163 Tests gruen. A11y: axe 0 Verstoesse (Playwright+Chromium+axe-core lokal).
 - Offen: Etappe 5+6 inhaltlich fertig. NUR noch Merge nach main + Release-Tag v1.0 durch dich.
 
 ## Kanonische Quellen

@@ -29,6 +29,7 @@ interface QuestionCardProps {
 /** Eine MC-Frage mit vier Optionen; nach der Antwort werden richtig/falsch markiert. */
 export function QuestionCard({ question, phase, selectedId, onAnswer }: QuestionCardProps) {
   const revealed = phase !== 'answering';
+  const imageOptions = question.options.some((o) => o.imageUrl);
   const optionRefs = useRef<Array<HTMLButtonElement | null>>([]);
   // Roving-Tabindex: nur EINE Option liegt im Tab-Fluss; Pfeiltasten wandern
   // zwischen den Optionen, Enter/Space (nativer Button) wählt aus. Bei jeder
@@ -66,7 +67,11 @@ export function QuestionCard({ question, phase, selectedId, onAnswer }: Question
         <p className="quiz-card__prompt">{question.prompt}</p>
       )}
 
-      <div className="quiz-options" role="radiogroup" aria-label={question.category}>
+      <div
+        className={`quiz-options${imageOptions ? ' quiz-options--images' : ''}`}
+        role="radiogroup"
+        aria-label={question.category}
+      >
         {question.options.map((option, index) => (
           <button
             key={option.id}
@@ -77,8 +82,9 @@ export function QuestionCard({ question, phase, selectedId, onAnswer }: Question
             role="radio"
             aria-checked={option.id === selectedId}
             aria-disabled={revealed}
+            aria-label={imageOptions ? option.label : undefined}
             tabIndex={index === roving ? 0 : -1}
-            className={`quiz-option${optionModifier(option.id, question.correctId, selectedId, revealed)}`}
+            className={`quiz-option${imageOptions ? ' quiz-option--image' : ''}${optionModifier(option.id, question.correctId, selectedId, revealed)}`}
             disabled={revealed}
             onClick={() => onAnswer(option.id)}
             onKeyDown={(event) => handleKey(event, index)}
@@ -86,7 +92,17 @@ export function QuestionCard({ question, phase, selectedId, onAnswer }: Question
             <span className="quiz-option__badge" aria-hidden="true">
               {LETTERS[index]}
             </span>
-            <span className="quiz-option__label">{option.label}</span>
+            {option.imageUrl ? (
+              <img
+                className="quiz-option__img"
+                src={assetUrl(option.imageUrl)}
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+            ) : (
+              <span className="quiz-option__label">{option.label}</span>
+            )}
           </button>
         ))}
       </div>
