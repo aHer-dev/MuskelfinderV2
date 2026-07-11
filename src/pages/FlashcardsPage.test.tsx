@@ -30,11 +30,24 @@ describe('FlashcardsPage — 3-Screen-Ablauf', () => {
     expect(screen.getByRole('button', { name: /Lernen starten/i })).toBeInTheDocument()
   })
 
-  it('„Lernen starten" wechselt in den Card-Screen', () => {
+  it('„Lernen starten" zeigt zuerst „Karte aufdecken", Bewertung erst nach dem Aufdecken', () => {
     useProgressStore.getState().addCards(['M. deltoideus'])
     renderPage()
     fireEvent.click(screen.getByRole('button', { name: /Lernen starten/i }))
-    // Card-Screen: Bewertungsleiste ist vorhanden.
+
+    // Vor dem Aufdecken: KEINE Bewertungs-Buttons (kein „toter" Disabled-Klick), stattdessen Aufdecken.
+    expect(screen.queryByRole('button', { name: 'Richtig' })).not.toBeInTheDocument()
+    const reveal = screen.getByRole('button', { name: /Karte aufdecken/i })
+    expect(reveal).toBeInTheDocument()
+
+    // Nach dem Aufdecken: Bewertungsleiste da und klickbar.
+    fireEvent.click(reveal)
     expect(screen.getByRole('group', { name: /Karte bewerten/i })).toBeInTheDocument()
+    const richtig = screen.getByRole('button', { name: 'Richtig' })
+    expect(richtig).toBeEnabled()
+
+    // Bewertung verschiebt das Fach (Sitzung reagiert).
+    fireEvent.click(richtig)
+    expect(useProgressStore.getState().getCardState('M. deltoideus')?.fach).toBe(2)
   })
 })

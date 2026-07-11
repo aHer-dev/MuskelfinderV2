@@ -325,11 +325,29 @@ function CardScreen({
 
           <Flashcard muscle={muscle} revealed={revealed} onReveal={() => setRevealed(true)} />
           <LeitnerBoxes counts={byFach} activeBox={activeBox} />
-          <RatingBar onRate={rate} disabled={!revealed} />
-          <p className="fc-controls-hint">
-            <kbd>Space</kbd> aufdecken · <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd> bewerten ·{' '}
-            <kbd>F</kbd> schwierig · mobil: wischen
-          </p>
+          {/* V1-Parität: erst aufdecken, dann bewerten — kein deaktivierter „Toter-Klick"-Zustand. */}
+          {revealed ? (
+            <>
+              <RatingBar onRate={rate} disabled={false} />
+              <p className="fc-controls-hint">
+                <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd> bewerten · <kbd>F</kbd> schwierig ·
+                mobil: wischen
+              </p>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                className="btn btn--primary btn--block"
+                onClick={() => setRevealed(true)}
+              >
+                Karte aufdecken
+              </button>
+              <p className="fc-controls-hint">
+                <kbd>Space</kbd> oder tippen zum Aufdecken
+              </p>
+            </>
+          )}
         </>
       ) : (
         <div className="flashcards__empty">
