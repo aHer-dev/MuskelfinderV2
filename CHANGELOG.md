@@ -6,6 +6,13 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Fixed
+- Lernkarten: Bewertungs-Buttons (Falsch/Unsicher/Richtig) waren vor dem Aufdecken als
+  **deaktivierte** Buttons sichtbar — ein Klick tat nichts und wirkte wie ein Bug. Jetzt wie V1:
+  vor dem Aufdecken ein klarer **„Karte aufdecken"**-Button, die Bewertung erscheint erst nach dem
+  Aufdecken. Regressionstest ergänzt. (Voll-Audit aller Workflows — Lernkarten, Quiz inkl. neuer
+  Modi, Deck-Verwaltung, Detail, Backup Import/Export — im Browser durchgespielt, sonst fehlerfrei.)
+
 ### Added
 - Agenten-Workflow & Steuerdateien aufgesetzt (AGENTS.md + CLAUDE.md-Symlink,
   AGENT_WORKFLOW.md, ROADMAP.md, docs/architecture.md, docs/decisions/, docs/tasks/).
