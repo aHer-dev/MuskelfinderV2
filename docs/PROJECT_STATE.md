@@ -39,7 +39,10 @@
   3D-Modelle bleibt aussen vor (war nie Teil von V1; nur Verlinkung).
 - Gate zuletzt gruen: `npm run lint && npm run test && npm run build` (Per-Route-Chunks + SW/Manifest).
 - Aktueller Teststand: 163 Tests gruen. A11y: axe 0 Verstoesse (Playwright+Chromium+axe-core lokal).
-- Offen: Etappe 5+6 inhaltlich fertig. NUR noch Merge nach main + Release-Tag v1.0 durch dich.
+- **Release:** nach `main` gemergt (`--no-ff`) und als **`v1.0`** getaggt (lokal; noch kein Remote
+  konfiguriert → nichts gepusht). Etappe 5+6 inhaltlich abgeschlossen, volle V1-Paritaet.
+- Offen: Bei oeffentlichem Deploy Remote/`git remote add origin …` + Push durch dich; optional
+  Impressum + eigene Domain/CNAME.
 
 ## Kanonische Quellen
 - V1-Original: `../Muskelfinder` (`/home/pepperboy8/Documents/Muskelfinder`)
