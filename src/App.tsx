@@ -3,6 +3,7 @@ import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AppShell } from './components/layout/AppShell'
 import { RouteFallback } from './components/layout/RouteFallback'
 import { useTheme } from './hooks/useTheme'
+import { useDailyBonus } from './hooks/useDailyBonus'
 
 /*
  * Route-Code-Splitting (Etappe 5): jede Seite ist ein eigener Chunk via React.lazy,
@@ -36,6 +37,7 @@ const NotFoundPage = lazy(() =>
  */
 function App() {
   useTheme()
+  useDailyBonus()
 
   return (
     <HashRouter>

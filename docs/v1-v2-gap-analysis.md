@@ -18,8 +18,8 @@ Legende Schweregrad: 🔴 großer Funktionsverlust · 🟠 spürbar · 🟡 klei
 
 ---
 
-> **Fortschritt:** §1 ✅ · §2 ✅ · §3 ✅ · §4 ✅ ·
-> offen: §5 Menü, §6/§7 klein.
+> **Fortschritt:** §1 ✅ · §2 ✅ · §3 ✅ · §4 ✅ · §5 ✅ · §6 ✅ (kein Handlungsbedarf) · §7 ✅ —
+> **alle identifizierten Lücken geschlossen.**
 
 ## 1. ✅ Karteikasten-Verwaltung / Muskelauswahl — ERLEDIGT (war: fehlt komplett)
 **V1:** Eigene Seite `quizzes/muscle-selection.html` (+ `muscle-selection.js`, `package-selector.js`):
@@ -104,7 +104,7 @@ Level-Card (Ring), Region-Mastery, `CardBreakdown` (Fächer-Bento), Backup-Panel
 
 ---
 
-## 5. 🟠 Navigation / Menü
+## 5. ✅ Navigation / Menü — ERLEDIGT
 **V1** (`nav.js`, Hamburger-Menü): 🔍 Suche · 🃏 Lernkarten · **📋 Muskeln verwalten** · 📝 Quiz ·
 📊 Gesamtstatistik · **🧊 3D-Anatomie-App** (externer Link) · Theme · **Backup Import/Export im Menü**.
 
@@ -116,14 +116,18 @@ Backup-Panel der Statistik.
 
 ---
 
-## 6. 🟡 Detailseite
+## 6. ✅ Detailseite — GEPRÜFT (kein Handlungsbedarf)
+**Befund:** `functionalChain` ist in **allen 150 V1-Datensätzen leer** — es gibt keinen Inhalt zu
+übernehmen. Das Weglassen bei der Migration war korrekt; nichts zu tun.
+
+## 6b. (ursprüngliche Notiz) 🟡 Detailseite
 **V2** zeigt Ursprung/Ansatz/Funktion/Innervation/Segmente + Bilder + Attribution + Fachlich/Einfach ✔.
 **Fehlt/anders:** V1-Feld **`functionalChain`** (funktionelle Kette) wurde in der Migration nicht
 übernommen (war in V1 oft leer). Prüfen, ob überhaupt inhaltlich befüllt; sonst ignorierbar. **Klein.**
 
 ---
 
-## 7. 🟡 Gamification-Feedback
+## 7. ✅ Gamification-Feedback — ERLEDIGT
 **V1:** XP-/Level-Up-**Toasts** („+X XP", Level-Up-Feier), Tagesbonus + Streak-Boni **mit sichtbarer
 Rückmeldung**.
 **V2:** XP-/Streak-/Tagesbonus-**Logik ist vorhanden** ([persistence/xp.ts](../src/persistence/xp.ts),

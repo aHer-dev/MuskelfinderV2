@@ -3,6 +3,7 @@ import { useIsDesktop } from '../../hooks/useMediaQuery';
 import { IconRail } from './IconRail';
 import { TabBar } from './TabBar';
 import { SiteFooter } from './SiteFooter';
+import { ToastHost } from '../ui/ToastHost';
 import './AppShell.css';
 
 /*
@@ -22,6 +23,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <SiteFooter />
       </div>
       {!isDesktop ? <TabBar /> : null}
+      <ToastHost />
     </div>
   );
 }

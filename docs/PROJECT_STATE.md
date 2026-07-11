@@ -30,10 +30,13 @@
     exakt V1-Key (ADR 0002); Innervations-Modus (V2-Extra) bleibt.
   - Teil 4: **Statistik** um „Quiz-Bilanz je Modus" (mit Beste-Quote) + „Ziele/Meilensteine"
     erweitert (`quizByMode`/`nextMasteryMilestone`).
+  - Teil 5: **Nav-Eintrag „Karteikasten"** (Desktop-Rail), **XP-/Level-Up-Toasts**
+    (`useToastStore`/`ToastHost`) und **Tagesbonus verdrahtet** (`useDailyBonus`).
+    `functionalChain` in V1 durchgaengig leer → bewusst ausgelassen.
+  **Alle in der Gap-Analyse (§1–§7) identifizierten V1-Luecken sind geschlossen.**
 - Gate zuletzt gruen: `npm run lint && npm run test && npm run build` (Per-Route-Chunks + SW/Manifest).
-- Aktueller Teststand: 154 Tests gruen. A11y: axe 0 Verstoesse (Playwright+Chromium+axe-core lokal).
-- Offen: Etappe 5 fertig (nur Merge+Tag durch dich). Etappe 6 Rest laut Gap-Analyse:
-  Menue-Eintrag „Muskeln verwalten" (§5), Kleinkram functionalChain/XP-Toasts (§6/§7).
+- Aktueller Teststand: 157 Tests gruen. A11y: axe 0 Verstoesse (Playwright+Chromium+axe-core lokal).
+- Offen: Etappe 5+6 inhaltlich fertig. NUR noch Merge nach main + Release-Tag v1.0 durch dich.
 
 ## Kanonische Quellen
 - V1-Original: `../Muskelfinder` (`/home/pepperboy8/Documents/Muskelfinder`)

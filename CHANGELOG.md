@@ -125,3 +125,10 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   `nextMasteryMilestone` (Meilensteine 1/5/10/25/50/100). Neue Panels: **„Quiz-Bilanz je Modus"**
   (Quote-Balken je Modus + „Beste Quote"-Badge nach Genauigkeit) und **„Ziele"** (nächster
   Karten-Meilenstein in F5–F7 + XP bis nächstes Level). 154 Tests grün; Light verifiziert.
+- V1-Parität (Etappe 6, Teil 5 — Feinschliff): **Nav-Eintrag „Karteikasten"** in der Desktop-Rail
+  (mobile TabBar bleibt schlank; dort via Lernkarten-Link). **XP-/Level-Up-Toasts** (neuer
+  `useToastStore` + `ToastHost`, aria-live, reduced-motion): Rückmeldung bei Quiz-Antworten,
+  Lernkarten-Bewertungen, Serien-Boni und Level-Ups. **Tagesbonus verdrahtet** (`useDailyBonus`)
+  — vergibt V1s 10 XP einmal täglich beim App-Start (war zuvor implementiert, aber nie aufgerufen).
+  Hinweis: V1-Feld `functionalChain` ist in allen 150 Datensätzen leer → bewusst nicht übernommen.
+  Toast-Store-Tests (157 Tests grün); Toast/Rail/TabBar im Browser verifiziert.

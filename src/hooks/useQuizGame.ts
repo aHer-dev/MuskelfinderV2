@@ -13,6 +13,7 @@ import { MUSCLES } from '../data';
 import { generateQuiz, quizSeriesKey } from '../data/quiz';
 import { useProgressStore } from '../store/useProgressStore';
 import { useQuizStore } from '../store/useQuizStore';
+import { notifyAward } from '../store/useToastStore';
 import type { QuizMode, QuizPhase, QuizQuestion, QuizResult, RegionId } from '../types';
 
 /** XP je richtiger MC-Antwort (V1: multiple-choice = 2). */
@@ -76,8 +77,16 @@ export function useQuizGame(mode: QuizMode, count = 10, regions: RegionId[] = []
       setBestStreak((best) => Math.max(best, newStreak));
       setCorrectCount((c) => c + 1);
       setScore((s) => s + POINTS_PER_CORRECT);
-      const gained = awardXp(XP_PER_CORRECT).xpAdded + awardStreak(newStreak).xpAdded;
+      const base = awardXp(XP_PER_CORRECT);
+      const streakBonus = awardStreak(newStreak);
+      const gained = base.xpAdded + streakBonus.xpAdded;
       setXpEarned((xp) => xp + gained);
+      // Toast: Level-Up (aus beiden Awards) + gesammelte XP; Serien-Bonus benennen.
+      notifyAward(
+        { ...base, xpAdded: gained, levelUp: base.levelUp || streakBonus.levelUp,
+          levelAfter: Math.max(base.levelAfter, streakBonus.levelAfter) },
+        streakBonus.xpAdded > 0 ? `Serie ×${newStreak}` : undefined,
+      );
     } else {
       setStreak(0);
     }

@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { Icon } from '../ui/Icon';
 import { ThemeToggle } from '../ui/ThemeToggle';
-import { NAV_ITEMS } from './nav';
+import { TABBAR_ITEMS } from './nav';
 
 /**
  * Mobile-Tab-Leiste (Handoff §7): schwebende Glas-Pille unten, Touch-Targets ≥ 52px.
@@ -10,7 +10,7 @@ import { NAV_ITEMS } from './nav';
 export function TabBar() {
   return (
     <nav className="tabbar" aria-label="Hauptnavigation">
-      {NAV_ITEMS.map((item) => (
+      {TABBAR_ITEMS.map((item) => (
         <NavLink
           key={item.to}
           to={item.to}

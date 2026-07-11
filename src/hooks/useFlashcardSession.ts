@@ -12,6 +12,7 @@
 import { useCallback, useState } from 'react';
 import { getMuscles } from '../data';
 import { useProgressStore } from '../store/useProgressStore';
+import { notifyAward } from '../store/useToastStore';
 import type { CardRating, RegionId } from '../types';
 
 /** Nächste Warteschlange nach einer Bewertung (rein, ohne Seiteneffekte). */
@@ -94,6 +95,7 @@ export function useFlashcardSession(): FlashcardSessionApi {
       const name = queue[0];
       const award = reviewCard(name, rating);
       setXpEarned((xp) => xp + award.xpAdded);
+      notifyAward(award);
       if (rating === 'unsure') {
         setUnsure((u) => u + 1);
       } else {
