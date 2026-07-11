@@ -18,6 +18,47 @@ Legende Schweregrad: 🔴 großer Funktionsverlust · 🟠 spürbar · 🟡 klei
 
 ---
 
+## Vollständiger Seiten-/Funktions-Abgleich (Abschluss, 2026-07-11)
+Nach Umsetzung §1–§7 wurde **jede V1-Seite und jedes JS-Modul** gegen V2 geprüft.
+
+| V1-Seite / Modul | V2-Entsprechung | Status |
+|---|---|---|
+| `index.html` / `app.js` (Suche, Filter, Sortierung) | `SearchPage` (+ Mehrfach-Region, Deep-Link) | ✅ Parität+ |
+| `muscle-details.html` / `details.js` | `MuscleDetailPage` (Expert/Easy, Bilder, Attribution, Merken, Zu Lernkarten, Chips, Tags) | ✅ Parität+ |
+| `quizzes/flashcards.html` / `flashcards.js` | `FlashcardsPage` (Setup/Card/Summary) | ✅ |
+| `quizzes/muscle-selection.html` / `muscle-selection.js` | `DeckManagerPage` | ✅ |
+| `package-selector.js` (Regionen-Pakete) | Quiz-Bereichsfilter + Lernkarten-Bereich | ✅ (als Region-Scope) |
+| `quizzes/quiz.html` / `quiz-session.js` / `quiz-filter.js` | `QuizPage` (+ Bereichsfilter) | ✅ |
+| `movement-quiz.js` (Funktion↔Muskel) | Modi `function-to-muscle` / `muscle-to-function` | ✅ |
+| `origin-insertion-quiz.js` (Ursprung↔Ansatz) | Modi `origin-insertion` / `insertion-origin` | ✅ |
+| `image-match-quiz.js` (Bild↔Name) | Modus `image` (Bild→Muskel) | ⚠️ teilweise (s. u.) |
+| `quizzes/stats.html` / `stats-dashboard.js` | `StatsPage` (+ Quote je Modus, Ziele) | ✅ |
+| `gamification.js` (XP, Level, Streak, Tagesbonus, Toasts) | `xp.ts` + Toasts + `useDailyBonus` | ✅ |
+| `nav.js` Menü (Suche/Lernkarten/Verwalten/Quiz/Statistik) | IconRail + TabBar | ✅ |
+| `nav.js` Backup Import/Export | `BackupPanel` (Statistik) | ✅ |
+| Theme-Umschalter | `ThemeToggle` | ✅ |
+| `quellen-lizenzen.html` | `SourcesPage` (`/quellen`) | ✅ |
+| `datenschutz.html` | `PrivacyPage` (`/datenschutz`) | ✅ |
+| — (V1 hatte keine) | Offline/PWA | 🟢 V2-Extra |
+
+### Bewusst nicht übernommen (Architektur-Entscheidung)
+- **„In 3D ansehen" + externe 3D-Anatomie-App** (`details.js` `build3DAnatomyUrl`,
+  `data/muskelfinder-map.json`-Fetch, Menü-Link, `get3DAnatomyUrl`). Erfordert **externe
+  Laufzeit-Requests** und **fremde 3D-Modelle mit ungeklärter Lizenz** — beides durch die harten
+  V2-Regeln ausgeschlossen (CLAUDE.md: „Statische App, keine externen Laufzeit-Requests"; „Keine
+  fremden Modelle/Bilder ohne geklärte Lizenz"). **Bei Bedarf bewusst als eigene Entscheidung
+  wieder aufnehmen** (dann als externer Link ohne Laufzeit-Fetch).
+
+### Kleine, optionale Rest-Verfeinerungen (kein Funktionsverlust im Kern)
+- **Quiz-Submodus „Gemischt"**: V1 bot je Quiztyp einen „Gemischt"-Modus (Richtungen zufällig
+  gemischt). V2 hat die diskreten Richtungen einzeln, aber keinen kombinierten „Gemischt"-Modus.
+- **Quiz-Submodus „Name → Bild"**: V1 konnte im Bildquiz auch Name→Bild (aus 4 Bildern das richtige
+  wählen). V2 hat nur Bild→Muskel. Bräuchte ein Bild-Optionen-UI.
+
+Diese zwei Punkte sind Komfort-Varianten bestehender Modi; alle **Inhalte/Daten** dafür sind da.
+
+---
+
 > **Fortschritt:** §1 ✅ · §2 ✅ · §3 ✅ · §4 ✅ · §5 ✅ · §6 ✅ (kein Handlungsbedarf) · §7 ✅ —
 > **alle identifizierten Lücken geschlossen.**
 
