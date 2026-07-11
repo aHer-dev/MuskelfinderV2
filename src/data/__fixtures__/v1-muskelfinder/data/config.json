@@ -1,0 +1,36 @@
+{
+  "regions": [
+    {
+      "id": "obere-extremitaet",
+      "name": "Obere Extremität",
+      "dataFile": "obere-extremitaet.json",
+      "subgroups": [
+        { "id": "schulter", "name": "Schultergürtel", "joints": ["Art. humeri"] }
+      ]
+    },
+    {
+      "id": "untere-extremitaet",
+      "name": "Untere Extremität",
+      "dataFile": "untere-extremitaet.json",
+      "subgroups": [
+        { "id": "knie", "name": "Knie", "joints": ["Art. genus"] }
+      ]
+    },
+    {
+      "id": "wirbelsaeule",
+      "name": "Wirbelsäule & Rumpf",
+      "dataFile": "wirbelsaeule.json",
+      "subgroups": [
+        { "id": "ruecken", "name": "Rückenmuskulatur", "joints": ["Wirbelsäule"] }
+      ]
+    },
+    {
+      "id": "kopf-hals",
+      "name": "Kopf & Hals",
+      "dataFile": "kopf-hals.json",
+      "subgroups": [
+        { "id": "mimikmuskulatur", "name": "Mimikmuskulatur", "joints": [] }
+      ]
+    }
+  ]
+}

@@ -1,10 +1,26 @@
 <!doctype html>
-<html lang="en">
+<html lang="de" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>muskelfinder-v2</title>
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#f1efe9" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b0c0e" media="(prefers-color-scheme: dark)" />
+    <meta name="description" content="Muskelfinder — Nachschlagewerk & Lern-Tool für die Skelettmuskulatur." />
+    <title>Anatomie Fokus · Muskelfinder</title>
+    <!-- Theme vor dem ersten Paint setzen (kein Flash). Liest den persistierten Zustand-Store. -->
+    <script>
+      (function () {
+        try {
+          var raw = localStorage.getItem('mf.theme');
+          var t = raw ? (JSON.parse(raw).state || {}).theme : null;
+          document.documentElement.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light');
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

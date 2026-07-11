@@ -1,0 +1,485 @@
+/* =========================================================================
+   Lernkarten (Etappe 3c) — funktional & tokenbasiert.
+   ========================================================================= */
+
+.flashcards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.flashcards__session {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  max-width: 640px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.flashcards__manage {
+  display: inline-block;
+  margin-top: var(--spacing-sm);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-on-surface);
+  text-decoration: none;
+}
+.flashcards__manage:hover {
+  text-decoration: underline;
+}
+
+.flashcards__empty,
+.flashcards__done {
+  padding: var(--spacing-xl) var(--spacing-md);
+  text-align: center;
+  color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.flashcards__done h2 {
+  margin: 0;
+  font-family: var(--font-display);
+}
+
+/* ---- Fortschritt ------------------------------------------------------ */
+.flashcards__progress {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.flashcards__progress-track {
+  flex: 1 1 auto;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-sunken);
+  overflow: hidden;
+}
+
+.flashcards__progress-fill {
+  height: 100%;
+  background: var(--accent-gradient);
+  transition: var(--transition-smooth);
+}
+
+.flashcards__progress-label {
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Karte (3D-Flip) --------------------------------------------------- */
+/* Der Button ist nur der Perspektiv-Rahmen; die sichtbare Karte sind die
+   beiden Seiten, die im Grid gestapelt liegen (Zellenhöhe = höhere Seite). */
+.flashcard {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--font-ui);
+  color: var(--text-primary);
+  border-radius: var(--radius-xl);
+  perspective: 1200px;
+}
+
+.flashcard--revealed {
+  cursor: default;
+}
+
+.flashcard:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.flashcard__inner {
+  display: grid;
+  transform-style: preserve-3d;
+  transition: transform 0.55s var(--ease-smooth);
+}
+
+.flashcard--revealed .flashcard__inner {
+  transform: rotateY(180deg);
+}
+
+.flashcard__side {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  min-height: 280px;
+  padding: var(--spacing-xl);
+  background: var(--surface);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--card-shadow);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.flashcard__front {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.flashcard__back {
+  transform: rotateY(180deg);
+}
+
+.flashcard__eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.flashcard__name {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.flashcard__hint {
+  margin-top: var(--spacing-sm);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.flashcard__facts {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.flashcard__facts div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.flashcard__facts dt {
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.flashcard__facts dd {
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* ---- Leitner-Fächer --------------------------------------------------- */
+.leitner-boxes {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--spacing-xs);
+}
+
+.leitner-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--spacing-xs) 0;
+  border-radius: var(--radius-sm);
+  background: var(--surface-sunken);
+  border: 1px solid var(--hairline);
+}
+
+.leitner-box--active {
+  background: var(--accent-tint);
+  border-color: var(--accent-border);
+}
+
+.leitner-box__num {
+  font-size: 0.68rem;
+  color: var(--text-faint);
+}
+
+.leitner-box--active .leitner-box__num {
+  color: var(--accent-on-surface);
+}
+
+.leitner-box__count {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Bewertungsleiste ------------------------------------------------- */
+.rating-bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-sm);
+}
+
+.rating-btn {
+  min-height: var(--touch-min);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.rating-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.rating-btn:not(:disabled):hover {
+  border-color: var(--hairline-strong);
+}
+
+.rating-btn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.rating-btn--wrong:not(:disabled) {
+  color: var(--danger);
+}
+
+.rating-btn--correct:not(:disabled) {
+  color: var(--success);
+}
+
+/* =========================================================================
+   Lernkarten-Ablauf (Etappe 6): Setup · Card-Head · Bild/Flag · Summary.
+   ========================================================================= */
+
+/* ---- Setup ------------------------------------------------------------ */
+.fc-setup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  max-width: 560px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.fc-setup__due {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--spacing-lg);
+  background: var(--surface);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+}
+.fc-setup__due-num {
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--accent-on-surface);
+}
+.fc-setup__due-label {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.fc-setup__controls {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.fc-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  flex: 1 1 200px;
+}
+.fc-field__label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+}
+.fc-select {
+  padding: 10px var(--spacing-md);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-field);
+  background: var(--surface-sunken);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 14px;
+}
+.fc-select:focus-visible {
+  outline: 2px solid var(--accent-border);
+  outline-offset: 1px;
+}
+
+.fc-setup__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+.fc-setup__subtitle {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+.fc-setup__hint {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-tertiary);
+  margin: 0;
+}
+
+/* ---- Card-Kopf (zurück · Fortschritt · Flag) -------------------------- */
+.fc-session-head {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+.fc-session-head .flashcards__progress {
+  flex: 1 1 auto;
+}
+
+.fc-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border: 1px solid var(--glass-border);
+  background: transparent;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 18px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+.fc-icon-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+.fc-icon-btn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.fc-flag--on {
+  background: var(--accent-tint);
+  border-color: var(--accent-border);
+  color: var(--accent-on-surface);
+}
+
+/* ---- Bild-Zuschalten -------------------------------------------------- */
+.fc-image-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+.fc-image-toggle {
+  align-self: center;
+  border: 1px solid var(--glass-border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+.fc-image-toggle:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+.fc-image {
+  max-width: 100%;
+  max-height: 260px;
+  border-radius: var(--radius-md);
+  background: var(--media-bg, #0b0c0e);
+}
+
+/* ---- Steuerungs-Hinweis ----------------------------------------------- */
+.fc-controls-hint {
+  text-align: center;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-faint);
+  margin: 0;
+}
+.fc-controls-hint kbd {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  padding: 1px 5px;
+}
+
+/* ---- Summary ---------------------------------------------------------- */
+.fc-summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  max-width: 560px;
+  width: 100%;
+  margin: 0 auto;
+}
+.fc-summary__stats {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.fc-summary__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 64px;
+}
+.fc-summary__num {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text-primary);
+}
+.fc-summary__num--ok { color: var(--success); }
+.fc-summary__num--bad { color: var(--danger); }
+.fc-summary__num--xp { color: var(--accent-on-surface); }
+.fc-summary__label {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+.fc-summary__actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: center;
+  flex-wrap: wrap;
+}

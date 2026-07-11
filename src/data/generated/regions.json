@@ -1,0 +1,22 @@
+[
+  {
+    "id": "upper",
+    "label": "Obere Extremität",
+    "count": 53
+  },
+  {
+    "id": "lower",
+    "label": "Untere Extremität",
+    "count": 53
+  },
+  {
+    "id": "trunk",
+    "label": "Wirbelsäule & Rumpf",
+    "count": 20
+  },
+  {
+    "id": "head",
+    "label": "Kopf & Hals",
+    "count": 24
+  }
+]

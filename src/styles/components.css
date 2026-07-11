@@ -1,0 +1,296 @@
+/* =========================================================================
+   Geteilte UI-Primitives (Etappe 3, funktional & tokenbasiert).
+   src/styles/components.css — global eingebunden in main.tsx.
+   Etappe 4 verfeinert diese zu pixelgenauen Marken-Primitives.
+   ========================================================================= */
+
+/* ---- Button ----------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  min-height: 38px;
+  padding: 0 var(--spacing-md);
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: var(--surface);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: var(--control-border);
+  color: var(--text-secondary);
+}
+
+.btn--ghost:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.btn--active {
+  background: var(--accent-tint);
+  border-color: var(--accent-border);
+  color: var(--accent-on-surface);
+}
+
+.btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-on);
+  font-weight: 600;
+}
+
+.btn--primary:hover {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+}
+
+.btn--danger {
+  background: transparent;
+  border-color: var(--control-border);
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.btn--danger:hover {
+  border-color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+}
+
+.btn--block {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  min-height: 46px;
+  font-size: 1rem;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* ---- Chip / Bewegungs-Tag (Handoff §8) -------------------------------- */
+.chip {
+  display: inline-block;
+  max-width: 100%;
+  min-width: 0;
+  padding: 5px 9px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-sunken);
+  border: 1px solid var(--hairline);
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 11.5px;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+.chip--active {
+  background: var(--accent-tint);
+  border-color: var(--accent-border);
+  color: var(--accent-on-surface);
+}
+
+.chip--muted {
+  color: var(--text-muted);
+}
+
+/* ---- Checkbox-Label --------------------------------------------------- */
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.checkbox input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+
+/* ---- Schwierigkeits-Punkte -------------------------------------------- */
+.difficulty {
+  display: inline-flex;
+  gap: 3px;
+  flex: 0 0 auto;
+  align-items: center;
+  margin-top: 3px;
+}
+
+.difficulty__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--hairline-strong);
+}
+
+.difficulty__dot--on {
+  background: var(--accent);
+}
+
+/* ---- Sheet (Bottom-Sheet, mobil) ------------------------------------- */
+.sheet {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-sheet);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(6, 6, 7, 0.6);
+}
+
+.sheet__panel {
+  width: 100%;
+  max-width: 640px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-sm) var(--spacing-md) calc(var(--spacing-lg) + env(safe-area-inset-bottom, 0px));
+  background: var(--glass-panel);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 28px 28px 0 0;
+  box-shadow: var(--glass-shadow);
+  outline: none;
+}
+
+.sheet__grabber {
+  width: 42px;
+  height: 5px;
+  margin: var(--spacing-xs) auto var(--spacing-sm);
+  border-radius: var(--radius-pill);
+  background: var(--hairline-strong);
+}
+
+.sheet__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+.sheet__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+}
+
+.sheet__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-pill);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.sheet__close:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.sheet__close:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.sheet__body {
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* ---- ProgressRing ----------------------------------------------------- */
+.progress-ring {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+}
+
+.progress-ring__track {
+  stroke: var(--hairline-strong);
+}
+
+.progress-ring__fill {
+  stroke: var(--accent);
+  transition: stroke-dashoffset 0.4s var(--ease-smooth);
+}
+
+.progress-ring__center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.progress-ring__label {
+  font-size: 0.55rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.progress-ring__value {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+/* ---- Segmented Control ------------------------------------------------ */
+.segmented {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+}
+
+.segmented__btn {
+  min-height: 34px;
+  padding: 0 var(--spacing-md);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.segmented__btn--active {
+  background: var(--accent);
+  color: var(--accent-on);
+}
+
+.segmented__btn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}

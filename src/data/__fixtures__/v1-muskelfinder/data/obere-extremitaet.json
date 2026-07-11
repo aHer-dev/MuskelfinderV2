@@ -1,0 +1,37 @@
+{
+  "Sheet1": [
+    {
+      "Name": "M. test muscle",
+      "Joints": "Art. humeri, Schultergürtel",
+      "Movements": "Flexion, Außenrotation",
+      "Segments": "N. axillaris, C5, C6",
+      "Origin": [
+        { "Part": "Pars superior", "Location": "Testursprung 1" },
+        { "Part": "Pars inferior", "Location": "Testursprung 2" }
+      ],
+      "Insertion": ["Testansatz 1", "Testansatz 2"],
+      "Function": "Bewegt den Testarm.",
+      "Image": "/assets/images/obere-ext/test_muscle_ventral_1.jpg",
+      "Images": ["/assets/images/obere-ext/test_muscle_ventral_1.jpg"],
+      "region": "obere-extremitaet",
+      "subgroup": "schulter",
+      "tags": ["test", "schulter"],
+      "difficulty": 2,
+      "clinicalNote": "Testnotiz",
+      "functionalChain": "",
+      "Attribution": {
+        "Author": "Fixture",
+        "AuthorUrl": "",
+        "License": "CC BY 4.0",
+        "LicenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "SourceUrl": ""
+      },
+      "easy": {
+        "Origin": "Einfacher Ursprung",
+        "Insertion": "Einfacher Ansatz",
+        "Function": "Einfache Funktion.",
+        "Segments": "N. axillaris, C5, C6"
+      }
+    }
+  ]
+}

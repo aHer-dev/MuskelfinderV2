@@ -1,0 +1,23 @@
+/* =========================================================================
+   Fonts — Sora (Display/Titel) + Manrope (UI/Fließtext), SELF-HOSTED.
+   Keine externen CDNs (Architektur-Grenze: keine Laufzeit-Requests nach außen).
+
+   AKTIVIEREN: Die @font-face-Regeln unten sind auskommentiert, weil die .woff2
+   noch NICHT unter public/fonts/ liegen (sonst wirft der Build 10 Warnungen).
+   → Dateien laut public/fonts/README.md ablegen, dann diesen Block einkommentieren.
+   Bis dahin greift der system-ui-Fallback aus theme.css (--font-display / --font-ui).
+   ========================================================================= */
+
+/*
+@font-face { font-family: 'Sora'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/sora-400.woff2') format('woff2'); }
+@font-face { font-family: 'Sora'; font-style: normal; font-weight: 500; font-display: swap; src: url('/fonts/sora-500.woff2') format('woff2'); }
+@font-face { font-family: 'Sora'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/sora-600.woff2') format('woff2'); }
+@font-face { font-family: 'Sora'; font-style: normal; font-weight: 700; font-display: swap; src: url('/fonts/sora-700.woff2') format('woff2'); }
+@font-face { font-family: 'Sora'; font-style: normal; font-weight: 800; font-display: swap; src: url('/fonts/sora-800.woff2') format('woff2'); }
+
+@font-face { font-family: 'Manrope'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/manrope-400.woff2') format('woff2'); }
+@font-face { font-family: 'Manrope'; font-style: normal; font-weight: 500; font-display: swap; src: url('/fonts/manrope-500.woff2') format('woff2'); }
+@font-face { font-family: 'Manrope'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/manrope-600.woff2') format('woff2'); }
+@font-face { font-family: 'Manrope'; font-style: normal; font-weight: 700; font-display: swap; src: url('/fonts/manrope-700.woff2') format('woff2'); }
+@font-face { font-family: 'Manrope'; font-style: normal; font-weight: 800; font-display: swap; src: url('/fonts/manrope-800.woff2') format('woff2'); }
+*/

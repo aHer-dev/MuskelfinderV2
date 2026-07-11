@@ -1,0 +1,191 @@
+/* =========================================================================
+   Muskelfinder — Design-Tokens  ·  src/styles/theme.css
+   Marke „Anatomie Fokus" (Variante A): Orange als EINZIGER Akzent.
+   Zwei Themes über [data-theme] auf <html>. DEFAULT = LIGHT (Warm/Atlas).
+   REGEL: In Komponenten IMMER diese Variablen nutzen, nie Hardcodes.
+   ========================================================================= */
+
+/* ---- Theme-AGNOSTISCH (gilt für light & dark) --------------------------- */
+:root {
+  /* Typografie */
+  --font-display: 'Sora', system-ui, -apple-system, 'Segoe UI', sans-serif;   /* Titel/Headlines/Wortmarke */
+  --font-ui:      'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif; /* Interface/Fließtext */
+
+  /* Akzent — Marken-Orange, in BEIDEN Themes identisch als Füllung */
+  --accent:          #ff6a00;   /* Füllung: Buttons, aktiv, Checkbox, Ring, Fokus */
+  --accent-strong:   #e64500;
+  --accent-hi:       #ff9d3d;
+  --accent-gradient: linear-gradient(90deg, #e64500, #ff9d3d);   /* Progress/CTA */
+  --accent-on:       #1a1a1a;   /* Text/Icon AUF gefülltem Orange (near-black, beide Themes) */
+
+  /* Spacing */
+  --spacing-xs: 4px;  --spacing-sm: 8px;  --spacing-md: 16px;  --spacing-lg: 24px;  --spacing-xl: 32px;
+
+  /* Radien */
+  --radius-sm: 8px;  --radius-md: 12px;  --radius-lg: 16px;  --radius-xl: 20px;  --radius-pill: 999px;
+  --radius-rail-btn: 13px;   /* Rail-Icon-Button 44×44 */
+  --radius-field: 14px;      /* Suchfeld / große Eingaben */
+
+  /* Motion — eine Kurve für alles */
+  --ease-smooth:       cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* z-index-Ebenen */
+  --z-base: 1;  --z-rail: 100;  --z-sidebar: 100;  --z-sheet: 1000;  --z-modal: 2000;  --z-toast: 3000;
+
+  /* Touch / A11y */
+  --touch-min: 44px;
+
+  /* Fokus-Ring (Tastatur) — Akzent, in beiden Themes */
+  --focus-ring: var(--accent);
+
+  /* Semantische Zustandsfarben (Bewertung/Quiz) — auf hell & dunkel lesbar.
+     Etappe 4 darf sie pro Theme feinjustieren; bis dahin theme-agnostisch. */
+  --success: #2f9e5f;
+  --danger:  #d1493a;
+}
+
+/* =========================================================================
+   LIGHT  ·  Palette A „Warm / Atlas"  ·  DEFAULT
+   (:root deckt den Default ab, [data-theme="light"] macht es explizit)
+   ========================================================================= */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Bühne / App-Hintergrund */
+  --bg:              #f1efe9;   /* warmes Papier */
+  --bg-elevated:     #eae7df;
+  --stage-gradient:  radial-gradient(135% 115% at 46% 6%, #fbfaf7 0%, #f1efe9 56%, #eae7df 100%);
+
+  /* Flächen */
+  --surface:         #ffffff;                 /* Karten */
+  --surface-sunken:  rgba(28,26,23,0.04);      /* Chips / Tags / gedämpfte Felder */
+  --surface-hover:   rgba(28,26,23,0.06);
+
+  /* Glas (Rail / Sidebar / Sheet) */
+  --glass-panel:     rgba(255,255,255,0.78);
+  --glass-blur:      blur(22px);
+  --glass-border:    rgba(28,26,23,0.09);
+  --glass-shadow:    0 12px 40px rgba(60,54,44,0.13);
+
+  /* Karten-Rahmen/Schatten */
+  --card-border:     rgba(28,26,23,0.09);
+  --card-shadow:     0 1px 2px rgba(28,26,23,0.05);
+
+  /* Hairlines */
+  --hairline:        rgba(28,26,23,0.08);
+  --hairline-strong: rgba(28,26,23,0.14);
+  --control-border:  rgba(28,26,23,0.16);      /* Kbd-Hint / Input-Border */
+  --checkbox-border: rgba(28,26,23,0.24);
+
+  /* Text */
+  --text-primary:    #1c1b18;   /* warmes Anthrazit */
+  --text-secondary:  #55524c;
+  --text-tertiary:   #6f6c64;   /* AA-Kontrast ≥4.5:1 auf Surface/Sunken (Etappe 5 A11y) */
+  --text-muted:      #6f6b64;
+  --text-faint:      #6f6b63;   /* Uppercase-Labels */
+
+  /* Akzent auf heller Fläche — DUNKLER (Kontrast!) für Text/Icons/Links; AA ≥4.5:1 */
+  --accent-on-surface: #bd4800;
+  --accent-tint:       color-mix(in srgb, var(--accent) 13%, transparent);  /* aktive Fläche */
+  --accent-border:     color-mix(in srgb, var(--accent) 52%, transparent);  /* Outline-CTA / Fokus-Feld */
+  --accent-dim:        color-mix(in srgb, var(--accent) 11%, transparent);  /* Zeilen-Highlight */
+
+  /* Punkt für neutrale Region-Badges */
+  --region-dot:      #9a968d;
+
+  /* Medien-„Fenster" (Anatomie-/Bildviewer) — bleibt DUNKEL, auch im Light-Modus */
+  --media-well:      radial-gradient(120% 100% at 50% 4%, #20232a 0%, #0b0c0e 70%);
+  --media-fg:        #f6f6f7;
+  --media-faint:     #8a8d93;
+}
+
+/* =========================================================================
+   DARK  ·  Marken-Schwarz + Orange (= 3D-App)
+   ========================================================================= */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg:              #0b0c0e;
+  --bg-elevated:     #16181d;
+  --stage-gradient:  radial-gradient(135% 115% at 50% 8%, #181a1f 0%, #0b0c0e 56%, #060607 100%);
+
+  --surface:         rgba(255,255,255,0.035);
+  --surface-sunken:  rgba(255,255,255,0.05);
+  --surface-hover:   rgba(255,255,255,0.06);
+
+  --glass-panel:     rgba(15,16,20,0.82);
+  --glass-blur:      blur(22px);
+  --glass-border:    rgba(255,255,255,0.08);
+  --glass-shadow:    0 12px 40px rgba(0,0,0,0.50);
+
+  --card-border:     rgba(255,255,255,0.07);
+  --card-shadow:     none;
+
+  --hairline:        rgba(255,255,255,0.08);
+  --hairline-strong: rgba(255,255,255,0.15);
+  --control-border:  rgba(255,255,255,0.14);
+  --checkbox-border: rgba(255,255,255,0.22);
+
+  --text-primary:    #f6f6f7;
+  --text-secondary:  #c9cace;
+  --text-tertiary:   #9a9ca2;
+  --text-muted:      #8a8d93;
+  --text-faint:      #6e7076;
+
+  /* Auf Schwarz kann Orange direkt als Text/Icon stehen */
+  --accent-on-surface: #ff6a00;
+  --accent-tint:       color-mix(in srgb, var(--accent) 16%, transparent);
+  --accent-border:     color-mix(in srgb, var(--accent) 50%, transparent);
+  --accent-dim:        color-mix(in srgb, var(--accent) 12%, transparent);
+
+  --region-dot:      #9a9ca2;
+
+  /* Semantische Zustandsfarben auf Dunkel heller/klarer (Kontrast, distinkt vom Orange) */
+  --success: #4ecb83;
+  --danger:  #f2705f;
+
+  /* Medien-Fenster ist im Dark-Modus ohnehin dunkel — gleiche Werte */
+  --media-well:      radial-gradient(120% 100% at 50% 4%, #20232a 0%, #0b0c0e 70%);
+  --media-fg:        #f6f6f7;
+  --media-faint:     #8a8d93;
+}
+
+/* System-Präferenz nur als Erst-Default, wenn KEIN data-theme gesetzt ist.
+   (Produkt-Default ist Light; der ThemeToggle setzt data-theme explizit.) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --bg:#0b0c0e; --bg-elevated:#16181d;
+    --stage-gradient:radial-gradient(135% 115% at 50% 8%,#181a1f 0%,#0b0c0e 56%,#060607 100%);
+    --surface:rgba(255,255,255,0.035); --surface-sunken:rgba(255,255,255,0.05); --surface-hover:rgba(255,255,255,0.06);
+    --glass-panel:rgba(15,16,20,0.82); --glass-border:rgba(255,255,255,0.08); --glass-shadow:0 12px 40px rgba(0,0,0,0.5);
+    --card-border:rgba(255,255,255,0.07); --card-shadow:none;
+    --hairline:rgba(255,255,255,0.08); --hairline-strong:rgba(255,255,255,0.15);
+    --control-border:rgba(255,255,255,0.14); --checkbox-border:rgba(255,255,255,0.22);
+    --text-primary:#f6f6f7; --text-secondary:#c9cace; --text-tertiary:#9a9ca2; --text-muted:#8a8d93; --text-faint:#6e7076;
+    --accent-on-surface:#ff6a00; --accent-tint:color-mix(in srgb,var(--accent) 16%,transparent);
+    --accent-border:color-mix(in srgb,var(--accent) 50%,transparent); --accent-dim:color-mix(in srgb,var(--accent) 12%,transparent);
+    --region-dot:#9a9ca2;
+    --success:#4ecb83; --danger:#f2705f;
+  }
+}
+
+/* Motion-Reduktion */
+@media (prefers-reduced-motion: reduce) {
+  :root { --transition-smooth: none; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* Body-Reset (Beispiel) */
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+a { color: var(--accent-on-surface); text-decoration: none; }
+a:hover { color: var(--accent); }

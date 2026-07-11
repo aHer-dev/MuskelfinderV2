@@ -1,0 +1,262 @@
+/* =========================================================================
+   App-Shell (Etappe 4) — schwebende Glas-Rail (Desktop) ⇄ Tab-Leiste (Mobile).
+   Ausschließlich Tokens aus theme.css. Handoff §7/§8.
+   ========================================================================= */
+
+.shell {
+  min-height: 100svh;
+  background: var(--stage-gradient);
+  background-attachment: fixed;
+}
+
+.content {
+  min-width: 0;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+}
+
+.content__main {
+  flex: 1 0 auto;
+  min-width: 0;
+}
+
+/* ---- Desktop: schwebende Icon-Rail links ------------------------------ */
+.shell--desktop .content {
+  margin-left: 108px; /* Rail 68 + 20 links + 20 Luft */
+  margin-right: auto;
+  padding: var(--spacing-xl) var(--spacing-xl);
+}
+
+.rail {
+  position: fixed;
+  left: 20px;
+  top: 20px;
+  bottom: 20px;
+  width: 68px;
+  z-index: var(--z-rail);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) 0;
+  background: var(--glass-panel);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--glass-shadow);
+}
+
+.rail__brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rail__divider {
+  width: 36px;
+  height: 1px;
+  background: var(--hairline-strong);
+}
+
+.rail__nav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.rail-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-rail-btn);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.rail-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.rail-btn--active {
+  background: var(--accent-tint);
+  color: var(--accent-on-surface);
+}
+
+.rail-btn:focus-visible,
+.rail__brand:focus-visible,
+.rail__level:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-rail-btn);
+}
+
+.rail__foot {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.rail__level {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+}
+
+/* ---- Mobile: schwebende Glas-Tab-Leiste unten ------------------------- */
+.shell--mobile .content {
+  padding: var(--spacing-lg) var(--spacing-md);
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+}
+
+.tabbar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  z-index: var(--z-rail);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px;
+  max-width: calc(100vw - 32px);
+  background: var(--glass-panel);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--glass-shadow);
+}
+
+.tabbar__btn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 52px;
+  min-height: 52px;
+  padding: 0 var(--spacing-xs);
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-md);
+  color: var(--text-tertiary);
+  font-family: var(--font-ui);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.tabbar__btn--active {
+  color: var(--accent-on-surface);
+}
+
+.tabbar__btn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.tabbar__label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.tabbar__btn--toggle .tabbar__label {
+  display: none;
+}
+
+/* ---- Globaler Footer (Etappe 5) --------------------------------------- */
+.site-footer {
+  flex-shrink: 0;
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--hairline);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  color: var(--text-faint);
+}
+
+.site-footer__attr {
+  margin: 0;
+}
+
+.site-footer__links {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.site-footer__link {
+  color: var(--text-tertiary);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+}
+
+.site-footer__link:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+
+.site-footer__link:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.site-footer__link.active {
+  color: var(--accent-on-surface);
+}
+
+/* ---- Route-Suspense-Fallback (Etappe 5) ------------------------------- */
+.route-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  min-height: 40svh;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--text-tertiary);
+}
+
+.route-fallback__spinner {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--hairline-strong);
+  border-top-color: var(--accent);
+  animation: route-fallback-spin 0.7s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-fallback__spinner {
+    animation: none;
+  }
+}
+
+@keyframes route-fallback-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
