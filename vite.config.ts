@@ -15,7 +15,7 @@ export default defineConfig({
     // Bleibt statisch/lokal (CLAUDE.md): der SW greift nur auf Repo-Assets zu.
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
+      includeAssets: ['favicon-32.png', 'apple-touch-icon.png'],
       manifest: {
         name: 'Anatomie Fokus · Muskelfinder',
         short_name: 'Muskelfinder',

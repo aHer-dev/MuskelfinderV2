@@ -43,6 +43,14 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 - **Token `--accent-on-tint`** für Text auf getönter Akzentfläche.
 
 ### Fixed
+- **App-Icons zeigten nicht das Markenlogo.** Favicon, Apple-Touch-Icon und alle PWA-Icons waren ein
+  handgezeichneter Platzhalter (kantiges „A" mit gerader Balken-Leiste) und hatten mit der Wortmarke
+  nichts zu tun — sichtbar im Browser-Tab und auf dem Homescreen. Jetzt aus dem echten Logo erzeugt
+  (`public/logo/af-logo.png`, weißes „A" mit orangem Schwung) auf der Marken-Kachel #1c1b18:
+  `favicon-32.png`, `apple-touch-icon.png` (180, ohne Alpha — iOS mag keins), `pwa-192/512` sowie
+  ein randloses `pwa-maskable-512` mit Logo in der 80-%-Sicherheitszone. Reproduzierbar über
+  `scripts/generate-icons.py`. Das Platzhalter-`favicon.svg` ist entfernt (auch aus dem
+  PWA-Precache, der es sonst weiter ausgeliefert hätte).
 - **Lernkarten-Rückseite nannte den Muskelnamen nicht.** Nach dem Aufdecken standen dort nur die
   Fakten — welcher Muskel gemeint war, stand auf der weggedrehten Vorderseite. Damit ließ sich die
   eigene Antwort nicht gegen die Lösung prüfen, also genau das, wofür eine Lernkarte da ist.
