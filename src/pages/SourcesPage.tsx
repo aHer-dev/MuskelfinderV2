@@ -112,6 +112,31 @@ export function SourcesPage() {
       </section>
 
       <section className="legal-card">
+        <h2>Schriften</h2>
+        <p>
+          Die App verwendet die Schriftfamilien <strong>Sora</strong> (Überschriften) und{' '}
+          <strong>Manrope</strong> (Fließtext). Beide stehen unter der{' '}
+          <a
+            href="https://openfontlicense.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            SIL Open Font License 1.1
+          </a>{' '}
+          und werden self-hosted ausgeliefert — es werden <strong>keine</strong> Schriften von
+          externen Diensten wie Google Fonts nachgeladen.
+        </p>
+        <ul className="legal-list">
+          <li>Sora — Copyright 2019 The Sora Project Authors</li>
+          <li>Manrope — Copyright 2018 The Manrope Project Authors</li>
+        </ul>
+        <p>
+          Die vollständigen Lizenztexte liegen im Projekt unter{' '}
+          <code>public/fonts/OFL-Sora.txt</code> und <code>public/fonts/OFL-Manrope.txt</code>.
+        </p>
+      </section>
+
+      <section className="legal-card">
         <h2>Verwendete Software</h2>
         <ul className="legal-list">
           <li>

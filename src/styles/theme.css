@@ -185,7 +185,7 @@
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 
-/* Body-Reset (Beispiel) */
+/* Body-Reset */
 html, body { margin: 0; padding: 0; }
 body {
   background: var(--bg);

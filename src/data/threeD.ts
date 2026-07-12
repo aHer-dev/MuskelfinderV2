@@ -16,13 +16,21 @@ export const THREE_D_BASE_URL = 'https://aher-dev.github.io/3DAnatomy/';
 
 const SUPPORTED_KEYS = new Set<string>(supportData.muscleKeys);
 
-/** Muskel-Key aus dem lateinischen Namen (identisch zur V1-Normalisierung). */
+/**
+ * Muskel-Key aus dem lateinischen Namen (Key-Format der 3D-App: `m_<name>`).
+ *
+ * `mm?\.` f\u00e4ngt auch den Plural \u201eMm." (z. B. \u201eMm. lumbricales I\u2013IV"). Vorher wurde
+ * nur \u201eM." gestrippt \u2014 die 14 Plural-Muskeln erzeugten `m_mm_lumbricales_i_iv`,
+ * trafen damit keinen Mapping-Key und bekamen keinen 3D-Button, obwohl die 3D-App
+ * sie kennt.
+ */
 export function buildMuscleKey(name = ''): string {
   const normalized = name
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
-    .replace(/^m\.\s*/, '')
+    .replace(/^mm?\.\s*/, '')
+    .replace(/^musculi\s+/, '')
     .replace(/^musculus\s+/, '')
     .replace(/[^a-z0-9]+/g, '_')
     .replace(/^_+|_+$/g, '')

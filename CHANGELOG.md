@@ -43,6 +43,13 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 - **Token `--accent-on-tint`** für Text auf getönter Akzentfläche.
 
 ### Fixed
+- **14 Muskeln bekamen keinen 3D-Button, obwohl die 3D-App sie kennt.** `buildMuscleKey` strippte
+  nur das Präfix „M.", nicht den Plural „Mm." — „Mm. lumbricales I–IV" erzeugte den Key
+  `m_mm_lumbricales_i_iv` und traf damit keinen Mapping-Eintrag. Jetzt `mm?\.` (plus „Musculi").
+  **Muskeln mit 3D-Link: 111 → 121**; von den 118 Mapping-Keys finden jetzt *alle* ihren Muskel
+  (vorher 10 Waisen). Test läuft über den gesamten Datenbestand gegen das Mapping.
+- **Schriften fehlten auf der Lizenzseite.** Sora und Manrope sind Fremd-Assets (SIL OFL 1.1) und
+  gehören nach CLAUDE.md sichtbar attribuiert — `/quellen` hat jetzt einen Abschnitt „Schriften".
 - **App-Icons zeigten nicht das Markenlogo.** Favicon, Apple-Touch-Icon und alle PWA-Icons waren ein
   handgezeichneter Platzhalter (kantiges „A" mit gerader Balken-Leiste) und hatten mit der Wortmarke
   nichts zu tun — sichtbar im Browser-Tab und auf dem Homescreen. Jetzt aus dem echten Logo erzeugt
