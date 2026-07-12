@@ -232,6 +232,14 @@
   min-height: 0;
 }
 
+/* Der Body ist per Tastatur fokussierbar (er scrollt) — dann muss man auch sehen,
+   dass er den Fokus hat. */
+.sheet__body:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: -2px;
+  border-radius: var(--radius-sm);
+}
+
 /* Abschluss-Leiste: bleibt beim Scrollen sichtbar, damit die Wirkung der Filter
    (Ergebniszahl) und der Ausstieg immer erreichbar sind. */
 .sheet__footer {

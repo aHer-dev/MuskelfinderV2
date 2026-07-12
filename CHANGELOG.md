@@ -7,6 +7,19 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- **Etappe 7e — Falschantworten erklären sich + Brücke B2** (`src/data/explain.ts`,
+  `confusions.ts`, `ExplainSheet`): Wer falsch liegt, sieht nicht mehr nur die Lösung, sondern
+  **warum** — ein Kontrastsatz, der genau das Merkmal gegenüberstellt, nach dem gefragt war
+  („N. peroneus profundus versorgt M. tibialis anterior. M. rhomboideus minor wird von
+  N. dorsalis scapulae versorgt."). Der Satz wird **komponiert**, nicht redigiert: null
+  Redaktionsarbeit für den Massenfall, getestet über **alle** Quizmodi inkl. sauberer Degradation
+  bei fehlenden Feldern. Für die klassischen Prüfungsfallen (Supra-/Infraspinatus, Teres
+  major/minor, Pronatoren, Glutei …) liegen **7 handgeschriebene Sätze** in `confusions.ts`, die
+  das Template ersetzen — die Liste ist erweiterbar und nie ein Blocker. **Brücke B2:** „Beide
+  vergleichen" öffnet ein `Sheet` **über** der laufenden Session mit beiden Muskeln nebeneinander
+  (Bild, Funktion, Ursprung, Ansatz, Innervation; die gefragte Zeile hervorgehoben) — Schließen
+  führt in dieselbe Frage zurück, der Quiz-Zustand wird nie angefasst. Kein `navigate()`, denn wer
+  eine Session verlässt, kommt nicht zurück.
 - **Lernprofil im Backup** (Entscheidung 2026-07-12): Beruf und Prüfungstermin liegen jetzt auch im
   Backup — als **additive, optionale** Sektion `profile`, nach demselben Muster wie `lookups`. Sie
   fehlt in der Datei, solange kein Profil gesetzt ist; ältere Versionen ignorieren den Schlüssel;
@@ -74,6 +87,11 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   je Schritt ein Link direkt ins Briefing.
 
 ### Fixed
+- **Grammatik im Erklärsatz** (7e): Plural-Muskeln („Mm. lumbricales I–IV") bekommen ein
+  Plural-Verb — vorher stand dort „Mm. lumbricales I–IV **wird** von … versorgt".
+- **Sheet-Inhalt war per Tastatur nicht erreichbar** (axe `scrollable-region-focusable`, serious):
+  Der scrollbare Sheet-Body ist jetzt fokussierbar und zeigt seinen Fokus. Betraf alle Sheets, nicht
+  nur das neue — wer nicht mausen kann, kam an den unteren Teil des Inhalts nicht heran.
 - **Namensdubletten im Startdeck** (7c): Fünf lateinische Namen gibt es zweimal (Hand *und* Fuß,
   z. B. `M. flexor digiti minimi brevis`). Da Karten nach `nameLatin` geschlüsselt sind (ADR 0002 §2),
   sind zwei solche Muskeln **eine** Karte — ohne Sperre wären aus 20 versprochenen Karten stillschweigend
@@ -143,6 +161,11 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   vollständig — es fehlte kein Zeichen.
 
 ### Fixed
+- **Grammatik im Erklärsatz** (7e): Plural-Muskeln („Mm. lumbricales I–IV") bekommen ein
+  Plural-Verb — vorher stand dort „Mm. lumbricales I–IV **wird** von … versorgt".
+- **Sheet-Inhalt war per Tastatur nicht erreichbar** (axe `scrollable-region-focusable`, serious):
+  Der scrollbare Sheet-Body ist jetzt fokussierbar und zeigt seinen Fokus. Betraf alle Sheets, nicht
+  nur das neue — wer nicht mausen kann, kam an den unteren Teil des Inhalts nicht heran.
 - **14 Muskeln bekamen keinen 3D-Button, obwohl die 3D-App sie kennt.** `buildMuscleKey` strippte
   nur das Präfix „M.", nicht den Plural „Mm." — „Mm. lumbricales I–IV" erzeugte den Key
   `m_mm_lumbricales_i_iv` und traf damit keinen Mapping-Eintrag. Jetzt `mm?\.` (plus „Musculi").

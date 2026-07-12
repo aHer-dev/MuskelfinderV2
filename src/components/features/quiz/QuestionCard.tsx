@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { explainWrongAnswer } from '../../../data/explain';
 import type { QuizPhase, QuizQuestion } from '../../../types';
 import { Icon } from '../../ui/Icon';
+import { ExplainSheet } from './ExplainSheet';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'] as const;
 
@@ -38,7 +40,17 @@ export function QuestionCard({ question, phase, selectedId, onAnswer }: Question
   // zwischen den Optionen, Enter/Space (nativer Button) wählt aus. Bei jeder
   // neuen Frage zurück auf die erste Option.
   const [roving, setRoving] = useState(0);
-  useEffect(() => setRoving(0), [question]);
+  const [explaining, setExplaining] = useState(false);
+  useEffect(() => {
+    setRoving(0);
+    setExplaining(false);
+  }, [question]);
+
+  // Der Erklärsatz wird in der Datenschicht komponiert — hier wird er nur gezeigt.
+  const explanation = useMemo(
+    () => (revealed ? explainWrongAnswer({ question, selectedId }) : null),
+    [revealed, question, selectedId],
+  );
 
   const handleKey = (event: React.KeyboardEvent, index: number) => {
     const count = question.options.length;
@@ -125,6 +137,29 @@ export function QuestionCard({ question, phase, selectedId, onAnswer }: Question
             : `Leider falsch. Richtig ist: ${correctLabel}`
           : ''}
       </p>
+
+      {/* Nicht nur WAS richtig war, sondern WARUM — sonst erkennt man die Lösung beim
+          nächsten Mal bloß wieder, ohne den Unterschied zu kennen. */}
+      {explanation && (
+        <div className="quiz-card__explain">
+          <p className="quiz-card__explain-text">{explanation.text}</p>
+          <button
+            type="button"
+            className="btn btn--ghost"
+            onClick={() => setExplaining(true)}
+          >
+            <Icon name="icInfo" size={16} /> Beide vergleichen
+          </button>
+        </div>
+      )}
+
+      {explanation && (
+        <ExplainSheet
+          open={explaining}
+          explanation={explanation}
+          onClose={() => setExplaining(false)}
+        />
+      )}
     </div>
   );
 }

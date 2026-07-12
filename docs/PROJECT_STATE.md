@@ -8,10 +8,10 @@
 - Datum: 2026-07-12
 - Branch: `main` (Design-Feinschliff und Produkt-Roadmap gemergt, `--no-ff`)
 - Status: **Migration abgeschlossen (Etappen 0–6, `v1.0` getaggt). Produktphase laeuft
-  (Etappen 7–9) — Statustafel in `docs/produkt-plan.md`. 7a–7d fertig, naechster Schritt: 7e.**
-  Der historische Verlauf steht unten.
-- Gate zuletzt gruen auf `feat/etappe-7d-suchfeld-bruecke`:
-  `npm run lint && npm run test && npm run build` — **227 Tests**.
+  (Etappen 7–9) — Statustafel in `docs/produkt-plan.md`. 7a–7e fertig, naechster Schritt: 7f
+  (letzter Schritt der Etappe 7).** Der historische Verlauf steht unten.
+- Gate zuletzt gruen auf `feat/etappe-7e-falschantwort-erklaeren`:
+  `npm run lint && npm run test && npm run build` — **250 Tests**.
 
 ## Verlauf (Migration, abgeschlossen)
 - Etappe 0–4 abgeschlossen. **Etappe 5 (Haertung)** — Teil 1+2 umgesetzt:
@@ -151,15 +151,16 @@ befuellt werden, die Statistik zeigt Zahlen ohne Empfehlung.
 - Konzept-Mockups (visuell, extern): Heute-Screen und Produktkonzept, siehe `docs/produkt-plan.md`.
 
 ## Naechster Schritt
-**Etappe 7e — Falschantwort erklaert sich (Template) + Detail-Sheet in der Session (Bruecke B2).**
-Briefing: `docs/tasks/2026-07-12-etappe-7e-falschantwort-erklaeren.md`. Danach 7f (Streak + Freeze).
-Anschlusspunkt: Die Sitzung liegt seit 7d im `useSessionStore` und ueberlebt Navigation — B2 will
-aber, dass die Detailseite **als Sheet ueber der Session** aufgeht, statt wegzunavigieren
-(`src/components/ui/Sheet.tsx` existiert und hat einen Fokus-Trap).
+**Etappe 7f — Streak + Freeze.** Letzter Schritt der Etappe 7.
+Briefing: `docs/tasks/2026-07-12-etappe-7f-streak-und-freeze.md`.
+Danach: **Etappe 7 am Stueck auf `main` mergen** (so entschieden) und Etappe 8 planen.
+Muster fuer einen additiven, persistierten Store: `useProfileStore` / `useLookupStore` — beide
+schreiben eine OPTIONALE Backup-Sektion, die aeltere Versionen ignorieren.
 
-**7a–7d sind fertig** (Branch-Kette `feat/etappe-7a-empfehlungs-engine` →
+**7a–7e sind fertig** (Branch-Kette `feat/etappe-7a-empfehlungs-engine` →
 `feat/etappe-7b-route-heute` → `feat/etappe-7c-onboarding-seeding` →
-`feat/etappe-7d-suchfeld-bruecke`, **noch nichts gemergt**):
+`feat/etappe-7d-suchfeld-bruecke` → `feat/profil-im-backup` →
+`feat/etappe-7e-falschantwort-erklaeren`, **noch nichts gemergt**):
 - **7a:** `src/data/today.ts` liefert `getTodayPlan()` → getypter `TodayPlan` mit vier Zustaenden
   (`needsOnboarding` · `review` · `backlog` · `new`) — **kein Zustand ohne Vorschlag**. Priorisierung
   nach Verzug, Schwierig-Flag, Fach, Region-Schwaeche und Nachschlage-Haeufigkeit; Tagesdosis
@@ -191,6 +192,15 @@ aber, dass die Detailseite **als Sheet ueber der Session** aufgeht, statt wegzun
   `useState` der `FlashcardsPage` — sonst haette der Griff zur Kopfzeilen-Suche die laufende Sitzung
   zerstoert (Unmount). `useFlashcardSession` ist nur noch die Sicht darauf; sie ueberlebt Navigation,
   bewusst NICHT den Browser-Neustart.
+- **7e:** Falschantworten erklaeren sich (`src/data/explain.ts`): ein Kontrastsatz, **komponiert**
+  aus den Daten beider Muskeln, kontrastiert genau das gefragte Merkmal — null Redaktionsarbeit,
+  alle Modi getestet, saubere Degradation bei fehlenden Feldern. `src/data/confusions.ts` haelt
+  **7 handgeschriebene Saetze** fuer klassische Pruefungsfallen; sie ersetzen das Template und sind
+  beliebig erweiterbar (nie ein Blocker). **Bruecke B2:** `ExplainSheet` legt beide Muskeln
+  nebeneinander **ueber** die Session (Sheet, kein `navigate()`), Schliessen fuehrt in dieselbe
+  Frage zurueck. **Quiz-Datenmodell additiv erweitert:** `QuizQuestion.muscleId`/`.concreteMode`
+  und `QuizOption.muscleId` — die Auswertung, `quizSeriesKey` und die Statistik sind unberuehrt
+  (ADR 0002).
 
 ## Entscheidungen — alle getroffen (2026-07-12)
 **Etappe 9 ist damit nicht mehr blockiert.** Volltext + Begruendungen: `docs/produkt-plan.md`.

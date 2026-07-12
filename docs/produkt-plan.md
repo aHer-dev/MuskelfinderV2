@@ -65,7 +65,7 @@ Drei tragende Entscheidungen (Details in den ADRs):
 | 7b | Route `/heute` als Einstieg + Navigation auf vier Absichten | [7b](tasks/2026-07-12-etappe-7b-route-heute.md) | **fertig** | `feat/etappe-7b-route-heute` | — |
 | 7c | Onboarding (2 Fragen) + Auto-Seeding des Karteikastens | [7c](tasks/2026-07-12-etappe-7c-onboarding-seeding.md) | **fertig** | `feat/etappe-7c-onboarding-seeding` | — |
 | 7d | Persistentes Suchfeld + Aufrufzähler + „Zuletzt nachgeschlagen“ (**B1**) | [7d](tasks/2026-07-12-etappe-7d-suchfeld-und-bruecke-b1.md) | **fertig** | `feat/etappe-7d-suchfeld-bruecke` | — |
-| 7e | Falschantwort-Erklärung (Template) + Detail-Sheet in der Session (**B2**) | [7e](tasks/2026-07-12-etappe-7e-falschantwort-erklaeren.md) | offen | — | — |
+| 7e | Falschantwort-Erklärung (Template) + Detail-Sheet in der Session (**B2**) | [7e](tasks/2026-07-12-etappe-7e-falschantwort-erklaeren.md) | **fertig** | `feat/etappe-7e-falschantwort-erklaeren` | — |
 | 7f | Streak + Freeze | [7f](tasks/2026-07-12-etappe-7f-streak-und-freeze.md) | offen | — | — |
 
 ### Etappe 8 — Die App wird schwerer, wenn du besser wirst

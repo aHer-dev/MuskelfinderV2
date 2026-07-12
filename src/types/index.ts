@@ -138,13 +138,20 @@ export interface QuizOption {
   label: string;
   /** Gesetzt → Option wird als Bild dargestellt (Modi mit Bild-Antworten). */
   imageUrl?: string;
+  /** Muskel, aus dessen Daten diese Option stammt — Grundlage der Falschantwort-Erklärung (7e). */
+  muscleId?: string;
 }
 
 export interface QuizQuestion {
   id: string;
+  /** Anzeige-/Serien-Modus (bei „Gemischt" der Oberbegriff) — Basis des `quizSeriesKey` (ADR 0002). */
   mode: QuizMode;
+  /** Die tatsächlich gestellte Richtung. Bei „Gemischt" löst jede Frage konkret auf. */
+  concreteMode: QuizMode;
   /** Kategorie-Label, z. B. „Funktion → Muskel". */
   category: string;
+  /** Der gefragte Muskel — die Erklärung (7e) kontrastiert ihn mit dem gewählten Distraktor. */
+  muscleId: string;
   prompt: string;
   imageUrl?: string;       // nur mode==='image'
   options: QuizOption[];   // i. d. R. 4
