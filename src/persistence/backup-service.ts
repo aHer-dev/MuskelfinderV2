@@ -9,6 +9,7 @@
    ========================================================================= */
 
 import { useLookupStore } from '../store/useLookupStore';
+import { useNotesStore } from '../store/useNotesStore';
 import { useProfileStore } from '../store/useProfileStore';
 import { useProgressStore } from '../store/useProgressStore';
 import { useQuizStore } from '../store/useQuizStore';
@@ -23,13 +24,14 @@ export function exportBackup(exportedAt?: string): BackupFile {
   const { lookups } = useLookupStore.getState();
   const profile = useProfileStore.getState().toSection();
   const { streak } = useStreakStore.getState();
-  return buildBackup({ flashcards, xp, quizSeries, lookups, profile, streak }, exportedAt);
+  const { notes } = useNotesStore.getState();
+  return buildBackup({ flashcards, xp, quizSeries, lookups, profile, streak, notes }, exportedAt);
 }
 
 /** Backup parsen und in die Stores schreiben. Wirft `BackupFormatError` bei Ablehnung. */
 export function importBackup(input: string | unknown): ImportResult {
   const result = parseBackup(input);
-  const { flashcards, xp, quizSeries, lookups, profile, streak } = result.sections;
+  const { flashcards, xp, quizSeries, lookups, profile, streak, notes } = result.sections;
 
   if (flashcards) {
     // Legacy: xp fehlt → bestehenden XP-Stand behalten.
@@ -49,6 +51,10 @@ export function importBackup(input: string | unknown): ImportResult {
   }
   if (streak) {
     useStreakStore.getState().replaceStreak(streak);
+  }
+  // Ein Backup von vor 8e traegt keine Notizen — es darf die vorhandenen nicht loeschen.
+  if (notes) {
+    useNotesStore.getState().replaceNotes(notes);
   }
 
   return result;

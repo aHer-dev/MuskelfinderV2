@@ -14,6 +14,7 @@ import {
   isPlainObject,
   sanitizeFlashcards,
   sanitizeLookups,
+  sanitizeNotes,
   sanitizeProfile,
   sanitizeQuizSeries,
   sanitizeStreak,
@@ -79,6 +80,7 @@ export function normalizeFullBackup(parsed: unknown): ImportResult {
       ...(hasOwn(parsed, 'lookups') ? { lookups: sanitizeLookups(parsed.lookups) } : {}),
       ...(hasOwn(parsed, 'profile') ? { profile: sanitizeProfile(parsed.profile) } : {}),
       ...(hasOwn(parsed, 'streak') ? { streak: sanitizeStreak(parsed.streak) } : {}),
+      ...(hasOwn(parsed, 'notes') ? { notes: sanitizeNotes(parsed.notes) } : {}),
     },
   };
 }
@@ -106,7 +108,8 @@ export function parseBackup(input: string | unknown): ImportResult {
 /**
  * Erzeugt das exportierbare v2-Backup-Objekt aus den (bereits getypten) Sektionen.
  * Die additiven Sektionen werden nur geschrieben, wenn sie etwas enthalten: wer weder
- * nachschlägt noch ein Profil setzt, bekommt exakt die Datei, die er vor 7c/7d bekam.
+ * nachschlägt noch ein Profil setzt noch Notizen schreibt, bekommt exakt die Datei, die
+ * er vor 7c/7d/8e bekam.
  */
 export function buildBackup(
   sections: BackupSections,
@@ -115,6 +118,7 @@ export function buildBackup(
   const lookups = sections.lookups ? sanitizeLookups(sections.lookups) : null;
   const profile = sections.profile ? sanitizeProfile(sections.profile) : null;
   const streak = sections.streak ? sanitizeStreak(sections.streak) : null;
+  const notes = sections.notes ? sanitizeNotes(sections.notes) : null;
 
   return {
     backupType: BACKUP_TYPE,
@@ -126,6 +130,7 @@ export function buildBackup(
     ...(lookups && Object.keys(lookups.entries).length > 0 ? { lookups } : {}),
     ...(profile && (profile.profession || profile.examDate) ? { profile } : {}),
     ...(streak && (streak.best > 0 || streak.current > 0 || streak.freezes > 0) ? { streak } : {}),
+    ...(notes && Object.keys(notes.entries).length > 0 ? { notes } : {}),
   };
 }
 

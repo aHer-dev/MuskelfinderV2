@@ -5,6 +5,7 @@ import { useLookupStore } from '../store/useLookupStore';
 import { useProfileStore } from '../store/useProfileStore';
 import { useProgressStore } from '../store/useProgressStore';
 import { useQuizStore } from '../store/useQuizStore';
+import { useNotesStore } from '../store/useNotesStore';
 import { useStreakStore } from '../store/useStreakStore';
 import { parseBackup } from './backup';
 import { exportBackup, importBackup } from './backup-service';
@@ -280,5 +281,64 @@ describe('Additive Sektion „streak" (7f)', () => {
     importBackup(fixture('full-backup-v1.json'));
 
     expect(useStreakStore.getState().streak.current).toBe(3);
+  });
+});
+
+describe('Additive Sektion „notes" (8e)', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    useProgressStore.getState().resetProgress();
+    useQuizStore.getState().resetAllSeries();
+    useLookupStore.getState().resetLookups();
+    useProfileStore.getState().resetProfile();
+    useStreakStore.getState().resetStreak();
+    useNotesStore.getState().resetNotes();
+  });
+
+  it('ohne Notiz fehlt der Schluessel — die Datei bleibt die von vor 8e', () => {
+    importBackup(fixture('full-backup-v2.json'));
+    const out = exportBackup('2026-07-08T00:00:00.000Z');
+
+    expect(out).not.toHaveProperty('notes');
+  });
+
+  it('Notizen ueberleben Export → Import', () => {
+    importBackup(fixture('full-backup-v2.json'));
+    useNotesStore.getState().setNote('M. deltoideus', 'Dozentin: Pars spinalis ist der Antagonist.');
+
+    const out = exportBackup('2026-07-08T00:00:00.000Z');
+    expect(out.notes?.entries['M. deltoideus'].text).toContain('Antagonist');
+
+    useNotesStore.getState().resetNotes();
+    importBackup(JSON.stringify(out));
+
+    expect(useNotesStore.getState().getNote('M. deltoideus')).toContain('Antagonist');
+  });
+
+  it('ein altes Backup ohne die Sektion loescht die lokalen Notizen NICHT', () => {
+    useNotesStore.getState().setNote('M. deltoideus', 'Wichtig fuer die Pruefung.');
+
+    importBackup(fixture('full-backup-v1.json'));
+
+    expect(useNotesStore.getState().getNote('M. deltoideus')).toBe('Wichtig fuer die Pruefung.');
+  });
+
+  it('eine kaputte Sektion kippt den Import nicht', () => {
+    const broken = JSON.parse(fixture('full-backup-v2.json'));
+    broken.notes = { version: 2, entries: { 'M. deltoideus': 42, '': { text: 'x' }, 'M. iliacus': { text: '   ' } } };
+
+    expect(() => importBackup(JSON.stringify(broken))).not.toThrow();
+    expect(useNotesStore.getState().notes.entries).toEqual({});
+    // Die Pflicht-Sektionen sind trotzdem angekommen.
+    expect(Object.keys(useProgressStore.getState().flashcards.cards).length).toBeGreaterThan(0);
+  });
+
+  it('eine handgeschriebene Datei kann den Speicher nicht sprengen', () => {
+    const huge = JSON.parse(fixture('full-backup-v2.json'));
+    huge.notes = { version: 2, entries: { 'M. deltoideus': { text: 'x'.repeat(50_000) } } };
+
+    importBackup(JSON.stringify(huge));
+
+    expect(useNotesStore.getState().getNote('M. deltoideus').length).toBe(2000);
   });
 });

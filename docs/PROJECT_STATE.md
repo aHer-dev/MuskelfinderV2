@@ -6,12 +6,13 @@
 
 ## Stand
 - Datum: 2026-07-12
-- Branch: `feat/etappe-8b-session-filter` (8a + 8c sind auf `main` gemergt)
+- Branch: `feat/etappe-8e-notizen` (8a + 8c + 8b sind auf `main` gemergt)
 - Status: **Migration abgeschlossen (Etappen 0–6, `v1.0`). ETAPPE 7 KOMPLETT (7a–7f). ETAPPE 8
-  LAEUFT: 8a + 8c + 8b fertig** — die Abrufhaerte waechst mit der Beherrschung, keine Zahl in der
-  Statistik steht ohne Knopf, und man kann gezielt an den Luecken ueben.
+  LAEUFT: 8a + 8c + 8b + 8e fertig** — die Abrufhaerte waechst mit der Beherrschung, keine Zahl in der
+  Statistik steht ohne Knopf, man kann gezielt an den Luecken ueben, und eigene Notizen stehen beim
+  Muskel. **Offen: nur noch 8f und 8d.**
   **Bruecke B4 ist eingeloest**; offen bleibt nur noch B3 (9c). Statustafel: `docs/produkt-plan.md`.
-- Gate gruen: `npm run lint && npm run test && npm run build` — **366 Tests**.
+- Gate gruen: `npm run lint && npm run test && npm run build` — **385 Tests**.
 - **Offen aus 8b (Entscheidung noetig):** Die Filter gibt es in der **Sitzung**, aber **nicht im
   Quiz**. Ein gefilterter Quiz-Pool braucht einen ZUSAETZLICHEN Serien-Schluessel (der bestehende
   muss bitgleich bleiben, ADR 0002) und eine Antwort auf zu kleine Pools (eine Frage braucht 4
@@ -154,10 +155,20 @@ befuellt werden, die Statistik zeigt Zahlen ohne Empfehlung.
 - Konzept-Mockups (visuell, extern): Heute-Screen und Produktkonzept, siehe `docs/produkt-plan.md`.
 
 ## Naechster Schritt
-**Etappe 8e — Eigene Notizen je Muskel.** Briefing:
-`docs/tasks/2026-07-12-etappe-8e-notizen.md`.
-**Etappe 8 ist vollstaendig gebrieft** (Rahmen + 8a–8f, siehe Statustafel).
-Reihenfolge: 8a ✅ → 8c ✅ → 8b ✅ → **8e** → 8f → 8d.
+**Etappe 8f — Die 47 bildlosen Muskeln.** Briefing:
+`docs/tasks/2026-07-12-etappe-8f-bildluecke.md`.
+**ACHTUNG: Stufe 1 ist eine LIZENZPRUEFUNG, kein Code.** Erst pruefen, ob in der eigenen 3D-App
+(`3DAnatomyV2`) ausschliesslich BodyParts3D-Geometrie (DBCLS) steckt. Nur dann duerfen Renderings
+uebernommen werden (E5). Steckt irgendwo Fremdmaterial mit unklarer Lizenz drin: typografischer
+Platzhalter, ohne Diskussion. Das Ergebnis der Pruefung wird schriftlich festgehalten.
+Reihenfolge: 8a ✅ → 8c ✅ → 8b ✅ → 8e ✅ → **8f** → 8d.
+
+Aus 8e mitnehmen:
+- Die additive Backup-Sektion gibt es jetzt **viermal** (`lookups`, `profile`, `streak`, `notes`).
+  Das Muster ist erprobt: optionale Sektion, nur schreiben wenn nicht leer, Sanitizer nie `strict`,
+  altes Backup darf lokale Daten NICHT loeschen. Backup-Version bleibt 2.
+- **Muskelnamen taugen nicht als HTML-ID** (sie enthalten Leerzeichen und Punkte). `aria-labelledby`
+  bricht daran still. Echtes `<label for>` benutzen.
 
 Aus 8b mitnehmen:
 - **`buildQueue(opts, cards?)` ist rein**, wenn man die Karten mitgibt. Die Seite fragt damit dieselbe

@@ -7,6 +7,18 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- **Etappe 8e — Eigene Notizen je Muskel** (`useNotesStore`, `MuscleNote`): Was die Dozentin im
+  Unterricht sagt, steht in keinem Datensatz — es gehoert dorthin, wo der Muskel steht, nicht in eine
+  fremde App. Freitext je Muskel, direkt auf der Detailseite, **ohne „Speichern"-Knopf** (debounced)
+  und trotzdem **verlustfrei**: Wer mitten im Tippen wegnavigiert, verliert nichts (die Aufraeumfunktion
+  schreibt den letzten Stand weg — eine Notiz, die beim Wegblaettern verschwindet, ist schlimmer als
+  gar keine). **Leere Notiz = keine Notiz** (kein leerer Eintrag im Backup). Die Notiz haengt am
+  **Muskel** (`nameLatin`, ADR 0002 §2), nicht an der Karte — sie ueberlebt, wenn eine Karte aus dem
+  Kasten fliegt. Persistenz **additiv** (die vierte Sektion nach `lookups`/`profile`/`streak`):
+  optionale Backup-Sektion `notes`, die nur geschrieben wird, wenn es Notizen gibt; ein **altes Backup
+  ohne die Sektion loescht die lokalen Notizen nicht**; eine kaputte Sektion kippt den Import nicht;
+  ueberlange Texte werden gedeckelt (2000 Zeichen), damit eine handgeschriebene Datei den Speicher
+  nicht sprengt. Backup-Version bleibt **2**, der V1-Round-Trip gruen.
 - **Etappe 8b — Session-Filter „nur falsch beantwortete" / „nie gesehen"** (`src/data/card-filter.ts`):
   Gezielt an den Lücken üben statt am ganzen Deck. Drei Filter — falsch beantwortet
   (`totalWrong > 0`), nie gesehen (`lastSeen === null`), schwierig markiert. **Es wird nichts Neues
