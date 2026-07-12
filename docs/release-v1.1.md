@@ -11,7 +11,7 @@ Bis heute war sie nie deployt — es gibt kein Git-Remote.
       Pages liegt ein Projekt-Repo unter `<user>.github.io/<repo>/` — damit hätten **Sprite, Fonts und
       alle Bilder 404 geliefert**. Lokal fällt das nie auf, weil `vite preview` für jeden Pfad die
       `index.html` ausliefert und die Assets trotzdem vom Root holt. `base` ist jetzt
-      `/Muskelfinder-V2/` (per `VITE_BASE` überschreibbar), `start_url` und `scope` des PWA-Manifests
+      `/MuskelfinderV2/` (per `VITE_BASE` überschreibbar), `start_url` und `scope` des PWA-Manifests
       ziehen mit — sonst installiert die PWA einen Scope, den es nicht gibt.
 - [x] **Unter echten Pages-Bedingungen geprüft** (Build unter Unterpfad serviert, ohne SPA-Fallback):
       alle **10 Routen** tragen inkl. Deep-Link-Reload · **0 HTTP-Fehler** · **0 Konsolenfehler** ·
@@ -25,33 +25,35 @@ Bis heute war sie nie deployt — es gibt kein Git-Remote.
 
 ## Was nur du tun kannst
 
-### 1 · Remote anlegen und pushen
-```bash
-gh repo create Muskelfinder-V2 --public --source=. --remote=origin --push
-# oder: git remote add origin git@github.com:<user>/Muskelfinder-V2.git && git push -u origin main
-```
-- [ ] Repo angelegt, `main` gepusht.
-- [ ] In den Repo-Settings: **Pages → Source = „GitHub Actions"**.
-- [ ] **Heißt das Repo anders als `Muskelfinder-V2`?** Dann `base` in `vite.config.ts` anpassen —
-      es ist die **einzige** Stellschraube. (Eigene Domain oder User-Site? Dann `VITE_BASE=/`.)
+### 1 · Pages einschalten
+Das Repo ist **`github.com/aHer-dev/MuskelfinderV2`**, `main` ist gepusht, `base` steht auf
+`/MuskelfinderV2/`. Ziel-URL: **`https://aher-dev.github.io/MuskelfinderV2/`**
 
-### 2 · Die 3D-Kopplung auflösen (sonst laufen Nutzer ins Leere)
-Der „In 3D ansehen"-Link zeigt bewusst auf **`aher-dev.github.io/3DAnatomyV2/`** — deine V2, die
-three.js lokal bündelt und **keine** externen Requests macht (V1 lud es von jsDelivr und hätte die
-IP deiner Schüler an ein fremdes CDN geschickt).
+- [ ] Repo-Settings → **Pages → Source = „GitHub Actions"**. (Das ist der einzige Schalter; der
+      Workflow läuft dann bei jedem Push auf `main`.)
+- [ ] Danach: Actions-Tab ansehen — Build muss grün durchlaufen (lint + 405 Tests + build).
 
-- [ ] **Ist V2 überhaupt veröffentlicht und stabil?**
-- [ ] **`/3DAnatomyV2/datenschutz.html` liefert 404.** Eine öffentliche App ohne erreichbare
-      Datenschutzseite ist kein Schönheitsfehler — die V2 braucht einen Redeploy.
-- [ ] Im 3D-Repo liegt der Branch `fix/datenschutz-jsdelivr-veraltet` (Commit `f209896`) — sollte
-      mit veröffentlicht werden.
+### 2 · Die 3D-Kopplung (ein Rest-Blocker)
+Der „In 3D ansehen"-Link zeigt auf **`aher-dev.github.io/3DAnatomyV2/`**. Stand 2026-07-13 geprüft:
 
-**Fällt die Entscheidung gegen V2:** `THREE_D_BASE_URL` in
-[`src/data/threeD.ts`](../src/data/threeD.ts) auf `/3DAnatomy/` zurückdrehen. Eine Konstante, eine
-Zeile. **Aber:** Dann lädt die verlinkte App three.js von einem fremden CDN — mit den IPs deiner
-Schüler. Das ist der Grund, warum der Link auf V2 zeigt.
+- ✅ **V2 ist live** (HTTP 200) — die frühere Notiz „noch nicht veröffentlicht" ist überholt.
+- ❌ **`/3DAnatomyV2/datenschutz.html` liefert 404.** Die 3D-App verlinkt ihre eigene
+      Datenschutzseite, die es im deployten Build nicht gibt. Eine öffentliche App ohne erreichbare
+      Datenschutzseite ist kein Schönheitsfehler.
+- [ ] Im lokalen 3D-Repo liegt der Fix bereits als HEAD (`f209896`,
+      „fix(legal): veraltete jsDelivr-Aussage …"). **Pushen und neu deployen** — dann ist die Seite da.
 
-### 3 · Tag setzen (wenn der Deploy steht)
+**V1 bleibt bewusst außen vor:** Sie lädt three.js von jsDelivr nach und schickt damit die IPs deiner
+Schüler an ein fremdes CDN. Genau deshalb zeigt der Link auf V2.
+
+### 3 · Die alte V1 aufräumen (Empfehlung)
+`aher-dev.github.io/Muskelfinder/` ist **weiterhin live**. Zwei Apps, zwei URLs — Schüler landen sonst
+auf der alten. Die Daten kollidieren nicht (V1 nutzt `muskelfinder_*`, V2 `mf.*` — geprüft), aber die
+Verwirrung bleibt.
+- [ ] Auf V1 einen Hinweis setzen („Diese Version ist abgelöst → neue URL") **oder** V1-Pages
+      abschalten.
+
+### 4 · Tag setzen (wenn der Deploy steht)
 ```bash
 git tag -a v1.1 -m "Vom Nachschlagewerk zum Lernbegleiter (Etappe 7 + 8)"
 git push origin v1.1
