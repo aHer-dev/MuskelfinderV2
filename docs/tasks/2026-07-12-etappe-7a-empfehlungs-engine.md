@@ -1,5 +1,8 @@
 # Task: Etappe 7a — Empfehlungs-Engine („Heute dran“)
 
+> **Zuerst lesen:** [Rahmen-Briefing Etappe 7](2026-07-12-etappe-7-uebersicht.md) — dort stehen das
+> Problem, der Nordstern und die Invarianten, die für alle Tasks der Etappe gelten.
+
 ## Ziel
 Die Datenschicht kann beantworten, **was die Studentin heute tun soll** — als getyptes
 `TodayPlan`-Objekt. Reine Logik, kein UI. Das ist die Wurzel von Etappe 7: ohne sie gibt es
