@@ -16,6 +16,7 @@ import {
   sanitizeLookups,
   sanitizeProfile,
   sanitizeQuizSeries,
+  sanitizeStreak,
   sanitizeXp,
   toNonNegativeInt,
 } from './sanitize';
@@ -77,6 +78,7 @@ export function normalizeFullBackup(parsed: unknown): ImportResult {
       // Additiv (7c/7d): fehlen in jeder älteren Datei — kein Grund, den Import abzulehnen.
       ...(hasOwn(parsed, 'lookups') ? { lookups: sanitizeLookups(parsed.lookups) } : {}),
       ...(hasOwn(parsed, 'profile') ? { profile: sanitizeProfile(parsed.profile) } : {}),
+      ...(hasOwn(parsed, 'streak') ? { streak: sanitizeStreak(parsed.streak) } : {}),
     },
   };
 }
@@ -112,6 +114,7 @@ export function buildBackup(
 ): BackupFile {
   const lookups = sections.lookups ? sanitizeLookups(sections.lookups) : null;
   const profile = sections.profile ? sanitizeProfile(sections.profile) : null;
+  const streak = sections.streak ? sanitizeStreak(sections.streak) : null;
 
   return {
     backupType: BACKUP_TYPE,
@@ -122,6 +125,7 @@ export function buildBackup(
     quizSeries: sanitizeQuizSeries(sections.quizSeries, { strict: true }),
     ...(lookups && Object.keys(lookups.entries).length > 0 ? { lookups } : {}),
     ...(profile && (profile.profession || profile.examDate) ? { profile } : {}),
+    ...(streak && (streak.best > 0 || streak.current > 0 || streak.freezes > 0) ? { streak } : {}),
   };
 }
 

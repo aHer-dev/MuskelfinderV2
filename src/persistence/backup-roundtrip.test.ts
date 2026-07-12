@@ -5,6 +5,7 @@ import { useLookupStore } from '../store/useLookupStore';
 import { useProfileStore } from '../store/useProfileStore';
 import { useProgressStore } from '../store/useProgressStore';
 import { useQuizStore } from '../store/useQuizStore';
+import { useStreakStore } from '../store/useStreakStore';
 import { parseBackup } from './backup';
 import { exportBackup, importBackup } from './backup-service';
 
@@ -204,5 +205,80 @@ describe('Additive Sektion „profile" (Entscheidung 2026-07-12)', () => {
 
     expect(useProfileStore.getState().profession).toBe('physio');
     expect(useProfileStore.getState().examDate).toBe('2026-08-15');
+  });
+});
+
+describe('Additive Sektion „streak" (7f)', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    useProgressStore.getState().resetProgress();
+    useQuizStore.getState().resetAllSeries();
+    useLookupStore.getState().resetLookups();
+    useProfileStore.getState().resetProfile();
+    useStreakStore.getState().resetStreak();
+  });
+
+  it('ohne Serie fehlt der Schluessel — die Datei bleibt die von vor 7f', () => {
+    importBackup(fixture('full-backup-v2.json'));
+    const out = exportBackup('2026-07-08T00:00:00.000Z');
+
+    expect(out).not.toHaveProperty('streak');
+  });
+
+  it('Serie und Freezes ueberleben Export → Import', () => {
+    importBackup(fixture('full-backup-v2.json'));
+    useStreakStore.setState({
+      streak: {
+        version: 2,
+        current: 6,
+        best: 9,
+        lastCompletedDay: '2026-07-12',
+        freezes: 1,
+        day: '2026-07-12',
+        reviewedToday: 22,
+        earnedFreezeToday: true,
+      },
+    });
+
+    const out = exportBackup('2026-07-08T00:00:00.000Z');
+    expect(out.streak).toMatchObject({ current: 6, best: 9, freezes: 1 });
+
+    useStreakStore.getState().resetStreak();
+    importBackup(JSON.stringify(out));
+
+    expect(useStreakStore.getState().streak.current).toBe(6);
+    expect(useStreakStore.getState().streak.best).toBe(9);
+    expect(useStreakStore.getState().streak.freezes).toBe(1);
+  });
+
+  it('eine handgeschriebene Datei kann den Streak nicht beliebig aufblasen', () => {
+    const cheat = JSON.parse(fixture('full-backup-v2.json'));
+    cheat.streak = { version: 2, current: 5, best: 1, freezes: 99, lastCompletedDay: 'gestern' };
+
+    importBackup(JSON.stringify(cheat));
+    const s = useStreakStore.getState().streak;
+
+    expect(s.freezes).toBe(2); // gedeckelt
+    expect(s.best).toBe(5); // best kann nie kleiner als current sein
+    expect(s.lastCompletedDay).toBeNull(); // kein gueltiger Tagesstempel
+  });
+
+  it('ein altes Backup ohne die Sektion loescht die lokale Serie nicht', () => {
+    useStreakStore.setState({
+      streak: {
+        version: 2,
+        current: 3,
+        best: 3,
+        lastCompletedDay: '2026-07-12',
+        freezes: 0,
+        day: '2026-07-12',
+        reviewedToday: 20,
+        earnedFreezeToday: false,
+      },
+    });
+
+    importBackup(fixture('full-backup-v1.json'));
+
+    expect(useStreakStore.getState().streak.current).toBe(3);
   });
 });

@@ -100,6 +100,29 @@ export interface ProfileSection {
   examDate: string | null;
 }
 
+/* ---------- Tages-Streak (Etappe 7f) ------------------------------------ */
+
+/**
+ * Aufeinanderfolgende Tage mit erledigter Tagesdosis, plus verdiente Freezes.
+ * Additive, optionale Sektion — wie `lookups`/`profile`. NICHT zu verwechseln mit
+ * der Quiz-Antwortserie (`streakXp`), die nichts mit Tagen zu tun hat.
+ */
+export interface StreakSection {
+  version: 2;
+  /** Aufeinanderfolgende Tage mit erledigter Tagesdosis. */
+  current: number;
+  best: number;
+  /** „YYYY-MM-DD" des letzten Tages mit erfüllter Dosis, oder null. */
+  lastCompletedDay: string | null;
+  freezes: number;
+  /** Der Tag, auf den sich `reviewedToday` bezieht — sonst zählte man über Mitternacht weiter. */
+  day: string | null;
+  /** Heute bewertete Karten. */
+  reviewedToday: number;
+  /** Wurde heute schon ein Freeze verdient? (Max. einer pro Tag.) */
+  earnedFreezeToday: boolean;
+}
+
 /* ---------- Backup-Datei ------------------------------------------------ */
 
 export interface BackupFile {
@@ -113,6 +136,8 @@ export interface BackupFile {
   lookups?: LookupsSection;
   /** Fehlt, solange kein Profil gesetzt wurde. */
   profile?: ProfileSection;
+  /** Fehlt, solange nie ein Tag abgeschlossen wurde. */
+  streak?: StreakSection;
 }
 
 /** Die Sektionen, die Import → Store und Store → Export überträgt. */
@@ -122,6 +147,7 @@ export interface BackupSections {
   quizSeries: QuizSeriesSection;
   lookups?: LookupsSection;
   profile?: ProfileSection;
+  streak?: StreakSection;
 }
 
 /** Ergebnis eines erfolgreichen Imports. Legacy-Backups liefern nur `flashcards`. */
@@ -133,5 +159,6 @@ export interface ImportResult {
     quizSeries?: QuizSeriesSection;
     lookups?: LookupsSection;
     profile?: ProfileSection;
+    streak?: StreakSection;
   };
 }

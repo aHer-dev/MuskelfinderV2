@@ -7,11 +7,11 @@
 ## Stand
 - Datum: 2026-07-12
 - Branch: `main` (Design-Feinschliff und Produkt-Roadmap gemergt, `--no-ff`)
-- Status: **Migration abgeschlossen (Etappen 0–6, `v1.0` getaggt). Produktphase laeuft
-  (Etappen 7–9) — Statustafel in `docs/produkt-plan.md`. 7a–7e fertig, naechster Schritt: 7f
-  (letzter Schritt der Etappe 7).** Der historische Verlauf steht unten.
-- Gate zuletzt gruen auf `feat/etappe-7e-falschantwort-erklaeren`:
-  `npm run lint && npm run test && npm run build` — **250 Tests**.
+- Status: **Migration abgeschlossen (Etappen 0–6, `v1.0` getaggt). ETAPPE 7 KOMPLETT (7a–7f) —
+  die App hat eine Meinung. Noch NICHT auf `main` gemergt (Merge am Stueck, so entschieden).
+  Naechster Schritt: Merge + Etappe 8 planen.** Statustafel: `docs/produkt-plan.md`.
+- Gate zuletzt gruen auf `feat/etappe-7f-streak-freeze`:
+  `npm run lint && npm run test && npm run build` — **271 Tests**.
 
 ## Verlauf (Migration, abgeschlossen)
 - Etappe 0–4 abgeschlossen. **Etappe 5 (Haertung)** — Teil 1+2 umgesetzt:
@@ -151,16 +151,14 @@ befuellt werden, die Statistik zeigt Zahlen ohne Empfehlung.
 - Konzept-Mockups (visuell, extern): Heute-Screen und Produktkonzept, siehe `docs/produkt-plan.md`.
 
 ## Naechster Schritt
-**Etappe 7f — Streak + Freeze.** Letzter Schritt der Etappe 7.
-Briefing: `docs/tasks/2026-07-12-etappe-7f-streak-und-freeze.md`.
-Danach: **Etappe 7 am Stueck auf `main` mergen** (so entschieden) und Etappe 8 planen.
-Muster fuer einen additiven, persistierten Store: `useProfileStore` / `useLookupStore` — beide
-schreiben eine OPTIONALE Backup-Sektion, die aeltere Versionen ignorieren.
+**Etappe 7 auf `main` mergen** (am Stueck, `--no-ff`), danach **Etappe 8 planen**
+(Statustafel: 8a–8f; 8a „Freitext-Abrufstufe" ist durch Entscheidung E1 zur Pflicht geworden).
 
-**7a–7e sind fertig** (Branch-Kette `feat/etappe-7a-empfehlungs-engine` →
-`feat/etappe-7b-route-heute` → `feat/etappe-7c-onboarding-seeding` →
-`feat/etappe-7d-suchfeld-bruecke` → `feat/profil-im-backup` →
-`feat/etappe-7e-falschantwort-erklaeren`, **noch nichts gemergt**):
+**Etappe 7 ist komplett** — Branch-Kette, jeder Branch baut auf dem vorigen auf:
+`feat/etappe-7a-empfehlungs-engine` → `feat/etappe-7b-route-heute` →
+`feat/etappe-7c-onboarding-seeding` → `feat/etappe-7d-suchfeld-bruecke` → `feat/profil-im-backup` →
+`feat/etappe-7e-falschantwort-erklaeren` → `feat/etappe-7f-streak-freeze` (**Spitze der Kette**).
+Ein Merge der Spitze bringt die ganze Etappe.
 - **7a:** `src/data/today.ts` liefert `getTodayPlan()` → getypter `TodayPlan` mit vier Zustaenden
   (`needsOnboarding` · `review` · `backlog` · `new`) — **kein Zustand ohne Vorschlag**. Priorisierung
   nach Verzug, Schwierig-Flag, Fach, Region-Schwaeche und Nachschlage-Haeufigkeit; Tagesdosis

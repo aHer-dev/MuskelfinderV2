@@ -209,3 +209,19 @@
   color: var(--text-tertiary);
   font-variant-numeric: tabular-nums;
 }
+
+/* ---- Tages-Streak (7f) ------------------------------------------------- */
+/* Nüchtern: eine Zahl in der Fortschrittszeile, kein Feuer, keine Animation.
+   Nie nur über Farbe — der Zustand steht immer als Text da (WCAG 1.4.1). */
+.today__streak {
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.today__freeze {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent-on-surface);
+  font-variant-numeric: tabular-nums;
+}

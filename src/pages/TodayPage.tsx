@@ -17,6 +17,7 @@ import { useCompleteOnboarding } from '../hooks/useCompleteOnboarding';
 import { useLookupStore } from '../store/useLookupStore';
 import { useProfileStore } from '../store/useProfileStore';
 import { useProgressStore } from '../store/useProgressStore';
+import { useStreakStore } from '../store/useStreakStore';
 import { xpView } from '../persistence/xp';
 import { OnboardingFlow } from '../components/features/onboarding/OnboardingFlow';
 import { EmptyState } from '../components/ui/EmptyState';
@@ -96,6 +97,7 @@ export function TodayPage() {
   const profession = useProfileStore((s) => s.profession);
   const lookups = useLookupStore((s) => s.lookups);
   const forgetLookups = useLookupStore((s) => s.forget);
+  const streak = useStreakStore((s) => s.streak);
   const completeOnboarding = useCompleteOnboarding();
   const xp = xpView(totalXP);
 
@@ -242,6 +244,27 @@ export function TodayPage() {
         <ProgressRing value={xp.progress} size={38} stroke={4} centerValue={String(xp.level)} />
         <span className="today__progress-text">
           Level {xp.level} · {plan.deckSize} {cardWord(plan.deckSize)} im Kasten
+          {streak.current > 0 && (
+            <>
+              {' · '}
+              <span className="today__streak">
+                {streak.current} {streak.current === 1 ? 'Tag' : 'Tage'} in Folge
+              </span>
+            </>
+          )}
+          {/* Freezes sind der Grund, warum ein Fehltag nicht das Ende ist — also zeigen. */}
+          {streak.freezes > 0 && (
+            <>
+              {' · '}
+              <span
+                className="today__freeze"
+                title="Ein Freeze überbrückt automatisch einen Fehltag."
+              >
+                <Icon name="icCheck" size={14} />
+                {streak.freezes} {streak.freezes === 1 ? 'Freeze' : 'Freezes'}
+              </span>
+            </>
+          )}
         </span>
         <Icon name="icArrow" size={16} />
       </Link>

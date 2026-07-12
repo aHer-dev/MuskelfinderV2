@@ -12,6 +12,7 @@ import { useLookupStore } from '../store/useLookupStore';
 import { useProfileStore } from '../store/useProfileStore';
 import { useProgressStore } from '../store/useProgressStore';
 import { useQuizStore } from '../store/useQuizStore';
+import { useStreakStore } from '../store/useStreakStore';
 import { buildBackup, parseBackup } from './backup';
 import type { BackupFile, ImportResult } from './types';
 
@@ -21,13 +22,14 @@ export function exportBackup(exportedAt?: string): BackupFile {
   const { quizSeries } = useQuizStore.getState();
   const { lookups } = useLookupStore.getState();
   const profile = useProfileStore.getState().toSection();
-  return buildBackup({ flashcards, xp, quizSeries, lookups, profile }, exportedAt);
+  const { streak } = useStreakStore.getState();
+  return buildBackup({ flashcards, xp, quizSeries, lookups, profile, streak }, exportedAt);
 }
 
 /** Backup parsen und in die Stores schreiben. Wirft `BackupFormatError` bei Ablehnung. */
 export function importBackup(input: string | unknown): ImportResult {
   const result = parseBackup(input);
-  const { flashcards, xp, quizSeries, lookups, profile } = result.sections;
+  const { flashcards, xp, quizSeries, lookups, profile, streak } = result.sections;
 
   if (flashcards) {
     // Legacy: xp fehlt → bestehenden XP-Stand behalten.
@@ -44,6 +46,9 @@ export function importBackup(input: string | unknown): ImportResult {
   }
   if (profile) {
     useProfileStore.getState().replaceProfile(profile);
+  }
+  if (streak) {
+    useStreakStore.getState().replaceStreak(streak);
   }
 
   return result;

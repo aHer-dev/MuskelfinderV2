@@ -7,6 +7,18 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- **Etappe 7f — Tages-Streak mit Freeze** (`src/persistence/streak.ts`, `useStreakStore`): Ein Grund
+  wiederzukommen, **ohne Schuld-Mechanik**. Der Streak zählt aufeinanderfolgende Tage mit erledigter
+  Tagesdosis (dieselbe Dosis, die der Tagesplan vorschlägt — ein naher Prüfungstermin hebt sie).
+  **Der Freeze wird verdient, nicht gekauft:** das Doppelte der Tagesdosis an einem Tag bringt einen
+  Freeze aufs Konto (max. 2, einer pro Tag). Bei einem Fehltag wird er beim nächsten Öffnen
+  **automatisch eingelöst** — ohne Nachfrage. Reißt die Serie doch, lautet die Botschaft „Neue
+  Serie — weiter geht's", nie „du hast X verloren"; die Bestmarke und die verdienten Freezes bleiben.
+  Tagesgrenzen rechnen **lokal** (nicht UTC), Sommerzeit-fest, und eine zurückgedrehte Uhr kann den
+  Streak weder aufblähen noch zerstören. Anzeige: eine nüchterne Zeile auf `/heute` („5 Tage in
+  Folge · 1 Freeze") — kein Feuer, kein Konfetti, keine Animation, nie nur über Farbe. Persistenz
+  **additiv**: optionale Backup-Sektion `streak`, die eine handgeschriebene Datei nicht aufblasen
+  kann (Freezes gedeckelt, `best ≥ current`).
 - **Etappe 7e — Falschantworten erklären sich + Brücke B2** (`src/data/explain.ts`,
   `confusions.ts`, `ExplainSheet`): Wer falsch liegt, sieht nicht mehr nur die Lösung, sondern
   **warum** — ein Kontrastsatz, der genau das Merkmal gegenüberstellt, nach dem gefragt war

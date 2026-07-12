@@ -16,6 +16,7 @@ import {
   type LookupEntry,
   type LookupsSection,
   type ProfileSection,
+  type StreakSection,
   type QuizHistoryEntry,
   type QuizSeriesEntry,
   type QuizSeriesSection,
@@ -244,4 +245,40 @@ export function sanitizeProfile(data: unknown): ProfileSection {
       : null;
 
   return { version: 2, profession, examDate: toOptionalDayStamp(data.examDate) };
+}
+
+/* ---------- Tages-Streak (7f) ------------------------------------------- */
+
+export function createEmptyStreakSection(): StreakSection {
+  return {
+    version: 2,
+    current: 0,
+    best: 0,
+    lastCompletedDay: null,
+    freezes: 0,
+    day: null,
+    reviewedToday: 0,
+    earnedFreezeToday: false,
+  };
+}
+
+/**
+ * Streak härten. Nie `strict` (optionale Sektion). `best` kann nie kleiner als
+ * `current` sein, und die Freeze-Zahl wird gedeckelt — sonst liesse sich der Streak
+ * über eine handgeschriebene Backup-Datei beliebig aufblasen.
+ */
+export function sanitizeStreak(data: unknown, maxFreezes = 2): StreakSection {
+  if (!isPlainObject(data)) return createEmptyStreakSection();
+
+  const current = toNonNegativeInt(data.current);
+  return {
+    version: 2,
+    current,
+    best: Math.max(current, toNonNegativeInt(data.best)),
+    lastCompletedDay: toOptionalDayStamp(data.lastCompletedDay),
+    freezes: toClampedInt(data.freezes, 0, 0, maxFreezes),
+    day: toOptionalDayStamp(data.day),
+    reviewedToday: toNonNegativeInt(data.reviewedToday),
+    earnedFreezeToday: !!data.earnedFreezeToday,
+  };
 }

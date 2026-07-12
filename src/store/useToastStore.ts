@@ -47,3 +47,8 @@ export function notifyAward(award: XpAward, label?: string): void {
     useToastStore.getState().push(`+${award.xpAdded} XP${label ? ` · ${label}` : ''}`, 'xp')
   }
 }
+
+/** Schlichte Textmeldung ohne XP (Etappe 7f: Tagesdosis, Freeze). */
+export function notifyToast(message: string): void {
+  useToastStore.getState().push(message, 'info')
+}

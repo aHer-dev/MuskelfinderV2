@@ -18,8 +18,11 @@
 
 import { create } from 'zustand';
 import { getMuscles } from '../data';
+import { dailyDose, daysUntilExam } from '../data/today';
+import { useProfileStore } from './useProfileStore';
 import { useProgressStore } from './useProgressStore';
-import { notifyAward } from './useToastStore';
+import { useStreakStore } from './useStreakStore';
+import { notifyAward, notifyToast } from './useToastStore';
 import type { CardRating, RegionId } from '../types';
 
 /** Nächste Warteschlange nach einer Bewertung (rein, ohne Seiteneffekte). */
@@ -130,6 +133,15 @@ export const useSessionStore = create<SessionState>()((set, get) => ({
     const name = queue[0];
     const award = useProgressStore.getState().reviewCard(name, rating);
     notifyAward(award);
+
+    /* Tages-Streak (7f): Jede bewertete Karte zaehlt auf die heutige Dosis ein — die
+       gleiche Dosis, die der Tagesplan vorschlaegt (ein naher Pruefungstermin hebt sie).
+       Der Streak waechst genau einmal am Tag, das Doppelte verdient einen Freeze. */
+    const { examDate } = useProfileStore.getState();
+    const dose = dailyDose(daysUntilExam(examDate));
+    const { completedToday, earnedFreeze } = useStreakStore.getState().review(dose);
+    if (completedToday) notifyToast('Tagesdosis geschafft');
+    if (earnedFreeze) notifyToast('Freeze verdient — ein Fehltag ist abgesichert');
 
     set((s) => ({
       queue: advanceQueue(s.queue, rating),

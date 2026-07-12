@@ -55,7 +55,7 @@ Drei tragende Entscheidungen (Details in den ADRs):
 > Status: `offen` · `laufend` · `fertig` · `blockiert`
 
 ### Etappe 7 — Die App bekommt eine Meinung
-*Kein Schritt hier ist von einer offenen Entscheidung blockiert. Sofort startklar.*
+***Vollständig umgesetzt (2026-07-12).** Alle sechs Schritte fertig; Merge auf `main` am Stück.*
 **Rahmen-Briefing für alle Agenten (Pflicht vor jedem Task):**
 [tasks/2026-07-12-etappe-7-uebersicht.md](tasks/2026-07-12-etappe-7-uebersicht.md)
 
@@ -66,7 +66,7 @@ Drei tragende Entscheidungen (Details in den ADRs):
 | 7c | Onboarding (2 Fragen) + Auto-Seeding des Karteikastens | [7c](tasks/2026-07-12-etappe-7c-onboarding-seeding.md) | **fertig** | `feat/etappe-7c-onboarding-seeding` | — |
 | 7d | Persistentes Suchfeld + Aufrufzähler + „Zuletzt nachgeschlagen“ (**B1**) | [7d](tasks/2026-07-12-etappe-7d-suchfeld-und-bruecke-b1.md) | **fertig** | `feat/etappe-7d-suchfeld-bruecke` | — |
 | 7e | Falschantwort-Erklärung (Template) + Detail-Sheet in der Session (**B2**) | [7e](tasks/2026-07-12-etappe-7e-falschantwort-erklaeren.md) | **fertig** | `feat/etappe-7e-falschantwort-erklaeren` | — |
-| 7f | Streak + Freeze | [7f](tasks/2026-07-12-etappe-7f-streak-und-freeze.md) | offen | — | — |
+| 7f | Streak + Freeze | [7f](tasks/2026-07-12-etappe-7f-streak-und-freeze.md) | **fertig** | `feat/etappe-7f-streak-freeze` | — |
 
 ### Etappe 8 — Die App wird schwerer, wenn du besser wirst
 
