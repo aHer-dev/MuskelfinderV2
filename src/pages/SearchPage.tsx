@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
-import { SearchField } from '../components/features/search/SearchField';
 import { FilterPanel } from '../components/features/search/FilterPanel';
 import { RegionChips } from '../components/features/search/RegionChips';
 import { ActiveFilters } from '../components/features/search/ActiveFilters';
@@ -68,7 +67,6 @@ export function SearchPage() {
         <p className="search-page__lead">
           {total} Muskeln · Suche über lateinischen Namen, deutsche Begriffe und Stichworte.
         </p>
-        <SearchField />
       </header>
 
       <div className="search-page__body">

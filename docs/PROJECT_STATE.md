@@ -7,10 +7,11 @@
 ## Stand
 - Datum: 2026-07-12
 - Branch: `main` (Design-Feinschliff und Produkt-Roadmap gemergt, `--no-ff`)
-- Status: **Migration abgeschlossen (Etappen 0–6, `v1.0` getaggt). Produktphase geplant
-  (Etappen 7–9) — Statustafel in `docs/produkt-plan.md`. Naechster Schritt: Etappe 7a.**
-  Der historische Verlauf steht unten.
-- Gate auf `main` zuletzt gruen: `npm run lint && npm run test && npm run build` — **170 Tests**.
+- Status: **Migration abgeschlossen (Etappen 0–6, `v1.0` getaggt). ETAPPE 7 KOMPLETT (7a–7f) —
+  die App hat eine Meinung. Noch NICHT auf `main` gemergt (Merge am Stueck, so entschieden).
+  Naechster Schritt: Merge + Etappe 8 planen.** Statustafel: `docs/produkt-plan.md`.
+- Gate zuletzt gruen auf `feat/etappe-7f-streak-freeze`:
+  `npm run lint && npm run test && npm run build` — **271 Tests**.
 
 ## Verlauf (Migration, abgeschlossen)
 - Etappe 0–4 abgeschlossen. **Etappe 5 (Haertung)** — Teil 1+2 umgesetzt:
@@ -150,12 +151,74 @@ befuellt werden, die Statistik zeigt Zahlen ohne Empfehlung.
 - Konzept-Mockups (visuell, extern): Heute-Screen und Produktkonzept, siehe `docs/produkt-plan.md`.
 
 ## Naechster Schritt
-**Etappe 7a — Empfehlungs-Engine** (`src/data/today.ts`, reine Selektoren, kein UI).
-Briefing: `docs/tasks/2026-07-12-etappe-7a-empfehlungs-engine.md`. Danach 7b (Route `/heute`).
+**Etappe 7 auf `main` mergen** (am Stueck, `--no-ff`), danach **Etappe 8 planen**
+(Statustafel: 8a–8f; 8a „Freitext-Abrufstufe" ist durch Entscheidung E1 zur Pflicht geworden).
+
+**Etappe 7 ist komplett** — Branch-Kette, jeder Branch baut auf dem vorigen auf:
+`feat/etappe-7a-empfehlungs-engine` → `feat/etappe-7b-route-heute` →
+`feat/etappe-7c-onboarding-seeding` → `feat/etappe-7d-suchfeld-bruecke` → `feat/profil-im-backup` →
+`feat/etappe-7e-falschantwort-erklaeren` → `feat/etappe-7f-streak-freeze` (**Spitze der Kette**).
+Ein Merge der Spitze bringt die ganze Etappe.
+- **7a:** `src/data/today.ts` liefert `getTodayPlan()` → getypter `TodayPlan` mit vier Zustaenden
+  (`needsOnboarding` · `review` · `backlog` · `new`) — **kein Zustand ohne Vorschlag**. Priorisierung
+  nach Verzug, Schwierig-Flag, Fach, Region-Schwaeche und Nachschlage-Haeufigkeit; Tagesdosis
+  gedeckelt (Default 20, max 40 bei nahem Pruefungstermin). `lookupCounts` ist im Parametertyp schon
+  vorgesehen — den Store dazu baut 7d.
+- **7b:** Route `/heute` (`TodayPage` + `useTodayPlan`), `/` leitet dorthin. Navigation auf vier
+  Absichten (Heute · Suche · Lernen · Fortschritt); **Karteikasten und Quiz haben keinen Tab mehr,
+  bleiben aber verlinkt** (Karteikasten unter Fortschritt, Quiz unter Lernen) und deep-linkbar.
+  Der Primaerbutton uebergibt die **vorpriorisierte Auswahl** an `/lernkarten`
+  (`SessionOptions.names` + `readSessionHandoff`) — die Sitzung startet ohne Setup-Screen.
+  Verifiziert: axe 0 Verstoesse auf `/heute` (Light+Dark, beide Zustaende), Deep-Link-Reload auf
+  allen 7 Routen, End-to-End-Klick „Los" → laufende Sitzung.
+- **7c:** Onboarding (2 Fragen) auf `/heute` beim Erststart + `src/data/seeding.ts`
+  (`seedDeck(profession)` → 20 Karten, berufsgewichtet, leichte zuerst). Neuer Store
+  `useProfileStore` (`mf.profile`: Beruf + Pruefungstermin) — **neben** dem Backup, nicht darin;
+  ADR 0002 bleibt unangetastet. Neue Route `/start` (Profil aendern, aus Fortschritt verlinkt).
+  Der Pruefungstermin speist die Tagesdosis. Verifiziert: axe 0 Verstoesse auf beiden
+  Onboarding-Screens (Light+Dark), kalter Erststart → erste bewertete Karte nach 2 Klicks.
+  **Wichtig fuer alle Folge-Tasks:** `nameLatin` ist NICHT eindeutig — 5 Namen gibt es zweimal
+  (Hand/Fuss). Karten schluesseln nach `nameLatin` (ADR 0002 §2), also sind das je EINE Karte.
+  Wer Namenslisten baut (Seeding, Sessions, Vorschlaege), muss deduplizieren.
+- **7d:** Suchfeld in der Kopfzeile **jeder** Route (`HeaderSearch`, eigene `search`-Landmark).
+  Neuer `useLookupStore` (`mf.lookups`) zaehlt Detailseiten-Aufrufe je `nameLatin`; `/heute` zeigt
+  daraus „Zuletzt nachgeschlagen = noch nicht gewusst" mit **einem** Button „Alle N als Karten
+  lernen" — der Kasten fuellt sich ohne die Verwaltungsseite (Bruecke B1). Aufnahme in den Kasten
+  loescht den Zaehler. **Backup additiv erweitert:** neue OPTIONALE Sektion `lookups`; sie fehlt in
+  der Datei, solange nichts nachgeschlagen wurde, Version bleibt 2, V1-Round-Trip gruen.
+  **Architektur-Aenderung:** Die Lernsitzung liegt jetzt in `src/store/useSessionStore.ts` statt in
+  `useState` der `FlashcardsPage` — sonst haette der Griff zur Kopfzeilen-Suche die laufende Sitzung
+  zerstoert (Unmount). `useFlashcardSession` ist nur noch die Sicht darauf; sie ueberlebt Navigation,
+  bewusst NICHT den Browser-Neustart.
+- **7e:** Falschantworten erklaeren sich (`src/data/explain.ts`): ein Kontrastsatz, **komponiert**
+  aus den Daten beider Muskeln, kontrastiert genau das gefragte Merkmal — null Redaktionsarbeit,
+  alle Modi getestet, saubere Degradation bei fehlenden Feldern. `src/data/confusions.ts` haelt
+  **7 handgeschriebene Saetze** fuer klassische Pruefungsfallen; sie ersetzen das Template und sind
+  beliebig erweiterbar (nie ein Blocker). **Bruecke B2:** `ExplainSheet` legt beide Muskeln
+  nebeneinander **ueber** die Session (Sheet, kein `navigate()`), Schliessen fuehrt in dieselbe
+  Frage zurueck. **Quiz-Datenmodell additiv erweitert:** `QuizQuestion.muscleId`/`.concreteMode`
+  und `QuizOption.muscleId` — die Auswertung, `quizSeriesKey` und die Statistik sind unberuehrt
+  (ADR 0002).
+
+## Entscheidungen — alle getroffen (2026-07-12)
+**Etappe 9 ist damit nicht mehr blockiert.** Volltext + Begruendungen: `docs/produkt-plan.md`.
+- **E1 (Pruefungsform):** gemischt (schriftlich *und* muendlich/praktisch) — **trainiert wird aber
+  der freie Abruf**, MC nur als Einstiegsstufe fuer frische Karten. Macht die Freitext-Stufe (8a)
+  zur Pflicht, bestaetigt ADR 0008.
+- **E2 (Funktionelle Gruppen):** ja, aber **~12–15 kuratierte Gruppen**, automatisch aus den
+  vorhandenen Feldern vorannotiert, vom Projektinhaber nur geprueft. Kein 30×150-Handbetrieb.
+- **E3 (Palpation):** optionales Feld anlegen, **inkrementell** fuellen; Sektion erscheint nur, wo
+  etwas steht. Kein Blocker.
+- **E4 (Empfehler):** adaptiv (bereits in 7a umgesetzt).
+- **E5 (3D-Renderings fuer die 47 bildlosen Muskeln):** erlaubt, **sofern BodyParts3D-basiert**
+  (CC BY 4.0, Attribution mitfuehren). **Vor Uebernahme pruefen**, dass in der 3D-App wirklich nur
+  BodyParts3D-Geometrie steckt — sonst typografischer Platzhalter.
+- **Lernprofil im Backup:** ja, additiv nachgezogen (Branch `feat/profil-im-backup`).
 
 Offen (nur durch dich):
 - Bei oeffentlichem Deploy: `git remote add origin …` + Push (kein Remote konfiguriert).
-- Entscheidungen **E1–E3** treffen — sie blockieren Etappe 9 (Statustafel in `docs/produkt-plan.md`).
+- **Merge:** Etappe 7 wird **am Stueck** gemergt, wenn 7e + 7f fertig sind (so entschieden).
+  Branch-Kette: 7a → 7b → 7c → 7d → `feat/profil-im-backup`.
 
 ## Vorheriger Stand (Etappe 5+6)
 Etappe 5+6 abgeschlossen, `v1.0` lokal getaggt. **Laufend: Branch `feat/design-feinschliff`** —

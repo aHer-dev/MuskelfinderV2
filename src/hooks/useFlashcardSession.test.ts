@@ -1,6 +1,12 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
-import { advanceQueue, useFlashcardSession } from './useFlashcardSession';
+import { useFlashcardSession } from './useFlashcardSession';
+import {
+  advanceQueue,
+  buildQueue,
+  readSessionHandoff,
+  useSessionStore,
+} from '../store/useSessionStore';
 import { useProgressStore } from '../store/useProgressStore';
 
 describe('advanceQueue (rein)', () => {
@@ -23,6 +29,7 @@ describe('useFlashcardSession (gegen useProgressStore)', () => {
   beforeEach(() => {
     localStorage.clear();
     useProgressStore.getState().resetProgress();
+    useSessionStore.getState().exit();
   });
 
   it('beginnt im Setup (nicht gestartet) und startet erst über start()', () => {
@@ -79,5 +86,86 @@ describe('useFlashcardSession (gegen useProgressStore)', () => {
     act(() => result.current.exit());
     expect(result.current.started).toBe(false);
     expect(result.current.current).toBeNull();
+  });
+});
+
+describe('readSessionHandoff (Übergabe von /heute, 7b)', () => {
+  it('nimmt eine gültige Auswahl an und ergänzt die Voreinstellungen', () => {
+    expect(readSessionHandoff({ start: { names: ['A', 'B'] } })).toEqual({
+      names: ['A', 'B'],
+      limit: 0,
+      scope: 'all',
+    });
+  });
+
+  it('weist alles zurück, was nicht wie eine Auswahl aussieht', () => {
+    // Der Router-State kommt aus der History — er kann beliebig sein.
+    expect(readSessionHandoff(null)).toBeNull();
+    expect(readSessionHandoff('los')).toBeNull();
+    expect(readSessionHandoff({})).toBeNull();
+    expect(readSessionHandoff({ start: {} })).toBeNull();
+    expect(readSessionHandoff({ start: { names: [] } })).toBeNull();
+    expect(readSessionHandoff({ start: { names: [1, 2] } })).toBeNull();
+  });
+
+  it('übernimmt nur bekannte Bereiche, sonst „alle"', () => {
+    expect(readSessionHandoff({ start: { names: ['A'], scope: 'head' } })?.scope).toBe('head');
+    expect(readSessionHandoff({ start: { names: ['A'], scope: 'bein' } })?.scope).toBe('all');
+  });
+});
+
+describe('buildQueue mit vorgegebener Auswahl (7b)', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    useProgressStore.getState().resetProgress();
+    useSessionStore.getState().exit();
+  });
+
+  it('behält die Reihenfolge des Tagesplans bei', () => {
+    useProgressStore.getState().addCards(['A', 'B', 'C']);
+    expect(buildQueue({ names: ['C', 'A', 'B'], limit: 0, scope: 'all' })).toEqual(['C', 'A', 'B']);
+  });
+
+  it('lässt Namen weg, die nicht (mehr) fällig oder gar nicht im Kasten sind', () => {
+    useProgressStore.getState().addCards(['A']);
+    expect(buildQueue({ names: ['A', 'Unbekannt'], limit: 0, scope: 'all' })).toEqual(['A']);
+  });
+});
+
+describe('Sitzung überlebt die Navigation (7d)', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    useProgressStore.getState().resetProgress();
+    useSessionStore.getState().exit();
+  });
+
+  it('bleibt bestehen, wenn die Seite aushängt — Nachschlagen kostet die Sitzung nicht', () => {
+    useProgressStore.getState().addCards(['A', 'B', 'C']);
+
+    const first = renderHook(() => useFlashcardSession());
+    act(() => first.result.current.start({ limit: 0, scope: 'all' }));
+    act(() => first.result.current.rate('correct'));
+    expect(first.result.current.reviewed).toBe(1);
+
+    // Die Nutzerin schlägt etwas nach: /lernkarten hängt aus, die Detailseite kommt.
+    first.unmount();
+
+    // Zurück auf /lernkarten — die Sitzung läuft weiter, mit Zähler und Warteschlange.
+    const second = renderHook(() => useFlashcardSession());
+    expect(second.result.current.started).toBe(true);
+    expect(second.result.current.reviewed).toBe(1);
+    expect(second.result.current.total).toBe(3);
+    expect(second.result.current.current).toBe('B');
+  });
+
+  it('exit() beendet sie wirklich — kein Zombie beim nächsten Besuch', () => {
+    useProgressStore.getState().addCards(['A']);
+    const { result, unmount } = renderHook(() => useFlashcardSession());
+    act(() => result.current.start({ limit: 0, scope: 'all' }));
+    act(() => result.current.exit());
+    unmount();
+
+    const again = renderHook(() => useFlashcardSession());
+    expect(again.result.current.started).toBe(false);
   });
 });

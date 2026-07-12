@@ -269,3 +269,14 @@
     transform: rotate(360deg);
   }
 }
+
+/* ---- Kopfzeilen-Suche (7d) -------------------------------------------- */
+/* Nachschlagen bleibt von jeder Route aus einen Griff entfernt. Sie sitzt über
+   dem Seiteninhalt, nicht in der Rail: das Feld braucht Breite, kein Icon. */
+.header-search {
+  margin-bottom: var(--spacing-lg);
+}
+
+.shell--mobile .header-search {
+  margin-bottom: var(--spacing-md);
+}

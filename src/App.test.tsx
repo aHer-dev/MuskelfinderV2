@@ -1,22 +1,23 @@
 import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import App from './App'
 
 describe('App (Smoke)', () => {
-  it('rendert und leitet die Wurzel auf die Suche um', async () => {
+  it('leitet die Wurzel auf den Heute-Screen um, nicht mehr auf die Suche (ADR 0007)', async () => {
     render(<App />)
     // Seiten werden lazy geladen (Etappe 5) — auf den aufgelösten Chunk warten.
+    // Beim allerersten Start (kein Profil, kein Deck) ist das Onboarding der Vorschlag (7c).
     expect(
-      await screen.findByRole('heading', { level: 1, name: /^Muskulatur$/i }),
+      await screen.findByRole('heading', { level: 1, name: /Was lernst du\?/i }),
     ).toBeInTheDocument()
   })
 
-  it('zeigt die Hauptnavigation mit allen Routen', () => {
+  it('zeigt die Hauptnavigation mit den vier Absichten', () => {
     render(<App />)
     const nav = screen.getByRole('navigation', { name: /Hauptnavigation/i })
     expect(nav).toBeInTheDocument()
-    for (const label of ['Suche', 'Lernkarten', 'Quiz', 'Statistik']) {
-      expect(screen.getByRole('link', { name: new RegExp(label, 'i') })).toBeInTheDocument()
+    for (const label of ['Heute', 'Suche', 'Lernen', 'Fortschritt']) {
+      expect(within(nav).getByRole('link', { name: new RegExp(label, 'i') })).toBeInTheDocument()
     }
   })
 })

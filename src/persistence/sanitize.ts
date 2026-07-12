@@ -13,6 +13,10 @@
 import {
   type FlashcardCard,
   type FlashcardsSection,
+  type LookupEntry,
+  type LookupsSection,
+  type ProfileSection,
+  type StreakSection,
   type QuizHistoryEntry,
   type QuizSeriesEntry,
   type QuizSeriesSection,
@@ -184,4 +188,97 @@ export function sanitizeQuizSeries(data: unknown, options: SanitizeOptions = {})
   }
 
   return normalized;
+}
+
+/* ---------- Nachgeschlagen (7d) ----------------------------------------- */
+
+export function createEmptyLookupsSection(): LookupsSection {
+  return { version: 2, entries: {} };
+}
+
+export function sanitizeLookupEntry(entry: unknown): LookupEntry {
+  const e = isPlainObject(entry) ? entry : {};
+  return {
+    // Ein Eintrag ohne Aufruf ergibt keinen Sinn — mindestens 1.
+    count: Math.max(1, toNonNegativeInt(e.count, 1)),
+    lastLookup: toISODate(e.lastLookup, new Date().toISOString()),
+  };
+}
+
+/**
+ * Nachschlage-Zähler härten. Nie `strict`: die Sektion ist optional (ADR 0002 §1),
+ * ein fehlender oder kaputter Block darf einen sonst gültigen Import nicht scheitern
+ * lassen — die Lernkarten sind das Wertvolle, die Zähler sind Komfort.
+ */
+export function sanitizeLookups(data: unknown): LookupsSection {
+  if (!isPlainObject(data)) return createEmptyLookupsSection();
+
+  const rawEntries = isPlainObject(data.entries) ? data.entries : {};
+  const entries: Record<string, LookupEntry> = {};
+  for (const [name, entry] of Object.entries(rawEntries)) {
+    if (typeof name !== 'string' || name.trim() === '') continue;
+    entries[name] = sanitizeLookupEntry(entry);
+  }
+
+  return { version: 2, entries };
+}
+
+/* ---------- Lernprofil (7c) --------------------------------------------- */
+
+const PROFESSIONS = ['physio', 'ergo', 'logo'];
+
+export function createEmptyProfileSection(): ProfileSection {
+  return { version: 2, profession: null, examDate: null };
+}
+
+/**
+ * Lernprofil härten. Nie `strict` — die Sektion ist optional und darf einen sonst
+ * gültigen Import nicht scheitern lassen. Ein unbekannter Beruf wird verworfen statt
+ * durchgereicht: die App würde sonst über einen Wert stolpern, den sie nicht kennt.
+ */
+export function sanitizeProfile(data: unknown): ProfileSection {
+  if (!isPlainObject(data)) return createEmptyProfileSection();
+
+  const profession =
+    typeof data.profession === 'string' && PROFESSIONS.includes(data.profession)
+      ? data.profession
+      : null;
+
+  return { version: 2, profession, examDate: toOptionalDayStamp(data.examDate) };
+}
+
+/* ---------- Tages-Streak (7f) ------------------------------------------- */
+
+export function createEmptyStreakSection(): StreakSection {
+  return {
+    version: 2,
+    current: 0,
+    best: 0,
+    lastCompletedDay: null,
+    freezes: 0,
+    day: null,
+    reviewedToday: 0,
+    earnedFreezeToday: false,
+  };
+}
+
+/**
+ * Streak härten. Nie `strict` (optionale Sektion). `best` kann nie kleiner als
+ * `current` sein, und die Freeze-Zahl wird gedeckelt — sonst liesse sich der Streak
+ * über eine handgeschriebene Backup-Datei beliebig aufblasen.
+ */
+export function sanitizeStreak(data: unknown, maxFreezes = 2): StreakSection {
+  if (!isPlainObject(data)) return createEmptyStreakSection();
+
+  const current = toNonNegativeInt(data.current);
+  return {
+    version: 2,
+    current,
+    best: Math.max(current, toNonNegativeInt(data.best)),
+    lastCompletedDay: toOptionalDayStamp(data.lastCompletedDay),
+    freezes: toClampedInt(data.freezes, 0, 0, maxFreezes),
+    day: toOptionalDayStamp(data.day),
+    reviewedToday: toNonNegativeInt(data.reviewedToday),
+    earnedFreezeToday: !!data.earnedFreezeToday,
+  };
 }

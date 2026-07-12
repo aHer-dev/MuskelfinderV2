@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { getMuscleByLatinName, getMuscles, getRegions } from '../data';
 import { regionLabel } from '../data/labels';
 import { isDue } from '../persistence/leitner';
@@ -7,7 +7,7 @@ import { Flashcard } from '../components/features/flashcards/Flashcard';
 import { LeitnerBoxes } from '../components/features/flashcards/LeitnerBoxes';
 import { RatingBar } from '../components/features/flashcards/RatingBar';
 import { useFlashcardSession } from '../hooks/useFlashcardSession';
-import type { RegionScope } from '../hooks/useFlashcardSession';
+import { readSessionHandoff, type RegionScope } from '../store/useSessionStore';
 import { useProgressStore } from '../store/useProgressStore';
 import { Icon } from '../components/ui/Icon';
 import { EmptyState } from '../components/ui/EmptyState';
@@ -39,6 +39,20 @@ export function FlashcardsPage() {
   const [limit, setLimit] = useState(0);
   const [scope, setScope] = useState<RegionScope>('all');
 
+  /* Übergabe von `/heute` (7b): der Tagesplan hat die Karten bereits ausgewählt und
+     sortiert — die Sitzung startet dann ohne Umweg über den Setup-Screen. Pro
+     Navigation genau einmal, sonst würde ein Sitzungsabbruch sofort neu starten. */
+  const location = useLocation();
+  const startSession = session.start;
+  const consumedKey = useRef<string | null>(null);
+  useEffect(() => {
+    if (consumedKey.current === location.key) return;
+    const handoff = readSessionHandoff(location.state);
+    if (!handoff) return;
+    consumedKey.current = location.key;
+    startSession(handoff);
+  }, [location.key, location.state, startSession]);
+
   const byFach = useMemo(() => {
     const acc = Array<number>(8).fill(0);
     for (const card of Object.values(cards)) acc[card.fach]++;
@@ -60,13 +74,22 @@ export function FlashcardsPage() {
       <header className="flashcards__header">
         <p className="page__eyebrow">Spaced Repetition</p>
         <h1 className="page__title">Lernkarten</h1>
-        <Link to="/karteikasten" className="flashcards__manage">
-          <Icon name="icList" size={16} />
-          <span>
-            Muskeln im Karteikasten verwalten{deckSize > 0 ? ` (${deckSize})` : ''}
-          </span>
-          <Icon name="icArrow" size={16} />
-        </Link>
+        {/* „Lernen" ist der Hub für beide Abrufformen: Karten und Quiz (ADR 0007 —
+            das Quiz verliert den Tab-Rang, nicht die Erreichbarkeit). */}
+        <div className="flashcards__links">
+          <Link to="/karteikasten" className="flashcards__manage">
+            <Icon name="icList" size={16} />
+            <span>
+              Muskeln im Karteikasten verwalten{deckSize > 0 ? ` (${deckSize})` : ''}
+            </span>
+            <Icon name="icArrow" size={16} />
+          </Link>
+          <Link to="/quiz" className="flashcards__manage">
+            <Icon name="icQuiz" size={16} />
+            <span>Stattdessen ein Quiz spielen</span>
+            <Icon name="icArrow" size={16} />
+          </Link>
+        </div>
       </header>
 
       {!session.started ? (

@@ -29,14 +29,30 @@ function shuffle<T>(items: readonly T[], rng: () => number): T[] {
   return result;
 }
 
-/** Wählt bis zu `n` verschiedene Distraktor-Labels (≠ correct). */
+/** Ein Antwort-Kandidat: das Label und der Muskel, aus dessen Daten es stammt. */
+interface Candidate {
+  label: string;
+  muscleId: string;
+}
+
+/**
+ * Wählt bis zu `n` verschiedene Distraktoren (≠ correct). Jeder trägt seinen Muskel mit —
+ * ohne diese Herkunft könnte die Erklärung (7e) den gewählten Distraktor nur noch über
+ * seinen Text zurückraten.
+ */
 function pickDistractors(
-  pool: readonly string[],
+  pool: readonly Candidate[],
   correct: string,
   n: number,
   rng: () => number,
-): string[] {
-  const unique = [...new Set(pool)].filter((label) => label !== correct && label.trim() !== '');
+): Candidate[] {
+  const seen = new Set<string>([correct]);
+  const unique: Candidate[] = [];
+  for (const candidate of pool) {
+    if (candidate.label.trim() === '' || seen.has(candidate.label)) continue;
+    seen.add(candidate.label);
+    unique.push(candidate);
+  }
   return shuffle(unique, rng).slice(0, n);
 }
 
@@ -77,8 +93,13 @@ export function quizSeriesKey(mode: QuizMode, regions: RegionId[] = []): string 
 interface QuestionSpec {
   prompt: string;
   correctLabel: string;
-  distractorPool: string[];
+  distractorPool: Candidate[];
   imageUrl?: string;
+}
+
+/** Kandidatenliste aus einem Muskelfeld — Label plus Herkunft. */
+function candidates(all: readonly Muscle[], field: (m: Muscle) => string): Candidate[] {
+  return all.map((m) => ({ label: field(m), muscleId: m.id }));
 }
 
 /** Muskeln, die für den Modus taugliche Daten haben. */
@@ -99,31 +120,31 @@ function specFor(muscle: Muscle, mode: QuizMode, all: readonly Muscle[]): Questi
       return {
         prompt: muscle.nameLatin,
         correctLabel: muscle.functionDescription,
-        distractorPool: all.map((m) => m.functionDescription),
+        distractorPool: candidates(all, (m) => m.functionDescription),
       };
     case 'innervation':
       return {
         prompt: muscle.nameLatin,
         correctLabel: muscle.innervation,
-        distractorPool: all.map((m) => m.innervation),
+        distractorPool: candidates(all, (m) => m.innervation),
       };
     case 'origin-insertion':
       return {
         prompt: muscle.origin,
         correctLabel: muscle.insertion,
-        distractorPool: all.map((m) => m.insertion),
+        distractorPool: candidates(all, (m) => m.insertion),
       };
     case 'insertion-origin':
       return {
         prompt: muscle.insertion,
         correctLabel: muscle.origin,
-        distractorPool: all.map((m) => m.origin),
+        distractorPool: candidates(all, (m) => m.origin),
       };
     case 'image':
       return {
         prompt: 'Welcher Muskel ist abgebildet?',
         correctLabel: muscle.nameLatin,
-        distractorPool: all.map((m) => m.nameLatin),
+        distractorPool: candidates(all, (m) => m.nameLatin),
         imageUrl: muscle.images[0]?.url,
       };
     case 'function-to-muscle':
@@ -131,7 +152,7 @@ function specFor(muscle: Muscle, mode: QuizMode, all: readonly Muscle[]): Questi
       return {
         prompt: muscle.functionDescription,
         correctLabel: muscle.nameLatin,
-        distractorPool: all.map((m) => m.nameLatin),
+        distractorPool: candidates(all, (m) => m.nameLatin),
       };
   }
 }
@@ -147,13 +168,19 @@ function textQuestion(
 ): QuizQuestion {
   const spec = specFor(muscle, concreteMode, all);
   const distractors = pickDistractors(spec.distractorPool, spec.correctLabel, 3, rng);
-  const labels = shuffle([spec.correctLabel, ...distractors], rng);
-  const options = labels.map((label, oIndex) => ({ id: `${qid}-o${oIndex}`, label }));
+  const picks = shuffle([{ label: spec.correctLabel, muscleId: muscle.id }, ...distractors], rng);
+  const options = picks.map((candidate, oIndex) => ({
+    id: `${qid}-o${oIndex}`,
+    label: candidate.label,
+    muscleId: candidate.muscleId,
+  }));
   const correctId = options.find((o) => o.label === spec.correctLabel)?.id ?? options[0].id;
   return {
     id: qid,
     mode: displayMode,
+    concreteMode,
     category: MODE_CATEGORY[concreteMode], // konkrete Richtung anzeigen (auch in „Gemischt")
+    muscleId: muscle.id,
     prompt: spec.prompt,
     imageUrl: spec.imageUrl,
     options,
@@ -176,12 +203,15 @@ function imageOptionQuestion(
     id: `${qid}-o${oIndex}`,
     label: m.nameLatin,
     imageUrl: m.images[0]?.url,
+    muscleId: m.id,
   }));
   const correctId = options.find((o) => o.label === muscle.nameLatin)?.id ?? options[0].id;
   return {
     id: qid,
     mode: displayMode,
+    concreteMode: 'name-image',
     category: MODE_CATEGORY['name-image'], // konkrete Richtung, auch innerhalb „Bild ↔ Name"
+    muscleId: muscle.id,
     prompt: muscle.nameLatin,
     options,
     correctId,

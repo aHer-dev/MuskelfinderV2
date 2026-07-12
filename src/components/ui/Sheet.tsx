@@ -91,7 +91,12 @@ export function Sheet({ open, title, onClose, children, footer }: SheetProps) {
             </button>
           </div>
         )}
-        <div className="sheet__body">{children}</div>
+        {/* Der Inhalt scrollt. Ohne `tabIndex` käme man per Tastatur nicht an den
+            unteren Teil heran (axe „scrollable-region-focusable") — wer nicht mausen
+            kann, sähe die Hälfte des Vergleichs nie. */}
+        <div className="sheet__body" tabIndex={0}>
+          {children}
+        </div>
         {footer && <div className="sheet__footer">{footer}</div>}
       </div>
     </div>,

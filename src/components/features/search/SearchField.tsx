@@ -1,8 +1,16 @@
 import { Icon } from '../../ui/Icon';
 import { useFilterStore } from '../../../store/useFilterStore';
 
+interface SearchFieldProps {
+  /**
+   * Wird beim Tippen gerufen — die Kopfzeile (7d) nutzt das, um zur Trefferliste
+   * zu wechseln, wenn gerade eine andere Route offen ist. Ohne Prop passiert nichts.
+   */
+  onActivate?: () => void;
+}
+
 /** Suchfeld — schreibt direkt in den Filter-Store (Debounce passiert im Hook). */
-export function SearchField() {
+export function SearchField({ onActivate }: SearchFieldProps = {}) {
   const query = useFilterStore((s) => s.query);
   const setQuery = useFilterStore((s) => s.setQuery);
 
@@ -15,7 +23,10 @@ export function SearchField() {
         placeholder="Muskel suchen …"
         aria-label="Muskel suchen"
         value={query}
-        onChange={(event) => setQuery(event.target.value)}
+        onChange={(event) => {
+          setQuery(event.target.value);
+          onActivate?.();
+        }}
       />
       {query && (
         <button

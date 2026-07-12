@@ -7,6 +7,81 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- **Etappe 7f — Tages-Streak mit Freeze** (`src/persistence/streak.ts`, `useStreakStore`): Ein Grund
+  wiederzukommen, **ohne Schuld-Mechanik**. Der Streak zählt aufeinanderfolgende Tage mit erledigter
+  Tagesdosis (dieselbe Dosis, die der Tagesplan vorschlägt — ein naher Prüfungstermin hebt sie).
+  **Der Freeze wird verdient, nicht gekauft:** das Doppelte der Tagesdosis an einem Tag bringt einen
+  Freeze aufs Konto (max. 2, einer pro Tag). Bei einem Fehltag wird er beim nächsten Öffnen
+  **automatisch eingelöst** — ohne Nachfrage. Reißt die Serie doch, lautet die Botschaft „Neue
+  Serie — weiter geht's", nie „du hast X verloren"; die Bestmarke und die verdienten Freezes bleiben.
+  Tagesgrenzen rechnen **lokal** (nicht UTC), Sommerzeit-fest, und eine zurückgedrehte Uhr kann den
+  Streak weder aufblähen noch zerstören. Anzeige: eine nüchterne Zeile auf `/heute` („5 Tage in
+  Folge · 1 Freeze") — kein Feuer, kein Konfetti, keine Animation, nie nur über Farbe. Persistenz
+  **additiv**: optionale Backup-Sektion `streak`, die eine handgeschriebene Datei nicht aufblasen
+  kann (Freezes gedeckelt, `best ≥ current`).
+- **Etappe 7e — Falschantworten erklären sich + Brücke B2** (`src/data/explain.ts`,
+  `confusions.ts`, `ExplainSheet`): Wer falsch liegt, sieht nicht mehr nur die Lösung, sondern
+  **warum** — ein Kontrastsatz, der genau das Merkmal gegenüberstellt, nach dem gefragt war
+  („N. peroneus profundus versorgt M. tibialis anterior. M. rhomboideus minor wird von
+  N. dorsalis scapulae versorgt."). Der Satz wird **komponiert**, nicht redigiert: null
+  Redaktionsarbeit für den Massenfall, getestet über **alle** Quizmodi inkl. sauberer Degradation
+  bei fehlenden Feldern. Für die klassischen Prüfungsfallen (Supra-/Infraspinatus, Teres
+  major/minor, Pronatoren, Glutei …) liegen **7 handgeschriebene Sätze** in `confusions.ts`, die
+  das Template ersetzen — die Liste ist erweiterbar und nie ein Blocker. **Brücke B2:** „Beide
+  vergleichen" öffnet ein `Sheet` **über** der laufenden Session mit beiden Muskeln nebeneinander
+  (Bild, Funktion, Ursprung, Ansatz, Innervation; die gefragte Zeile hervorgehoben) — Schließen
+  führt in dieselbe Frage zurück, der Quiz-Zustand wird nie angefasst. Kein `navigate()`, denn wer
+  eine Session verlässt, kommt nicht zurück.
+- **Lernprofil im Backup** (Entscheidung 2026-07-12): Beruf und Prüfungstermin liegen jetzt auch im
+  Backup — als **additive, optionale** Sektion `profile`, nach demselben Muster wie `lookups`. Sie
+  fehlt in der Datei, solange kein Profil gesetzt ist; ältere Versionen ignorieren den Schlüssel;
+  Backup-Version bleibt 2; V1-Round-Trip grün. Grund: Der Prüfungstermin steuert die Tagesdosis —
+  ein Gerätewechsel soll ihn nicht verlieren. Ein unbekannter Beruf wird beim Import verworfen statt
+  durchgereicht.
+- **Etappe 7d — Suchfeld überall + Brücke B1 „nachgeschlagen = noch nicht gewusst"**: Das Suchfeld
+  sitzt jetzt in der **Kopfzeile jeder Route** (eigene `search`-Landmark, tastaturerreichbar mit
+  sichtbarem Fokus-Ring) — der neue Einstieg macht das Nachschlagen nicht teurer. Neuer
+  `useLookupStore` zählt Detailseiten-Aufrufe je `nameLatin`; auf `/heute` erscheint daraus die
+  Sektion **„Zuletzt nachgeschlagen — *= noch nicht gewusst*"** (häufigste zuerst, mit Zähler und
+  Region) samt **einem** Button „Alle N als Karten lernen". Damit füllt sich der Karteikasten durch
+  normale Benutzung — im Test wie im Browser nachgewiesen, **ohne dass `/karteikasten` je geöffnet
+  wurde**. Wer im Kasten liegt, wird nicht mehr vorgeschlagen; wer aufgenommen wird, verliert seinen
+  Zähler (er ist keine Lücke mehr). Mehrfach Nachgeschlagenes wird in der Empfehlung aus 7a höher
+  priorisiert. Persistenz **additiv**: neue, optionale Backup-Sektion `lookups` — sie fehlt in der
+  Datei, solange nichts nachgeschlagen wurde, ältere Versionen ignorieren den Schlüssel, die
+  Backup-Version bleibt 2 und der Round-Trip gegen die V1-Fixtures grün.
+- **Etappe 7c — Onboarding in zwei Fragen + Auto-Seeding** (`src/data/seeding.ts`,
+  `components/features/onboarding/`): Der leere Karteikasten verschwindet als Problem. Beim
+  Erststart fragt `/heute` **„Was lernst du?"** (Physio · Ergo · Logo — die Wahl *ist* die Handlung,
+  kein „Weiter" dahinter) und **„Wann ist deine Prüfung?"** (Datum, überspringbar). Daraus legt
+  `seedDeck()` ein **Startdeck von 20 Karten** an — berufsgewichtet (Logo → Kopf/Hals inkl. Kau-,
+  Zungenbein- und Kehlkopfmuskulatur; Ergo → obere Extremität, Hand & Finger zuerst; Physio →
+  Extremitäten + Rumpf), innerhalb der Region die leichten Muskeln zuerst — und führt **direkt in
+  die erste Sitzung**, ohne Bestätigungsseite. Live gemessen: erste bewertete Karte nach zwei
+  Klicks. Das Prüfungsdatum speist die Tagesdosis aus 7a (näher = größer). Profil (Beruf, Termin)
+  liegt in einem eigenen Store `mf.profile` — **neben** dem Backup-Format, nicht darin: das
+  eingefrorene V1-Format (ADR 0002 §1) bleibt unangetastet, der Round-Trip-Test gegen die
+  V1-Fixtures grün. Neue Route `/start` macht das Profil aus *Fortschritt* heraus änderbar.
+- **Etappe 7b — Route `/heute` + Navigation nach Absichten** (ADR 0007): Die App öffnet nicht mehr
+  auf einer Liste mit 150 Muskeln, sondern auf **einem Vorschlag**. Neue `TodayPage` mit
+  Diagnosezeile („5 Karten fällig · 2 davon Obere Extremität — deine schwächste Region · ca. 2 Min"),
+  **genau einem Primärbutton** je Zustand, ruhigen Sekundär-Aktionen (Quiz · Karteikasten ·
+  Nachschlagen) und klein gehaltenem Fortschritt. Der Button startet die Sitzung **mit genau den
+  Karten aus dem Tagesplan, in dessen Reihenfolge** (`SessionOptions.names`, validiert per
+  `readSessionHandoff`) — kein Umweg über den Setup-Screen. Im Zustand „nichts fällig" legt er die
+  vorgeschlagenen neuen Muskeln an und lernt sie sofort; bei leerem Kasten führt er in den
+  Karteikasten (das Onboarding baut 7c). Die Formulierung entsteht im UI, die Datenschicht liefert
+  weiterhin nur Zahlen und Codes.
+- **Etappe 7a — Empfehlungs-Engine** (`src/data/today.ts`): `getTodayPlan()` beantwortet als reine
+  Funktion, was heute dran ist, und gibt einen getypten `TodayPlan` zurück — Zahlen und Codes, keine
+  Sätze (die Formulierung gehört ins UI, 7b). **Kein Zustand ohne Vorschlag:** leerer Kasten →
+  `needsOnboarding` *mit* Startvorschlägen, nichts fällig → `new` (neue Muskeln aus dem Pfad),
+  Überfällig-Stau → `backlog` auf eine verdaubare Tagesdosis gedeckelt (die volle Zahl bleibt als
+  `dueTotal` sichtbar), sonst `review`. Fällige Karten werden priorisiert nach Verzug, Schwierig-Flag,
+  niedrigem Fach, Schwäche der Region (aus `stats.ts`) und Nachschlage-Häufigkeit; die Tagesdosis
+  wächst bei nahem Prüfungstermin (Deckel 40). Der Parametertyp sieht `lookupCounts` bereits vor —
+  den Store dazu baut 7d, sein Fehlen ist kein Fehler. Leitner-Fälligkeit und Backup-Format bleiben
+  unangetastet (ADR 0002). 15 neue Tests, gesamt 185.
 - **Produktplan für Etappen 7–9** (`docs/produkt-plan.md`): der Weg vom Nachschlagewerk zum Coach,
   mit **Statustafel** (jeder Schritt 7a–9d: offen/laufend/fertig/blockiert), den vier Brücken
   zwischen Suche und Lernen, Abhängigkeitsgraph und den fünf offenen Entscheidungen (E1–E5), die
@@ -23,7 +98,29 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   Timer im normalen Lernen …) und die Nicht-Ziele der gesamten Etappe. Aus der Statustafel führt
   je Schritt ein Link direkt ins Briefing.
 
+### Fixed
+- **Grammatik im Erklärsatz** (7e): Plural-Muskeln („Mm. lumbricales I–IV") bekommen ein
+  Plural-Verb — vorher stand dort „Mm. lumbricales I–IV **wird** von … versorgt".
+- **Sheet-Inhalt war per Tastatur nicht erreichbar** (axe `scrollable-region-focusable`, serious):
+  Der scrollbare Sheet-Body ist jetzt fokussierbar und zeigt seinen Fokus. Betraf alle Sheets, nicht
+  nur das neue — wer nicht mausen kann, kam an den unteren Teil des Inhalts nicht heran.
+- **Namensdubletten im Startdeck** (7c): Fünf lateinische Namen gibt es zweimal (Hand *und* Fuß,
+  z. B. `M. flexor digiti minimi brevis`). Da Karten nach `nameLatin` geschlüsselt sind (ADR 0002 §2),
+  sind zwei solche Muskeln **eine** Karte — ohne Sperre wären aus 20 versprochenen Karten stillschweigend
+  19 geworden. `seedDeck` dedupliziert jetzt beim Ziehen und füllt nach.
+
 ### Changed
+- **Die Lernsitzung liegt jetzt zentral** (`src/store/useSessionStore.ts`, 7d) statt in
+  `useState` der `FlashcardsPage`. Grund: Mit dem Suchfeld in der Kopfzeile verlässt man mitten in
+  der Sitzung die Route — lag der Zustand in der Komponente, war die Sitzung mit dem Unmount weg.
+  Sie übersteht die Navigation jetzt (Nachschlagen kostet keine Sitzung mehr), **nicht** aber einen
+  Browser-Neustart; das ist Absicht, die Bewertungen selbst liegen ohnehin nach jeder Karte im
+  Fortschritts-Store. `useFlashcardSession` ist nur noch die abgeleitete Sicht darauf.
+- **Navigation auf vier Absichten** (7b): Heute · Suche · Lernen · Fortschritt — statt sechs
+  gleichrangiger Werkzeuge. **Karteikasten und Quiz verlieren nur den Tab-Rang, nicht die
+  Erreichbarkeit:** der Karteikasten hängt jetzt sichtbar unter *Fortschritt*, das Quiz unter
+  *Lernen*; beide Routen bleiben deep-linkbar (Reload auf allen Routen live geprüft). `/` leitet
+  auf `/heute` statt auf `/suche`.
 - **Statistik entdoppelt:** Level und XP standen dreifach auf einem Screen (Kachel, Ring, Text).
   Die Kachelreihe zeigt jetzt vier *verschiedene* Kennzahlen (Karten im Kasten, Gemeistert,
   Quiz-Trefferquote, Quiz-Runden); Level/XP haben ihren Platz in der Level-Karte.
@@ -76,6 +173,11 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   vollständig — es fehlte kein Zeichen.
 
 ### Fixed
+- **Grammatik im Erklärsatz** (7e): Plural-Muskeln („Mm. lumbricales I–IV") bekommen ein
+  Plural-Verb — vorher stand dort „Mm. lumbricales I–IV **wird** von … versorgt".
+- **Sheet-Inhalt war per Tastatur nicht erreichbar** (axe `scrollable-region-focusable`, serious):
+  Der scrollbare Sheet-Body ist jetzt fokussierbar und zeigt seinen Fokus. Betraf alle Sheets, nicht
+  nur das neue — wer nicht mausen kann, kam an den unteren Teil des Inhalts nicht heran.
 - **14 Muskeln bekamen keinen 3D-Button, obwohl die 3D-App sie kennt.** `buildMuscleKey` strippte
   nur das Präfix „M.", nicht den Plural „Mm." — „Mm. lumbricales I–IV" erzeugte den Key
   `m_mm_lumbricales_i_iv` und traf damit keinen Mapping-Eintrag. Jetzt `mm?\.` (plus „Musculi").

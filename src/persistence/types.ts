@@ -62,6 +62,67 @@ export interface QuizSeriesEntry {
 /** Schlüssel = opaker Modus-Key (`"<quizType>::<filterSignatur>"`), verbatim erhalten. */
 export type QuizSeriesSection = Record<string, QuizSeriesEntry>;
 
+/* ---------- Nachgeschlagen (Etappe 7d) ---------------------------------- */
+
+/** Ein nachgeschlagener Muskel: wie oft, und wann zuletzt. */
+export interface LookupEntry {
+  /** Aufrufe der Detailseite, ≥ 1. */
+  count: number;
+  /** ISO-Datum des letzten Aufrufs. */
+  lastLookup: string;
+}
+
+/**
+ * Nachschlage-Zähler je Muskel. **Additive Sektion** (ADR 0002 §1): sie ist im
+ * Backup OPTIONAL und fehlt in jeder Datei, die vor 7d geschrieben wurde. Ältere
+ * Versionen (und V1) ignorieren den Schlüssel — die drei Pflicht-Sektionen sind
+ * unverändert, die Backup-Version bleibt 2.
+ */
+export interface LookupsSection {
+  version: 2;
+  /** Schlüssel = lateinischer Muskelname, wie bei den Lernkarten (ADR 0002 §2). */
+  entries: Record<string, LookupEntry>;
+}
+
+/* ---------- Lernprofil (Etappe 7c) -------------------------------------- */
+
+/**
+ * Beruf + Prüfungstermin. Wie `lookups` eine **additive, optionale** Sektion:
+ * Sie fehlt in jeder Datei, die vor 7c/7d geschrieben wurde, und in jeder, deren
+ * Nutzerin nie ein Profil gesetzt hat. Der Termin steuert die Tagesdosis — er ist
+ * es wert, einen Gerätewechsel zu überleben.
+ */
+export interface ProfileSection {
+  version: 2;
+  /** 'physio' | 'ergo' | 'logo' — als String, damit die Persistenz nichts über die Domäne weiß. */
+  profession: string | null;
+  /** „YYYY-MM-DD" oder null (übersprungen). */
+  examDate: string | null;
+}
+
+/* ---------- Tages-Streak (Etappe 7f) ------------------------------------ */
+
+/**
+ * Aufeinanderfolgende Tage mit erledigter Tagesdosis, plus verdiente Freezes.
+ * Additive, optionale Sektion — wie `lookups`/`profile`. NICHT zu verwechseln mit
+ * der Quiz-Antwortserie (`streakXp`), die nichts mit Tagen zu tun hat.
+ */
+export interface StreakSection {
+  version: 2;
+  /** Aufeinanderfolgende Tage mit erledigter Tagesdosis. */
+  current: number;
+  best: number;
+  /** „YYYY-MM-DD" des letzten Tages mit erfüllter Dosis, oder null. */
+  lastCompletedDay: string | null;
+  freezes: number;
+  /** Der Tag, auf den sich `reviewedToday` bezieht — sonst zählte man über Mitternacht weiter. */
+  day: string | null;
+  /** Heute bewertete Karten. */
+  reviewedToday: number;
+  /** Wurde heute schon ein Freeze verdient? (Max. einer pro Tag.) */
+  earnedFreezeToday: boolean;
+}
+
 /* ---------- Backup-Datei ------------------------------------------------ */
 
 export interface BackupFile {
@@ -71,13 +132,22 @@ export interface BackupFile {
   flashcards: FlashcardsSection;
   xp: XpSection;
   quizSeries: QuizSeriesSection;
+  /** Fehlt, solange nichts nachgeschlagen wurde — dann bleibt die Datei byte-gleich zu vor 7d. */
+  lookups?: LookupsSection;
+  /** Fehlt, solange kein Profil gesetzt wurde. */
+  profile?: ProfileSection;
+  /** Fehlt, solange nie ein Tag abgeschlossen wurde. */
+  streak?: StreakSection;
 }
 
-/** Die drei Sektionen, die Import → Store und Store → Export überträgt. */
+/** Die Sektionen, die Import → Store und Store → Export überträgt. */
 export interface BackupSections {
   flashcards: FlashcardsSection;
   xp: XpSection;
   quizSeries: QuizSeriesSection;
+  lookups?: LookupsSection;
+  profile?: ProfileSection;
+  streak?: StreakSection;
 }
 
 /** Ergebnis eines erfolgreichen Imports. Legacy-Backups liefern nur `flashcards`. */
@@ -87,5 +157,8 @@ export interface ImportResult {
     flashcards: FlashcardsSection;
     xp?: XpSection;
     quizSeries?: QuizSeriesSection;
+    lookups?: LookupsSection;
+    profile?: ProfileSection;
+    streak?: StreakSection;
   };
 }

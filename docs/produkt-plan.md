@@ -55,18 +55,18 @@ Drei tragende Entscheidungen (Details in den ADRs):
 > Status: `offen` · `laufend` · `fertig` · `blockiert`
 
 ### Etappe 7 — Die App bekommt eine Meinung
-*Kein Schritt hier ist von einer offenen Entscheidung blockiert. Sofort startklar.*
+***Vollständig umgesetzt (2026-07-12).** Alle sechs Schritte fertig; Merge auf `main` am Stück.*
 **Rahmen-Briefing für alle Agenten (Pflicht vor jedem Task):**
 [tasks/2026-07-12-etappe-7-uebersicht.md](tasks/2026-07-12-etappe-7-uebersicht.md)
 
 | ID | Schritt | Briefing | Status | Branch | Blockiert durch |
 |----|---------|----------|--------|--------|-----------------|
-| 7a | Empfehlungs-Engine (`src/data/today.ts`), reine Selektoren, kein UI | [7a](tasks/2026-07-12-etappe-7a-empfehlungs-engine.md) | offen | — | — |
-| 7b | Route `/heute` als Einstieg + Navigation auf vier Absichten | [7b](tasks/2026-07-12-etappe-7b-route-heute.md) | offen | — | 7a |
-| 7c | Onboarding (2 Fragen) + Auto-Seeding des Karteikastens | [7c](tasks/2026-07-12-etappe-7c-onboarding-seeding.md) | offen | — | 7a, 7b |
-| 7d | Persistentes Suchfeld + Aufrufzähler + „Zuletzt nachgeschlagen“ (**B1**) | [7d](tasks/2026-07-12-etappe-7d-suchfeld-und-bruecke-b1.md) | offen | — | 7b |
-| 7e | Falschantwort-Erklärung (Template) + Detail-Sheet in der Session (**B2**) | [7e](tasks/2026-07-12-etappe-7e-falschantwort-erklaeren.md) | offen | — | — |
-| 7f | Streak + Freeze | [7f](tasks/2026-07-12-etappe-7f-streak-und-freeze.md) | offen | — | — |
+| 7a | Empfehlungs-Engine (`src/data/today.ts`), reine Selektoren, kein UI | [7a](tasks/2026-07-12-etappe-7a-empfehlungs-engine.md) | **fertig** | `feat/etappe-7a-empfehlungs-engine` | — |
+| 7b | Route `/heute` als Einstieg + Navigation auf vier Absichten | [7b](tasks/2026-07-12-etappe-7b-route-heute.md) | **fertig** | `feat/etappe-7b-route-heute` | — |
+| 7c | Onboarding (2 Fragen) + Auto-Seeding des Karteikastens | [7c](tasks/2026-07-12-etappe-7c-onboarding-seeding.md) | **fertig** | `feat/etappe-7c-onboarding-seeding` | — |
+| 7d | Persistentes Suchfeld + Aufrufzähler + „Zuletzt nachgeschlagen“ (**B1**) | [7d](tasks/2026-07-12-etappe-7d-suchfeld-und-bruecke-b1.md) | **fertig** | `feat/etappe-7d-suchfeld-bruecke` | — |
+| 7e | Falschantwort-Erklärung (Template) + Detail-Sheet in der Session (**B2**) | [7e](tasks/2026-07-12-etappe-7e-falschantwort-erklaeren.md) | **fertig** | `feat/etappe-7e-falschantwort-erklaeren` | — |
+| 7f | Streak + Freeze | [7f](tasks/2026-07-12-etappe-7f-streak-und-freeze.md) | **fertig** | `feat/etappe-7f-streak-freeze` | — |
 
 ### Etappe 8 — Die App wird schwerer, wenn du besser wirst
 
@@ -80,27 +80,43 @@ Drei tragende Entscheidungen (Details in den ADRs):
 | 8f | Typografischer Platzhalter für die 47 bildlosen Muskeln | offen | — | — |
 
 ### Etappe 9 — Die App wird prüfungsnah
-*Jeder Schritt hier wartet auf eine Entscheidung. Nicht ohne Antwort beginnen.*
+*Seit 2026-07-12 **nicht mehr blockiert** — E1, E2, E3 und E5 sind entschieden (Tabelle unten).*
 
 | ID | Schritt | Status | Branch | Blockiert durch |
 |----|---------|--------|--------|-----------------|
-| 9a | Funktionelle Gruppen als Datendimension + Gruppen-Quiz | blockiert | — | **E2** |
-| 9b | Kompetenz-Abzeichen | blockiert | — | 9a |
-| 9c | Prüfungsmodus + Debrief-Schleife (**B3**) | blockiert | — | **E1** |
-| 9d | Palpations-Sektion je Muskel | blockiert | — | **E3** |
+| 9a | Funktionelle Gruppen (~12–15, generiert + geprüft) + Gruppen-Quiz | offen | — | — |
+| 9b | Kompetenz-Abzeichen | offen | — | 9a |
+| 9c | Prüfungsmodus (schriftlich + mündlich/praktisch) + Debrief-Schleife (**B3**) | offen | — | — |
+| 9d | Palpations-Sektion je Muskel (optionales Feld, inkrementell) | offen | — | — |
 
-### Offene Entscheidungen (nur der Projektinhaber kann sie treffen)
+### Entscheidungen — **alle getroffen (2026-07-12)**
 
-| ID | Frage | Blockiert | Stand |
-|----|-------|-----------|-------|
-| E1 | Wie sieht das reale Testat aus (MC / mündlich / praktisch), getrennt nach Physio, Ergo, Logo? | 9c | offen |
-| E2 | Wird die Gruppen-Annotation gemacht (~30 Gruppen × 150 Muskeln)? | 9a, 9b | offen |
-| E3 | Ist Palpation prüfungsrelevant oder Kür? | 9d | offen |
-| E4 | Curriculum-fest (Semester-Sequenz) oder adaptiver Empfehler? | 7a (Ausbaustufe) | **vorläufig: adaptiv** |
-| E5 | Dürfen Renderings aus der eigenen 3D-App übernommen werden (Lizenz/Workflow)? | 8f (Langfassung) | offen |
+| ID | Frage | Blockierte | Entscheidung |
+|----|-------|-----------|--------------|
+| E1 | Wie sieht das reale Testat aus (MC / mündlich / praktisch)? | 9c | **Gemischt — aber trainiert wird freier Abruf.** |
+| E2 | Wird die Gruppen-Annotation gemacht? | 9a, 9b | **Ja, abgespeckt: ~12–15 kuratierte Gruppen, generiert + geprüft.** |
+| E3 | Ist Palpation prüfungsrelevant oder Kür? | 9d | **Datenfeld anlegen, inkrementell füllen.** |
+| E4 | Curriculum-fest oder adaptiver Empfehler? | 7a | **Adaptiv** (schon in 7a umgesetzt). |
+| E5 | Dürfen Renderings aus der eigenen 3D-App übernommen werden? | 8f | **Ja, sofern BodyParts3D-basiert** (CC BY 4.0, Attribution mitführen). |
 
-E4 ist vorläufig entschieden, damit 7a nicht wartet: **adaptiver Empfehler**. Eine feste
-Semester-Sequenz wäre additiv nachrüstbar (eine sortierte Liste je Kohorte), kein Umbau.
+**Damit ist Etappe 9 nicht mehr blockiert.** Was aus den Entscheidungen folgt:
+
+- **E1 → 9c + 8a.** Der Prüfungsmodus simuliert beide Formen (schriftlich *und* mündlich/praktisch),
+  aber die **Trainingsstufe ist der freie Abruf**, nicht Multiple Choice. Begründung: Wer frei
+  abrufen kann, besteht auch MC — umgekehrt nicht. MC bleibt die *Einstiegsstufe* für frische
+  Karten (Fach 1–2), nicht das Ziel. Das bestätigt [ADR 0008](decisions/0008-abrufstufen-aus-leitner-box.md)
+  und macht die Freitext-Stufe (8a, Fach 7) zur Pflicht statt zur Kür.
+- **E2 → 9a/9b.** Keine 30 Gruppen von Hand. Der Agent schlägt **~12–15 klinisch relevante Gruppen**
+  vor und annotiert sie **automatisch aus den vorhandenen Feldern** (Region, Subregion, Funktion,
+  Innervation); der Projektinhaber prüft nur die fertige Liste. Aufwand: eine Stunde Durchsehen
+  statt ein Wochenende Tippen. Erweiterbar bleibt es trotzdem.
+- **E3 → 9d.** Optionales Feld `palpation` je Muskel; die Sektion erscheint **nur**, wo etwas steht.
+  Kein Redaktionsberg, kein Blocker — Startpunkt sind die gut tastbaren Muskeln.
+- **E5 → 8f.** Die 47 bildlosen Muskeln dürfen mit Renderings aus der eigenen 3D-App geschlossen
+  werden, **solange die Modelle BodyParts3D (DBCLS) sind**: Renderings davon sind abgeleitete Werke
+  unter CC BY 4.0, die Attribution führen wir ohnehin. **Vor der Übernahme ist zu prüfen, dass in
+  der 3D-App wirklich nur BodyParts3D-Geometrie steckt** — steckt Fremdmaterial drin, gilt der
+  typografische Platzhalter.
 
 ---
 

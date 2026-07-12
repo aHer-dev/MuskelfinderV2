@@ -19,7 +19,7 @@ export function IconRail() {
 
   return (
     <nav className="rail" aria-label="Hauptnavigation">
-      <NavLink to="/suche" className="rail__brand" aria-label="Anatomie Fokus — Startseite">
+      <NavLink to="/heute" className="rail__brand" aria-label="Anatomie Fokus — Startseite">
         <img src={logo} alt="Anatomie Fokus" width={30} height={30} />
       </NavLink>
 

@@ -17,6 +17,12 @@
   margin: 0 auto;
 }
 
+.flashcards__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm) var(--spacing-lg);
+}
+
 .flashcards__manage {
   display: inline-flex;
   align-items: center;
