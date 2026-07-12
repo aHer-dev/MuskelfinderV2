@@ -6,6 +6,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
+  /* Nutzt den freien Vertikalraum: die Auswahl sitzt mittig statt oben
+     angeheftet mit toter Fläche darunter (funktioniert dank .content__main-Flex). */
+  margin-block: auto;
 }
 
 .quiz-game,
@@ -92,6 +95,14 @@
   border: 1px solid var(--card-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--card-shadow);
+  transition: box-shadow 0.28s var(--ease-smooth), transform 0.28s var(--ease-smooth),
+    border-color 0.28s var(--ease-smooth);
+}
+
+.quiz-family:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--card-shadow-hover);
+  border-color: var(--hairline-strong);
 }
 
 .quiz-family__title {

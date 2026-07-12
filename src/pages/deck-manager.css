@@ -1,5 +1,7 @@
 .deck-manager {
+  width: 100%;
   max-width: 940px;
+  margin-inline: auto;
 }
 
 .deck-manager__header {
@@ -63,6 +65,8 @@
   font-size: 14px;
   color: var(--text-tertiary);
   margin: 0;
+  padding: var(--spacing-lg) 0;
+  text-align: center;
 }
 
 /* ── In-Deck-Tabelle ──────────────────────────────────────────────── */

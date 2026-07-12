@@ -292,7 +292,8 @@
 .muscle-card__link:hover {
   border-color: var(--accent-border);
   color: var(--text-primary);
-  transform: translateY(-1px);
+  transform: translateY(-3px);
+  box-shadow: var(--card-shadow-hover);
 }
 
 .muscle-card__link:focus-visible {

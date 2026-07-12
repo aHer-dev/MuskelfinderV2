@@ -22,12 +22,21 @@
 .content__main {
   flex: 1 0 auto;
   min-width: 0;
+  /* Flex-Spalte: erlaubt Seiten, ihren freien Vertikalraum zu nutzen
+     (z. B. Quiz-Auswahl per margin-block:auto mittig statt oben angeheftet). */
+  display: flex;
+  flex-direction: column;
 }
 
 /* ---- Desktop: schwebende Icon-Rail links ------------------------------ */
+/* Die Rail ist position:fixed (out of flow). Damit der Inhalt nicht darunter
+   rutscht, halten wir ihre Breite per padding-left auf der Shell frei; die
+   .content zentriert sich dann (max-width 1160 + margin:auto) mittig in der
+   Restfläche — statt links angeheftet mit totem Raum rechts. */
+.shell--desktop {
+  padding-left: 88px; /* Rail: 20 links + 68 breit */
+}
 .shell--desktop .content {
-  margin-left: 108px; /* Rail 68 + 20 links + 20 Luft */
-  margin-right: auto;
   padding: var(--spacing-xl) var(--spacing-xl);
 }
 

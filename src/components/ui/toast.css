@@ -1,6 +1,6 @@
 .toast-host {
   position: fixed;
-  top: calc(16px + env(safe-area-inset-top, 0px));
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
   left: 50%;
   transform: translateX(-50%);
   z-index: var(--z-toast, 3000);
@@ -9,6 +9,13 @@
   align-items: center;
   gap: var(--spacing-xs);
   pointer-events: none;
+}
+
+/* Mobil: über der schwebenden Tab-Leiste einblenden, nicht dahinter. */
+@media (max-width: 1023px) {
+  .toast-host {
+    bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 .toast {
@@ -48,7 +55,7 @@
 @keyframes toast-in {
   from {
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;

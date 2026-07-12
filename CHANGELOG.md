@@ -6,6 +6,22 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Changed
+- **Design-/Layout-Feinschliff (hochwertigeres Erscheinungsbild).**
+  - **Rahmen-Fix:** Der Inhalt war auf dem Desktop links angeheftet (`margin-left` fix +
+    `margin-right:auto`), sodass die halbe Bildschirmbreite tot rechts lag. Jetzt hält die Shell
+    nur die Rail-Breite frei und der Inhalt **zentriert** sich mittig in der Restfläche.
+  - **Kopf-Primitives global geladen:** `pages.css` wurde bislang nur von der Platzhalterseite
+    importiert — dadurch waren `.page__eyebrow/__title/__body` auf allen echten Seiten wirkungslos.
+    Jetzt global; Eyebrows in Versalien, Titel skalieren per `clamp()` (~27→34 px), Lesetexte
+    (`.page__body`) auf ~70 Zeichen gedeckelt.
+  - **Vertikale Balance:** Quiz-Auswahl und leere Zustände (Lernkarten) sitzen mittig im freien
+    Raum statt oben angeheftet mit Leere darunter.
+  - **Karten:** kräftigere Ruhe-Elevation + klarer Hover-Lift (Muskel- & Quiz-Karten).
+  - **Toast** (Tagesbonus/XP) von oben-mittig nach **unten** verlegt (mobil über der Tab-Leiste).
+  - Breiten sauber getrennt: Grids/Dashboards nutzen die volle Spalte, Rechtliches 780 px,
+    Karteikasten-Verwaltung 940 px — jeweils zentriert.
+
 ### Fixed
 - Lernkarten: Bewertungs-Buttons (Falsch/Unsicher/Richtig) waren vor dem Aufdecken als
   **deaktivierte** Buttons sichtbar — ein Klick tat nichts und wirkte wie ein Bug. Jetzt wie V1:

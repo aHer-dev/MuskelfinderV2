@@ -6,6 +6,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
+  /* Kurze Zustände (leer/Setup/Karte) mittig im freien Vertikalraum statt oben
+     angeheftet; lange Inhalte füllen und richten sich oben aus (auto → 0). */
+  margin-block: auto;
 }
 
 .flashcards__session {
