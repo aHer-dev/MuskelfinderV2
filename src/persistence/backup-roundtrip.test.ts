@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { useLookupStore } from '../store/useLookupStore';
+import { useProfileStore } from '../store/useProfileStore';
 import { useProgressStore } from '../store/useProgressStore';
 import { useQuizStore } from '../store/useQuizStore';
 import { parseBackup } from './backup';
@@ -151,5 +152,57 @@ describe('Additive Sektion „lookups" (7d) — ADR 0002 bleibt unangetastet', (
     // Leerer Name raus, unbrauchbarer Eintrag auf einen plausiblen Wert gehaertet.
     expect(useLookupStore.getState().lookups.entries['']).toBeUndefined();
     expect(useLookupStore.getState().lookups.entries['M. soleus'].count).toBe(1);
+  });
+});
+
+describe('Additive Sektion „profile" (Entscheidung 2026-07-12)', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    useProgressStore.getState().resetProgress();
+    useQuizStore.getState().resetAllSeries();
+    useLookupStore.getState().resetLookups();
+    useProfileStore.getState().resetProfile();
+  });
+
+  it('ohne Profil fehlt der Schluessel — die Datei bleibt die von vor 7c', () => {
+    importBackup(fixture('full-backup-v2.json'));
+    const out = exportBackup('2026-07-08T00:00:00.000Z');
+
+    expect(out).not.toHaveProperty('profile');
+  });
+
+  it('Beruf und Pruefungstermin ueberleben Export → Import', () => {
+    importBackup(fixture('full-backup-v2.json'));
+    useProfileStore.getState().setProfile('logo', '2026-09-01');
+
+    const out = exportBackup('2026-07-08T00:00:00.000Z');
+    expect(out.profile).toEqual({ version: 2, profession: 'logo', examDate: '2026-09-01' });
+
+    useProfileStore.getState().resetProfile();
+    importBackup(JSON.stringify(out));
+
+    expect(useProfileStore.getState().profession).toBe('logo');
+    expect(useProfileStore.getState().examDate).toBe('2026-09-01');
+  });
+
+  it('ein unbekannter Beruf wird verworfen statt durchgereicht', () => {
+    const dirty = JSON.parse(fixture('full-backup-v2.json'));
+    dirty.profile = { version: 2, profession: 'zahnmedizin', examDate: 'irgendwann' };
+
+    importBackup(JSON.stringify(dirty));
+
+    expect(useProfileStore.getState().profession).toBeNull();
+    expect(useProfileStore.getState().examDate).toBeNull();
+    // Die Karten kommen trotzdem an — eine kaputte Zusatzsektion kippt den Import nicht.
+    expect(useProgressStore.getState().isInDeck('M. biceps brachii')).toBe(true);
+  });
+
+  it('ein altes Backup ohne die Sektion loescht das lokale Profil nicht', () => {
+    useProfileStore.getState().setProfile('physio', '2026-08-15');
+
+    importBackup(fixture('full-backup-v1.json'));
+
+    expect(useProfileStore.getState().profession).toBe('physio');
+    expect(useProfileStore.getState().examDate).toBe('2026-08-15');
   });
 });

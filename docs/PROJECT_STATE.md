@@ -192,9 +192,25 @@ aber, dass die Detailseite **als Sheet ueber der Session** aufgeht, statt wegzun
   zerstoert (Unmount). `useFlashcardSession` ist nur noch die Sicht darauf; sie ueberlebt Navigation,
   bewusst NICHT den Browser-Neustart.
 
+## Entscheidungen — alle getroffen (2026-07-12)
+**Etappe 9 ist damit nicht mehr blockiert.** Volltext + Begruendungen: `docs/produkt-plan.md`.
+- **E1 (Pruefungsform):** gemischt (schriftlich *und* muendlich/praktisch) — **trainiert wird aber
+  der freie Abruf**, MC nur als Einstiegsstufe fuer frische Karten. Macht die Freitext-Stufe (8a)
+  zur Pflicht, bestaetigt ADR 0008.
+- **E2 (Funktionelle Gruppen):** ja, aber **~12–15 kuratierte Gruppen**, automatisch aus den
+  vorhandenen Feldern vorannotiert, vom Projektinhaber nur geprueft. Kein 30×150-Handbetrieb.
+- **E3 (Palpation):** optionales Feld anlegen, **inkrementell** fuellen; Sektion erscheint nur, wo
+  etwas steht. Kein Blocker.
+- **E4 (Empfehler):** adaptiv (bereits in 7a umgesetzt).
+- **E5 (3D-Renderings fuer die 47 bildlosen Muskeln):** erlaubt, **sofern BodyParts3D-basiert**
+  (CC BY 4.0, Attribution mitfuehren). **Vor Uebernahme pruefen**, dass in der 3D-App wirklich nur
+  BodyParts3D-Geometrie steckt — sonst typografischer Platzhalter.
+- **Lernprofil im Backup:** ja, additiv nachgezogen (Branch `feat/profil-im-backup`).
+
 Offen (nur durch dich):
 - Bei oeffentlichem Deploy: `git remote add origin …` + Push (kein Remote konfiguriert).
-- Entscheidungen **E1–E3** treffen — sie blockieren Etappe 9 (Statustafel in `docs/produkt-plan.md`).
+- **Merge:** Etappe 7 wird **am Stueck** gemergt, wenn 7e + 7f fertig sind (so entschieden).
+  Branch-Kette: 7a → 7b → 7c → 7d → `feat/profil-im-backup`.
 
 ## Vorheriger Stand (Etappe 5+6)
 Etappe 5+6 abgeschlossen, `v1.0` lokal getaggt. **Laufend: Branch `feat/design-feinschliff`** —

@@ -15,6 +15,7 @@ import {
   type FlashcardsSection,
   type LookupEntry,
   type LookupsSection,
+  type ProfileSection,
   type QuizHistoryEntry,
   type QuizSeriesEntry,
   type QuizSeriesSection,
@@ -219,4 +220,28 @@ export function sanitizeLookups(data: unknown): LookupsSection {
   }
 
   return { version: 2, entries };
+}
+
+/* ---------- Lernprofil (7c) --------------------------------------------- */
+
+const PROFESSIONS = ['physio', 'ergo', 'logo'];
+
+export function createEmptyProfileSection(): ProfileSection {
+  return { version: 2, profession: null, examDate: null };
+}
+
+/**
+ * Lernprofil härten. Nie `strict` — die Sektion ist optional und darf einen sonst
+ * gültigen Import nicht scheitern lassen. Ein unbekannter Beruf wird verworfen statt
+ * durchgereicht: die App würde sonst über einen Wert stolpern, den sie nicht kennt.
+ */
+export function sanitizeProfile(data: unknown): ProfileSection {
+  if (!isPlainObject(data)) return createEmptyProfileSection();
+
+  const profession =
+    typeof data.profession === 'string' && PROFESSIONS.includes(data.profession)
+      ? data.profession
+      : null;
+
+  return { version: 2, profession, examDate: toOptionalDayStamp(data.examDate) };
 }

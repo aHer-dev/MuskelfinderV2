@@ -7,6 +7,12 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- **Lernprofil im Backup** (Entscheidung 2026-07-12): Beruf und Prüfungstermin liegen jetzt auch im
+  Backup — als **additive, optionale** Sektion `profile`, nach demselben Muster wie `lookups`. Sie
+  fehlt in der Datei, solange kein Profil gesetzt ist; ältere Versionen ignorieren den Schlüssel;
+  Backup-Version bleibt 2; V1-Round-Trip grün. Grund: Der Prüfungstermin steuert die Tagesdosis —
+  ein Gerätewechsel soll ihn nicht verlieren. Ein unbekannter Beruf wird beim Import verworfen statt
+  durchgereicht.
 - **Etappe 7d — Suchfeld überall + Brücke B1 „nachgeschlagen = noch nicht gewusst"**: Das Suchfeld
   sitzt jetzt in der **Kopfzeile jeder Route** (eigene `search`-Landmark, tastaturerreichbar mit
   sichtbarem Fokus-Ring) — der neue Einstieg macht das Nachschlagen nicht teurer. Neuer

@@ -14,6 +14,7 @@ import {
   isPlainObject,
   sanitizeFlashcards,
   sanitizeLookups,
+  sanitizeProfile,
   sanitizeQuizSeries,
   sanitizeXp,
   toNonNegativeInt,
@@ -73,8 +74,9 @@ export function normalizeFullBackup(parsed: unknown): ImportResult {
       flashcards: sanitizeFlashcards(parsed.flashcards, { strict: true }),
       xp: sanitizeXp(parsed.xp, { strict: true }),
       quizSeries: sanitizeQuizSeries(parsed.quizSeries, { strict: true }),
-      // Additiv (7d): fehlt in jeder Datei vor 7d — kein Grund, den Import abzulehnen.
+      // Additiv (7c/7d): fehlen in jeder älteren Datei — kein Grund, den Import abzulehnen.
       ...(hasOwn(parsed, 'lookups') ? { lookups: sanitizeLookups(parsed.lookups) } : {}),
+      ...(hasOwn(parsed, 'profile') ? { profile: sanitizeProfile(parsed.profile) } : {}),
     },
   };
 }
@@ -101,14 +103,15 @@ export function parseBackup(input: string | unknown): ImportResult {
 
 /**
  * Erzeugt das exportierbare v2-Backup-Objekt aus den (bereits getypten) Sektionen.
- * `lookups` wird nur geschrieben, wenn wirklich etwas nachgeschlagen wurde — wer die
- * Brücke nie nutzt, bekommt exakt die Datei, die er vor 7d bekommen hätte.
+ * Die additiven Sektionen werden nur geschrieben, wenn sie etwas enthalten: wer weder
+ * nachschlägt noch ein Profil setzt, bekommt exakt die Datei, die er vor 7c/7d bekam.
  */
 export function buildBackup(
   sections: BackupSections,
   exportedAt: string = new Date().toISOString(),
 ): BackupFile {
   const lookups = sections.lookups ? sanitizeLookups(sections.lookups) : null;
+  const profile = sections.profile ? sanitizeProfile(sections.profile) : null;
 
   return {
     backupType: BACKUP_TYPE,
@@ -118,6 +121,7 @@ export function buildBackup(
     xp: sanitizeXp(sections.xp, { strict: true }),
     quizSeries: sanitizeQuizSeries(sections.quizSeries, { strict: true }),
     ...(lookups && Object.keys(lookups.entries).length > 0 ? { lookups } : {}),
+    ...(profile && (profile.profession || profile.examDate) ? { profile } : {}),
   };
 }
 

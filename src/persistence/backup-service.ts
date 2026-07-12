@@ -9,6 +9,7 @@
    ========================================================================= */
 
 import { useLookupStore } from '../store/useLookupStore';
+import { useProfileStore } from '../store/useProfileStore';
 import { useProgressStore } from '../store/useProgressStore';
 import { useQuizStore } from '../store/useQuizStore';
 import { buildBackup, parseBackup } from './backup';
@@ -19,13 +20,14 @@ export function exportBackup(exportedAt?: string): BackupFile {
   const { flashcards, xp } = useProgressStore.getState();
   const { quizSeries } = useQuizStore.getState();
   const { lookups } = useLookupStore.getState();
-  return buildBackup({ flashcards, xp, quizSeries, lookups }, exportedAt);
+  const profile = useProfileStore.getState().toSection();
+  return buildBackup({ flashcards, xp, quizSeries, lookups, profile }, exportedAt);
 }
 
 /** Backup parsen und in die Stores schreiben. Wirft `BackupFormatError` bei Ablehnung. */
 export function importBackup(input: string | unknown): ImportResult {
   const result = parseBackup(input);
-  const { flashcards, xp, quizSeries, lookups } = result.sections;
+  const { flashcards, xp, quizSeries, lookups, profile } = result.sections;
 
   if (flashcards) {
     // Legacy: xp fehlt → bestehenden XP-Stand behalten.
@@ -39,6 +41,9 @@ export function importBackup(input: string | unknown): ImportResult {
   // ein alter Import darf ein Lückenprotokoll nicht stillschweigend löschen.
   if (lookups) {
     useLookupStore.getState().replaceLookups(lookups);
+  }
+  if (profile) {
+    useProfileStore.getState().replaceProfile(profile);
   }
 
   return result;
