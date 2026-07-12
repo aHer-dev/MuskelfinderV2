@@ -23,6 +23,14 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
     Karteikasten-Verwaltung 940 px — jeweils zentriert.
 
 ### Fixed
+- **Emoji im UI durch Sprite-Icons ersetzt.** Rohe Emoji (`📋 🏆 ⚡ 🎉 ⚑ ★`) rendern je nach
+  Betriebssystem/Font unterschiedlich — auf Linux/Chromium erschienen `📋` (Lernkarten-Kopf) und
+  `🏆` (Statistik-Ziele) als leeres Kästchen (fehlendes Glyph). Sie brachen zudem die monochrome
+  Strich-Bildsprache des Icon-Sprites. Jetzt: `icList` (+ `icArrow`) im Lernkarten-Kopf, `icFlag`
+  am Schwierig-Marker, `icCheck` in der Sitzungs-Zusammenfassung, `icTrophy`/`icFlame` bei den
+  Zielen, `icTrophy` im Level-Up-Toast. Neues Symbol `icFlag` im Sprite (24er-Raster, Strich 1.6,
+  `currentColor`) — `icBookmark` wäre kollidiert (belegt für „Merken" im Detail). Keine neue
+  Abhängigkeit: das Sprite deckte alles bis auf die Flagge ab.
 - Lernkarten: Bewertungs-Buttons (Falsch/Unsicher/Richtig) waren vor dem Aufdecken als
   **deaktivierte** Buttons sichtbar — ein Klick tat nichts und wirkte wie ein Bug. Jetzt wie V1:
   vor dem Aufdecken ein klarer **„Karte aufdecken"**-Button, die Bewertung erscheint erst nach dem

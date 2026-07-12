@@ -48,8 +48,7 @@
 }
 
 .toast__icon {
-  font-size: 14px;
-  line-height: 1;
+  flex-shrink: 0;
 }
 
 @keyframes toast-in {

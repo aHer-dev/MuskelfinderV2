@@ -21,7 +21,9 @@
 }
 
 .flashcards__manage {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   margin-top: var(--spacing-sm);
   font-family: var(--font-ui);
   font-size: 13px;
@@ -29,7 +31,7 @@
   color: var(--accent-on-surface);
   text-decoration: none;
 }
-.flashcards__manage:hover {
+.flashcards__manage:hover span {
   text-decoration: underline;
 }
 
@@ -42,6 +44,10 @@
   flex-direction: column;
   align-items: center;
   gap: var(--spacing-md);
+}
+
+.flashcards__done-icon {
+  color: var(--success);
 }
 
 .flashcards__done h2 {

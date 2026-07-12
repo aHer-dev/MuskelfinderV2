@@ -4,6 +4,7 @@ import { useStats } from '../hooks/useStats';
 import { BackupPanel } from '../components/features/stats/BackupPanel';
 import { CardBreakdown } from '../components/features/stats/CardBreakdown';
 import { ProgressRing } from '../components/ui/ProgressRing';
+import { Icon } from '../components/ui/Icon';
 import type { RegionId } from '../types';
 import '../components/features/stats/stats.css';
 
@@ -129,7 +130,7 @@ export function StatsPage() {
           <h2>Ziele</h2>
           <ul className="stats__goals">
             <li className="stats__goal">
-              <span className="stats__goal-icon" aria-hidden="true">🏆</span>
+              <Icon name="icTrophy" size={18} className="stats__goal-icon" />
               <span className="stats__goal-text">
                 {stats.masteryNext == null ? (
                   <>
@@ -145,7 +146,7 @@ export function StatsPage() {
               </span>
             </li>
             <li className="stats__goal">
-              <span className="stats__goal-icon" aria-hidden="true">⚡</span>
+              <Icon name="icFlame" size={18} className="stats__goal-icon" />
               <span className="stats__goal-text">
                 {stats.level < 99 ? (
                   <>

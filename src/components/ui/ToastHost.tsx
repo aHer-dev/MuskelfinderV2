@@ -1,4 +1,5 @@
 import { useToastStore } from '../../store/useToastStore'
+import { Icon } from './Icon'
 import './toast.css'
 
 /**
@@ -15,9 +16,7 @@ export function ToastHost() {
       {toasts.map((toast) => (
         <div key={toast.id} className={`toast toast--${toast.kind}`}>
           {toast.kind === 'level' && (
-            <span className="toast__icon" aria-hidden="true">
-              ★
-            </span>
+            <Icon name="icTrophy" size={14} className="toast__icon" />
           )}
           <span className="toast__msg">{toast.message}</span>
         </div>

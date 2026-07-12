@@ -9,6 +9,7 @@ import { RatingBar } from '../components/features/flashcards/RatingBar';
 import { useFlashcardSession } from '../hooks/useFlashcardSession';
 import type { RegionScope } from '../hooks/useFlashcardSession';
 import { useProgressStore } from '../store/useProgressStore';
+import { Icon } from '../components/ui/Icon';
 import type { CardRating, Muscle, RegionId } from '../types';
 import '../components/features/flashcards/flashcards.css';
 
@@ -59,7 +60,11 @@ export function FlashcardsPage() {
         <p className="page__eyebrow">Spaced Repetition</p>
         <h1 className="page__title">Lernkarten</h1>
         <Link to="/karteikasten" className="flashcards__manage">
-          📋 Muskeln im Karteikasten verwalten{deckSize > 0 ? ` (${deckSize})` : ''} →
+          <Icon name="icList" size={16} />
+          <span>
+            Muskeln im Karteikasten verwalten{deckSize > 0 ? ` (${deckSize})` : ''}
+          </span>
+          <Icon name="icArrow" size={16} />
         </Link>
       </header>
 
@@ -295,7 +300,7 @@ function CardScreen({
           aria-label="Als schwierig markieren"
           title="Als schwierig markieren (F)"
         >
-          ⚑
+          <Icon name="icFlag" size={18} />
         </button>
       </div>
 
@@ -374,7 +379,8 @@ function SummaryScreen({
   return (
     <div className="fc-summary">
       <div className="flashcards__done">
-        <h2>Sitzung geschafft 🎉</h2>
+        <Icon name="icCheck" size={32} className="flashcards__done-icon" />
+        <h2>Sitzung geschafft</h2>
         <div className="fc-summary__stats">
           <div className="fc-summary__stat">
             <span className="fc-summary__num">{session.reviewed}</span>
