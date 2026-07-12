@@ -69,15 +69,24 @@ Drei tragende Entscheidungen (Details in den ADRs):
 | 7f | Streak + Freeze | [7f](tasks/2026-07-12-etappe-7f-streak-und-freeze.md) | **fertig** | `feat/etappe-7f-streak-freeze` | — |
 
 ### Etappe 8 — Die App wird schwerer, wenn du besser wirst
+*Nichts hier ist blockiert. **Empfohlene Reihenfolge: 8a → 8c → 8b → 8e → 8f → 8d.***
+**Rahmen-Briefing (Pflicht vor jedem Task):**
+[tasks/2026-07-12-etappe-8-uebersicht.md](tasks/2026-07-12-etappe-8-uebersicht.md)
 
-| ID | Schritt | Status | Branch | Blockiert durch |
-|----|---------|--------|--------|-----------------|
-| 8a | Abrufleiter: Stufe aus Leitner-Box + Freitext-Stufe (Fach 7) | offen | — | 7b (Session-Fluss) |
-| 8b | Session-Filter „nur falsch beantwortete“ / „nie gesehen“ | offen | — | — |
-| 8c | Statistik → Handlung: jede Schwäche bekommt einen CTA (**B4**) | offen | — | — |
-| 8d | Etymologie & Eselsbrücken im „Einfach“-Niveau | offen | — | redaktionell, inkrementell |
-| 8e | Eigene Notizen je Muskel (additiv im Backup, ADR-0002-konform) | offen | — | — |
-| 8f | Typografischer Platzhalter für die 47 bildlosen Muskeln | offen | — | — |
+| ID | Schritt | Briefing | Status | Branch | Blockiert durch |
+|----|---------|----------|--------|--------|-----------------|
+| 8a | Abrufleiter: Stufe aus Leitner-Box + **Freitext-Stufe** (Fach 7) — durch **E1 zur Pflicht** geworden | [8a](tasks/2026-07-12-etappe-8a-abrufleiter-freitext.md) | offen | — | — |
+| 8b | Session-Filter „nur falsch beantwortete“ / „nie gesehen“ | [8b](tasks/2026-07-12-etappe-8b-session-filter.md) | offen | — | — |
+| 8c | Statistik → Handlung: jede Schwäche bekommt einen CTA (**B4**) | [8c](tasks/2026-07-12-etappe-8c-statistik-zu-handlung.md) | offen | — | — |
+| 8d | Etymologie & Eselsbrücken im „Einfach“-Niveau | [8d](tasks/2026-07-12-etappe-8d-etymologie.md) | offen | — | redaktionell, inkrementell |
+| 8e | Eigene Notizen je Muskel (additiv im Backup, ADR-0002-konform) | [8e](tasks/2026-07-12-etappe-8e-notizen.md) | offen | — | — |
+| 8f | Die 47 bildlosen Muskeln: erst **Lizenzprüfung** (E5), dann Renderings **oder** Platzhalter | [8f](tasks/2026-07-12-etappe-8f-bildluecke.md) | offen | — | — |
+
+> **Zwei Fallen, die im Text unten (§Etappe 8) falsch stehen und am Code verifiziert wurden:**
+> (1) Die Daten für **8b** liegen **nicht** in `useQuizStore` (der hält nur Aggregate je Serien-Key),
+> sondern in der Karte selbst (`totalWrong`, `lastSeen`). (2) **`src/data/generated/` wird von
+> `npm run migrate:data` überschrieben** — die redaktionellen Texte aus **8d** (und später 9d) dürfen
+> dort nicht liegen. Details im Rahmen-Briefing.
 
 ### Etappe 9 — Die App wird prüfungsnah
 *Seit 2026-07-12 **nicht mehr blockiert** — E1, E2, E3 und E5 sind entschieden (Tabelle unten).*
