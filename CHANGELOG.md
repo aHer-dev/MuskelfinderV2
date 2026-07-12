@@ -42,6 +42,14 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   „N Ergebnisse anzeigen". Vorher gab es nur ein ✕ — die Wirkung der Filter war unsichtbar.
 - **Token `--accent-on-tint`** für Text auf getönter Akzentfläche.
 
+### Changed
+- **Schriftdateien aus der Schwester-App `3DAnatomy 2.0` übernommen** (byte-identisch). Es ist
+  dieselbe Schrift in derselben Version (Sora 2.000, Manrope 4.504) — die Darstellung ändert sich
+  **nicht**. Der Gewinn ist eine gemeinsame Quelle: beide Apps sind gegenseitig verlinkt („In 3D
+  ansehen"), und identische Dateien schließen aus, dass die Typografie auseinanderläuft. Nebeneffekt:
+  Subset `latin-ext` statt `latin` (355 statt 223 Zeichen, +41 KB). Für Deutsch war `latin` bereits
+  vollständig — es fehlte kein Zeichen.
+
 ### Fixed
 - **14 Muskeln bekamen keinen 3D-Button, obwohl die 3D-App sie kennt.** `buildMuscleKey` strippte
   nur das Präfix „M.", nicht den Plural „Mm." — „Mm. lumbricales I–IV" erzeugte den Key
