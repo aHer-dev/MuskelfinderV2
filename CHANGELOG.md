@@ -6,6 +6,12 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [1.1.0] — 2026-07-13
+
+**Vom Nachschlagewerk zum Lernbegleiter.** V1.0 konnte alles nachschlagen — aber sie öffnete auf einer
+Liste mit 150 Muskeln, der Karteikasten musste von Hand gefüllt werden, und die Statistik zeigte
+Zahlen ohne Empfehlung. Etappe 7 gibt der App eine **Meinung**, Etappe 8 macht sie **prüfungsnah**.
+
 ### Added
 - **Etappe 8d — Den Namen lesen lernen** (`src/data/etymology.ts`,
   `src/data/editorial/etymology.json`): Der lateinische Name **ist** die Funktion — man muss ihn nur

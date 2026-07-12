@@ -6,7 +6,7 @@
 
 ## Stand
 - Datum: 2026-07-12
-- Branch: `feat/etappe-8d-etymologie` (8a + 8c + 8b + 8e + 8f sind auf `main` gemergt)
+- Branch: `release/v1.1` (Etappe 8 komplett auf `main`)
 - Status: **Migration abgeschlossen (Etappen 0–6, `v1.0`). ETAPPE 7 KOMPLETT (7a–7f). ETAPPE 8
   LAEUFT: 8a + 8c + 8b + 8e fertig** — die Abrufhaerte waechst mit der Beherrschung, keine Zahl in der
   Statistik steht ohne Knopf, man kann gezielt an den Luecken ueben, und eigene Notizen stehen beim
@@ -157,8 +157,14 @@ befuellt werden, die Statistik zeigt Zahlen ohne Empfehlung.
 - Konzept-Mockups (visuell, extern): Heute-Screen und Produktkonzept, siehe `docs/produkt-plan.md`.
 
 ## Naechster Schritt
-**ETAPPE 8 IST KOMPLETT.** Naechster Schritt: **Etappe 9 planen** (Briefings schreiben, wie fuer
-Etappe 7 und 8). Etappe 9 ist seit den Entscheidungen E1-E5 nicht mehr blockiert:
+**RELEASE v1.1 — die App war NIE deployt.** Es gibt kein Git-Remote; kein Schueler hat sie je
+geoeffnet. Checkliste: `docs/release-v1.1.md`. Alles, was ohne den Projektinhaber ging, ist erledigt
+(Release-Blocker `base` behoben, unter echten Pages-Bedingungen verifiziert, Version 1.1.0).
+**Offen und nur vom Projektinhaber loesbar:** Remote anlegen + pushen, Pages auf "GitHub Actions"
+stellen, und die 3D-Kopplung aufloesen (V2 veroeffentlichen; ihre datenschutz.html liefert 404).
+
+**Danach: Etappe 9 planen** (Briefings wie fuer Etappe 7 und 8). Etappe 9 ist seit den
+Entscheidungen E1-E5 nicht mehr blockiert:
 9a funktionelle Gruppen + Gruppen-Quiz · 9b Abzeichen · 9c Pruefungsmodus (schliesst **Bruecke B3**)
 · 9d Palpation.
 
