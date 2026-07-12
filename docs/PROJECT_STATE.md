@@ -6,13 +6,15 @@
 
 ## Stand
 - Datum: 2026-07-12
-- Branch: `feat/etappe-8f-bildluecke` (8a + 8c + 8b + 8e sind auf `main` gemergt)
+- Branch: `feat/etappe-8d-etymologie` (8a + 8c + 8b + 8e + 8f sind auf `main` gemergt)
 - Status: **Migration abgeschlossen (Etappen 0–6, `v1.0`). ETAPPE 7 KOMPLETT (7a–7f). ETAPPE 8
   LAEUFT: 8a + 8c + 8b + 8e fertig** — die Abrufhaerte waechst mit der Beherrschung, keine Zahl in der
   Statistik steht ohne Knopf, man kann gezielt an den Luecken ueben, und eigene Notizen stehen beim
-  Muskel, und die Bildluecke sieht absichtlich aus. **Offen: 8d — und Stufe 2a von 8f.**
+  Muskel, die Bildluecke sieht absichtlich aus, und der lateinische Name erklaert sich selbst.
+  **ETAPPE 8 IST KOMPLETT** (8a–8f). Offen bleiben nur zwei bewusste Auslassungen: Stufe 2a von 8f
+  (Renderings) und die Merksaetze aus 8d — beide brauchen den Fachmann, nicht mehr Code.
   **Bruecke B4 ist eingeloest**; offen bleibt nur noch B3 (9c). Statustafel: `docs/produkt-plan.md`.
-- Gate gruen: `npm run lint && npm run test && npm run build` — **392 Tests**.
+- Gate gruen: `npm run lint && npm run test && npm run build` — **405 Tests**.
 - **Offen aus 8b (Entscheidung noetig):** Die Filter gibt es in der **Sitzung**, aber **nicht im
   Quiz**. Ein gefilterter Quiz-Pool braucht einen ZUSAETZLICHEN Serien-Schluessel (der bestehende
   muss bitgleich bleiben, ADR 0002) und eine Antwort auf zu kleine Pools (eine Frage braucht 4
@@ -155,12 +157,21 @@ befuellt werden, die Statistik zeigt Zahlen ohne Empfehlung.
 - Konzept-Mockups (visuell, extern): Heute-Screen und Produktkonzept, siehe `docs/produkt-plan.md`.
 
 ## Naechster Schritt
-**Etappe 8d — Etymologie & Eselsbruecken.** Briefing:
-`docs/tasks/2026-07-12-etappe-8d-etymologie.md`.
-**ACHTUNG (die Falle):** `src/data/generated/` wird von `npm run migrate:data` UEBERSCHRIEBEN.
-Die redaktionellen Texte gehoeren in eine eigene, handgepflegte Datei ausserhalb von `generated/`,
-die der Loader dazumischt (`nameLatin` als Schluessel).
-Reihenfolge: 8a ✅ → 8c ✅ → 8b ✅ → 8e ✅ → 8f (Stufe 1+2b) ✅ → **8d**.
+**ETAPPE 8 IST KOMPLETT.** Naechster Schritt: **Etappe 9 planen** (Briefings schreiben, wie fuer
+Etappe 7 und 8). Etappe 9 ist seit den Entscheidungen E1-E5 nicht mehr blockiert:
+9a funktionelle Gruppen + Gruppen-Quiz · 9b Abzeichen · 9c Pruefungsmodus (schliesst **Bruecke B3**)
+· 9d Palpation.
+
+**Zwei bewusste Auslassungen aus Etappe 8 — beide brauchen den Fachmann, nicht mehr Code:**
+1. **8f Stufe 2a (Renderings):** lizenzrechtlich freigegeben, aber Qualitaets-Gate offen (s. u.).
+2. **8d Merksaetze:** Die Mechanik steht, die Feldstruktur auch — es ist bewusst **kein einziger
+   Merksatz erfunden** worden. Ein falscher Merksatz wird auswendig gelernt. Sie gehoeren in
+   `src/data/editorial/etymology.json` unter `muskeln.<nameLatin>.merksatz`.
+
+**8d-Falle (bleibt fuer 9d Palpation relevant):** `src/data/generated/` wird von
+`npm run migrate:data` UEBERSCHRIEBEN. Redaktionelle Daten liegen darum unter `src/data/editorial/`
+und werden vom Loader dazugemischt (`withEtymology` in `src/data/etymology.ts` ist die Blaupause).
+Ein Test wacht darueber; die Migration wurde real ausgefuehrt, die Daten haben sie ueberlebt.
 
 ## Lizenzfrage 3D-App: GEKLAERT (2026-07-13)
 **Die Pruefung ist bestanden** — Protokoll: `docs/3d-app-lizenzpruefung.md`. Die eigene 3D-App

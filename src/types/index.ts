@@ -71,6 +71,14 @@ export interface Muscle {
   images: MuscleImage[];
   tags: string[];            // ['#Schultergürtel','#Abduktor']
   easy?: MuscleEasyFields;
+  /**
+   * Herleitung des Namens (Etappe 8d). Wird vom Loader aus dem handgepflegten
+   * Lexikon zusammengesetzt (`src/data/editorial/etymology.json`) — NICHT in den
+   * generierten Daten, die `npm run migrate:data` ueberschreibt.
+   */
+  etymology?: string;
+  /** Merksatz — nur von Hand gepflegt, nie generiert. Ein falscher Merksatz wird auswendig gelernt. */
+  mnemonic?: string;
 }
 
 /* ---------- Suche & Filter --------------------------------------------- */
