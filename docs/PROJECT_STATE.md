@@ -6,11 +6,11 @@
 
 ## Stand
 - Datum: 2026-07-12
-- Branch: `main` (**Etappe 7 komplett gemergt**, `--no-ff`)
-- Status: **Migration abgeschlossen (Etappen 0–6, `v1.0`). ETAPPE 7 KOMPLETT (7a–7f) und auf
-  `main` gemergt — die App hat eine Meinung. Naechster Schritt: Etappe 8 planen.**
+- Branch: `feat/etappe-8a-abrufleiter` (**Etappe 7 komplett auf `main` gemergt**, Briefings 8a–8f auch)
+- Status: **Migration abgeschlossen (Etappen 0–6, `v1.0`). ETAPPE 7 KOMPLETT (7a–7f). ETAPPE 8
+  LAEUFT: 8a fertig** — die Abrufhaerte waechst jetzt mit der Beherrschung.
   Statustafel: `docs/produkt-plan.md`.
-- Gate auf `main` gruen: `npm run lint && npm run test && npm run build` — **271 Tests**.
+- Gate gruen: `npm run lint && npm run test && npm run build` — **319 Tests**.
 
 ## Verlauf (Migration, abgeschlossen)
 - Etappe 0–4 abgeschlossen. **Etappe 5 (Haertung)** — Teil 1+2 umgesetzt:
@@ -144,20 +144,29 @@ befuellt werden, die Statistik zeigt Zahlen ohne Empfehlung.
 - Harte Entscheidungen: **ADR 0007** (Einstieg `/heute`, Navigation nach Absichten statt Features),
   **ADR 0008** (Abrufstufe wird aus der Leitner-Box *abgeleitet*, nicht gespeichert — ADR 0002
   bleibt dadurch unangetastet).
-- Etappe 7 ist **nicht blockiert** und sofort startklar. Etappe 9 wartet auf Entscheidungen
-  **E1–E3** (reale Pruefungsform · Gruppen-Annotation · Palpations-Relevanz), die nur der
-  Projektinhaber treffen kann — Liste in der Statustafel.
+- **Nichts ist mehr blockiert:** Die Entscheidungen E1–E5 sind am 2026-07-12 getroffen (siehe unten
+  und Statustafel). Etappe 9 ist damit entblockt und folgt nach Etappe 8.
 - Konzept-Mockups (visuell, extern): Heute-Screen und Produktkonzept, siehe `docs/produkt-plan.md`.
 
 ## Naechster Schritt
-**Etappe 8a — Abrufleiter + Freitext-Stufe.** Briefing:
-`docs/tasks/2026-07-12-etappe-8a-abrufleiter-freitext.md`.
+**Etappe 8c — Statistik wird handlungsfaehig (Bruecke B4).** Briefing:
+`docs/tasks/2026-07-12-etappe-8c-statistik-zu-handlung.md`.
 **Etappe 8 ist vollstaendig gebrieft** (Rahmen + 8a–8f, siehe Statustafel).
-Empfohlene Reihenfolge: **8a → 8c → 8b → 8e → 8f → 8d.**
+Reihenfolge: 8a ✅ → **8c** → 8b → 8e → 8f → 8d.
+
+Aus 8a mitnehmen (gilt fuer alle folgenden Tasks):
+- `recallStage(fach)` in `src/data/recall.ts` ist die **einzige** Ableitung der Abrufstufe
+  (ADR 0008). Fach 7 = Freitext. **Nichts davon ist persistiert** — wer eine Stufe speichert,
+  bricht ADR 0008 **und** ADR 0002.
+- `checkAnswer(input, target, corpus)` in `src/data/answer-check.ts` **braucht den Korpus**. Ohne ihn
+  misst sie nur gegen das Ziel und winkt fremde Muskeln durch („mylohyoideus" als Tippfehler von
+  „stylohyoideus"). Wer die Funktion wiederverwendet, gibt `getMuscles()` mit.
+- **Die roemische Nummerierung im Namen ist kein Beiwerk:** `Mm. lumbricales I–IV` (Hand) und
+  `Mm. lumbricales` (Fuss) sind **zwei Karten**. Wer sie beim Normalisieren wegkuerzt, verschmilzt sie.
+- Tastatur-Kuerzel in der Sitzung (`F`, `Space`, `1/2/3`) haengen am `window` und ignorieren jetzt
+  Eingaben aus `<input>`. Wer ein weiteres Feld in die Sitzung baut, verlaesst sich darauf.
 
 Was fuer Etappe 8 schon entschieden ist:
-- **8a ist durch E1 zur Pflicht geworden**, nicht Kuer: trainiert wird der freie Abruf, MC bleibt
-  nur Einstiegsstufe fuer frische Karten (ADR 0008).
 - **8f** darf Renderings aus der eigenen 3D-App nutzen — **aber erst nach der Pruefung**, dass dort
   ausschliesslich BodyParts3D-Geometrie steckt (E5). Ohne bestandene Pruefung: Platzhalter.
 

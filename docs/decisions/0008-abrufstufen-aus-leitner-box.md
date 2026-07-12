@@ -1,6 +1,6 @@
 # ADR 0008: Abrufstufe wird aus der Leitner-Box abgeleitet, nicht gespeichert
 
-## Status: vorgeschlagen · 2026-07-12
+## Status: angenommen · 2026-07-12 — umgesetzt in Etappe 8a
 
 ## Kontext
 Heute muss die Studentin **vor** dem Üben wählen: Lernkarten oder Quiz? Und im Quiz: welcher der
@@ -28,10 +28,15 @@ Feld einführen — und damit die eingefrorene Backup-Struktur aus
 | 5–6 | Freier Abruf, Selbstbewertung | abrufen | vorhanden (`FlashcardsPage`) |
 | 7 | Freitext tippen | produzieren | **neu** |
 
-- Die Ableitung ist eine **reine Funktion** in `src/data/` (`retrievalStage(box): Stage`), getestet.
+- Die Ableitung ist eine **reine Funktion** in `src/data/` (`recallStage(fach): RecallStage`), getestet.
 - Die Freitext-Auswertung normalisiert tolerant (Groß/Klein, Diakritika, `M.` ↔ `Musculus`, kleine
   Tippfehler), lehnt aber echte Verwechslungen ab: `M. flexor digitorum longus` darf **nicht** als
   `… brevis` durchgehen.
+- **Mehrdeutig heißt falsch.** Die Toleranz wird nicht nur gegen den gesuchten Namen gemessen,
+  sondern gegen den **ganzen Namensraum**: Liegt die Eingabe genauso nah an einem *anderen* Muskel,
+  wird sie abgelehnt. Ohne diese Regel würde „mylohyoideus" als Tippfehler von „stylohyoideus"
+  durchgehen — um das Zungenbein liegen sieben Namen im Abstand von zwei Zeichen. Die Toleranz darf
+  verzeihen, aber nicht **raten**.
 - Die zehn bestehenden Quizmodi verschwinden nicht — sie bleiben als **„Freies Üben“** unter
   *Lernen* erhalten, für alle, die gezielt einen Modus wählen wollen.
 
