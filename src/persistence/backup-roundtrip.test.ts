@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { useLookupStore } from '../store/useLookupStore';
 import { useProgressStore } from '../store/useProgressStore';
 import { useQuizStore } from '../store/useQuizStore';
 import { parseBackup } from './backup';
@@ -91,5 +92,64 @@ describe('Backup Round-Trip (Kompatibilitäts-Selbsttest, ADR 0002)', () => {
     importBackup(JSON.stringify(first));
     const second = exportBackup('2026-07-08T00:00:00.000Z');
     expect(second).toEqual(first);
+  });
+});
+
+describe('Additive Sektion „lookups" (7d) — ADR 0002 bleibt unangetastet', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    useProgressStore.getState().resetProgress();
+    useQuizStore.getState().resetAllSeries();
+    useLookupStore.getState().resetLookups();
+  });
+
+  it('ohne Nachschlagen fehlt der Schlüssel — die Datei ist die von vor 7d', () => {
+    importBackup(fixture('full-backup-v2.json'));
+    const out = exportBackup('2026-07-08T00:00:00.000Z');
+
+    expect(out).not.toHaveProperty('lookups');
+    expect(Object.keys(out).sort()).toEqual(
+      ['backupType', 'exportedAt', 'flashcards', 'quizSeries', 'version', 'xp'].sort(),
+    );
+  });
+
+  it('ein V1-Backup ohne die Sektion loescht die lokalen Zaehler nicht', () => {
+    useLookupStore.getState().record('M. deltoideus');
+
+    importBackup(fixture('full-backup-v1.json'));
+
+    expect(useLookupStore.getState().lookups.entries['M. deltoideus'].count).toBe(1);
+  });
+
+  it('Zaehler ueberleben Export → Import verlustfrei', () => {
+    importBackup(fixture('full-backup-v2.json'));
+    useLookupStore.getState().record('M. supraspinatus', new Date('2026-07-12T09:00:00.000Z'));
+    useLookupStore.getState().record('M. supraspinatus', new Date('2026-07-12T10:00:00.000Z'));
+
+    const out = exportBackup('2026-07-08T00:00:00.000Z');
+    expect(out.lookups?.entries['M. supraspinatus']).toEqual({
+      count: 2,
+      lastLookup: '2026-07-12T10:00:00.000Z',
+    });
+
+    useLookupStore.getState().resetLookups();
+    importBackup(JSON.stringify(out));
+
+    expect(useLookupStore.getState().lookups.entries['M. supraspinatus'].count).toBe(2);
+    // Und die Pflicht-Sektionen bleiben davon unberührt.
+    expect(useProgressStore.getState().getLevel()).toBe(5);
+  });
+
+  it('eine kaputte lookups-Sektion kippt den Import nicht — die Karten sind das Wertvolle', () => {
+    const broken = JSON.parse(fixture('full-backup-v2.json'));
+    broken.lookups = { version: 2, entries: { '': { count: 3 }, 'M. soleus': 'kaputt' } };
+
+    const result = importBackup(JSON.stringify(broken));
+
+    expect(result.type).toBe('full-backup');
+    expect(useProgressStore.getState().isInDeck('M. biceps brachii')).toBe(true);
+    // Leerer Name raus, unbrauchbarer Eintrag auf einen plausiblen Wert gehaertet.
+    expect(useLookupStore.getState().lookups.entries['']).toBeUndefined();
+    expect(useLookupStore.getState().lookups.entries['M. soleus'].count).toBe(1);
   });
 });

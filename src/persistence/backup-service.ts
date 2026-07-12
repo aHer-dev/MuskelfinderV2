@@ -8,6 +8,7 @@
    XP/Quiz-Serien unangetastet (wie V1 persistSections).
    ========================================================================= */
 
+import { useLookupStore } from '../store/useLookupStore';
 import { useProgressStore } from '../store/useProgressStore';
 import { useQuizStore } from '../store/useQuizStore';
 import { buildBackup, parseBackup } from './backup';
@@ -17,13 +18,14 @@ import type { BackupFile, ImportResult } from './types';
 export function exportBackup(exportedAt?: string): BackupFile {
   const { flashcards, xp } = useProgressStore.getState();
   const { quizSeries } = useQuizStore.getState();
-  return buildBackup({ flashcards, xp, quizSeries }, exportedAt);
+  const { lookups } = useLookupStore.getState();
+  return buildBackup({ flashcards, xp, quizSeries, lookups }, exportedAt);
 }
 
 /** Backup parsen und in die Stores schreiben. Wirft `BackupFormatError` bei Ablehnung. */
 export function importBackup(input: string | unknown): ImportResult {
   const result = parseBackup(input);
-  const { flashcards, xp, quizSeries } = result.sections;
+  const { flashcards, xp, quizSeries, lookups } = result.sections;
 
   if (flashcards) {
     // Legacy: xp fehlt → bestehenden XP-Stand behalten.
@@ -32,6 +34,11 @@ export function importBackup(input: string | unknown): ImportResult {
   }
   if (quizSeries) {
     useQuizStore.getState().replaceQuizSeries(quizSeries);
+  }
+  // Fehlt die additive Sektion (jedes Backup vor 7d), bleiben die lokalen Zähler stehen —
+  // ein alter Import darf ein Lückenprotokoll nicht stillschweigend löschen.
+  if (lookups) {
+    useLookupStore.getState().replaceLookups(lookups);
   }
 
   return result;

@@ -145,3 +145,67 @@
     color: var(--text-faint);
   }
 }
+
+/* ---- Zuletzt nachgeschlagen (7d, Brücke B1) --------------------------- */
+/* Die Lücken, die die Nutzerin selbst offengelegt hat. Ruhig gesetzt: die
+   Sektion informiert, sie fordert nicht — der Primärbutton bleibt oben. */
+.today__gaps {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg);
+  background: var(--surface-sunken);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+}
+
+.today__gaps-note {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text-faint);
+}
+
+.today__gap-list {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.today__gap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--spacing-xs) var(--spacing-sm);
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.today__gap:last-child {
+  border-bottom: none;
+}
+
+.today__gap-name {
+  flex: 1;
+  min-width: 12ch;
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.today__gap-name:hover {
+  text-decoration: underline;
+}
+
+.today__gap-count {
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+}

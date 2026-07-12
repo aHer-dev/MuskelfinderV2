@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getMuscleById } from '../data';
 import { movementLabel, regionLabel } from '../data/labels';
@@ -11,6 +11,7 @@ import { DifficultyDots } from '../components/ui/DifficultyDots';
 import { Icon } from '../components/ui/Icon';
 import { SegmentedControl } from '../components/ui/SegmentedControl';
 import { useCollectionStore } from '../store/useCollectionStore';
+import { useLookupStore } from '../store/useLookupStore';
 import { useProgressStore } from '../store/useProgressStore';
 import type { Muscle } from '../types';
 import '../components/features/detail/detail.css';
@@ -39,7 +40,17 @@ export function MuscleDetailPage() {
   const toggleCollection = useCollectionStore((s) => s.toggle);
   const inDeck = useProgressStore((s) => (muscle ? muscle.nameLatin in s.flashcards.cards : false));
   const addCard = useProgressStore((s) => s.addCard);
+  const recordLookup = useLookupStore((s) => s.record);
+  const forgetLookup = useLookupStore((s) => s.forget);
   const removeCard = useProgressStore((s) => s.removeCard);
+
+  /* Brücke B1 (7d): Nachschlagen ist ein Lernsignal. Wer denselben Muskel wieder und
+     wieder aufschlägt, kann ihn nicht — `/heute` bietet ihn daraufhin als Karte an.
+     Gezählt wird der Aufruf, nicht das Rendern. */
+  const nameLatin = muscle?.nameLatin;
+  useEffect(() => {
+    if (nameLatin) recordLookup(nameLatin);
+  }, [nameLatin, recordLookup]);
 
   if (!muscle) {
     return (
@@ -82,7 +93,15 @@ export function MuscleDetailPage() {
             type="button"
             className={`btn btn--ghost${inDeck ? ' btn--active' : ''}`}
             aria-pressed={inDeck}
-            onClick={() => (inDeck ? removeCard(muscle.nameLatin) : addCard(muscle.nameLatin))}
+            onClick={() => {
+              if (inDeck) {
+                removeCard(muscle.nameLatin);
+                return;
+              }
+              // Im Kasten ist er keine Lücke mehr — der Zähler hat seine Arbeit getan.
+              addCard(muscle.nameLatin);
+              forgetLookup([muscle.nameLatin]);
+            }}
           >
             <Icon name="icCards" size={18} /> {inDeck ? 'In Lernkarten' : 'Zu Lernkarten'}
           </button>

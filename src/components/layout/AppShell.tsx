@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { useIsDesktop } from '../../hooks/useMediaQuery';
+import { HeaderSearch } from './HeaderSearch';
 import { IconRail } from './IconRail';
 import { TabBar } from './TabBar';
 import { SiteFooter } from './SiteFooter';
@@ -19,6 +20,8 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className={`shell${isDesktop ? ' shell--desktop' : ' shell--mobile'}`}>
       {isDesktop ? <IconRail /> : null}
       <div className="content">
+        {/* Etappe 7d: Nachschlagen ist von jeder Route aus einen Griff entfernt. */}
+        <HeaderSearch />
         <main className="content__main">{children}</main>
         <SiteFooter />
       </div>

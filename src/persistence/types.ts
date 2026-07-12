@@ -62,6 +62,28 @@ export interface QuizSeriesEntry {
 /** Schlüssel = opaker Modus-Key (`"<quizType>::<filterSignatur>"`), verbatim erhalten. */
 export type QuizSeriesSection = Record<string, QuizSeriesEntry>;
 
+/* ---------- Nachgeschlagen (Etappe 7d) ---------------------------------- */
+
+/** Ein nachgeschlagener Muskel: wie oft, und wann zuletzt. */
+export interface LookupEntry {
+  /** Aufrufe der Detailseite, ≥ 1. */
+  count: number;
+  /** ISO-Datum des letzten Aufrufs. */
+  lastLookup: string;
+}
+
+/**
+ * Nachschlage-Zähler je Muskel. **Additive Sektion** (ADR 0002 §1): sie ist im
+ * Backup OPTIONAL und fehlt in jeder Datei, die vor 7d geschrieben wurde. Ältere
+ * Versionen (und V1) ignorieren den Schlüssel — die drei Pflicht-Sektionen sind
+ * unverändert, die Backup-Version bleibt 2.
+ */
+export interface LookupsSection {
+  version: 2;
+  /** Schlüssel = lateinischer Muskelname, wie bei den Lernkarten (ADR 0002 §2). */
+  entries: Record<string, LookupEntry>;
+}
+
 /* ---------- Backup-Datei ------------------------------------------------ */
 
 export interface BackupFile {
@@ -71,13 +93,16 @@ export interface BackupFile {
   flashcards: FlashcardsSection;
   xp: XpSection;
   quizSeries: QuizSeriesSection;
+  /** Fehlt, solange nichts nachgeschlagen wurde — dann bleibt die Datei byte-gleich zu vor 7d. */
+  lookups?: LookupsSection;
 }
 
-/** Die drei Sektionen, die Import → Store und Store → Export überträgt. */
+/** Die Sektionen, die Import → Store und Store → Export überträgt. */
 export interface BackupSections {
   flashcards: FlashcardsSection;
   xp: XpSection;
   quizSeries: QuizSeriesSection;
+  lookups?: LookupsSection;
 }
 
 /** Ergebnis eines erfolgreichen Imports. Legacy-Backups liefern nur `flashcards`. */
@@ -87,5 +112,6 @@ export interface ImportResult {
     flashcards: FlashcardsSection;
     xp?: XpSection;
     quizSeries?: QuizSeriesSection;
+    lookups?: LookupsSection;
   };
 }

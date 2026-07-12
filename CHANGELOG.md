@@ -7,6 +7,18 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- **Etappe 7d — Suchfeld überall + Brücke B1 „nachgeschlagen = noch nicht gewusst"**: Das Suchfeld
+  sitzt jetzt in der **Kopfzeile jeder Route** (eigene `search`-Landmark, tastaturerreichbar mit
+  sichtbarem Fokus-Ring) — der neue Einstieg macht das Nachschlagen nicht teurer. Neuer
+  `useLookupStore` zählt Detailseiten-Aufrufe je `nameLatin`; auf `/heute` erscheint daraus die
+  Sektion **„Zuletzt nachgeschlagen — *= noch nicht gewusst*"** (häufigste zuerst, mit Zähler und
+  Region) samt **einem** Button „Alle N als Karten lernen". Damit füllt sich der Karteikasten durch
+  normale Benutzung — im Test wie im Browser nachgewiesen, **ohne dass `/karteikasten` je geöffnet
+  wurde**. Wer im Kasten liegt, wird nicht mehr vorgeschlagen; wer aufgenommen wird, verliert seinen
+  Zähler (er ist keine Lücke mehr). Mehrfach Nachgeschlagenes wird in der Empfehlung aus 7a höher
+  priorisiert. Persistenz **additiv**: neue, optionale Backup-Sektion `lookups` — sie fehlt in der
+  Datei, solange nichts nachgeschlagen wurde, ältere Versionen ignorieren den Schlüssel, die
+  Backup-Version bleibt 2 und der Round-Trip gegen die V1-Fixtures grün.
 - **Etappe 7c — Onboarding in zwei Fragen + Auto-Seeding** (`src/data/seeding.ts`,
   `components/features/onboarding/`): Der leere Karteikasten verschwindet als Problem. Beim
   Erststart fragt `/heute` **„Was lernst du?"** (Physio · Ergo · Logo — die Wahl *ist* die Handlung,
@@ -62,6 +74,12 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   19 geworden. `seedDeck` dedupliziert jetzt beim Ziehen und füllt nach.
 
 ### Changed
+- **Die Lernsitzung liegt jetzt zentral** (`src/store/useSessionStore.ts`, 7d) statt in
+  `useState` der `FlashcardsPage`. Grund: Mit dem Suchfeld in der Kopfzeile verlässt man mitten in
+  der Sitzung die Route — lag der Zustand in der Komponente, war die Sitzung mit dem Unmount weg.
+  Sie übersteht die Navigation jetzt (Nachschlagen kostet keine Sitzung mehr), **nicht** aber einen
+  Browser-Neustart; das ist Absicht, die Bewertungen selbst liegen ohnehin nach jeder Karte im
+  Fortschritts-Store. `useFlashcardSession` ist nur noch die abgeleitete Sicht darauf.
 - **Navigation auf vier Absichten** (7b): Heute · Suche · Lernen · Fortschritt — statt sechs
   gleichrangiger Werkzeuge. **Karteikasten und Quiz verlieren nur den Tab-Rang, nicht die
   Erreichbarkeit:** der Karteikasten hängt jetzt sichtbar unter *Fortschritt*, das Quiz unter

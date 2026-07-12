@@ -8,10 +8,10 @@
 - Datum: 2026-07-12
 - Branch: `main` (Design-Feinschliff und Produkt-Roadmap gemergt, `--no-ff`)
 - Status: **Migration abgeschlossen (Etappen 0–6, `v1.0` getaggt). Produktphase laeuft
-  (Etappen 7–9) — Statustafel in `docs/produkt-plan.md`. 7a + 7b + 7c fertig, naechster Schritt: 7d.**
+  (Etappen 7–9) — Statustafel in `docs/produkt-plan.md`. 7a–7d fertig, naechster Schritt: 7e.**
   Der historische Verlauf steht unten.
-- Gate zuletzt gruen auf `feat/etappe-7c-onboarding-seeding`:
-  `npm run lint && npm run test && npm run build` — **211 Tests**.
+- Gate zuletzt gruen auf `feat/etappe-7d-suchfeld-bruecke`:
+  `npm run lint && npm run test && npm run build` — **227 Tests**.
 
 ## Verlauf (Migration, abgeschlossen)
 - Etappe 0–4 abgeschlossen. **Etappe 5 (Haertung)** — Teil 1+2 umgesetzt:
@@ -151,15 +151,15 @@ befuellt werden, die Statistik zeigt Zahlen ohne Empfehlung.
 - Konzept-Mockups (visuell, extern): Heute-Screen und Produktkonzept, siehe `docs/produkt-plan.md`.
 
 ## Naechster Schritt
-**Etappe 7d — Persistentes Suchfeld + Aufrufzaehler + „Zuletzt nachgeschlagen" (Bruecke B1).**
-Briefing: `docs/tasks/2026-07-12-etappe-7d-suchfeld-und-bruecke-b1.md`.
-Anschlusspunkt: Die Engine nimmt `lookupCounts` (Record<nameLatin, number>) **bereits entgegen** und
-priorisiert danach — 7d muss nur den `useLookupStore` bauen und ihn in `useTodayPlan` durchreichen
-(genau so, wie es 7c mit `examDate` gemacht hat). Muster fuer einen additiven Store, der das
-Backup-Format nicht anfasst: `src/store/useProfileStore.ts`.
+**Etappe 7e — Falschantwort erklaert sich (Template) + Detail-Sheet in der Session (Bruecke B2).**
+Briefing: `docs/tasks/2026-07-12-etappe-7e-falschantwort-erklaeren.md`. Danach 7f (Streak + Freeze).
+Anschlusspunkt: Die Sitzung liegt seit 7d im `useSessionStore` und ueberlebt Navigation — B2 will
+aber, dass die Detailseite **als Sheet ueber der Session** aufgeht, statt wegzunavigieren
+(`src/components/ui/Sheet.tsx` existiert und hat einen Fokus-Trap).
 
-**7a + 7b + 7c sind fertig** (Branch-Kette `feat/etappe-7a-empfehlungs-engine` →
-`feat/etappe-7b-route-heute` → `feat/etappe-7c-onboarding-seeding`, **noch nichts gemergt**):
+**7a–7d sind fertig** (Branch-Kette `feat/etappe-7a-empfehlungs-engine` →
+`feat/etappe-7b-route-heute` → `feat/etappe-7c-onboarding-seeding` →
+`feat/etappe-7d-suchfeld-bruecke`, **noch nichts gemergt**):
 - **7a:** `src/data/today.ts` liefert `getTodayPlan()` → getypter `TodayPlan` mit vier Zustaenden
   (`needsOnboarding` · `review` · `backlog` · `new`) — **kein Zustand ohne Vorschlag**. Priorisierung
   nach Verzug, Schwierig-Flag, Fach, Region-Schwaeche und Nachschlage-Haeufigkeit; Tagesdosis
@@ -181,6 +181,16 @@ Backup-Format nicht anfasst: `src/store/useProfileStore.ts`.
   **Wichtig fuer alle Folge-Tasks:** `nameLatin` ist NICHT eindeutig — 5 Namen gibt es zweimal
   (Hand/Fuss). Karten schluesseln nach `nameLatin` (ADR 0002 §2), also sind das je EINE Karte.
   Wer Namenslisten baut (Seeding, Sessions, Vorschlaege), muss deduplizieren.
+- **7d:** Suchfeld in der Kopfzeile **jeder** Route (`HeaderSearch`, eigene `search`-Landmark).
+  Neuer `useLookupStore` (`mf.lookups`) zaehlt Detailseiten-Aufrufe je `nameLatin`; `/heute` zeigt
+  daraus „Zuletzt nachgeschlagen = noch nicht gewusst" mit **einem** Button „Alle N als Karten
+  lernen" — der Kasten fuellt sich ohne die Verwaltungsseite (Bruecke B1). Aufnahme in den Kasten
+  loescht den Zaehler. **Backup additiv erweitert:** neue OPTIONALE Sektion `lookups`; sie fehlt in
+  der Datei, solange nichts nachgeschlagen wurde, Version bleibt 2, V1-Round-Trip gruen.
+  **Architektur-Aenderung:** Die Lernsitzung liegt jetzt in `src/store/useSessionStore.ts` statt in
+  `useState` der `FlashcardsPage` — sonst haette der Griff zur Kopfzeilen-Suche die laufende Sitzung
+  zerstoert (Unmount). `useFlashcardSession` ist nur noch die Sicht darauf; sie ueberlebt Navigation,
+  bewusst NICHT den Browser-Neustart.
 
 Offen (nur durch dich):
 - Bei oeffentlichem Deploy: `git remote add origin …` + Push (kein Remote konfiguriert).

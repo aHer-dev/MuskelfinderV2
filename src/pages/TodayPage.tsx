@@ -6,11 +6,15 @@
    in jedem der vier Zustände genau ein Primärbutton.
    ========================================================================= */
 
+import { useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { getMuscleByLatinName } from '../data';
 import { regionLabel } from '../data/labels';
+import { lookupSuggestions } from '../data/lookups';
 import type { TodayPlan } from '../data/today';
 import { useTodayPlan } from '../hooks/useTodayPlan';
 import { useCompleteOnboarding } from '../hooks/useCompleteOnboarding';
+import { useLookupStore } from '../store/useLookupStore';
 import { useProfileStore } from '../store/useProfileStore';
 import { useProgressStore } from '../store/useProgressStore';
 import { xpView } from '../persistence/xp';
@@ -87,10 +91,16 @@ export function TodayPage() {
   const plan = useTodayPlan();
   const navigate = useNavigate();
   const addCards = useProgressStore((s) => s.addCards);
+  const cards = useProgressStore((s) => s.flashcards.cards);
   const totalXP = useProgressStore((s) => s.xp.totalXP);
   const profession = useProfileStore((s) => s.profession);
+  const lookups = useLookupStore((s) => s.lookups);
+  const forgetLookups = useLookupStore((s) => s.forget);
   const completeOnboarding = useCompleteOnboarding();
   const xp = xpView(totalXP);
+
+  // Brücke B1: nachgeschlagen = noch nicht gewusst. Was im Kasten liegt, ist keine Lücke.
+  const gaps = useMemo(() => lookupSuggestions({ lookups, cards }), [lookups, cards]);
 
   const today = new Date().toLocaleDateString('de-DE', DATE_FORMAT);
 
@@ -114,6 +124,13 @@ export function TodayPage() {
   const learnSuggestions = () => {
     addCards(plan.newSuggestions);
     startSession(plan.newSuggestions);
+  };
+
+  /** Die nachgeschlagenen Lücken in den Kasten holen — ohne die Verwaltungsseite zu öffnen. */
+  const learnGaps = () => {
+    const names = gaps.map((g) => g.name);
+    addCards(names);
+    forgetLookups(names);
   };
 
   return (
@@ -165,6 +182,37 @@ export function TodayPage() {
             </p>
           )}
         </div>
+      )}
+
+      {gaps.length > 0 && (
+        <section className="today__gaps" aria-labelledby="today-gaps">
+          <h2 className="today__subtitle" id="today-gaps">
+            Zuletzt nachgeschlagen <span className="today__gaps-note">= noch nicht gewusst</span>
+          </h2>
+
+          <ul className="today__gap-list">
+            {gaps.map((gap) => {
+              const muscle = getMuscleByLatinName(gap.name);
+              return (
+                <li key={gap.name} className="today__gap">
+                  <Link to={muscle ? `/muskel/${muscle.id}` : '/suche'} className="today__gap-name">
+                    {gap.name}
+                  </Link>
+                  <span className="today__gap-count">
+                    {gap.count}× nachgeschlagen
+                    {muscle ? ` · ${regionLabel(muscle.region)}` : ''}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+
+          <button type="button" className="btn btn--ghost" onClick={learnGaps}>
+            {gaps.length === 1
+              ? 'Als Karte lernen'
+              : `Alle ${gaps.length} als Karten lernen`}
+          </button>
+        </section>
       )}
 
       <section className="today__quick" aria-labelledby="today-quick">

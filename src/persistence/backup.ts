@@ -13,6 +13,7 @@ import {
   hasOwn,
   isPlainObject,
   sanitizeFlashcards,
+  sanitizeLookups,
   sanitizeQuizSeries,
   sanitizeXp,
   toNonNegativeInt,
@@ -72,6 +73,8 @@ export function normalizeFullBackup(parsed: unknown): ImportResult {
       flashcards: sanitizeFlashcards(parsed.flashcards, { strict: true }),
       xp: sanitizeXp(parsed.xp, { strict: true }),
       quizSeries: sanitizeQuizSeries(parsed.quizSeries, { strict: true }),
+      // Additiv (7d): fehlt in jeder Datei vor 7d — kein Grund, den Import abzulehnen.
+      ...(hasOwn(parsed, 'lookups') ? { lookups: sanitizeLookups(parsed.lookups) } : {}),
     },
   };
 }
@@ -96,11 +99,17 @@ export function parseBackup(input: string | unknown): ImportResult {
   return legacy ?? normalizeFullBackup(parsed);
 }
 
-/** Erzeugt das exportierbare v2-Backup-Objekt aus den (bereits getypten) Sektionen. */
+/**
+ * Erzeugt das exportierbare v2-Backup-Objekt aus den (bereits getypten) Sektionen.
+ * `lookups` wird nur geschrieben, wenn wirklich etwas nachgeschlagen wurde — wer die
+ * Brücke nie nutzt, bekommt exakt die Datei, die er vor 7d bekommen hätte.
+ */
 export function buildBackup(
   sections: BackupSections,
   exportedAt: string = new Date().toISOString(),
 ): BackupFile {
+  const lookups = sections.lookups ? sanitizeLookups(sections.lookups) : null;
+
   return {
     backupType: BACKUP_TYPE,
     version: BACKUP_VERSION,
@@ -108,6 +117,7 @@ export function buildBackup(
     flashcards: sanitizeFlashcards(sections.flashcards, { strict: true }),
     xp: sanitizeXp(sections.xp, { strict: true }),
     quizSeries: sanitizeQuizSeries(sections.quizSeries, { strict: true }),
+    ...(lookups && Object.keys(lookups.entries).length > 0 ? { lookups } : {}),
   };
 }
 

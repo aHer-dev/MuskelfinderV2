@@ -1,6 +1,12 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
-import { advanceQueue, buildQueue, readSessionHandoff, useFlashcardSession } from './useFlashcardSession';
+import { useFlashcardSession } from './useFlashcardSession';
+import {
+  advanceQueue,
+  buildQueue,
+  readSessionHandoff,
+  useSessionStore,
+} from '../store/useSessionStore';
 import { useProgressStore } from '../store/useProgressStore';
 
 describe('advanceQueue (rein)', () => {
@@ -23,6 +29,7 @@ describe('useFlashcardSession (gegen useProgressStore)', () => {
   beforeEach(() => {
     localStorage.clear();
     useProgressStore.getState().resetProgress();
+    useSessionStore.getState().exit();
   });
 
   it('beginnt im Setup (nicht gestartet) und startet erst über start()', () => {
@@ -111,6 +118,7 @@ describe('buildQueue mit vorgegebener Auswahl (7b)', () => {
   beforeEach(() => {
     localStorage.clear();
     useProgressStore.getState().resetProgress();
+    useSessionStore.getState().exit();
   });
 
   it('behält die Reihenfolge des Tagesplans bei', () => {
@@ -121,5 +129,43 @@ describe('buildQueue mit vorgegebener Auswahl (7b)', () => {
   it('lässt Namen weg, die nicht (mehr) fällig oder gar nicht im Kasten sind', () => {
     useProgressStore.getState().addCards(['A']);
     expect(buildQueue({ names: ['A', 'Unbekannt'], limit: 0, scope: 'all' })).toEqual(['A']);
+  });
+});
+
+describe('Sitzung überlebt die Navigation (7d)', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    useProgressStore.getState().resetProgress();
+    useSessionStore.getState().exit();
+  });
+
+  it('bleibt bestehen, wenn die Seite aushängt — Nachschlagen kostet die Sitzung nicht', () => {
+    useProgressStore.getState().addCards(['A', 'B', 'C']);
+
+    const first = renderHook(() => useFlashcardSession());
+    act(() => first.result.current.start({ limit: 0, scope: 'all' }));
+    act(() => first.result.current.rate('correct'));
+    expect(first.result.current.reviewed).toBe(1);
+
+    // Die Nutzerin schlägt etwas nach: /lernkarten hängt aus, die Detailseite kommt.
+    first.unmount();
+
+    // Zurück auf /lernkarten — die Sitzung läuft weiter, mit Zähler und Warteschlange.
+    const second = renderHook(() => useFlashcardSession());
+    expect(second.result.current.started).toBe(true);
+    expect(second.result.current.reviewed).toBe(1);
+    expect(second.result.current.total).toBe(3);
+    expect(second.result.current.current).toBe('B');
+  });
+
+  it('exit() beendet sie wirklich — kein Zombie beim nächsten Besuch', () => {
+    useProgressStore.getState().addCards(['A']);
+    const { result, unmount } = renderHook(() => useFlashcardSession());
+    act(() => result.current.start({ limit: 0, scope: 'all' }));
+    act(() => result.current.exit());
+    unmount();
+
+    const again = renderHook(() => useFlashcardSession());
+    expect(again.result.current.started).toBe(false);
   });
 });
