@@ -1,12 +1,18 @@
 # Project State — Single Source of Truth
 
 > Erst hier lesen. Diese Datei ist der kompakte, aktuelle Stand fuer Agenten.
-> Details stehen in ROADMAP.md, docs/migration-plan.md, docs/architecture.md und den ADRs.
+> Details stehen in ROADMAP.md, docs/produkt-plan.md (aktuelle Arbeit, mit Statustafel),
+> docs/migration-plan.md (abgeschlossen), docs/architecture.md und den ADRs.
 
 ## Stand
-- Datum: 2026-07-09
-- Branch: `feat/etappe-0-fundament`
-- Status: Etappe 0–4 abgeschlossen. **Etappe 5 (Haertung) laeuft** — Teil 1+2 umgesetzt:
+- Datum: 2026-07-12
+- Branch: `feat/design-feinschliff` (nicht gemergt)
+- Status: **Migration abgeschlossen (Etappen 0–6, `v1.0` getaggt). Produktphase geplant
+  (Etappen 7–9) — Statustafel in `docs/produkt-plan.md`. Naechster Schritt: Etappe 7a.**
+  Der historische Verlauf steht unten.
+
+## Verlauf (Migration, abgeschlossen)
+- Etappe 0–4 abgeschlossen. **Etappe 5 (Haertung)** — Teil 1+2 umgesetzt:
   (1) Quellen-/Lizenz-Seite (`/quellen`) + Datenschutz-Seite (`/datenschutz`) aus V1 uebernommen
   (geteiltes `LegalPage`-Geruest, CC-BY-4.0-Attribution vollstaendig), globaler `SiteFooter`
   (Attribution + Legal-Links) auf jeder Route; Route-Code-Splitting via `React.lazy`/`Suspense`
@@ -124,7 +130,33 @@ End-to-End verifiziert (Muskel wird hervorgehoben, „Zurueck zum Muskelfinder" 
 Faellt die Entscheidung gegen V2, genuegt ein Zurueckdrehen von `THREE_D_BASE_URL`
 (`src/data/threeD.ts`) — die URL ist die einzige Stelle.
 
+## Produktphase (Etappen 7–9) — vom Nachschlagewerk zum Coach
+Die Migration ist durch: die App **kann** alles, was V1 konnte. Drei unabhaengige Recherche-Berichte
+(`docs/Brainstorming.txt`) kommen zum selben Befund: **Die App ist eine Bibliothek, keine
+Lernbegleitung.** Sie oeffnet auf einer Liste mit 150 Muskeln, der Karteikasten muss von Hand
+befuellt werden, die Statistik zeigt Zahlen ohne Empfehlung.
+
+- **Verbindlicher Stand + Statustafel: `docs/produkt-plan.md`.** Dort steht je Schritt (7a–9d),
+  ob er offen, laufend, fertig oder blockiert ist. **Wer einen Schritt abschliesst, aktualisiert
+  die Tafel** — sonst weiss der naechste Agent nicht, wo er ansetzt.
+- Nordstern: beim Oeffnen genau **ein** Vorschlag — „Heute dran".
+- Harte Entscheidungen: **ADR 0007** (Einstieg `/heute`, Navigation nach Absichten statt Features),
+  **ADR 0008** (Abrufstufe wird aus der Leitner-Box *abgeleitet*, nicht gespeichert — ADR 0002
+  bleibt dadurch unangetastet).
+- Etappe 7 ist **nicht blockiert** und sofort startklar. Etappe 9 wartet auf Entscheidungen
+  **E1–E3** (reale Pruefungsform · Gruppen-Annotation · Palpations-Relevanz), die nur der
+  Projektinhaber treffen kann — Liste in der Statustafel.
+- Konzept-Mockups (visuell, extern): Heute-Screen und Produktkonzept, siehe `docs/produkt-plan.md`.
+
 ## Naechster Schritt
+**Etappe 7a — Empfehlungs-Engine** (`src/data/today.ts`, reine Selektoren, kein UI).
+Briefing: `docs/tasks/2026-07-12-etappe-7a-empfehlungs-engine.md`. Danach 7b (Route `/heute`).
+
+Davor liegt noch offen (nur durch dich):
+- Merge `feat/design-feinschliff` → `main`.
+- Bei oeffentlichem Deploy: `git remote add origin …` + Push (kein Remote konfiguriert).
+
+## Vorheriger Stand (Etappe 5+6)
 Etappe 5+6 abgeschlossen, `v1.0` lokal getaggt. **Laufend: Branch `feat/design-feinschliff`** —
 UX-/Design-Review der fertigen App (Playwright-Durchklick aller Routen, Light+Dark, Desktop+Mobil).
 Behoben: Emoji-Tofu-Glyphen → Sprite-Icons (neues `icFlag`), Lernkarten-Rueckseite ohne

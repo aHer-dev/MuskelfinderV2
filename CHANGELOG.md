@@ -6,6 +6,18 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+- **Produktplan für Etappen 7–9** (`docs/produkt-plan.md`): der Weg vom Nachschlagewerk zum Coach,
+  mit **Statustafel** (jeder Schritt 7a–9d: offen/laufend/fertig/blockiert), den vier Brücken
+  zwischen Suche und Lernen, Abhängigkeitsgraph und den fünf offenen Entscheidungen (E1–E5), die
+  nur der Projektinhaber treffen kann. ROADMAP.md um „Teil 2 — Produkt“ erweitert.
+- **ADR 0007** — Einstiegsroute `/heute`; die Navigation benennt künftig Absichten
+  (Heute · Suche · Lernen · Fortschritt) statt sechs gleichrangiger Werkzeuge. `/karteikasten`
+  bleibt als Route erhalten, damit Deep-Links nicht brechen.
+- **ADR 0008** — die Abrufstufe (MC → Bildzuordnung → freier Abruf → Freitext) wird aus der
+  Leitner-Box *abgeleitet* statt gespeichert. Kein neuer persistierter Key, ADR 0002 unangetastet.
+- **Task-Briefing Etappe 7a** — Empfehlungs-Engine (`src/data/today.ts`), die Wurzel von Etappe 7.
+
 ### Changed
 - **Statistik entdoppelt:** Level und XP standen dreifach auf einem Screen (Kachel, Ring, Text).
   Die Kachelreihe zeigt jetzt vier *verschiedene* Kennzahlen (Karten im Kasten, Gemeistert,
