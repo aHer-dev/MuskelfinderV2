@@ -18,11 +18,14 @@
 
 import { create } from 'zustand';
 import { getMuscles } from '../data';
+import { applyCardFilter, isCardFilter, type CardFilter } from '../data/card-filter';
 import { dailyDose, daysUntilExam } from '../data/today';
+import { isDue } from '../persistence/leitner';
 import { useProfileStore } from './useProfileStore';
 import { useProgressStore } from './useProgressStore';
 import { useStreakStore } from './useStreakStore';
 import { notifyAward, notifyToast } from './useToastStore';
+import type { FlashcardCard } from '../persistence/types';
 import type { CardRating, RegionId } from '../types';
 
 /** Nächste Warteschlange nach einer Bewertung (rein, ohne Seiteneffekte). */
@@ -44,27 +47,48 @@ export interface SessionOptions {
    * `scope` entfällt, `limit` deckelt weiterhin. Nicht mehr fällige Namen fallen raus.
    */
   names?: string[];
+  /**
+   * Lücken-Filter (Etappe 8b), additiv: „nur falsch beantwortete", „nie gesehen",
+   * „schwierig markiert". Fehlt er, ist alles wie vorher (`'all'`).
+   */
+  filter?: CardFilter;
 }
 
-/** Fällige Karten für einen Bereich (oder eine vorgegebene Auswahl), optional auf `limit` gekürzt. */
-export function buildQueue(opts: SessionOptions): string[] {
-  const store = useProgressStore.getState();
+/**
+ * Fällige Karten für einen Bereich (oder eine vorgegebene Auswahl), gefiltert und
+ * optional auf `limit` gekürzt.
+ *
+ * Der Filter setzt sich VOR den Deckel und HINTER die Fälligkeit — er nimmt Karten
+ * weg, ohne die Reihenfolge anzufassen (8b). Die Vorpriorisierung aus 7b überlebt das.
+ */
+export function buildQueue(
+  opts: SessionOptions,
+  cards: Record<string, FlashcardCard> = useProgressStore.getState().flashcards.cards,
+): string[] {
+  const filter = opts.filter ?? 'all';
+  const now = new Date();
+  const dueNow = (name: string): boolean => {
+    const card = cards[name];
+    return card !== undefined && isDue(card, now);
+  };
+
+  const cut = (queue: string[]): string[] => {
+    const filtered = applyCardFilter({ cards, candidates: queue, filter });
+    return opts.limit > 0 ? filtered.slice(0, opts.limit) : filtered;
+  };
 
   // Vorgegebene Auswahl: Reihenfolge übernehmen, nur die Fälligkeit noch prüfen.
-  if (opts.names) {
-    const due = new Set(store.getDueCards(opts.names));
-    const queue = opts.names.filter((name) => due.has(name));
-    return opts.limit > 0 ? queue.slice(0, opts.limit) : queue;
-  }
+  if (opts.names) return cut(opts.names.filter(dueNow));
 
-  let names: string[] | undefined;
-  if (opts.scope !== 'all') {
-    names = getMuscles()
-      .filter((m) => m.region === opts.scope)
-      .map((m) => m.nameLatin);
-  }
-  const due = store.getDueCards(names);
-  return opts.limit > 0 ? due.slice(0, opts.limit) : due;
+  const inScope =
+    opts.scope === 'all'
+      ? Object.keys(cards)
+      : getMuscles()
+          .filter((m) => m.region === opts.scope)
+          .map((m) => m.nameLatin)
+          .filter((name) => name in cards);
+
+  return cut(inScope.filter(dueNow));
 }
 
 /**
@@ -76,7 +100,12 @@ export function readSessionHandoff(state: unknown): SessionOptions | null {
   const start = (state as { start?: unknown }).start;
   if (typeof start !== 'object' || start === null) return null;
 
-  const { names, limit, scope } = start as { names?: unknown; limit?: unknown; scope?: unknown };
+  const { names, limit, scope, filter } = start as {
+    names?: unknown;
+    limit?: unknown;
+    scope?: unknown;
+    filter?: unknown;
+  };
   if (!Array.isArray(names) || !names.every((n) => typeof n === 'string') || names.length === 0) {
     return null;
   }
@@ -84,6 +113,7 @@ export function readSessionHandoff(state: unknown): SessionOptions | null {
     names,
     limit: typeof limit === 'number' ? limit : 0,
     scope: scope === 'upper' || scope === 'lower' || scope === 'trunk' || scope === 'head' ? scope : 'all',
+    filter: isCardFilter(filter) ? filter : 'all',
   };
 }
 

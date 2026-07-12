@@ -95,7 +95,13 @@ describe('readSessionHandoff (Übergabe von /heute, 7b)', () => {
       names: ['A', 'B'],
       limit: 0,
       scope: 'all',
+      filter: 'all',
     });
+  });
+
+  it('nimmt einen Filter mit, weist aber Unsinn zurück (8b)', () => {
+    expect(readSessionHandoff({ start: { names: ['A'], filter: 'wrong' } })?.filter).toBe('wrong');
+    expect(readSessionHandoff({ start: { names: ['A'], filter: 'kaputt' } })?.filter).toBe('all');
   });
 
   it('weist alles zurück, was nicht wie eine Auswahl aussieht', () => {

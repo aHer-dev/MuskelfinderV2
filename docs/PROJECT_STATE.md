@@ -6,12 +6,16 @@
 
 ## Stand
 - Datum: 2026-07-12
-- Branch: `feat/etappe-8c-statistik-handlung` (8a ist auf `main` gemergt)
+- Branch: `feat/etappe-8b-session-filter` (8a + 8c sind auf `main` gemergt)
 - Status: **Migration abgeschlossen (Etappen 0–6, `v1.0`). ETAPPE 7 KOMPLETT (7a–7f). ETAPPE 8
-  LAEUFT: 8a + 8c fertig** — die Abrufhaerte waechst mit der Beherrschung, und keine Zahl in der
-  Statistik steht mehr ohne Knopf. **Bruecke B4 ist eingeloest**; offen bleibt nur noch B3 (9c).
-  Statustafel: `docs/produkt-plan.md`.
-- Gate gruen: `npm run lint && npm run test && npm run build` — **346 Tests**.
+  LAEUFT: 8a + 8c + 8b fertig** — die Abrufhaerte waechst mit der Beherrschung, keine Zahl in der
+  Statistik steht ohne Knopf, und man kann gezielt an den Luecken ueben.
+  **Bruecke B4 ist eingeloest**; offen bleibt nur noch B3 (9c). Statustafel: `docs/produkt-plan.md`.
+- Gate gruen: `npm run lint && npm run test && npm run build` — **366 Tests**.
+- **Offen aus 8b (Entscheidung noetig):** Die Filter gibt es in der **Sitzung**, aber **nicht im
+  Quiz**. Ein gefilterter Quiz-Pool braucht einen ZUSAETZLICHEN Serien-Schluessel (der bestehende
+  muss bitgleich bleiben, ADR 0002) und eine Antwort auf zu kleine Pools (eine Frage braucht 4
+  Optionen). Siehe Kasten in der Statustafel.
 
 ## Verlauf (Migration, abgeschlossen)
 - Etappe 0–4 abgeschlossen. **Etappe 5 (Haertung)** — Teil 1+2 umgesetzt:
@@ -150,10 +154,16 @@ befuellt werden, die Statistik zeigt Zahlen ohne Empfehlung.
 - Konzept-Mockups (visuell, extern): Heute-Screen und Produktkonzept, siehe `docs/produkt-plan.md`.
 
 ## Naechster Schritt
-**Etappe 8b — Session-Filter „nur falsch beantwortete" / „nie gesehen".** Briefing:
-`docs/tasks/2026-07-12-etappe-8b-session-filter.md`.
+**Etappe 8e — Eigene Notizen je Muskel.** Briefing:
+`docs/tasks/2026-07-12-etappe-8e-notizen.md`.
 **Etappe 8 ist vollstaendig gebrieft** (Rahmen + 8a–8f, siehe Statustafel).
-Reihenfolge: 8a ✅ → 8c ✅ → **8b** → 8e → 8f → 8d.
+Reihenfolge: 8a ✅ → 8c ✅ → 8b ✅ → **8e** → 8f → 8d.
+
+Aus 8b mitnehmen:
+- **`buildQueue(opts, cards?)` ist rein**, wenn man die Karten mitgibt. Die Seite fragt damit dieselbe
+  Funktion, die auch die Sitzung startet — die Zahl am Knopf KANN nicht mehr von der Sitzung abweichen.
+- **Ein Filter hebt die Faelligkeit nicht auf.** Die Leitner-Box bleibt die einzige Wahrheit ueber den
+  Zeitpunkt. Wer eine Karte sofort wiedersehen will, markiert sie als schwierig (die ist immer faellig).
 
 Aus 8c mitnehmen:
 - **Ein CTA darf nur faellige Karten versprechen.** `buildQueue` filtert die Uebergabe erneut auf

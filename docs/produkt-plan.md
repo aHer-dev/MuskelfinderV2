@@ -79,7 +79,7 @@ Prüfungsmodus und kommt mit **9c**.
 | ID | Schritt | Briefing | Status | Branch | Blockiert durch |
 |----|---------|----------|--------|--------|-----------------|
 | 8a | Abrufleiter: Stufe aus Leitner-Box + **Freitext-Stufe** (Fach 7) — durch **E1 zur Pflicht** geworden | [8a](tasks/2026-07-12-etappe-8a-abrufleiter-freitext.md) | **fertig** | `feat/etappe-8a-abrufleiter` | — |
-| 8b | Session-Filter „nur falsch beantwortete“ / „nie gesehen“ | [8b](tasks/2026-07-12-etappe-8b-session-filter.md) | offen | — | — |
+| 8b | Session-Filter „nur falsch beantwortete“ / „nie gesehen“ | [8b](tasks/2026-07-12-etappe-8b-session-filter.md) | **fertig** (Quiz-Pool bewusst offen, s. u.) | `feat/etappe-8b-session-filter` | — |
 | 8c | Statistik → Handlung: jede Schwäche bekommt einen CTA (**B4**) | [8c](tasks/2026-07-12-etappe-8c-statistik-zu-handlung.md) | **fertig** | `feat/etappe-8c-statistik-handlung` | — |
 | 8d | Etymologie & Eselsbrücken im „Einfach“-Niveau | [8d](tasks/2026-07-12-etappe-8d-etymologie.md) | offen | — | redaktionell, inkrementell |
 | 8e | Eigene Notizen je Muskel (additiv im Backup, ADR-0002-konform) | [8e](tasks/2026-07-12-etappe-8e-notizen.md) | offen | — | — |
@@ -87,9 +87,18 @@ Prüfungsmodus und kommt mit **9c**.
 
 > **Zwei Fallen, die im Text unten (§Etappe 8) falsch stehen und am Code verifiziert wurden:**
 > (1) Die Daten für **8b** liegen **nicht** in `useQuizStore` (der hält nur Aggregate je Serien-Key),
-> sondern in der Karte selbst (`totalWrong`, `lastSeen`). (2) **`src/data/generated/` wird von
-> `npm run migrate:data` überschrieben** — die redaktionellen Texte aus **8d** (und später 9d) dürfen
-> dort nicht liegen. Details im Rahmen-Briefing.
+> sondern in der Karte selbst (`totalWrong`, `lastSeen`) — in 8b bestätigt. (2) **`src/data/generated/`
+> wird von `npm run migrate:data` überschrieben** — die redaktionellen Texte aus **8d** (und später 9d)
+> dürfen dort nicht liegen. Details im Rahmen-Briefing.
+
+> **Offen aus 8b — Entscheidung nötig: Filter auch im Quiz?**
+> Das Briefing nennt die Filter als „auch für das Quiz nutzbar (Pool-Einschränkung)". Die **Session**
+> hat sie; das **Quiz** bewusst noch nicht. Grund: Ein gefilterter Pool braucht (a) einen
+> **zusätzlichen** Serien-Schlüssel — der bestehende muss bitgleich bleiben (ADR 0002) — und (b) einen
+> Umgang mit **zu kleinen Pools**: Eine Quizfrage braucht 4 Optionen; wer nur 3 Karten falsch
+> beantwortet hat, kann keine bekommen. Das ist eine eigene Produktentscheidung (Mindestpool?
+> Distraktoren von außerhalb des Filters?) und kein Nebenbei-Task. **Nicht vergessen, nicht heimlich
+> gestrichen.**
 
 ### Etappe 9 — Die App wird prüfungsnah
 *Seit 2026-07-12 **nicht mehr blockiert** — E1, E2, E3 und E5 sind entschieden (Tabelle unten).*
