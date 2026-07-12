@@ -11,10 +11,13 @@
    ========================================================================= */
 
 import {
+  MAX_NOTE_LENGTH,
   type FlashcardCard,
   type FlashcardsSection,
   type LookupEntry,
   type LookupsSection,
+  type NoteEntry,
+  type NotesSection,
   type ProfileSection,
   type StreakSection,
   type QuizHistoryEntry,
@@ -281,4 +284,35 @@ export function sanitizeStreak(data: unknown, maxFreezes = 2): StreakSection {
     reviewedToday: toNonNegativeInt(data.reviewedToday),
     earnedFreezeToday: !!data.earnedFreezeToday,
   };
+}
+
+/* ---------- Eigene Notizen (8e) ----------------------------------------- */
+
+export function createEmptyNotesSection(): NotesSection {
+  return { version: 2, entries: {} };
+}
+
+/**
+ * Notizen härten. Nie `strict` (optionale Sektion, ADR 0002 §1): Eine kaputte Notiz
+ * darf einen sonst gültigen Import nicht kippen — die Lernkarten sind das Wertvolle.
+ *
+ * Leere Notizen fallen raus (leere Notiz = keine Notiz), und der Text wird gedeckelt:
+ * Eine handgeschriebene Datei soll den Speicher nicht sprengen können.
+ */
+export function sanitizeNotes(data: unknown): NotesSection {
+  if (!isPlainObject(data)) return createEmptyNotesSection();
+
+  const rawEntries = isPlainObject(data.entries) ? data.entries : {};
+  const entries: Record<string, NoteEntry> = {};
+
+  for (const [name, entry] of Object.entries(rawEntries)) {
+    if (name.trim() === '' || !isPlainObject(entry)) continue;
+
+    const text = typeof entry.text === 'string' ? entry.text.trim().slice(0, MAX_NOTE_LENGTH) : '';
+    if (text === '') continue;
+
+    entries[name] = { text, updatedAt: toISODate(entry.updatedAt, new Date().toISOString()) };
+  }
+
+  return { version: 2, entries };
 }

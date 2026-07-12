@@ -123,6 +123,30 @@ export interface StreakSection {
   earnedFreezeToday: boolean;
 }
 
+/* ---------- Eigene Notizen (Etappe 8e) ---------------------------------- */
+
+/** Was die Dozentin im Unterricht gesagt hat — steht in keinem Datensatz. */
+export interface NoteEntry {
+  /** Freitext, nie leer: eine geleerte Notiz wird gelöscht, nicht als "" gespeichert. */
+  text: string;
+  /** ISO-Datum der letzten Änderung. */
+  updatedAt: string;
+}
+
+/**
+ * Notizen je Muskel. Wie `lookups`/`profile`/`streak` eine **additive, optionale**
+ * Sektion (ADR 0002 §1): Sie fehlt in jeder Datei, die vor 8e geschrieben wurde,
+ * ältere Versionen ignorieren sie, die Backup-Version bleibt 2.
+ */
+export interface NotesSection {
+  version: 2;
+  /** Schlüssel = lateinischer Muskelname (ADR 0002 §2), NICHT die Routing-id. */
+  entries: Record<string, NoteEntry>;
+}
+
+/** Obergrenze je Notiz. Schützt den Speicher vor einer handgeschriebenen Datei. */
+export const MAX_NOTE_LENGTH = 2000;
+
 /* ---------- Backup-Datei ------------------------------------------------ */
 
 export interface BackupFile {
@@ -138,6 +162,8 @@ export interface BackupFile {
   profile?: ProfileSection;
   /** Fehlt, solange nie ein Tag abgeschlossen wurde. */
   streak?: StreakSection;
+  /** Fehlt, solange keine Notiz geschrieben wurde. */
+  notes?: NotesSection;
 }
 
 /** Die Sektionen, die Import → Store und Store → Export überträgt. */
@@ -148,6 +174,7 @@ export interface BackupSections {
   lookups?: LookupsSection;
   profile?: ProfileSection;
   streak?: StreakSection;
+  notes?: NotesSection;
 }
 
 /** Ergebnis eines erfolgreichen Imports. Legacy-Backups liefern nur `flashcards`. */
@@ -160,5 +187,6 @@ export interface ImportResult {
     lookups?: LookupsSection;
     profile?: ProfileSection;
     streak?: StreakSection;
+    notes?: NotesSection;
   };
 }

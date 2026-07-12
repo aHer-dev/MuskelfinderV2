@@ -7,6 +7,7 @@ import { DataList } from '../components/features/detail/DataList';
 import type { DataRow } from '../components/features/detail/DataList';
 import { ClinicalNote } from '../components/features/detail/ClinicalNote';
 import { ImageViewer } from '../components/features/detail/ImageViewer';
+import { MuscleNote } from '../components/features/detail/MuscleNote';
 import { DifficultyDots } from '../components/ui/DifficultyDots';
 import { Icon } from '../components/ui/Icon';
 import { SegmentedControl } from '../components/ui/SegmentedControl';
@@ -155,6 +156,10 @@ export function MuscleDetailPage() {
               ))}
             </ul>
           )}
+
+          {/* `key`: beim Muskelwechsel startet die Notiz frisch — sonst stünde die
+              vorige im Feld, und der Debounce schriebe sie an den falschen Muskel. */}
+          <MuscleNote key={muscle.nameLatin} nameLatin={muscle.nameLatin} />
         </section>
 
         <section className="detail__media">

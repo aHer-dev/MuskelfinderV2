@@ -82,7 +82,7 @@ Prüfungsmodus und kommt mit **9c**.
 | 8b | Session-Filter „nur falsch beantwortete“ / „nie gesehen“ | [8b](tasks/2026-07-12-etappe-8b-session-filter.md) | **fertig** (Quiz-Pool bewusst offen, s. u.) | `feat/etappe-8b-session-filter` | — |
 | 8c | Statistik → Handlung: jede Schwäche bekommt einen CTA (**B4**) | [8c](tasks/2026-07-12-etappe-8c-statistik-zu-handlung.md) | **fertig** | `feat/etappe-8c-statistik-handlung` | — |
 | 8d | Etymologie & Eselsbrücken im „Einfach“-Niveau | [8d](tasks/2026-07-12-etappe-8d-etymologie.md) | offen | — | redaktionell, inkrementell |
-| 8e | Eigene Notizen je Muskel (additiv im Backup, ADR-0002-konform) | [8e](tasks/2026-07-12-etappe-8e-notizen.md) | offen | — | — |
+| 8e | Eigene Notizen je Muskel (additiv im Backup, ADR-0002-konform) | [8e](tasks/2026-07-12-etappe-8e-notizen.md) | **fertig** | `feat/etappe-8e-notizen` | — |
 | 8f | Die 47 bildlosen Muskeln: erst **Lizenzprüfung** (E5), dann Renderings **oder** Platzhalter | [8f](tasks/2026-07-12-etappe-8f-bildluecke.md) | offen | — | — |
 
 > **Zwei Fallen, die im Text unten (§Etappe 8) falsch stehen und am Code verifiziert wurden:**
