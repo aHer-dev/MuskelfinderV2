@@ -579,3 +579,11 @@
   gap: var(--spacing-sm);
   flex-wrap: wrap;
 }
+
+/* Aktiver Luecken-Filter (8b): steht unter der Zahl, damit klar ist, WORAUF sie sich bezieht. */
+.fc-setup__due-filter {
+  display: block;
+  font-style: normal;
+  font-weight: 600;
+  color: var(--accent-on-surface);
+}

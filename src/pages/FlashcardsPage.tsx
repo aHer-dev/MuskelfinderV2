@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { getMuscleByLatinName, getMuscles, getRegions } from '../data';
+import { getMuscleByLatinName, getRegions } from '../data';
 import { regionLabel } from '../data/labels';
 import { recallStage } from '../data/recall';
-import { isDue } from '../persistence/leitner';
+import type { CardFilter } from '../data/card-filter';
 import { Flashcard } from '../components/features/flashcards/Flashcard';
 import { LeitnerBoxes } from '../components/features/flashcards/LeitnerBoxes';
 import { RatingBar } from '../components/features/flashcards/RatingBar';
 import { TypeCard } from '../components/features/flashcards/TypeCard';
 import { useFlashcardSession } from '../hooks/useFlashcardSession';
-import { readSessionHandoff, type RegionScope } from '../store/useSessionStore';
+import { buildQueue, readSessionHandoff, type RegionScope } from '../store/useSessionStore';
 import { useProgressStore } from '../store/useProgressStore';
 import { Icon } from '../components/ui/Icon';
 import { EmptyState } from '../components/ui/EmptyState';
@@ -17,21 +17,19 @@ import type { CardRating, Muscle, RegionId } from '../types';
 import '../components/features/flashcards/flashcards.css';
 
 const REGION_ORDER = getRegions().map((r) => r.id) as RegionId[];
-const ALL_MUSCLES = getMuscles();
 const LIMITS = [0, 5, 10, 20, 50];
+
+/** Die drei Lücken-Filter (8b). „Alle" ist kein Filter, sondern seine Abwesenheit. */
+const FILTERS: Array<{ value: CardFilter; label: string }> = [
+  { value: 'all', label: 'Alle fälligen Karten' },
+  { value: 'wrong', label: 'Nur falsch beantwortete' },
+  { value: 'unseen', label: 'Nur nie gesehene' },
+  { value: 'difficult', label: 'Nur schwierig markierte' },
+];
 
 function assetUrl(url: string): string {
   return `${import.meta.env.BASE_URL}${url}`;
 }
-
-/** Namen der Muskeln je Bereich (für Scope-gefilterte Fälligkeitszählung). */
-const NAMES_BY_REGION: Record<RegionId, Set<string>> = REGION_ORDER.reduce(
-  (acc, r) => {
-    acc[r] = new Set(ALL_MUSCLES.filter((m) => m.region === r).map((m) => m.nameLatin));
-    return acc;
-  },
-  {} as Record<RegionId, Set<string>>,
-);
 
 export function FlashcardsPage() {
   const session = useFlashcardSession();
@@ -40,6 +38,7 @@ export function FlashcardsPage() {
 
   const [limit, setLimit] = useState(0);
   const [scope, setScope] = useState<RegionScope>('all');
+  const [filter, setFilter] = useState<CardFilter>('all');
 
   /* Übergabe von `/heute` (7b): der Tagesplan hat die Karten bereits ausgewählt und
      sortiert — die Sitzung startet dann ohne Umweg über den Setup-Screen. Pro
@@ -61,15 +60,14 @@ export function FlashcardsPage() {
     return acc;
   }, [cards]);
 
-  const dueForScope = useMemo(() => {
-    const now = new Date();
-    let n = 0;
-    for (const [name, card] of Object.entries(cards)) {
-      if (scope !== 'all' && !NAMES_BY_REGION[scope].has(name)) continue;
-      if (isDue(card, now)) n++;
-    }
-    return n;
-  }, [cards, scope]);
+  /* Die Zahl auf dem Knopf ist GENAU die Warteschlange, mit der die Sitzung startet —
+     sie wird nicht nebenher nachgezählt (sonst laufen Versprechen und Sitzung
+     auseinander, sobald ein Filter dazukommt). `limit` bleibt außen vor: es deckelt
+     die Sitzung, sagt aber nichts darüber, wie viel der Filter übrig lässt. */
+  const dueForScope = useMemo(
+    () => buildQueue({ limit: 0, scope, filter }, cards).length,
+    [cards, scope, filter],
+  );
 
   return (
     <section className="page flashcards">
@@ -103,15 +101,17 @@ export function FlashcardsPage() {
           byFach={byFach}
           limit={limit}
           scope={scope}
+          filter={filter}
           onLimit={setLimit}
           onScope={setScope}
-          onStart={() => session.start({ limit, scope })}
+          onFilter={setFilter}
+          onStart={() => session.start({ limit, scope, filter })}
         />
       ) : session.done ? (
         <SummaryScreen
           session={session}
           byFach={byFach}
-          onContinue={() => session.start({ limit, scope })}
+          onContinue={() => session.start({ limit, scope, filter })}
           canContinue={dueForScope > 0}
         />
       ) : (
@@ -122,14 +122,73 @@ export function FlashcardsPage() {
 }
 
 /* ── Setup ────────────────────────────────────────────────────────────── */
+/** Warum die Auswahl leer ist — und wie man da wieder rauskommt (8b). */
+function EmptySelection({
+  filter,
+  scope,
+  onFilter,
+  onScope,
+}: {
+  filter: CardFilter;
+  scope: RegionScope;
+  onFilter: (f: CardFilter) => void;
+  onScope: (s: RegionScope) => void;
+}) {
+  if (filter !== 'all') {
+    const label = FILTERS.find((f) => f.value === filter)?.label ?? '';
+    return (
+      <EmptyState
+        icon="icFilter"
+        title="Dieser Filter lässt heute nichts übrig"
+        description={`„${label}" trifft im gewählten Bereich auf keine fällige Karte. Der Filter grenzt die fälligen Karten ein — er hebt die Fälligkeit nicht auf.`}
+        action={
+          <button type="button" className="btn btn--primary" onClick={() => onFilter('all')}>
+            Filter aufheben
+          </button>
+        }
+      />
+    );
+  }
+
+  if (scope !== 'all') {
+    return (
+      <EmptyState
+        icon="icFilter"
+        title={`In „${regionLabel(scope)}" ist heute nichts fällig`}
+        description="In anderen Bereichen wartet vielleicht etwas."
+        action={
+          <button type="button" className="btn btn--primary" onClick={() => onScope('all')}>
+            Alle Bereiche zeigen
+          </button>
+        }
+      />
+    );
+  }
+
+  return (
+    <EmptyState
+      icon="icCheck"
+      title="Heute ist nichts fällig"
+      description="Alle Wiederholungen sind erledigt. Neue Muskeln bringen den Kasten weiter."
+      action={
+        <Link to="/karteikasten" className="btn btn--primary">
+          Neue Muskeln hinzufügen
+        </Link>
+      }
+    />
+  );
+}
+
 function SetupScreen({
   deckSize,
   dueForScope,
   byFach,
   limit,
   scope,
+  filter,
   onLimit,
   onScope,
+  onFilter,
   onStart,
 }: {
   deckSize: number;
@@ -137,8 +196,10 @@ function SetupScreen({
   byFach: number[];
   limit: number;
   scope: RegionScope;
+  filter: CardFilter;
   onLimit: (n: number) => void;
   onScope: (s: RegionScope) => void;
+  onFilter: (f: CardFilter) => void;
   onStart: () => void;
 }) {
   const resetProgress = useProgressStore((s) => s.resetProgress);
@@ -158,12 +219,15 @@ function SetupScreen({
     );
   }
 
+  const filterLabel = FILTERS.find((f) => f.value === filter)?.label ?? '';
+
   return (
     <div className="fc-setup">
       <div className="fc-setup__due">
         <span className="fc-setup__due-num">{dueForScope}</span>
         <span className="fc-setup__due-label">
           {dueForScope === 1 ? 'Karte' : 'Karten'} heute fällig
+          {filter !== 'all' && <em className="fc-setup__due-filter">{filterLabel}</em>}
         </span>
       </div>
 
@@ -185,6 +249,21 @@ function SetupScreen({
         </label>
 
         <label className="fc-field">
+          <span className="fc-field__label">Auswahl</span>
+          <select
+            className="fc-select"
+            value={filter}
+            onChange={(e) => onFilter(e.target.value as CardFilter)}
+          >
+            {FILTERS.map((f) => (
+              <option key={f.value} value={f.value}>
+                {f.label}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="fc-field">
           <span className="fc-field__label">Kartenlimit</span>
           <select
             className="fc-select"
@@ -200,14 +279,14 @@ function SetupScreen({
         </label>
       </div>
 
-      <button
-        type="button"
-        className="btn btn--primary btn--block"
-        onClick={onStart}
-        disabled={dueForScope === 0}
-      >
-        {dueForScope === 0 ? 'Nichts fällig' : 'Lernen starten'}
-      </button>
+      {/* Ein Filter, der still ins Leere greift, ist eine Falle — hier steht, warum. */}
+      {dueForScope === 0 ? (
+        <EmptySelection filter={filter} scope={scope} onFilter={onFilter} onScope={onScope} />
+      ) : (
+        <button type="button" className="btn btn--primary btn--block" onClick={onStart}>
+          Lernen starten
+        </button>
+      )}
 
       <div className="fc-setup__section">
         <h2 className="fc-setup__subtitle">Fächer-Übersicht</h2>

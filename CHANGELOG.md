@@ -7,6 +7,19 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- **Etappe 8b — Session-Filter „nur falsch beantwortete" / „nie gesehen"** (`src/data/card-filter.ts`):
+  Gezielt an den Lücken üben statt am ganzen Deck. Drei Filter — falsch beantwortet
+  (`totalWrong > 0`), nie gesehen (`lastSeen === null`), schwierig markiert. **Es wird nichts Neues
+  gespeichert:** Alles stand längst in der Karte (der Produktplan verwies auf `useQuizStore` — der
+  hält aber nur Aggregate je Serien-Key und weiß nichts über einzelne Muskeln). `SessionOptions` ist
+  **additiv** um `filter` erweitert; `applyCardFilter` **nimmt Karten weg, ohne umzusortieren**, damit
+  die Vorpriorisierung aus 7a/7b überlebt. **Ein Filter grenzt die fälligen Karten ein — er hebt die
+  Fälligkeit nicht auf:** Die Leitner-Box bleibt die einzige Wahrheit über den Zeitpunkt, sonst gäbe
+  es zwei Terminpläne. Die Zahl im Setup-Screen ist **exakt** die Warteschlange, mit der die Sitzung
+  startet (sie kommt aus `buildQueue` selbst, wird nicht nebenher nachgezählt). Greift ein Filter ins
+  Leere, gibt es **keinen leeren Screen**, sondern einen Leerzustand, der den Grund nennt und den
+  Ausweg anbietet („Filter aufheben" / „Alle Bereiche zeigen" / „Neue Muskeln hinzufügen").
+  Der **Quiz-Serien-Schlüssel bleibt unangetastet** (Regressionstest gegen ADR 0002).
 - **Etappe 8c — Statistik wird handlungsfähig (Brücke B4)** (`src/data/practice.ts`, `PracticeCta`):
   **Keine Zahl ohne Knopf.** Die Statistik wusste seit Etappe 3, dass die untere Extremität bei 33 %
   steht — und sagte es, ohne zu helfen. Jetzt hat **jeder** Block, der eine Schwäche ausweist, genau
