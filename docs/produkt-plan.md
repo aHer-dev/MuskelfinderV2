@@ -81,7 +81,7 @@ Prüfungsmodus und kommt mit **9c**.
 | 8a | Abrufleiter: Stufe aus Leitner-Box + **Freitext-Stufe** (Fach 7) — durch **E1 zur Pflicht** geworden | [8a](tasks/2026-07-12-etappe-8a-abrufleiter-freitext.md) | **fertig** | `feat/etappe-8a-abrufleiter` | — |
 | 8b | Session-Filter „nur falsch beantwortete“ / „nie gesehen“ | [8b](tasks/2026-07-12-etappe-8b-session-filter.md) | **fertig** (Quiz-Pool bewusst offen, s. u.) | `feat/etappe-8b-session-filter` | — |
 | 8c | Statistik → Handlung: jede Schwäche bekommt einen CTA (**B4**) | [8c](tasks/2026-07-12-etappe-8c-statistik-zu-handlung.md) | **fertig** | `feat/etappe-8c-statistik-handlung` | — |
-| 8d | Etymologie & Eselsbrücken im „Einfach“-Niveau | [8d](tasks/2026-07-12-etappe-8d-etymologie.md) | offen | — | redaktionell, inkrementell |
+| 8d | Etymologie & Eselsbrücken im „Einfach“-Niveau | [8d](tasks/2026-07-12-etappe-8d-etymologie.md) | **fertig** (Merksätze offen: nur der Fachmann) | `feat/etappe-8d-etymologie` | — |
 | 8e | Eigene Notizen je Muskel (additiv im Backup, ADR-0002-konform) | [8e](tasks/2026-07-12-etappe-8e-notizen.md) | **fertig** | `feat/etappe-8e-notizen` | — |
 | 8f | Die 47 bildlosen Muskeln: erst **Lizenzprüfung** (E5), dann Renderings **oder** Platzhalter | [8f](tasks/2026-07-12-etappe-8f-bildluecke.md) | **Stufe 1 + 2b fertig** (2a offen, s. u.) | `feat/etappe-8f-bildluecke` | — |
 

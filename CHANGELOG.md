@@ -7,6 +7,20 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- **Etappe 8d — Den Namen lesen lernen** (`src/data/etymology.ts`,
+  `src/data/editorial/etymology.json`): Der lateinische Name **ist** die Funktion — man muss ihn nur
+  lesen können. „M. flexor digitorum longus" → *flexor = Beuger · digitorum = der Finger bzw. der
+  Zehen · longus = lang*. Wer die Bausteine versteht, muss nicht 150 Namen auswendig lernen.
+  Die Herleitung wird **komponiert, nicht redigiert** (dasselbe Prinzip wie die Erklärsätze aus 7e):
+  ein handgepflegtes **Lexikon von ~110 Wortbausteinen**, aus dem der Loader je Muskel die Herleitung
+  zusammensetzt. **Alle 150 Muskeln** haben damit eine Herleitung — ohne 150 Texte zu schreiben.
+  Ein Wort, das nicht im Lexikon steht, fällt weg: Die Herleitung wird kürzer, **nie falsch**.
+  Angezeigt im **„Einfach"-Niveau**; im „Fachlich"-Niveau bleibt sie aus dem Weg.
+  ⚠️ Die Daten liegen unter `src/data/editorial/` und **nicht** unter `src/data/generated/` — den
+  Ordner erzeugt `npm run migrate:data` neu und würde jeden redaktionellen Text mitnehmen. Ein Test
+  wacht darüber; die Migration wurde real ausgeführt, die Herleitungen haben sie überlebt.
+  **Merksätze bleiben leer** — sie sind vorbereitet, aber keiner ist erfunden: Ein falscher Merksatz
+  wird auswendig gelernt und ist schlimmer als keiner. Sie schreibt der Fachmann.
 - **Etappe 8f (Stufe 1 + 2b) — Die 47 bildlosen Muskeln sehen absichtlich aus**
   (`MusclePlaceholder`, [Prüfprotokoll](docs/3d-app-lizenzpruefung.md)): **Stufe 1 war eine
   Lizenzprüfung, kein Code** — und sie ist **bestanden**. Nachgesehen wurde die Substanz, nicht die

@@ -135,6 +135,16 @@ export function MuscleDetailPage() {
 
           <DataList rows={buildRows(muscle, mode)} />
 
+          {/* Der Name IST die Funktion — man muss ihn nur lesen koennen (8d). Das gehoert
+              ins „Einfach"-Niveau; im Fachlichen bleibt es aus dem Weg. */}
+          {mode === 'easy' && (muscle.etymology || muscle.mnemonic) && (
+            <section className="name-origin">
+              <h2 className="name-origin__title">Den Namen verstehen</h2>
+              {muscle.etymology && <p className="name-origin__text">{muscle.etymology}</p>}
+              {muscle.mnemonic && <p className="name-origin__mnemonic">{muscle.mnemonic}</p>}
+            </section>
+          )}
+
           {muscle.clinicalNote && <ClinicalNote note={muscle.clinicalNote} />}
 
           {muscle.functions.length > 0 && (

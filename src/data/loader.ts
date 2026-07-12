@@ -3,8 +3,12 @@ import movementsData from './generated/movements.json'
 import regionsData from './generated/regions.json'
 import type { Movement, Muscle, Region } from '../types'
 import { validateMovements, validateMuscles, validateRegions } from './validation'
+import { withEtymology } from './etymology'
 
-const muscles = validateMuscles(musclesData as unknown)
+/* Die Herleitung des Namens kommt aus einer HANDGEPFLEGTEN Datei ausserhalb von
+   `generated/` und wird hier dazugemischt (8d). Fehlt ein Eintrag, bleibt der Muskel
+   unveraendert — die Detailseite rendert dann wie vorher. */
+const muscles = validateMuscles(musclesData as unknown).map((muscle) => withEtymology(muscle))
 const regions = validateRegions(regionsData as unknown)
 const movements = validateMovements(movementsData as unknown)
 const musclesById = new Map(muscles.map((muscle) => [muscle.id, muscle]))
