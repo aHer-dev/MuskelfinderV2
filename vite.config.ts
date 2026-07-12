@@ -11,7 +11,7 @@ import { VitePWA } from 'vite-plugin-pwa'
    Eigene Domain oder User-Site (<user>.github.io) statt Projektpfad? Dann beim Build
    `VITE_BASE=/` setzen. Alle Assets gehen ueber import.meta.env.BASE_URL bzw. werden von
    Vite umgeschrieben — diese eine Konstante ist die einzige Stellschraube. */
-const base = process.env.VITE_BASE ?? '/Muskelfinder-V2/'
+const base = process.env.VITE_BASE ?? '/MuskelfinderV2/'
 
 // https://vite.dev/config/
 export default defineConfig({

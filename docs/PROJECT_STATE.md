@@ -6,7 +6,7 @@
 
 ## Stand
 - Datum: 2026-07-12
-- Branch: `release/v1.1` (Etappe 8 komplett auf `main`)
+- Branch: `main` · **Remote: github.com/aHer-dev/MuskelfinderV2** · Ziel-URL: `aher-dev.github.io/MuskelfinderV2/`
 - Status: **Migration abgeschlossen (Etappen 0–6, `v1.0`). ETAPPE 7 KOMPLETT (7a–7f). ETAPPE 8
   LAEUFT: 8a + 8c + 8b + 8e fertig** — die Abrufhaerte waechst mit der Beherrschung, keine Zahl in der
   Statistik steht ohne Knopf, man kann gezielt an den Luecken ueben, und eigene Notizen stehen beim
@@ -115,7 +115,7 @@
   `/assets/images/untere-ext/muscle_fibularis_tertius_lateral_1.jpg`.
 - TA-Codes fehlen in V1 und bleiben optional. Nicht erfinden.
 
-## Offene Kopplung: 3D-App V2 ist noch NICHT veroeffentlicht
+## Kopplung 3D-App V2: VEROEFFENTLICHT — ein Rest-Blocker (Stand 2026-07-13 geprueft)
 Der „In 3D ansehen"-Link zeigt seit `28c4033` auf **`https://aher-dev.github.io/3DAnatomyV2/`**
 (vorher V1 `/3DAnatomy/`). Das ist **bewusst so** — aber V2 ist **noch nicht offiziell
 veroeffentlicht**. Der Link ist vorausschauend gesetzt, damit beim Release nichts nachgezogen
@@ -128,13 +128,13 @@ Architektur-Grenze „keine externen Laufzeit-Requests". V2 buendelt three.js lo
 (`muscleKey`/`muscle`/`source`/`returnTo`) und Mapping sind identisch (beide 118 Keys, diffed);
 End-to-End verifiziert (Muskel wird hervorgehoben, „Zurueck zum Muskelfinder" traegt).
 
-**Vor einem oeffentlichen Muskelfinder-Deploy pruefen — sonst laufen Nutzer ins Leere:**
-- [ ] Ist V2 unter `/3DAnatomyV2/` offiziell veroeffentlicht und stabil?
-- [ ] **`/3DAnatomyV2/datenschutz.html` liefert aktuell HTTP 404** (deployter Build ist aelter als
-      die `vite.config`, die sie als Input fuehrt). Eine oeffentliche App ohne erreichbare
-      Datenschutzseite ist ein Problem — Redeploy von V2 noetig.
-- [ ] Im 3D-Repo liegt der Branch `fix/datenschutz-jsdelivr-veraltet` (Commit `f209896`): entfernt
-      die falsche Behauptung, V2 lade three.js ueber jsDelivr. Sollte mit veroeffentlicht werden.
+**Live-Pruefung am 2026-07-13 (curl):**
+- ✅ `aher-dev.github.io/3DAnatomyV2/` → **HTTP 200**, also veroeffentlicht. Die frueher hier
+      stehende Behauptung „noch nicht veroeffentlicht" ist ueberholt.
+- ✅ `aher-dev.github.io/Muskelfinder/` (V1) → HTTP 200, **noch live**.
+- ❌ `…/3DAnatomyV2/datenschutz.html` → **HTTP 404**. Der deployte Build ist aelter als die
+      `vite.config`, die sie als Input fuehrt. **Das ist der einzige verbleibende Blocker.**
+      Der Fix liegt im lokalen 3D-Repo bereits als HEAD (`f209896`) — pushen und neu deployen.
 
 Faellt die Entscheidung gegen V2, genuegt ein Zurueckdrehen von `THREE_D_BASE_URL`
 (`src/data/threeD.ts`) — die URL ist die einzige Stelle.
@@ -160,8 +160,10 @@ befuellt werden, die Statistik zeigt Zahlen ohne Empfehlung.
 **RELEASE v1.1 — die App war NIE deployt.** Es gibt kein Git-Remote; kein Schueler hat sie je
 geoeffnet. Checkliste: `docs/release-v1.1.md`. Alles, was ohne den Projektinhaber ging, ist erledigt
 (Release-Blocker `base` behoben, unter echten Pages-Bedingungen verifiziert, Version 1.1.0).
-**Offen und nur vom Projektinhaber loesbar:** Remote anlegen + pushen, Pages auf "GitHub Actions"
-stellen, und die 3D-Kopplung aufloesen (V2 veroeffentlichen; ihre datenschutz.html liefert 404).
+**Remote ist angelegt und `main` gepusht.** Offen und nur vom Projektinhaber loesbar:
+(1) Repo-Settings → Pages → Source = "GitHub Actions" (ein Schalter).
+(2) 3D-App V2 neu deployen — ihre datenschutz.html liefert 404 (Fix liegt dort als HEAD).
+(3) V1 (`aher-dev.github.io/Muskelfinder/`) ist noch live — Hinweis setzen oder abschalten.
 
 **Danach: Etappe 9 planen** (Briefings wie fuer Etappe 7 und 8). Etappe 9 ist seit den
 Entscheidungen E1-E5 nicht mehr blockiert:
