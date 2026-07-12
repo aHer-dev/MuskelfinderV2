@@ -2,10 +2,12 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { getMuscleByLatinName, getMuscles, getRegions } from '../data';
 import { regionLabel } from '../data/labels';
+import { recallStage } from '../data/recall';
 import { isDue } from '../persistence/leitner';
 import { Flashcard } from '../components/features/flashcards/Flashcard';
 import { LeitnerBoxes } from '../components/features/flashcards/LeitnerBoxes';
 import { RatingBar } from '../components/features/flashcards/RatingBar';
+import { TypeCard } from '../components/features/flashcards/TypeCard';
 import { useFlashcardSession } from '../hooks/useFlashcardSession';
 import { readSessionHandoff, type RegionScope } from '../store/useSessionStore';
 import { useProgressStore } from '../store/useProgressStore';
@@ -84,9 +86,11 @@ export function FlashcardsPage() {
             </span>
             <Icon name="icArrow" size={16} />
           </Link>
+          {/* Die zehn Quizmodi behalten ihren Platz — als „Freies Üben" für alle, die
+              gezielt einen Modus wählen wollen (ADR 0008). */}
           <Link to="/quiz" className="flashcards__manage">
             <Icon name="icQuiz" size={16} />
-            <span>Stattdessen ein Quiz spielen</span>
+            <span>Freies Üben — Quizmodus selbst wählen</span>
             <Icon name="icArrow" size={16} />
           </Link>
         </div>
@@ -249,6 +253,10 @@ function CardScreen({
   const difficult = current ? (cards[current]?.difficult ?? false) : false;
   const activeBox = current ? cards[current]?.fach : undefined;
 
+  /* Die Abrufhärte wächst mit der Box (ADR 0008): Ab Fach 7 wird der Name getippt
+     statt aufgedeckt und selbst bewertet. Abgeleitet, nirgends gespeichert. */
+  const produce = activeBox !== undefined && recallStage(activeBox) === 'produce';
+
   // Beim Kartenwechsel Zustand zurücksetzen.
   useEffect(() => {
     setRevealed(false);
@@ -263,15 +271,21 @@ function CardScreen({
   // Tastatursteuerung (V1): Space=Aufdecken, 1/2/3=Falsch/Unsicher/Richtig, F=Schwierig.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      /* Auf der Freitext-Stufe ist die Tastatur die Eingabe: „F" schreibt ein F,
+         es markiert nicht die Karte, und Leertaste deckt nichts auf. */
+      if (e.target instanceof HTMLInputElement) return;
+
+      if (e.key === 'f' || e.key === 'F') {
+        if (current) toggleDifficult(current);
+        return;
+      }
+      if (produce) return;
+
       if (e.code === 'Space') {
         if (!revealed) {
           e.preventDefault();
           setRevealed(true);
         }
-        return;
-      }
-      if (e.key === 'f' || e.key === 'F') {
-        if (current) toggleDifficult(current);
         return;
       }
       if (!revealed) return;
@@ -356,31 +370,40 @@ function CardScreen({
             </div>
           )}
 
-          <Flashcard muscle={muscle} revealed={revealed} onReveal={() => setRevealed(true)} />
-          <LeitnerBoxes counts={byFach} activeBox={activeBox} />
-          {/* V1-Parität: erst aufdecken, dann bewerten — kein deaktivierter „Toter-Klick"-Zustand. */}
-          {revealed ? (
-            <>
-              <RatingBar onRate={rate} disabled={false} />
-              <p className="fc-controls-hint">
-                <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd> bewerten · <kbd>F</kbd> schwierig ·
-                mobil: wischen
-              </p>
-            </>
+          {produce ? (
+            /* `key`: jede Karte startet mit leerem Feld — sonst stünde die vorige Antwort noch da. */
+            <TypeCard key={muscle.id} muscle={muscle} onRate={rate} />
           ) : (
-            <>
-              <button
-                type="button"
-                className="btn btn--primary btn--block"
-                onClick={() => setRevealed(true)}
-              >
-                Karte aufdecken
-              </button>
-              <p className="fc-controls-hint">
-                <kbd>Space</kbd> oder tippen zum Aufdecken
-              </p>
-            </>
+            <Flashcard muscle={muscle} revealed={revealed} onReveal={() => setRevealed(true)} />
           )}
+
+          <LeitnerBoxes counts={byFach} activeBox={activeBox} />
+
+          {/* V1-Parität: erst aufdecken, dann bewerten — kein deaktivierter „Toter-Klick"-Zustand.
+              Die Freitext-Stufe bewertet sich selbst und braucht die Leiste nicht. */}
+          {!produce &&
+            (revealed ? (
+              <>
+                <RatingBar onRate={rate} disabled={false} />
+                <p className="fc-controls-hint">
+                  <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd> bewerten · <kbd>F</kbd> schwierig ·
+                  mobil: wischen
+                </p>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  className="btn btn--primary btn--block"
+                  onClick={() => setRevealed(true)}
+                >
+                  Karte aufdecken
+                </button>
+                <p className="fc-controls-hint">
+                  <kbd>Space</kbd> oder tippen zum Aufdecken
+                </p>
+              </>
+            ))}
         </>
       ) : (
         <div className="flashcards__empty">

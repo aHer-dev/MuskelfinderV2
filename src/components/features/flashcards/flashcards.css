@@ -513,3 +513,69 @@
   justify-content: center;
   flex-wrap: wrap;
 }
+
+/* ---- Freitext-Stufe (Fach 7, ADR 0008) -------------------------------- */
+.type-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.type-card__prompt {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-lg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--card-shadow);
+}
+
+.type-card__question {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.type-card__input {
+  width: 100%;
+  padding: 14px var(--spacing-md);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-field);
+  background: var(--surface-sunken);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 16px; /* < 16px zoomt iOS beim Fokus in das Feld hinein */
+}
+.type-card__input:focus-visible {
+  outline: 2px solid var(--accent-border);
+  outline-offset: 1px;
+}
+.type-card__input:read-only {
+  color: var(--text-secondary);
+}
+
+/* Das Ergebnis steht in Worten und mit Symbol da — Farbe ist nur die Zugabe. */
+.type-card__result {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  margin: 0;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+  font-family: var(--font-ui);
+  line-height: 1.45;
+}
+.type-card__result--correct { color: var(--success); }
+.type-card__result--almost  { color: var(--accent-on-surface); }
+.type-card__result--wrong   { color: var(--danger); }
+
+.type-card__actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}

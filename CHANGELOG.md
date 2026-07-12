@@ -7,6 +7,24 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- **Etappe 8a — Abrufleiter + Freitext-Stufe** (`src/data/recall.ts`, `src/data/answer-check.ts`,
+  `TypeCard`): **Wiedererkennen ist nicht Können.** Die Abrufhärte wächst jetzt mit der Beherrschung:
+  Ab **Fach 7** steht keine Auswahl mehr daneben — die Karte zeigt Funktion, Innervation, Ursprung und
+  Ansatz, und der Name muss **getippt** werden. Die Stufe wird aus der Leitner-Box **abgeleitet**
+  (`recallStage`, ADR 0008), **nichts Neues wird gespeichert**; ein importiertes V1-Backup bekommt die
+  Leiter automatisch. Die Prüfung ist **tolerant, aber nicht nachlässig**: Groß/Klein, Diakritika,
+  `M.`/`Mm.`/`Musculus`, Binde- und Gedankenstriche, „Pars"/„Caput" und Klammer-Synonyme
+  (`M. fibularis longus` = `M. peroneus longus`) werden normalisiert, ein Tippfehler zählt als richtig
+  und wird **sichtbar korrigiert** („Fast — richtig geschrieben: …"). **Bedeutungsfehler nie:**
+  `longus`≠`brevis`, `major`≠`minor`, `abductor`≠`adductor` (Levenshtein-Abstand **1**!),
+  `medialis`≠`lateralis`, `superficialis`≠`profundus` u. a. — 15 Dimensionen, die den Vergleich hart
+  scheitern lassen, bevor irgendeine Toleranz greift. Zusätzlich misst die Prüfung gegen den **ganzen
+  Namensraum**: Eine Antwort, die genauso gut auf einen **anderen** Muskel passt, ist mehrdeutig und
+  damit falsch (am Zungenbein liegen sieben Namen im Abstand von zwei Zeichen). Belegt durch einen
+  **Kreuztest über alle 150 Muskeln**: jeder unter seinem eigenen Namen `correct`, **kein einziger**
+  fremder Name kommt durch. Ein Freitext-Fehler ist eine **normale Leitner-Rückstufung** (7 → 6), keine
+  Extra-Strafe. Bedienbar allein mit der Tastatur (Enter prüft, Enter geht weiter); die zehn Quizmodi
+  bleiben als **„Freies Üben"** erhalten.
 - **Etappe 7f — Tages-Streak mit Freeze** (`src/persistence/streak.ts`, `useStreakStore`): Ein Grund
   wiederzukommen, **ohne Schuld-Mechanik**. Der Streak zählt aufeinanderfolgende Tage mit erledigter
   Tagesdosis (dieselbe Dosis, die der Tagesplan vorschlägt — ein naher Prüfungstermin hebt sie).

@@ -75,7 +75,7 @@ Drei tragende Entscheidungen (Details in den ADRs):
 
 | ID | Schritt | Briefing | Status | Branch | Blockiert durch |
 |----|---------|----------|--------|--------|-----------------|
-| 8a | Abrufleiter: Stufe aus Leitner-Box + **Freitext-Stufe** (Fach 7) — durch **E1 zur Pflicht** geworden | [8a](tasks/2026-07-12-etappe-8a-abrufleiter-freitext.md) | offen | — | — |
+| 8a | Abrufleiter: Stufe aus Leitner-Box + **Freitext-Stufe** (Fach 7) — durch **E1 zur Pflicht** geworden | [8a](tasks/2026-07-12-etappe-8a-abrufleiter-freitext.md) | **fertig** | `feat/etappe-8a-abrufleiter` | — |
 | 8b | Session-Filter „nur falsch beantwortete“ / „nie gesehen“ | [8b](tasks/2026-07-12-etappe-8b-session-filter.md) | offen | — | — |
 | 8c | Statistik → Handlung: jede Schwäche bekommt einen CTA (**B4**) | [8c](tasks/2026-07-12-etappe-8c-statistik-zu-handlung.md) | offen | — | — |
 | 8d | Etymologie & Eselsbrücken im „Einfach“-Niveau | [8d](tasks/2026-07-12-etappe-8d-etymologie.md) | offen | — | redaktionell, inkrementell |
