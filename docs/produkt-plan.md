@@ -56,15 +56,17 @@ Drei tragende Entscheidungen (Details in den ADRs):
 
 ### Etappe 7 — Die App bekommt eine Meinung
 *Kein Schritt hier ist von einer offenen Entscheidung blockiert. Sofort startklar.*
+**Rahmen-Briefing für alle Agenten (Pflicht vor jedem Task):**
+[tasks/2026-07-12-etappe-7-uebersicht.md](tasks/2026-07-12-etappe-7-uebersicht.md)
 
-| ID | Schritt | Status | Branch | Blockiert durch |
-|----|---------|--------|--------|-----------------|
-| 7a | Empfehlungs-Engine (`src/data/today.ts`), reine Selektoren, kein UI | offen | — | — |
-| 7b | Route `/heute` als Einstieg + Navigation auf vier Absichten | offen | — | 7a |
-| 7c | Onboarding (2 Fragen) + Auto-Seeding des Karteikastens | offen | — | 7a, 7b |
-| 7d | Persistentes Suchfeld + Aufrufzähler + „Zuletzt nachgeschlagen“ (**B1**) | offen | — | 7b |
-| 7e | Falschantwort-Erklärung (Template) + Detail-Sheet in der Session (**B2**) | offen | — | — |
-| 7f | Streak + Freeze | offen | — | — |
+| ID | Schritt | Briefing | Status | Branch | Blockiert durch |
+|----|---------|----------|--------|--------|-----------------|
+| 7a | Empfehlungs-Engine (`src/data/today.ts`), reine Selektoren, kein UI | [7a](tasks/2026-07-12-etappe-7a-empfehlungs-engine.md) | offen | — | — |
+| 7b | Route `/heute` als Einstieg + Navigation auf vier Absichten | [7b](tasks/2026-07-12-etappe-7b-route-heute.md) | offen | — | 7a |
+| 7c | Onboarding (2 Fragen) + Auto-Seeding des Karteikastens | [7c](tasks/2026-07-12-etappe-7c-onboarding-seeding.md) | offen | — | 7a, 7b |
+| 7d | Persistentes Suchfeld + Aufrufzähler + „Zuletzt nachgeschlagen“ (**B1**) | [7d](tasks/2026-07-12-etappe-7d-suchfeld-und-bruecke-b1.md) | offen | — | 7b |
+| 7e | Falschantwort-Erklärung (Template) + Detail-Sheet in der Session (**B2**) | [7e](tasks/2026-07-12-etappe-7e-falschantwort-erklaeren.md) | offen | — | — |
+| 7f | Streak + Freeze | [7f](tasks/2026-07-12-etappe-7f-streak-und-freeze.md) | offen | — | — |
 
 ### Etappe 8 — Die App wird schwerer, wenn du besser wirst
 

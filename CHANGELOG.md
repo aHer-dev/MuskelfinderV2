@@ -16,7 +16,12 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   bleibt als Route erhalten, damit Deep-Links nicht brechen.
 - **ADR 0008** — die Abrufstufe (MC → Bildzuordnung → freier Abruf → Freitext) wird aus der
   Leitner-Box *abgeleitet* statt gespeichert. Kein neuer persistierter Key, ADR 0002 unangetastet.
-- **Task-Briefing Etappe 7a** — Empfehlungs-Engine (`src/data/today.ts`), die Wurzel von Etappe 7.
+- **Task-Briefings für die komplette Etappe 7** (7a–7f) plus ein **Rahmen-Briefing**
+  (`docs/tasks/2026-07-12-etappe-7-uebersicht.md`), das jeder Agent vor jedem Task liest: das
+  Problem, der Nordstern („beim Öffnen genau ein Vorschlag“), der Abhängigkeitsgraph, die acht
+  Invarianten (kein Zustand ohne Primärbutton · Persistenz nur additiv · UI rendert nur · kein
+  Timer im normalen Lernen …) und die Nicht-Ziele der gesamten Etappe. Aus der Statustafel führt
+  je Schritt ein Link direkt ins Briefing.
 
 ### Changed
 - **Statistik entdoppelt:** Level und XP standen dreifach auf einem Screen (Kachel, Ring, Text).
