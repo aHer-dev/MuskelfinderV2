@@ -18,9 +18,13 @@ describe('FlashcardsPage — 3-Screen-Ablauf', () => {
     useProgressStore.getState().resetProgress()
   })
 
-  it('leerer Kasten → Hinweis auf Karteikasten-Verwaltung', () => {
+  it('leerer Kasten → Leerzustand mit CTA in die Karteikasten-Verwaltung', () => {
     renderPage()
-    expect(screen.getByRole('link', { name: /Muskeln verwalten/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /Karteikasten ist leer/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Muskeln hinzufügen/i })).toHaveAttribute(
+      'href',
+      '/karteikasten',
+    )
   })
 
   it('gefüllter Kasten → Setup mit Fällig-Zähler + „Lernen starten"', () => {

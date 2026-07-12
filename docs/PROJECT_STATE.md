@@ -38,7 +38,8 @@
   **Volle V1-Paritaet erreicht** — alle Seiten/Funktionen uebernommen; nur das *Einbetten* fremder
   3D-Modelle bleibt aussen vor (war nie Teil von V1; nur Verlinkung).
 - Gate zuletzt gruen: `npm run lint && npm run test && npm run build` (Per-Route-Chunks + SW/Manifest).
-- Aktueller Teststand: 163 Tests gruen. A11y: axe 0 Verstoesse (Playwright+Chromium+axe-core lokal).
+- Aktueller Teststand: 167 Tests gruen. A11y: axe 0 Verstoesse ueber alle Routen inkl.
+  `/karteikasten` (Playwright+Chromium+axe-core lokal, Light+Dark).
 - **Release:** nach `main` gemergt (`--no-ff`) und als **`v1.0`** getaggt (lokal; noch kein Remote
   konfiguriert → nichts gepusht). Etappe 5+6 inhaltlich abgeschlossen, volle V1-Paritaet.
 - Offen: Bei oeffentlichem Deploy Remote/`git remote add origin …` + Push durch dich; optional
@@ -100,13 +101,17 @@
 - TA-Codes fehlen in V1 und bleiben optional. Nicht erfinden.
 
 ## Naechster Schritt
-Etappe 5 (Haertung & Feinschliff) fortsetzen (docs/migration-plan.md, ROADMAP Phase 5).
-Erledigt: Quellen-/Lizenz- + Datenschutz-Seite, Route-Code-Splitting, Bild-Lazy-Load,
-A11y-Audit (axe 0 Verstoesse Light+Dark), Deep-Link-Reload verifiziert, Offline/PWA (SW +
-Manifest + Icons, offline verifiziert). **Etappe 5 technisch abgeschlossen.**
+Etappe 5+6 abgeschlossen, `v1.0` lokal getaggt. **Laufend: Branch `feat/design-feinschliff`** —
+UX-/Design-Review der fertigen App (Playwright-Durchklick aller Routen, Light+Dark, Desktop+Mobil).
+Behoben: Emoji-Tofu-Glyphen → Sprite-Icons (neues `icFlag`), Lernkarten-Rueckseite ohne
+Muskelnamen, leeres „Segmente"-Feld (48/150), Etappe-0-Jargon auf der 404-Seite, doppeltes
+Such-Clear-Kreuz, orange wirkende Disabled-Buttons, abgeschnittene Namen im Karteikasten,
+Farb-only-Quizfeedback (WCAG 1.4.1), `.chip--active`-Kontrast 4.47:1 (neuer Token
+`--accent-on-tint`). Neu: `EmptyState`-Primitive mit CTA, Filter-Sheet-Abschlussleiste.
 Offen — nur noch durch dich:
-- Merge `feat/etappe-0-fundament` → `main`.
-- Release-Tag `v1.0` setzen.
+- Merge `feat/design-feinschliff` → `main`.
+- Bei oeffentlichem Deploy: `git remote add origin …` + Push (kein Remote konfiguriert).
+- Optional: Impressum, eigene Domain/CNAME.
 Werkzeuge lokal: Playwright+Chromium+axe-core (visuelle/A11y-Verifikation, Preview Port 4319).
 Task-Briefing: `docs/tasks/2026-07-09-etappe-5-haertung.md`.
 

@@ -6,9 +6,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
-  /* Kurze Zustände (leer/Setup/Karte) mittig im freien Vertikalraum statt oben
-     angeheftet; lange Inhalte füllen und richten sich oben aus (auto → 0). */
-  margin-block: auto;
 }
 
 .flashcards__session {
@@ -161,6 +158,24 @@
   margin-top: var(--spacing-sm);
   font-size: 0.85rem;
   color: var(--text-muted);
+}
+
+/* Rückseiten-Kopf: wiederholt den Muskelnamen — ohne ihn wäre nach dem Umdrehen
+   nicht mehr erkennbar, zu welchem Muskel die Fakten gehören. */
+.flashcard__back-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--hairline-strong);
+}
+
+.flashcard__back-name {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.25;
 }
 
 .flashcard__facts {

@@ -70,9 +70,18 @@
   font-size: 1rem;
 }
 
+/* Deaktiviert = neutral, nicht „Akzent mit weniger Deckkraft". Ein halbtransparenter
+   oranger Primary sah weiterhin wie ein klickbarer CTA aus. */
 .btn:disabled {
-  opacity: 0.5;
+  background: var(--surface-sunken);
+  border-color: var(--hairline);
+  color: var(--text-tertiary);
   cursor: not-allowed;
+}
+
+.btn:disabled:hover {
+  background: var(--surface-sunken);
+  border-color: var(--hairline);
 }
 
 .btn:focus-visible {
@@ -103,7 +112,7 @@
 .chip--active {
   background: var(--accent-tint);
   border-color: var(--accent-border);
-  color: var(--accent-on-surface);
+  color: var(--accent-on-tint);
 }
 
 .chip--muted {
@@ -221,6 +230,21 @@
 .sheet__body {
   overflow-y: auto;
   min-height: 0;
+}
+
+/* Abschluss-Leiste: bleibt beim Scrollen sichtbar, damit die Wirkung der Filter
+   (Ergebniszahl) und der Ausstieg immer erreichbar sind. */
+.sheet__footer {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--hairline);
+}
+
+.sheet__footer .btn--block {
+  flex: 1;
 }
 
 /* ---- ProgressRing ----------------------------------------------------- */

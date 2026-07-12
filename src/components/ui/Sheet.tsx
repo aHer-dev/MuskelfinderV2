@@ -14,9 +14,11 @@ interface SheetProps {
   title?: string;
   onClose: () => void;
   children: ReactNode;
+  /** Klebt unten am Panel — für Abschluss-Aktionen (z. B. „Zurücksetzen“ + Ergebnis-CTA). */
+  footer?: ReactNode;
 }
 
-export function Sheet({ open, title, onClose, children }: SheetProps) {
+export function Sheet({ open, title, onClose, children, footer }: SheetProps) {
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -90,6 +92,7 @@ export function Sheet({ open, title, onClose, children }: SheetProps) {
           </div>
         )}
         <div className="sheet__body">{children}</div>
+        {footer && <div className="sheet__footer">{footer}</div>}
       </div>
     </div>,
     document.body,

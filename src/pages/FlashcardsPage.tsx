@@ -10,6 +10,7 @@ import { useFlashcardSession } from '../hooks/useFlashcardSession';
 import type { RegionScope } from '../hooks/useFlashcardSession';
 import { useProgressStore } from '../store/useProgressStore';
 import { Icon } from '../components/ui/Icon';
+import { EmptyState } from '../components/ui/EmptyState';
 import type { CardRating, Muscle, RegionId } from '../types';
 import '../components/features/flashcards/flashcards.css';
 
@@ -117,12 +118,16 @@ function SetupScreen({
 
   if (deckSize === 0) {
     return (
-      <div className="flashcards__empty">
-        <p>
-          Dein Karteikasten ist leer. Lege über <Link to="/karteikasten">Muskeln verwalten</Link>{' '}
-          Karten an — einzeln oder ganze Bereiche auf einmal.
-        </p>
-      </div>
+      <EmptyState
+        icon="icCards"
+        title="Dein Karteikasten ist leer"
+        description="Lege zuerst Karten an — einzeln oder gleich ein ganzer Bereich. Danach führt dich der Leitner-Algorithmus durch die Wiederholungen."
+        action={
+          <Link to="/karteikasten" className="btn btn--primary">
+            Muskeln hinzufügen
+          </Link>
+        }
+      />
     );
   }
 

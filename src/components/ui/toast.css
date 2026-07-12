@@ -1,20 +1,25 @@
+/* Desktop: unten RECHTS — unten-mittig legte sich der Toast quer über den Inhalt.
+   Mobil bleibt er mittig, dort ist rechts kein Platz. */
 .toast-host {
   position: fixed;
   bottom: calc(24px + env(safe-area-inset-bottom, 0px));
-  left: 50%;
-  transform: translateX(-50%);
+  right: var(--spacing-lg);
   z-index: var(--z-toast, 3000);
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
   gap: var(--spacing-xs);
   pointer-events: none;
 }
 
-/* Mobil: über der schwebenden Tab-Leiste einblenden, nicht dahinter. */
+/* Mobil: mittig über der schwebenden Tab-Leiste, nicht dahinter. */
 @media (max-width: 1023px) {
   .toast-host {
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
     bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+    align-items: center;
   }
 }
 

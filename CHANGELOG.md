@@ -7,6 +7,16 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Changed
+- **Statistik entdoppelt:** Level und XP standen dreifach auf einem Screen (Kachel, Ring, Text).
+  Die Kachelreihe zeigt jetzt vier *verschiedene* Kennzahlen (Karten im Kasten, Gemeistert,
+  Quiz-Trefferquote, Quiz-Runden); Level/XP haben ihren Platz in der Level-Karte.
+  Kaputte Ziel-Copy („Noch **1** bis **1** gemeisterten Karten") korrigiert.
+- **Toast** auf dem Desktop nach unten **rechts** (unten-mittig legte er sich über den Inhalt);
+  mobil weiterhin mittig über der Tab-Leiste.
+- **Quiz-Kopfzeile** verständlicher: „Serie 0 · 0 Pkt." → „0 Punkte · 0 in Folge richtig".
+- **Such-Platzhalter** gekürzt („Muskel suchen …") — der lange Text war mobil abgeschnitten und
+  wiederholte nur die Lead-Zeile darüber.
+- **Schwierigkeits-Punkte** haben jetzt einen Tooltip; drei Punkte ohne Legende waren nicht deutbar.
 - **Design-/Layout-Feinschliff (hochwertigeres Erscheinungsbild).**
   - **Rahmen-Fix:** Der Inhalt war auf dem Desktop links angeheftet (`margin-left` fix +
     `margin-right:auto`), sodass die halbe Bildschirmbreite tot rechts lag. Jetzt hält die Shell
@@ -22,7 +32,39 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   - Breiten sauber getrennt: Grids/Dashboards nutzen die volle Spalte, Rechtliches 780 px,
     Karteikasten-Verwaltung 940 px — jeweils zentriert.
 
+### Added
+- **`EmptyState`-Primitive** (`components/ui/EmptyState.tsx`): Icon, Überschrift, Erklärung und
+  **eine primäre Handlung**. Ersetzt die bisherigen beiläufigen Textzeilen bei leerem Karteikasten
+  (CTA „Muskeln hinzufügen"), 0 Suchtreffern (CTA „Filter zurücksetzen") und auf der 404-Seite
+  (CTA „Zur Muskelsuche"). Ohne CTA ist ein Leerzustand eine Sackgasse — und der leere Karteikasten
+  ist der Erstkontakt jedes neuen Nutzers mit dem Lernmodus.
+- **Abschluss-Leiste im mobilen Filter-Sheet** (`Sheet`-Prop `footer`): „Zurücksetzen" +
+  „N Ergebnisse anzeigen". Vorher gab es nur ein ✕ — die Wirkung der Filter war unsichtbar.
+- **Token `--accent-on-tint`** für Text auf getönter Akzentfläche.
+
 ### Fixed
+- **Lernkarten-Rückseite nannte den Muskelnamen nicht.** Nach dem Aufdecken standen dort nur die
+  Fakten — welcher Muskel gemeint war, stand auf der weggedrehten Vorderseite. Damit ließ sich die
+  eigene Antwort nicht gegen die Lösung prüfen, also genau das, wofür eine Lernkarte da ist.
+- **Leeres Feld „Segmente" auf jeder dritten Lernkarte.** `segments` ist bei **48 von 150** Muskeln
+  leer (V1-Datenstand), das Label wurde trotzdem gerendert. Leere Fakten fallen jetzt raus
+  (`flashcards/facts.ts`, mit Test über den gesamten Datenbestand).
+- **404-Seite zeigte internen Projekt-Jargon** („Etappe 0 · Grundgerüst"). Ursache war die
+  `PlaceholderPage` aus Etappe 0, die nur noch von der 404-Seite benutzt wurde — jetzt entfernt.
+- **Doppeltes Lösch-Kreuz im Suchfeld:** `type=search` bringt in WebKit/Blink ein eigenes ✕ mit,
+  das neben dem eigenen Clear-Button stand.
+- **Deaktivierte Buttons sahen klickbar aus.** `.btn:disabled` setzte nur `opacity: .5`, ein
+  deaktivierter Primary blieb damit orange. Jetzt neutral (gedämpfte Fläche, gedämpfter Text).
+- **Karteikasten: Muskelnamen bis zur Unkenntlichkeit abgeschnitten** („M. abducto…" zweimal
+  nebeneinander). Name steht jetzt über der Region statt daneben.
+- **Quiz-Feedback funktionierte nur über Farbe** (WCAG 1.4.1): ✓/✗-Marker an den Optionen, und die
+  Rückmeldung benennt die richtige Antwort, statt „ist markiert" zu sagen.
+- **Kontrast:** `.chip--active` lag bei 4.47:1 (AA verlangt 4.5:1) — der Akzent-Tint hebt den
+  Untergrund an. Neuer Token `--accent-on-tint` (#b34400 im Light-Theme). Der Karteikasten entstand
+  erst in Etappe 6, also nach dem A11y-Audit aus Etappe 5.
+- **Seitenkopf-Regression:** die vertikale Zentrierung aus dem letzten Commit zentrierte die ganze
+  Sektion **inklusive Titel** — Lernkarten- und Quiz-Titel rutschten in die Bildschirmmitte, andere
+  Seiten nicht. Der Kopf steht jetzt überall oben, nur der Leerzustand füllt den freien Raum.
 - **Emoji im UI durch Sprite-Icons ersetzt.** Rohe Emoji (`📋 🏆 ⚡ 🎉 ⚑ ★`) rendern je nach
   Betriebssystem/Font unterschiedlich — auf Linux/Chromium erschienen `📋` (Lernkarten-Kopf) und
   `🏆` (Statistik-Ziele) als leeres Kästchen (fehlendes Glyph). Sie brachen zudem die monochrome

@@ -30,22 +30,26 @@ export function StatsPage() {
         <h1 className="page__title">Statistik</h1>
       </header>
 
+      {/* Vier verschiedene Kennzahlen — Level und XP standen hier doppelt, sie haben
+          ihren Platz in der Level-Karte darunter. */}
       <div className="stat-tiles">
-        <div className="stat-tile">
-          <span className="stat-tile__value">{stats.level}</span>
-          <span className="stat-tile__label">Level</span>
-        </div>
-        <div className="stat-tile">
-          <span className="stat-tile__value">{stats.xp.totalXP}</span>
-          <span className="stat-tile__label">XP gesamt</span>
-        </div>
         <div className="stat-tile">
           <span className="stat-tile__value">{stats.deckSize}</span>
           <span className="stat-tile__label">Karten im Kasten</span>
         </div>
         <div className="stat-tile">
+          <span className="stat-tile__value">{stats.breakdown.mastered}</span>
+          <span className="stat-tile__label">Gemeistert</span>
+        </div>
+        <div className="stat-tile">
           <span className="stat-tile__value">{stats.quiz.accuracy}%</span>
           <span className="stat-tile__label">Quiz-Trefferquote</span>
+        </div>
+        <div className="stat-tile">
+          <span className="stat-tile__value">{stats.quiz.rounds}</span>
+          <span className="stat-tile__label">
+            {stats.quiz.rounds === 1 ? 'Quiz-Runde' : 'Quiz-Runden'}
+          </span>
         </div>
       </div>
 
@@ -59,8 +63,8 @@ export function StatsPage() {
             centerValue={String(stats.level)}
           />
           <div className="level-card__body">
-            <h2>Level {stats.level}</h2>
-            <p className="level-card__xp">{stats.xp.totalXP} XP gesamt</p>
+            {/* Der Ring nennt das Level bereits — hier steht die XP-Bilanz, nicht dasselbe nochmal. */}
+            <h2>{stats.xp.totalXP} XP gesamt</h2>
             <p className="stats__panel-sub">
               {stats.level < 99
                 ? `Noch ${stats.xp.xpNeeded - stats.xp.xpThisLevel} XP bis Level ${stats.level + 1}`
@@ -139,8 +143,12 @@ export function StatsPage() {
                   </>
                 ) : (
                   <>
-                    Noch <strong>{stats.masteryNext - stats.breakdown.mastered}</strong> bis{' '}
-                    <strong>{stats.masteryNext}</strong> gemeisterten Karten (F5–F7).
+                    Noch{' '}
+                    <strong>
+                      {stats.masteryNext - stats.breakdown.mastered}{' '}
+                      {stats.masteryNext - stats.breakdown.mastered === 1 ? 'Karte' : 'Karten'}
+                    </strong>{' '}
+                    bis zum Meilenstein <strong>{stats.masteryNext} gemeistert</strong> (F5–F7).
                   </>
                 )}
               </span>

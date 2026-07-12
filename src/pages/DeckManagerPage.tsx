@@ -5,6 +5,7 @@ import { regionLabel } from '../data/labels'
 import { isDue } from '../persistence/leitner'
 import { useProgressStore } from '../store/useProgressStore'
 import type { RegionId } from '../types'
+import { EmptyState } from '../components/ui/EmptyState'
 import './deck-manager.css'
 
 const REGION_ORDER = getRegions().map((r) => r.id) as RegionId[]
@@ -103,9 +104,11 @@ export function DeckManagerPage() {
         </div>
 
         {inDeck.length === 0 ? (
-          <p className="deck-empty">
-            Noch keine Muskeln im Karteikasten. Füge unten welche hinzu.
-          </p>
+          <EmptyState
+            icon="icCards"
+            title="Noch keine Karten"
+            description="Wähle unten Muskeln aus und füge sie hinzu — einzeln oder gleich ein ganzer Bereich."
+          />
         ) : (
           <div className="deck-table-wrap">
             <table className="deck-table">
@@ -235,8 +238,10 @@ export function DeckManagerPage() {
                       checked={checked}
                       onChange={() => toggleSelected(m.nameLatin)}
                     />
-                    <span className="deck-check__name">{m.nameLatin}</span>
-                    <span className="deck-check__sub">{m.subregion}</span>
+                    <span className="deck-check__text">
+                      <span className="deck-check__name">{m.nameLatin}</span>
+                      <span className="deck-check__sub">{m.subregion}</span>
+                    </span>
                   </label>
                 </li>
               )

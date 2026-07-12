@@ -87,7 +87,7 @@ function QuizGame({
           Frage {game.index + 1}/{game.total}
         </span>
         <span className="quiz-game__meta">
-          Serie {game.streak} · {game.score} Pkt.
+          {game.score} {game.score === 1 ? 'Punkt' : 'Punkte'} · {game.streak} in Folge richtig
         </span>
       </div>
 

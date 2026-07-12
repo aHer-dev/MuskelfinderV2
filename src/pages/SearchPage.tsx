@@ -31,6 +31,7 @@ const pickFilter = (s: MuscleFilter): MuscleFilter => ({
 export function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const setFilter = useFilterStore((s) => s.setFilter);
+  const reset = useFilterStore((s) => s.reset);
   const filter = useFilterStore(useShallow(pickFilter));
   const { results, options, total, count, query } = useMuscleSearch();
   const isDesktop = useIsDesktop();
@@ -92,7 +93,30 @@ export function SearchPage() {
       </div>
 
       {!isDesktop && (
-        <Sheet open={filterOpen} title="Filter" onClose={() => setFilterOpen(false)}>
+        <Sheet
+          open={filterOpen}
+          title="Filter"
+          onClose={() => setFilterOpen(false)}
+          footer={
+            <>
+              <button
+                type="button"
+                className="btn btn--ghost"
+                onClick={reset}
+                disabled={activeFilterCount === 0 && !filter.query}
+              >
+                Zurücksetzen
+              </button>
+              <button
+                type="button"
+                className="btn btn--primary btn--block"
+                onClick={() => setFilterOpen(false)}
+              >
+                {count} {count === 1 ? 'Ergebnis' : 'Ergebnisse'} anzeigen
+              </button>
+            </>
+          }
+        >
           <FilterPanel options={options} count={count} bare />
         </Sheet>
       )}

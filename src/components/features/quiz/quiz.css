@@ -6,9 +6,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
-  /* Nutzt den freien Vertikalraum: die Auswahl sitzt mittig statt oben
-     angeheftet mit toter Fläche darunter (funktioniert dank .content__main-Flex). */
-  margin-block: auto;
 }
 
 .quiz-game,
@@ -343,6 +340,13 @@
 .quiz-option--wrong .quiz-option__badge {
   border-color: var(--danger);
   color: var(--danger);
+}
+
+/* Zweiter Kanal neben der Farbe (WCAG 1.4.1 „Use of Color"): ✓ an der richtigen,
+   ✕ an der falsch gewählten Option. */
+.quiz-option__mark {
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .quiz-card__feedback {

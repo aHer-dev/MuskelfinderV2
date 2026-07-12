@@ -89,6 +89,9 @@
 
   /* Akzent auf heller Fläche — DUNKLER (Kontrast!) für Text/Icons/Links; AA ≥4.5:1 */
   --accent-on-surface: #bd4800;
+  /* Text AUF getönter Akzentfläche (--accent-tint). Der Tint hebt den Untergrund an,
+     dadurch fiel --accent-on-surface dort auf 4.47:1 — knapp unter AA. */
+  --accent-on-tint:    #b34400;
   --accent-tint:       color-mix(in srgb, var(--accent) 13%, transparent);  /* aktive Fläche */
   --accent-border:     color-mix(in srgb, var(--accent) 52%, transparent);  /* Outline-CTA / Fokus-Feld */
   --accent-dim:        color-mix(in srgb, var(--accent) 11%, transparent);  /* Zeilen-Highlight */
@@ -136,8 +139,9 @@
   --text-muted:      #8a8d93;
   --text-faint:      #6e7076;
 
-  /* Auf Schwarz kann Orange direkt als Text/Icon stehen */
+  /* Auf Schwarz kann Orange direkt als Text/Icon stehen — auch auf dem Tint. */
   --accent-on-surface: #ff6a00;
+  --accent-on-tint:    #ff6a00;
   --accent-tint:       color-mix(in srgb, var(--accent) 16%, transparent);
   --accent-border:     color-mix(in srgb, var(--accent) 50%, transparent);
   --accent-dim:        color-mix(in srgb, var(--accent) 12%, transparent);
@@ -167,7 +171,8 @@
     --hairline:rgba(255,255,255,0.08); --hairline-strong:rgba(255,255,255,0.15);
     --control-border:rgba(255,255,255,0.14); --checkbox-border:rgba(255,255,255,0.22);
     --text-primary:#f6f6f7; --text-secondary:#c9cace; --text-tertiary:#9a9ca2; --text-muted:#8a8d93; --text-faint:#6e7076;
-    --accent-on-surface:#ff6a00; --accent-tint:color-mix(in srgb,var(--accent) 16%,transparent);
+    --accent-on-surface:#ff6a00; --accent-on-tint:#ff6a00;
+    --accent-tint:color-mix(in srgb,var(--accent) 16%,transparent);
     --accent-border:color-mix(in srgb,var(--accent) 50%,transparent); --accent-dim:color-mix(in srgb,var(--accent) 12%,transparent);
     --region-dot:#9a9ca2;
     --success:#4ecb83; --danger:#f2705f;

@@ -66,6 +66,14 @@
   color: var(--text-muted);
 }
 
+/* type=search bringt in WebKit/Blink ein eigenes Lösch-Kreuz mit — zusammen mit
+   .search-field__clear standen zwei ✕ nebeneinander. */
+.search-field__input::-webkit-search-cancel-button,
+.search-field__input::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
 .search-field__clear {
   display: inline-flex;
   align-items: center;
@@ -263,12 +271,6 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: var(--spacing-md);
-}
-
-.muscle-grid__empty {
-  padding: var(--spacing-xl) var(--spacing-md);
-  text-align: center;
-  color: var(--text-tertiary);
 }
 
 .muscle-card {
