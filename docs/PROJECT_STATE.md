@@ -6,10 +6,11 @@
 
 ## Stand
 - Datum: 2026-07-12
-- Branch: `feat/design-feinschliff` (nicht gemergt)
+- Branch: `main` (Design-Feinschliff und Produkt-Roadmap gemergt, `--no-ff`)
 - Status: **Migration abgeschlossen (Etappen 0–6, `v1.0` getaggt). Produktphase geplant
   (Etappen 7–9) — Statustafel in `docs/produkt-plan.md`. Naechster Schritt: Etappe 7a.**
   Der historische Verlauf steht unten.
+- Gate auf `main` zuletzt gruen: `npm run lint && npm run test && npm run build` — **170 Tests**.
 
 ## Verlauf (Migration, abgeschlossen)
 - Etappe 0–4 abgeschlossen. **Etappe 5 (Haertung)** — Teil 1+2 umgesetzt:
@@ -152,9 +153,9 @@ befuellt werden, die Statistik zeigt Zahlen ohne Empfehlung.
 **Etappe 7a — Empfehlungs-Engine** (`src/data/today.ts`, reine Selektoren, kein UI).
 Briefing: `docs/tasks/2026-07-12-etappe-7a-empfehlungs-engine.md`. Danach 7b (Route `/heute`).
 
-Davor liegt noch offen (nur durch dich):
-- Merge `feat/design-feinschliff` → `main`.
+Offen (nur durch dich):
 - Bei oeffentlichem Deploy: `git remote add origin …` + Push (kein Remote konfiguriert).
+- Entscheidungen **E1–E3** treffen — sie blockieren Etappe 9 (Statustafel in `docs/produkt-plan.md`).
 
 ## Vorheriger Stand (Etappe 5+6)
 Etappe 5+6 abgeschlossen, `v1.0` lokal getaggt. **Laufend: Branch `feat/design-feinschliff`** —
