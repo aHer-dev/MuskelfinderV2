@@ -100,6 +100,30 @@
   `/assets/images/untere-ext/muscle_fibularis_tertius_lateral_1.jpg`.
 - TA-Codes fehlen in V1 und bleiben optional. Nicht erfinden.
 
+## Offene Kopplung: 3D-App V2 ist noch NICHT veroeffentlicht
+Der „In 3D ansehen"-Link zeigt seit `28c4033` auf **`https://aher-dev.github.io/3DAnatomyV2/`**
+(vorher V1 `/3DAnatomy/`). Das ist **bewusst so** — aber V2 ist **noch nicht offiziell
+veroeffentlicht**. Der Link ist vorausschauend gesetzt, damit beim Release nichts nachgezogen
+werden muss.
+
+**Warum V2 und nicht V1:** V1 laedt three.js zur Laufzeit per Import-Map von `cdn.jsdelivr.net`
+(live gemessen: 9 Requests). Das schickt die IP unserer Nutzer an ein fremdes CDN und verletzt die
+Architektur-Grenze „keine externen Laufzeit-Requests". V2 buendelt three.js lokal, setzt
+`default-src 'self'` und macht null externe Requests. Deep-Link-Vertrag
+(`muscleKey`/`muscle`/`source`/`returnTo`) und Mapping sind identisch (beide 118 Keys, diffed);
+End-to-End verifiziert (Muskel wird hervorgehoben, „Zurueck zum Muskelfinder" traegt).
+
+**Vor einem oeffentlichen Muskelfinder-Deploy pruefen — sonst laufen Nutzer ins Leere:**
+- [ ] Ist V2 unter `/3DAnatomyV2/` offiziell veroeffentlicht und stabil?
+- [ ] **`/3DAnatomyV2/datenschutz.html` liefert aktuell HTTP 404** (deployter Build ist aelter als
+      die `vite.config`, die sie als Input fuehrt). Eine oeffentliche App ohne erreichbare
+      Datenschutzseite ist ein Problem — Redeploy von V2 noetig.
+- [ ] Im 3D-Repo liegt der Branch `fix/datenschutz-jsdelivr-veraltet` (Commit `f209896`): entfernt
+      die falsche Behauptung, V2 lade three.js ueber jsDelivr. Sollte mit veroeffentlicht werden.
+
+Faellt die Entscheidung gegen V2, genuegt ein Zurueckdrehen von `THREE_D_BASE_URL`
+(`src/data/threeD.ts`) — die URL ist die einzige Stelle.
+
 ## Naechster Schritt
 Etappe 5+6 abgeschlossen, `v1.0` lokal getaggt. **Laufend: Branch `feat/design-feinschliff`** —
 UX-/Design-Review der fertigen App (Playwright-Durchklick aller Routen, Light+Dark, Desktop+Mobil).

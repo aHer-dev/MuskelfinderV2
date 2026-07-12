@@ -19,6 +19,11 @@ import supportData from './generated/three-d-support.json';
  * wir unseren Nutzern nicht zumuten. V2 bündelt three.js lokal (CSP `default-src 'self'`)
  * und macht keinen einzigen externen Request. Deep-Link-Vertrag und Muskel-Mapping sind
  * in beiden Versionen identisch (118 Keys).
+ *
+ * ACHTUNG: V2 ist noch **nicht offiziell veröffentlicht**. Der Link ist vorausschauend
+ * gesetzt. Vor einem öffentlichen Muskelfinder-Deploy die Checkliste in
+ * `docs/PROJECT_STATE.md` → „Offene Kopplung: 3D-App V2" abarbeiten. Diese Konstante ist
+ * die einzige Stelle, an der das Ziel hängt.
  */
 export const THREE_D_BASE_URL = 'https://aher-dev.github.io/3DAnatomyV2/';
 
