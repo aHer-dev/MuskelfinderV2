@@ -45,7 +45,10 @@ Drei tragende Entscheidungen (Details in den ADRs):
 | B1 | Suche → Lernen | Nachschlagen ist ein Lernsignal. Wer denselben Muskel dreimal sucht, kann ihn nicht → Aufrufzähler, „Zuletzt nachgeschlagen“, Ein-Klick-Karten. | 7d |
 | B2 | Lernen → Nachschlagen | Die Detailseite klappt als **Sheet in der Session** auf, statt wegzunavigieren. Wer die Session verlässt, kommt nicht zurück. | 7e |
 | B3 | Fehler → Karteikasten | Jedes Debrief seedet die verpassten Muskeln zurück in den Kasten. Der wertvolle Teil des Prüfungsmodus ist nicht der Timer. | 9c |
-| B4 | Fortschritt → Handlung | Keine Zahl ohne Knopf. Jede ausgewiesene Schwäche hat eine Aktion daneben. | 8c |
+| B4 | Fortschritt → Handlung | Keine Zahl ohne Knopf. Jede ausgewiesene Schwäche hat eine Aktion daneben. | 8c ✅ |
+
+**Drei der vier Brücken stehen:** B1 (7d), B2 (7e), B4 (8c). Offen bleibt **B3** — sie hängt am
+Prüfungsmodus und kommt mit **9c**.
 
 ---
 
@@ -77,7 +80,7 @@ Drei tragende Entscheidungen (Details in den ADRs):
 |----|---------|----------|--------|--------|-----------------|
 | 8a | Abrufleiter: Stufe aus Leitner-Box + **Freitext-Stufe** (Fach 7) — durch **E1 zur Pflicht** geworden | [8a](tasks/2026-07-12-etappe-8a-abrufleiter-freitext.md) | **fertig** | `feat/etappe-8a-abrufleiter` | — |
 | 8b | Session-Filter „nur falsch beantwortete“ / „nie gesehen“ | [8b](tasks/2026-07-12-etappe-8b-session-filter.md) | offen | — | — |
-| 8c | Statistik → Handlung: jede Schwäche bekommt einen CTA (**B4**) | [8c](tasks/2026-07-12-etappe-8c-statistik-zu-handlung.md) | offen | — | — |
+| 8c | Statistik → Handlung: jede Schwäche bekommt einen CTA (**B4**) | [8c](tasks/2026-07-12-etappe-8c-statistik-zu-handlung.md) | **fertig** | `feat/etappe-8c-statistik-handlung` | — |
 | 8d | Etymologie & Eselsbrücken im „Einfach“-Niveau | [8d](tasks/2026-07-12-etappe-8d-etymologie.md) | offen | — | redaktionell, inkrementell |
 | 8e | Eigene Notizen je Muskel (additiv im Backup, ADR-0002-konform) | [8e](tasks/2026-07-12-etappe-8e-notizen.md) | offen | — | — |
 | 8f | Die 47 bildlosen Muskeln: erst **Lizenzprüfung** (E5), dann Renderings **oder** Platzhalter | [8f](tasks/2026-07-12-etappe-8f-bildluecke.md) | offen | — | — |

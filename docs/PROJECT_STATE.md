@@ -6,11 +6,12 @@
 
 ## Stand
 - Datum: 2026-07-12
-- Branch: `feat/etappe-8a-abrufleiter` (**Etappe 7 komplett auf `main` gemergt**, Briefings 8a–8f auch)
+- Branch: `feat/etappe-8c-statistik-handlung` (8a ist auf `main` gemergt)
 - Status: **Migration abgeschlossen (Etappen 0–6, `v1.0`). ETAPPE 7 KOMPLETT (7a–7f). ETAPPE 8
-  LAEUFT: 8a fertig** — die Abrufhaerte waechst jetzt mit der Beherrschung.
+  LAEUFT: 8a + 8c fertig** — die Abrufhaerte waechst mit der Beherrschung, und keine Zahl in der
+  Statistik steht mehr ohne Knopf. **Bruecke B4 ist eingeloest**; offen bleibt nur noch B3 (9c).
   Statustafel: `docs/produkt-plan.md`.
-- Gate gruen: `npm run lint && npm run test && npm run build` — **319 Tests**.
+- Gate gruen: `npm run lint && npm run test && npm run build` — **346 Tests**.
 
 ## Verlauf (Migration, abgeschlossen)
 - Etappe 0–4 abgeschlossen. **Etappe 5 (Haertung)** — Teil 1+2 umgesetzt:
@@ -149,10 +150,19 @@ befuellt werden, die Statistik zeigt Zahlen ohne Empfehlung.
 - Konzept-Mockups (visuell, extern): Heute-Screen und Produktkonzept, siehe `docs/produkt-plan.md`.
 
 ## Naechster Schritt
-**Etappe 8c — Statistik wird handlungsfaehig (Bruecke B4).** Briefing:
-`docs/tasks/2026-07-12-etappe-8c-statistik-zu-handlung.md`.
+**Etappe 8b — Session-Filter „nur falsch beantwortete" / „nie gesehen".** Briefing:
+`docs/tasks/2026-07-12-etappe-8b-session-filter.md`.
 **Etappe 8 ist vollstaendig gebrieft** (Rahmen + 8a–8f, siehe Statustafel).
-Reihenfolge: 8a ✅ → **8c** → 8b → 8e → 8f → 8d.
+Reihenfolge: 8a ✅ → 8c ✅ → **8b** → 8e → 8f → 8d.
+
+Aus 8c mitnehmen:
+- **Ein CTA darf nur faellige Karten versprechen.** `buildQueue` filtert die Uebergabe erneut auf
+  Faelligkeit — wer eine nicht-faellige Karte uebergibt, startet eine **leere Sitzung**. Alle
+  Selektoren in `src/data/practice.ts` halten sich daran, 8b muss es auch.
+- **Es gibt genau eine Priorisierung:** `prioritizeDueCards` in `src/data/today.ts`. Sie ist aus
+  `getTodayPlan` herausgezogen, damit Tagesplan und CTAs dieselbe Auswahl treffen. Keine zweite bauen.
+- Modus-Sprung ins Quiz: `readQuizHandoff` (`src/data/quiz.ts`), validiert wie die Sitzungs-Uebergabe
+  aus 7b. Der V1-Serien-Schluessel bleibt dabei unangetastet.
 
 Aus 8a mitnehmen (gilt fuer alle folgenden Tasks):
 - `recallStage(fach)` in `src/data/recall.ts` ist die **einzige** Ableitung der Abrufstufe

@@ -76,6 +76,22 @@ const MIXED_SUBMODES: Partial<Record<QuizMode, QuizMode[]>> = {
   'image-mixed': ['image', 'name-image'],
 };
 
+/** Bekannter Quizmodus? V1-Backups können Serien-Keys enthalten, die es heute nicht gibt. */
+export function isQuizMode(value: unknown): value is QuizMode {
+  return typeof value === 'string' && Object.hasOwn(MODE_CATEGORY, value);
+}
+
+/**
+ * Router-State, mit dem die Statistik (8c) direkt in einen Modus springt — dasselbe
+ * Muster wie die Sitzungs-Übergabe aus 7b: validiert, nicht gecastet. Der State kommt
+ * aus der History und kann alles sein.
+ */
+export function readQuizHandoff(state: unknown): QuizMode | null {
+  if (typeof state !== 'object' || state === null) return null;
+  const mode = (state as { mode?: unknown }).mode;
+  return isQuizMode(mode) ? mode : null;
+}
+
 /**
  * Serien-Key im V1-Format `<mode>::{"deckOnly":…,"regions":…,"subgroups":…}`.
  * Ohne Bereichsfilter (`regions = []`) exakt der bisherige Key → ADR-0002-kompatibel;

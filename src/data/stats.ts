@@ -155,6 +155,22 @@ export function quizByMode(quizSeries: QuizSeriesSection): QuizModeStat[] {
     .sort((x, y) => y.answers - x.answers);
 }
 
+/**
+ * Der Modus mit der schlechtesten Quote — dort lohnt sich Übung am meisten (8c).
+ * Erst ab **zwei** gespielten Modi: Bei einem einzigen ist „der schwächste" nur
+ * „der einzige", und ein Knopf, der das behauptet, lügt.
+ * Bei Gleichstand gewinnt der mit mehr Antworten (die belastbarere Zahl).
+ */
+export function weakestQuizMode(modes: QuizModeStat[]): QuizModeStat | null {
+  const played = modes.filter((m) => m.answers > 0);
+  if (played.length < 2) return null;
+  return played.reduce((worst, m) =>
+    m.accuracy < worst.accuracy || (m.accuracy === worst.accuracy && m.answers > worst.answers)
+      ? m
+      : worst,
+  );
+}
+
 export interface StatsInput {
   cards: Cards;
   totalXP: number;
