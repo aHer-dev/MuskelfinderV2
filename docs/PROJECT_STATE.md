@@ -6,12 +6,11 @@
 
 ## Stand
 - Datum: 2026-07-12
-- Branch: `main` (Design-Feinschliff und Produkt-Roadmap gemergt, `--no-ff`)
-- Status: **Migration abgeschlossen (Etappen 0–6, `v1.0` getaggt). ETAPPE 7 KOMPLETT (7a–7f) —
-  die App hat eine Meinung. Noch NICHT auf `main` gemergt (Merge am Stueck, so entschieden).
-  Naechster Schritt: Merge + Etappe 8 planen.** Statustafel: `docs/produkt-plan.md`.
-- Gate zuletzt gruen auf `feat/etappe-7f-streak-freeze`:
-  `npm run lint && npm run test && npm run build` — **271 Tests**.
+- Branch: `main` (**Etappe 7 komplett gemergt**, `--no-ff`)
+- Status: **Migration abgeschlossen (Etappen 0–6, `v1.0`). ETAPPE 7 KOMPLETT (7a–7f) und auf
+  `main` gemergt — die App hat eine Meinung. Naechster Schritt: Etappe 8 planen.**
+  Statustafel: `docs/produkt-plan.md`.
+- Gate auf `main` gruen: `npm run lint && npm run test && npm run build` — **271 Tests**.
 
 ## Verlauf (Migration, abgeschlossen)
 - Etappe 0–4 abgeschlossen. **Etappe 5 (Haertung)** — Teil 1+2 umgesetzt:
@@ -151,14 +150,14 @@ befuellt werden, die Statistik zeigt Zahlen ohne Empfehlung.
 - Konzept-Mockups (visuell, extern): Heute-Screen und Produktkonzept, siehe `docs/produkt-plan.md`.
 
 ## Naechster Schritt
-**Etappe 7 auf `main` mergen** (am Stueck, `--no-ff`), danach **Etappe 8 planen**
-(Statustafel: 8a–8f; 8a „Freitext-Abrufstufe" ist durch Entscheidung E1 zur Pflicht geworden).
+**Etappe 8 planen** (Statustafel 8a–8f in `docs/produkt-plan.md`). Zwei Dinge sind dabei schon
+entschieden und nicht mehr verhandelbar:
+- **8a (Abrufleiter + Freitext-Stufe) ist durch Entscheidung E1 zur Pflicht geworden**, nicht Kuer:
+  trainiert wird der freie Abruf, MC bleibt nur Einstiegsstufe fuer frische Karten (ADR 0008).
+- **8f** darf Renderings aus der eigenen 3D-App nutzen — **aber erst nach der Pruefung**, dass dort
+  ausschliesslich BodyParts3D-Geometrie steckt (E5).
 
-**Etappe 7 ist komplett** — Branch-Kette, jeder Branch baut auf dem vorigen auf:
-`feat/etappe-7a-empfehlungs-engine` → `feat/etappe-7b-route-heute` →
-`feat/etappe-7c-onboarding-seeding` → `feat/etappe-7d-suchfeld-bruecke` → `feat/profil-im-backup` →
-`feat/etappe-7e-falschantwort-erklaeren` → `feat/etappe-7f-streak-freeze` (**Spitze der Kette**).
-Ein Merge der Spitze bringt die ganze Etappe.
+**Etappe 7 ist komplett und gemergt** (Merge-Commit `4380bfe`, `--no-ff`).
 - **7a:** `src/data/today.ts` liefert `getTodayPlan()` → getypter `TodayPlan` mit vier Zustaenden
   (`needsOnboarding` · `review` · `backlog` · `new`) — **kein Zustand ohne Vorschlag**. Priorisierung
   nach Verzug, Schwierig-Flag, Fach, Region-Schwaeche und Nachschlage-Haeufigkeit; Tagesdosis
