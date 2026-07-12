@@ -11,8 +11,16 @@
 
 import supportData from './generated/three-d-support.json';
 
-/** Basis-URL der externen 3D-Anatomie-App (eigene GitHub-Pages-App). */
-export const THREE_D_BASE_URL = 'https://aher-dev.github.io/3DAnatomy/';
+/**
+ * Basis-URL der externen 3D-Anatomie-App (eigene GitHub-Pages-App).
+ *
+ * Zeigt bewusst auf **V2**: die alte App (`/3DAnatomy/`) lädt three.js zur Laufzeit von
+ * cdn.jsdelivr.net nach — ein externer Abruf mit IP-Übertragung an ein fremdes CDN, den
+ * wir unseren Nutzern nicht zumuten. V2 bündelt three.js lokal (CSP `default-src 'self'`)
+ * und macht keinen einzigen externen Request. Deep-Link-Vertrag und Muskel-Mapping sind
+ * in beiden Versionen identisch (118 Keys).
+ */
+export const THREE_D_BASE_URL = 'https://aher-dev.github.io/3DAnatomyV2/';
 
 const SUPPORTED_KEYS = new Set<string>(supportData.muscleKeys);
 

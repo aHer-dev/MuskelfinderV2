@@ -43,6 +43,14 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 - **Token `--accent-on-tint`** für Text auf getönter Akzentfläche.
 
 ### Changed
+- **3D-Verlinkung zeigt auf die neue 3D-App (V2).** Der „In 3D ansehen"-Link ging auf
+  `/3DAnatomy/` (V1) — und **die lädt three.js zur Laufzeit von `cdn.jsdelivr.net`** nach. Jeder
+  Klick schickte damit die IP unserer Nutzer an ein fremdes CDN, also genau der externe Abruf, den
+  die Architektur-Grenze ausschließt. V2 (`/3DAnatomyV2/`) bündelt three.js lokal, setzt
+  `default-src 'self'` und macht **keinen einzigen** externen Request. Deep-Link-Vertrag
+  (`muscleKey`/`muscle`/`source`/`returnTo`) und Muskel-Mapping sind identisch (beide 118 Keys,
+  diffed). End-to-End verifiziert: Deep-Link hebt den Muskel hervor, „Zurück zum Muskelfinder"
+  funktioniert, null externe Hosts.
 - **Schriftdateien aus der Schwester-App `3DAnatomy 2.0` übernommen** (byte-identisch). Es ist
   dieselbe Schrift in derselben Version (Sora 2.000, Manrope 4.504) — die Darstellung ändert sich
   **nicht**. Der Gewinn ist eine gemeinsame Quelle: beide Apps sind gegenseitig verlinkt („In 3D
