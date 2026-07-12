@@ -150,12 +150,23 @@ befuellt werden, die Statistik zeigt Zahlen ohne Empfehlung.
 - Konzept-Mockups (visuell, extern): Heute-Screen und Produktkonzept, siehe `docs/produkt-plan.md`.
 
 ## Naechster Schritt
-**Etappe 8 planen** (Statustafel 8a–8f in `docs/produkt-plan.md`). Zwei Dinge sind dabei schon
-entschieden und nicht mehr verhandelbar:
-- **8a (Abrufleiter + Freitext-Stufe) ist durch Entscheidung E1 zur Pflicht geworden**, nicht Kuer:
-  trainiert wird der freie Abruf, MC bleibt nur Einstiegsstufe fuer frische Karten (ADR 0008).
+**Etappe 8a — Abrufleiter + Freitext-Stufe.** Briefing:
+`docs/tasks/2026-07-12-etappe-8a-abrufleiter-freitext.md`.
+**Etappe 8 ist vollstaendig gebrieft** (Rahmen + 8a–8f, siehe Statustafel).
+Empfohlene Reihenfolge: **8a → 8c → 8b → 8e → 8f → 8d.**
+
+Was fuer Etappe 8 schon entschieden ist:
+- **8a ist durch E1 zur Pflicht geworden**, nicht Kuer: trainiert wird der freie Abruf, MC bleibt
+  nur Einstiegsstufe fuer frische Karten (ADR 0008).
 - **8f** darf Renderings aus der eigenen 3D-App nutzen — **aber erst nach der Pruefung**, dass dort
-  ausschliesslich BodyParts3D-Geometrie steckt (E5).
+  ausschliesslich BodyParts3D-Geometrie steckt (E5). Ohne bestandene Pruefung: Platzhalter.
+
+**Zwei Fallen (am Code verifiziert, im Produktplan falsch beschrieben):**
+- Die Daten fuer **8b** liegen NICHT in `useQuizStore` (nur Aggregate je Serien-Key), sondern in der
+  Karte: `totalWrong`, `lastSeen` (`useProgressStore`).
+- **`src/data/generated/` wird von `npm run migrate:data` ueberschrieben.** Redaktionelle Texte
+  (**8d** Etymologie, spaeter 9d Palpation) muessen in eine eigene, handgepflegte Datei ausserhalb
+  von `generated/`, die der Loader dazumischt.
 
 **Etappe 7 ist komplett und gemergt** (Merge-Commit `4380bfe`, `--no-ff`).
 - **7a:** `src/data/today.ts` liefert `getTodayPlan()` → getypter `TodayPlan` mit vier Zustaenden
