@@ -178,6 +178,47 @@ function weakestRegion(
   return best;
 }
 
+export interface DuePriorityInput {
+  cards: Record<string, FlashcardCard>;
+  lookupCounts?: Record<string, number>;
+  muscles?: readonly Muscle[];
+  now?: Date;
+}
+
+/**
+ * Die fälligen Karten in DER Reihenfolge der App: Verzug, Schwierig-Flag, niedriges
+ * Fach, Schwäche der Region, Nachschlage-Häufigkeit.
+ *
+ * Exportiert, weil die Statistik-CTAs (8c) dieselbe Auswahl treffen müssen wie der
+ * Tagesplan. Es gibt genau eine Priorisierung — keine zweite daneben.
+ */
+export function prioritizeDueCards({
+  cards,
+  lookupCounts = {},
+  muscles = getMuscles(),
+  now = new Date(),
+}: DuePriorityInput): string[] {
+  const regionByName = new Map(muscles.map((m) => [m.nameLatin, m.region]));
+  const regionOf = (name: string): RegionId | undefined => regionByName.get(name);
+  const mastery = regionMastery(cards, regionOf);
+
+  return Object.entries(cards)
+    .filter(([, card]) => isDue(card, now))
+    .map(([name, card]) => {
+      const region = regionOf(name);
+      const weakness = region ? (100 - mastery[region]) / 100 : 0;
+      const score =
+        daysOverdue(card, now) * W_OVERDUE +
+        (card.difficult ? W_DIFFICULT : 0) +
+        (MAX_FACH - card.fach) * W_LOW_FACH +
+        weakness * W_REGION_WEAKNESS +
+        Math.min(lookupCounts[name] ?? 0, LOOKUP_CAP) * W_LOOKUP;
+      return { name, score };
+    })
+    .sort(byScoreThenName)
+    .map((s) => s.name);
+}
+
 /**
  * Der Tagesplan. Es gibt keinen Zustand ohne Vorschlag: leerer Kasten →
  * `needsOnboarding` mit Startvorschlägen, nichts fällig → `new`, Stau → `backlog`.
@@ -199,25 +240,9 @@ export function getTodayPlan({
   const examPressure = examDays !== null && dose > DEFAULT_DAILY_DOSE;
   const lookupsOf = (name: string): number => lookupCounts[name] ?? 0;
 
-  /* Fällige Karten priorisieren: Verzug, Schwierig-Flag, niedriges Fach,
-     Schwäche der Region, Nachschlage-Häufigkeit. */
-  const due = Object.entries(cards)
-    .filter(([, card]) => isDue(card, now))
-    .map(([name, card]) => {
-      const region = regionOf(name);
-      const weakness = region ? (100 - mastery[region]) / 100 : 0;
-      const score =
-        daysOverdue(card, now) * W_OVERDUE +
-        (card.difficult ? W_DIFFICULT : 0) +
-        (MAX_FACH - card.fach) * W_LOW_FACH +
-        weakness * W_REGION_WEAKNESS +
-        Math.min(lookupsOf(name), LOOKUP_CAP) * W_LOOKUP;
-      return { name, score };
-    })
-    .sort(byScoreThenName);
-
+  const due = prioritizeDueCards({ cards, lookupCounts, muscles, now });
   const dueTotal = due.length;
-  const dueCards = due.slice(0, dose).map((s) => s.name);
+  const dueCards = due.slice(0, dose);
 
   /* Neue Muskeln aus dem Pfad: schwache Region zuerst, dann was sie nachgeschlagen
      hat, dann die leichten. */

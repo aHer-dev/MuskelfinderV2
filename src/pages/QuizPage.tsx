@@ -1,9 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { QuestionCard } from '../components/features/quiz/QuestionCard';
 import { QuizProgress } from '../components/features/quiz/QuizProgress';
 import { QuizResult } from '../components/features/quiz/QuizResult';
 import { getRegions } from '../data';
 import { regionLabel } from '../data/labels';
+import { readQuizHandoff } from '../data/quiz';
 import { useQuizGame } from '../hooks/useQuizGame';
 import type { QuizMode, RegionId } from '../types';
 import '../components/features/quiz/quiz.css';
@@ -123,6 +125,19 @@ export function QuizPage() {
   const [mode, setMode] = useState<QuizMode | null>(null);
   const [round, setRound] = useState(0);
   const [regions, setRegions] = useState<RegionId[]>([]);
+
+  /* Übergabe aus der Statistik (8c): „Diesen Modus üben" startet ihn direkt, ohne
+     Umweg über die Modus-Wahl. Pro Navigation genau einmal — sonst würde ein Abbruch
+     sofort wieder in denselben Modus zurückspringen (dasselbe Muster wie 7b). */
+  const location = useLocation();
+  const consumedKey = useRef<string | null>(null);
+  useEffect(() => {
+    if (consumedKey.current === location.key) return;
+    const handoff = readQuizHandoff(location.state);
+    if (!handoff) return;
+    consumedKey.current = location.key;
+    setMode(handoff);
+  }, [location.key, location.state]);
 
   const regionKey = useMemo(() => [...regions].sort().join(','), [regions]);
 

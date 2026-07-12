@@ -1,9 +1,15 @@
-import { Link } from 'react-router-dom';
+import { useMemo } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { getRegions } from '../data';
 import { regionLabel } from '../data/labels';
+import { milestonePractice, weakCardsPractice, weakestRegionPractice } from '../data/practice';
+import { weakestQuizMode } from '../data/stats';
 import { useStats } from '../hooks/useStats';
+import { useProgressStore } from '../store/useProgressStore';
+import { useLookupStore } from '../store/useLookupStore';
 import { BackupPanel } from '../components/features/stats/BackupPanel';
 import { CardBreakdown } from '../components/features/stats/CardBreakdown';
+import { PracticeCta } from '../components/features/stats/PracticeCta';
 import { ProgressRing } from '../components/ui/ProgressRing';
 import { Icon } from '../components/ui/Icon';
 import type { RegionId } from '../types';
@@ -13,6 +19,34 @@ const REGION_ORDER = getRegions().map((r) => r.id) as RegionId[];
 
 export function StatsPage() {
   const stats = useStats();
+  const navigate = useNavigate();
+
+  const cards = useProgressStore((s) => s.flashcards.cards);
+  const lookups = useLookupStore((s) => s.lookups.entries);
+
+  /* Die Auswahl hinter den Knöpfen. Sie kommt aus `data/practice.ts` und trifft
+     dieselbe Priorisierung wie der Tagesplan — hier wird nichts gefiltert. */
+  const practice = useMemo(() => {
+    const lookupCounts: Record<string, number> = {};
+    for (const [name, entry] of Object.entries(lookups)) lookupCounts[name] = entry.count;
+
+    /* Nicht die Nummer des Meilensteins, sondern wie viele Karten bis dahin FEHLEN —
+       der Knopf verspricht sonst mehr Arbeit, als der Satz darüber nennt. */
+    const missing =
+      stats.masteryNext === null ? null : stats.masteryNext - stats.breakdown.mastered;
+
+    const input = { cards, lookupCounts };
+    return {
+      region: weakestRegionPractice(input),
+      weakCards: weakCardsPractice(input),
+      milestone: milestonePractice(input, missing),
+    };
+  }, [cards, lookups, stats.masteryNext, stats.breakdown.mastered]);
+
+  /* Eine Sitzung mit genau diesen Karten — der Weg ist seit 7b gebaut. */
+  const startSession = (names: string[]) => {
+    navigate('/lernkarten', { state: { start: { names, limit: 0, scope: 'all' } } });
+  };
 
   // Beste Quote (nach Genauigkeit, Antwortzahl als Tiebreak); nur bei ≥2 gespielten Modi.
   const bestMode =
@@ -23,6 +57,8 @@ export function StatsPage() {
             : best,
         )
       : null;
+
+  const weakMode = weakestQuizMode(stats.quizByMode);
 
   return (
     <section className="page stats">
@@ -95,6 +131,11 @@ export function StatsPage() {
         <section className="stats__panel">
           <h2>Lernkarten</h2>
           <CardBreakdown breakdown={stats.breakdown} deckSize={stats.deckSize} />
+          <PracticeCta
+            label="Die schwachen Karten üben"
+            selection={practice.weakCards}
+            onStart={startSession}
+          />
         </section>
 
         <section className="stats__panel stats__panel--wide">
@@ -113,14 +154,34 @@ export function StatsPage() {
               </li>
             ))}
           </ul>
+          {/* Nüchtern, nicht anklagend: „hier lohnt sich Zeit", nicht „Schwachstelle". */}
+          {practice.region.region !== null && (
+            <p className="stats__cta-line">
+              {regionLabel(practice.region.region)} {stats.regionMastery[practice.region.region]} %
+              — hier lohnt sich Zeit.
+            </p>
+          )}
+          <PracticeCta
+            label={
+              practice.region.region !== null
+                ? `${regionLabel(practice.region.region)} üben`
+                : 'Region üben'
+            }
+            selection={practice.region.selection}
+            onStart={startSession}
+          />
         </section>
 
         <section className="stats__panel stats__panel--wide">
           <h2>Quiz-Bilanz je Modus</h2>
           {stats.quizByMode.length === 0 ? (
-            <p className="stats__quiz-line">
-              Noch keine Quizrunde gespielt. Starte eine im <strong>Quiz</strong>.
-            </p>
+            /* Auch der leere Block bekommt einen Knopf — sonst ist er eine Sackgasse. */
+            <div className="stats__cta">
+              <Link to="/quiz" className="btn btn--ghost">
+                Erstes Quiz spielen
+              </Link>
+              <span className="stats__cta-note">Noch keine Runde gespielt</span>
+            </div>
           ) : (
             <>
               <p className="stats__quiz-line">
@@ -145,6 +206,21 @@ export function StatsPage() {
                   </li>
                 ))}
               </ul>
+              {/* „Der schwächste Modus" ergibt erst ab zwei gespielten Modi Sinn (stats.ts). */}
+              {weakMode !== null && (
+                <div className="stats__cta">
+                  <button
+                    type="button"
+                    className="btn btn--ghost"
+                    onClick={() => navigate('/quiz', { state: { mode: weakMode.mode } })}
+                  >
+                    {weakMode.label} üben
+                  </button>
+                  <span className="stats__cta-note">
+                    {weakMode.accuracy} % — dein schwächster Modus
+                  </span>
+                </div>
+              )}
             </>
           )}
         </section>
@@ -186,6 +262,13 @@ export function StatsPage() {
               </span>
             </li>
           </ul>
+          {/* Der Meilenstein ist die einzige Zahl hier, die man gezielt angehen kann:
+              die Karten, die ihm am nächsten stehen (Fach 4 vor Fach 1). */}
+          <PracticeCta
+            label="Die Karten kurz vor dem Ziel üben"
+            selection={practice.milestone}
+            onStart={startSession}
+          />
         </section>
 
         <BackupPanel />

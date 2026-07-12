@@ -292,7 +292,8 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--accent-on-surface);
+  /* Auf der getönten Fläche faellt --accent-on-surface auf 4.47:1 — dafuer gibt es --accent-on-tint. */
+  color: var(--accent-on-tint);
   background: var(--accent-tint);
   padding: 1px 6px;
   border-radius: var(--radius-pill);
@@ -380,4 +381,27 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--spacing-sm) var(--spacing-lg);
+}
+
+/* ---- Keine Zahl ohne Knopf (Bruecke B4, Etappe 8c) -------------------- */
+.stats__cta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  margin-top: var(--spacing-md);
+}
+
+/* Der Grund steht in Worten daneben — nicht als Tooltip, nicht als Farbe. */
+.stats__cta-note {
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+.stats__cta-line {
+  margin: var(--spacing-md) 0 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
 }

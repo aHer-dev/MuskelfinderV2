@@ -6,6 +6,7 @@ import {
   quizByMode,
   quizSummary,
   regionMastery,
+  weakestQuizMode,
 } from './stats';
 import type { FlashcardCard, QuizSeriesSection } from '../persistence/types';
 import type { RegionId } from '../types';
@@ -95,6 +96,32 @@ describe('quizByMode', () => {
     expect(quizByMode(series)[0].label).toBe('image-match');
   });
 });
+
+describe('weakestQuizMode', () => {
+  const mode = (m: string, correct: number, answers: number) => ({
+    mode: m,
+    label: m,
+    rounds: 1,
+    answers,
+    correct,
+    accuracy: Math.round((correct / answers) * 100),
+  })
+
+  it('nennt den Modus mit der schlechtesten Quote', () => {
+    const worst = weakestQuizMode([mode('image', 18, 20), mode('innervation', 4, 20)])
+    expect(worst?.mode).toBe('innervation')
+  })
+
+  it('schweigt bei nur einem gespielten Modus — „der schwächste" waere dort „der einzige"', () => {
+    expect(weakestQuizMode([mode('image', 5, 20)])).toBeNull()
+    expect(weakestQuizMode([])).toBeNull()
+  })
+
+  it('nimmt bei Gleichstand den mit mehr Antworten (die belastbarere Zahl)', () => {
+    const worst = weakestQuizMode([mode('image', 5, 10), mode('innervation', 10, 20)])
+    expect(worst?.mode).toBe('innervation')
+  })
+})
 
 describe('nextMasteryMilestone', () => {
   it('liefert den nächsten Meilenstein oder null', () => {

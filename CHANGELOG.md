@@ -7,6 +7,21 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- **Etappe 8c — Statistik wird handlungsfähig (Brücke B4)** (`src/data/practice.ts`, `PracticeCta`):
+  **Keine Zahl ohne Knopf.** Die Statistik wusste seit Etappe 3, dass die untere Extremität bei 33 %
+  steht — und sagte es, ohne zu helfen. Jetzt hat **jeder** Block, der eine Schwäche ausweist, genau
+  eine Aktion daneben: „Die schwachen Karten üben" (Fach 1–2), „Untere Extremität üben" (die
+  schwächste Region **mit** fälligen Karten), „Innervation üben" (der schwächste Quizmodus, ab zwei
+  gespielten Modi) und „Die Karten kurz vor dem Ziel üben" (die Karten, die dem nächsten Meilenstein
+  am nächsten stehen — **höchstes Fach zuerst**). Die Auswahl dahinter sind **reine Selektoren** in
+  `src/data/practice.ts`, die **dieselbe** Priorisierung nutzen wie der Tagesplan
+  (`prioritizeDueCards`, aus `today.ts` herausgezogen) — es gibt keine zweite Reihenfolge. **Kein CTA
+  greift ins Leere:** Jeder Selektor liefert nur **fällige** Karten (sonst startete der Knopf eine
+  leere Sitzung), und wenn es nichts zu tun gibt, ist der Knopf deaktiviert und **nennt den Grund**
+  („Dazu liegt keine Karte im Kasten" / „Heute nichts fällig" / „Hier ist nichts zu verbessern") —
+  nüchtern, nie anklagend. Der Sprung in die Sitzung nutzt die Übergabe aus 7b; der Sprung ins Quiz
+  bekommt dasselbe **validierte** Muster (`readQuizHandoff`), das den V1-Serien-Schlüssel
+  **unangetastet** lässt (ADR 0002).
 - **Etappe 8a — Abrufleiter + Freitext-Stufe** (`src/data/recall.ts`, `src/data/answer-check.ts`,
   `TypeCard`): **Wiedererkennen ist nicht Können.** Die Abrufhärte wächst jetzt mit der Beherrschung:
   Ab **Fach 7** steht keine Auswahl mehr daneben — die Karte zeigt Funktion, Innervation, Ursprung und
@@ -117,6 +132,11 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   je Schritt ein Link direkt ins Briefing.
 
 ### Fixed
+- **Kontrast des „Beste Quote"-Abzeichens** (axe `color-contrast`, serious): Es stand mit
+  `--accent-on-surface` auf getönter Fläche und kam damit auf **4,47:1** — knapp unter AA. Genau
+  dafür gibt es `--accent-on-tint`; diese eine Stelle war übersehen worden. Der Fehler war nie
+  aufgefallen, weil das Abzeichen erst ab **zwei** gespielten Quizmodi überhaupt erscheint
+  (gefunden bei der axe-Prüfung zu 8c).
 - **Grammatik im Erklärsatz** (7e): Plural-Muskeln („Mm. lumbricales I–IV") bekommen ein
   Plural-Verb — vorher stand dort „Mm. lumbricales I–IV **wird** von … versorgt".
 - **Sheet-Inhalt war per Tastatur nicht erreichbar** (axe `scrollable-region-focusable`, serious):

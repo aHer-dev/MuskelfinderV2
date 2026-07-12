@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createRng, generateQuiz, quizSeriesKey } from './quiz';
+import { createRng, generateQuiz, quizSeriesKey, readQuizHandoff } from './quiz';
 import type { Muscle, QuizMode } from '../types';
 
 function m(partial: Partial<Muscle> & { id: string; nameLatin: string }): Muscle {
@@ -51,6 +51,30 @@ describe('quizSeriesKey', () => {
     expect(quizSeriesKey('innervation', ['lower', 'head'])).toBe(
       'innervation::{"deckOnly":false,"regions":["head","lower"],"subgroups":[]}',
     );
+  });
+});
+
+describe('readQuizHandoff — die Statistik startet einen Modus direkt (8c)', () => {
+  it('nimmt einen bekannten Modus an', () => {
+    expect(readQuizHandoff({ mode: 'innervation' })).toBe('innervation');
+  });
+
+  it('weist alles zurück, was kein Modus ist — der State kommt aus der History', () => {
+    expect(readQuizHandoff({ mode: 'was-auch-immer' })).toBeNull();
+    expect(readQuizHandoff({ mode: 42 })).toBeNull();
+    expect(readQuizHandoff({})).toBeNull();
+    expect(readQuizHandoff(null)).toBeNull();
+    expect(readQuizHandoff('innervation')).toBeNull();
+  });
+
+  it('faellt nicht auf geerbte Eigenschaften herein', () => {
+    expect(readQuizHandoff({ mode: 'toString' })).toBeNull();
+  });
+
+  it('ein Modus-Sprung veraendert den Serien-Schluessel nicht (ADR 0002)', () => {
+    const mode = readQuizHandoff({ mode: 'innervation' });
+    expect(mode).not.toBeNull();
+    expect(quizSeriesKey(mode!)).toBe('innervation::{"deckOnly":false,"regions":[],"subgroups":[]}');
   });
 });
 
