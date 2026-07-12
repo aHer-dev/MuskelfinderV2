@@ -83,13 +83,24 @@ Prüfungsmodus und kommt mit **9c**.
 | 8c | Statistik → Handlung: jede Schwäche bekommt einen CTA (**B4**) | [8c](tasks/2026-07-12-etappe-8c-statistik-zu-handlung.md) | **fertig** | `feat/etappe-8c-statistik-handlung` | — |
 | 8d | Etymologie & Eselsbrücken im „Einfach“-Niveau | [8d](tasks/2026-07-12-etappe-8d-etymologie.md) | offen | — | redaktionell, inkrementell |
 | 8e | Eigene Notizen je Muskel (additiv im Backup, ADR-0002-konform) | [8e](tasks/2026-07-12-etappe-8e-notizen.md) | **fertig** | `feat/etappe-8e-notizen` | — |
-| 8f | Die 47 bildlosen Muskeln: erst **Lizenzprüfung** (E5), dann Renderings **oder** Platzhalter | [8f](tasks/2026-07-12-etappe-8f-bildluecke.md) | offen | — | — |
+| 8f | Die 47 bildlosen Muskeln: erst **Lizenzprüfung** (E5), dann Renderings **oder** Platzhalter | [8f](tasks/2026-07-12-etappe-8f-bildluecke.md) | **Stufe 1 + 2b fertig** (2a offen, s. u.) | `feat/etappe-8f-bildluecke` | — |
 
 > **Zwei Fallen, die im Text unten (§Etappe 8) falsch stehen und am Code verifiziert wurden:**
 > (1) Die Daten für **8b** liegen **nicht** in `useQuizStore` (der hält nur Aggregate je Serien-Key),
 > sondern in der Karte selbst (`totalWrong`, `lastSeen`) — in 8b bestätigt. (2) **`src/data/generated/`
 > wird von `npm run migrate:data` überschrieben** — die redaktionellen Texte aus **8d** (und später 9d)
 > dürfen dort nicht liegen. Details im Rahmen-Briefing.
+
+> **Offen aus 8f — Entscheidung nötig: Renderings aus der 3D-App?**
+> Die **Lizenzprüfung ist bestanden** ([Protokoll](3d-app-lizenzpruefung.md)): Die 3D-App enthält
+> ausschließlich BodyParts3D-Geometrie (DBCLS), Renderings sind CC BY 4.0 und dürfen mit Attribution
+> übernommen werden. Umgesetzt ist **Stufe 2b** (typografischer Platzhalter, für alle 47).
+> **Stufe 2a bleibt offen** — nicht aus Lizenz-, sondern aus **Qualitätsgründen**: (1) Nur **21 der
+> 47** sind in der 3D-App überhaupt adressierbar (ihr eigener Build-Report meldet für 28 Muskeln
+> `no-meta-match`). (2) Der Deep-Link allein liefert kein brauchbares Bild — im Kontrollrendering
+> liegt der Muskel hinter dem Unterkiefer. Es braucht **pro Muskel** Isolation, Kamera und
+> Hervorhebung, plus eine **fachliche Freigabe** durch den Projektinhaber. Ein Bild, auf dem der
+> Muskel nicht zu erkennen ist, ist schlechter als kein Bild.
 
 > **Offen aus 8b — Entscheidung nötig: Filter auch im Quiz?**
 > Das Briefing nennt die Filter als „auch für das Quiz nutzbar (Pool-Einschränkung)". Die **Session**

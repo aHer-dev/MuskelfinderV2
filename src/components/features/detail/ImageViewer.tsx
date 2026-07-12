@@ -1,23 +1,19 @@
 import { useState } from 'react';
-import type { MuscleImage } from '../../../types';
+import type { Muscle } from '../../../types';
 import { Icon } from '../../ui/Icon';
+import { MusclePlaceholder } from './MusclePlaceholder';
 
 function assetUrl(url: string): string {
   return `${import.meta.env.BASE_URL}${url}`;
 }
 
 /** Bild-„Fenster" mit Ansichts-Umschaltung und sichtbarer Attribution (CC BY 4.0 Pflicht). */
-export function ImageViewer({ images, alt }: { images: MuscleImage[]; alt: string }) {
+export function ImageViewer({ muscle }: { muscle: Muscle }) {
   const [index, setIndex] = useState(0);
+  const { images, nameLatin: alt } = muscle;
 
-  if (images.length === 0) {
-    return (
-      <div className="image-viewer image-viewer--empty">
-        <Icon name="icImage" size={28} />
-        <p>Für diesen Muskel liegt kein Bild vor.</p>
-      </div>
-    );
-  }
+  // 47 von 150 Muskeln haben kein Bild. Die Luecke soll absichtlich aussehen, nicht kaputt (8f).
+  if (images.length === 0) return <MusclePlaceholder muscle={muscle} />;
 
   const safeIndex = Math.min(index, images.length - 1);
   const current = images[safeIndex];

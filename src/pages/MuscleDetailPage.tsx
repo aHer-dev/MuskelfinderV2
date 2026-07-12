@@ -163,7 +163,7 @@ export function MuscleDetailPage() {
         </section>
 
         <section className="detail__media">
-          <ImageViewer images={muscle.images} alt={muscle.nameLatin} />
+          <ImageViewer muscle={muscle} />
         </section>
       </div>
     </article>
