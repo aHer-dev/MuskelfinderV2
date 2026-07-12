@@ -2,12 +2,20 @@ import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
+/* Der Pfad, unter dem die App liegt.
+   GitHub Pages serviert ein Projekt-Repo unter <user>.github.io/<repo>/ — dann MUSS base
+   '/<repo>/' sein, sonst laden Sprite, Fonts und Bilder nicht (sie werden absolut vom
+   Root geholt und laufen ins 404). Lokal faellt das nie auf: `vite preview` liefert fuer
+   jeden Pfad die index.html aus, die Assets kommen trotzdem vom Root.
+
+   Eigene Domain oder User-Site (<user>.github.io) statt Projektpfad? Dann beim Build
+   `VITE_BASE=/` setzen. Alle Assets gehen ueber import.meta.env.BASE_URL bzw. werden von
+   Vite umgeschrieben — diese eine Konstante ist die einzige Stellschraube. */
+const base = process.env.VITE_BASE ?? '/Muskelfinder-V2/'
+
 // https://vite.dev/config/
-// base: '/' passt für Root-Deploy (eigene Domain, ADR 0002/0003). Wird stattdessen
-// unter einem Projektpfad deployt (z. B. <name>.github.io/<repo>/), muss base auf
-// '/<repo>/' gesetzt werden — sonst laden Assets/Sprite/Fonts nicht.
 export default defineConfig({
-  base: '/',
+  base,
   plugins: [
     react(),
     // PWA/Offline (Etappe 5): App-Shell + JS/CSS/Sprite werden vorab gecacht, Muskelbilder
@@ -21,8 +29,9 @@ export default defineConfig({
         short_name: 'Muskelfinder',
         description: 'Nachschlagewerk & Lern-Tool für die Skelettmuskulatur.',
         lang: 'de',
-        start_url: '/',
-        scope: '/',
+        // Muessen dem base folgen — sonst installiert die PWA einen Scope, der nicht existiert.
+        start_url: base,
+        scope: base,
         display: 'standalone',
         background_color: '#f1efe9',
         theme_color: '#f1efe9',
