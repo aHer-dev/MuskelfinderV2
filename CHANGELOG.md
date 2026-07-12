@@ -7,6 +7,16 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- **Etappe 7a — Empfehlungs-Engine** (`src/data/today.ts`): `getTodayPlan()` beantwortet als reine
+  Funktion, was heute dran ist, und gibt einen getypten `TodayPlan` zurück — Zahlen und Codes, keine
+  Sätze (die Formulierung gehört ins UI, 7b). **Kein Zustand ohne Vorschlag:** leerer Kasten →
+  `needsOnboarding` *mit* Startvorschlägen, nichts fällig → `new` (neue Muskeln aus dem Pfad),
+  Überfällig-Stau → `backlog` auf eine verdaubare Tagesdosis gedeckelt (die volle Zahl bleibt als
+  `dueTotal` sichtbar), sonst `review`. Fällige Karten werden priorisiert nach Verzug, Schwierig-Flag,
+  niedrigem Fach, Schwäche der Region (aus `stats.ts`) und Nachschlage-Häufigkeit; die Tagesdosis
+  wächst bei nahem Prüfungstermin (Deckel 40). Der Parametertyp sieht `lookupCounts` bereits vor —
+  den Store dazu baut 7d, sein Fehlen ist kein Fehler. Leitner-Fälligkeit und Backup-Format bleiben
+  unangetastet (ADR 0002). 15 neue Tests, gesamt 185.
 - **Produktplan für Etappen 7–9** (`docs/produkt-plan.md`): der Weg vom Nachschlagewerk zum Coach,
   mit **Statustafel** (jeder Schritt 7a–9d: offen/laufend/fertig/blockiert), den vier Brücken
   zwischen Suche und Lernen, Abhängigkeitsgraph und den fünf offenen Entscheidungen (E1–E5), die

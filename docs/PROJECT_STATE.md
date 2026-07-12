@@ -7,10 +7,11 @@
 ## Stand
 - Datum: 2026-07-12
 - Branch: `main` (Design-Feinschliff und Produkt-Roadmap gemergt, `--no-ff`)
-- Status: **Migration abgeschlossen (Etappen 0–6, `v1.0` getaggt). Produktphase geplant
-  (Etappen 7–9) — Statustafel in `docs/produkt-plan.md`. Naechster Schritt: Etappe 7a.**
+- Status: **Migration abgeschlossen (Etappen 0–6, `v1.0` getaggt). Produktphase laeuft
+  (Etappen 7–9) — Statustafel in `docs/produkt-plan.md`. 7a fertig, naechster Schritt: 7b.**
   Der historische Verlauf steht unten.
-- Gate auf `main` zuletzt gruen: `npm run lint && npm run test && npm run build` — **170 Tests**.
+- Gate zuletzt gruen auf `feat/etappe-7a-empfehlungs-engine`:
+  `npm run lint && npm run test && npm run build` — **185 Tests**.
 
 ## Verlauf (Migration, abgeschlossen)
 - Etappe 0–4 abgeschlossen. **Etappe 5 (Haertung)** — Teil 1+2 umgesetzt:
@@ -150,8 +151,16 @@ befuellt werden, die Statistik zeigt Zahlen ohne Empfehlung.
 - Konzept-Mockups (visuell, extern): Heute-Screen und Produktkonzept, siehe `docs/produkt-plan.md`.
 
 ## Naechster Schritt
-**Etappe 7a — Empfehlungs-Engine** (`src/data/today.ts`, reine Selektoren, kein UI).
-Briefing: `docs/tasks/2026-07-12-etappe-7a-empfehlungs-engine.md`. Danach 7b (Route `/heute`).
+**Etappe 7b — Route `/heute`** (UI zur Engine aus 7a; `/` leitet dorthin, Navigation auf vier
+Absichten). Briefing: `docs/tasks/2026-07-12-etappe-7b-route-heute.md`.
+
+**7a ist fertig** (Branch `feat/etappe-7a-empfehlungs-engine`, noch nicht gemergt):
+`src/data/today.ts` liefert `getTodayPlan()` → getypter `TodayPlan` mit vier Zustaenden
+(`needsOnboarding` · `review` · `backlog` · `new`) — **kein Zustand ohne Vorschlag**. Priorisierung
+nach Verzug, Schwierig-Flag, Fach, Region-Schwaeche und Nachschlage-Haeufigkeit; Tagesdosis
+gedeckelt (Default 20, max 40 bei nahem Pruefungstermin). `lookupCounts` ist im Parametertyp schon
+vorgesehen — den Store dazu baut 7d. **7b konsumiert den Plan nur und formuliert die Texte; in der
+Datenschicht stehen bewusst keine Saetze.**
 
 Offen (nur durch dich):
 - Bei oeffentlichem Deploy: `git remote add origin …` + Push (kein Remote konfiguriert).
