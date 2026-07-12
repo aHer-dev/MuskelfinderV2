@@ -12,7 +12,7 @@ export function SearchField() {
       <input
         type="search"
         className="search-field__input"
-        placeholder="Muskel suchen … (lat. Name, deutsch, Stichwort)"
+        placeholder="Muskel suchen …"
         aria-label="Muskel suchen"
         value={query}
         onChange={(event) => setQuery(event.target.value)}

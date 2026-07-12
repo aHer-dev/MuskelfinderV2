@@ -22,7 +22,7 @@ describe('DeckManagerPage', () => {
     renderPage()
     expect(screen.getByRole('heading', { level: 1, name: /Muskeln verwalten/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /^Im Karteikasten$/i })).toBeInTheDocument()
-    expect(screen.getByText(/Noch keine Muskeln im Karteikasten/i)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /Noch keine Karten/i })).toBeInTheDocument()
   })
 
   it('fügt ausgewählte Muskeln per Checkbox + Button zum Kasten hinzu', () => {

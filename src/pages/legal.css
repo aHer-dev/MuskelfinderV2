@@ -1,4 +1,4 @@
-.legal { max-width: 780px; }
+.legal { width: 100%; max-width: 780px; margin-inline: auto; }
 
 .legal__eyebrow {
   font-family: var(--font-ui);

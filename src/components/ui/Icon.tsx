@@ -6,7 +6,7 @@ export type IconName =
   | 'icGear' | 'icSun' | 'icMoon' | 'icClose' | 'icChevD' | 'icChevR'
   | 'icCheck' | 'icFilter' | 'icMenu' | 'icArrow' | 'icArrowL'
   | 'icBookmark' | 'icFlip' | 'icFlame' | 'icTrophy' | 'icTarget'
-  | 'icImage' | 'icPlus' | 'icInfo'
+  | 'icImage' | 'icPlus' | 'icInfo' | 'icFlag'
 
 const SPRITE = `${import.meta.env.BASE_URL}icons/sprite.svg`
 

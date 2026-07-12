@@ -1,5 +1,6 @@
 import type { Muscle } from '../../../types';
 import { regionLabel } from '../../../data/labels';
+import { facts } from './facts';
 
 interface FlashcardProps {
   muscle: Muscle;
@@ -32,27 +33,18 @@ export function Flashcard({ muscle, revealed, onReveal }: FlashcardProps) {
         </span>
 
         <span className="flashcard__side flashcard__back" aria-hidden={!revealed}>
+          <span className="flashcard__back-head">
+            <span className="flashcard__eyebrow">{regionLabel(muscle.region)}</span>
+            <span className="flashcard__back-name">{muscle.nameLatin}</span>
+          </span>
+
           <dl className="flashcard__facts">
-            <div>
-              <dt>Funktion</dt>
-              <dd>{muscle.functionDescription}</dd>
-            </div>
-            <div>
-              <dt>Innervation</dt>
-              <dd>{muscle.innervation}</dd>
-            </div>
-            <div>
-              <dt>Segmente</dt>
-              <dd>{muscle.segments}</dd>
-            </div>
-            <div>
-              <dt>Ursprung</dt>
-              <dd>{muscle.origin}</dd>
-            </div>
-            <div>
-              <dt>Ansatz</dt>
-              <dd>{muscle.insertion}</dd>
-            </div>
+            {facts(muscle).map(({ label, value }) => (
+              <div key={label}>
+                <dt>{label}</dt>
+                <dd>{value}</dd>
+              </div>
+            ))}
           </dl>
         </span>
       </span>

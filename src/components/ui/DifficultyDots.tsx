@@ -9,7 +9,13 @@ const LABELS: Record<Difficulty, string> = {
 /** Drei-Punkte-Indikator für den Schwierigkeitsgrad (1..3). */
 export function DifficultyDots({ level }: { level: Difficulty }) {
   return (
-    <span className="difficulty" role="img" aria-label={`Schwierigkeit: ${LABELS[level]}`}>
+    <span
+      className="difficulty"
+      role="img"
+      aria-label={`Schwierigkeit: ${LABELS[level]}`}
+      /* Ohne Legende sind drei Punkte nicht deutbar — Tooltip macht sie lesbar. */
+      title={`Schwierigkeit: ${LABELS[level]}`}
+    >
       {[1, 2, 3].map((dot) => (
         <span
           key={dot}

@@ -11,18 +11,39 @@
 
 import supportData from './generated/three-d-support.json';
 
-/** Basis-URL der externen 3D-Anatomie-App (eigene GitHub-Pages-App). */
-export const THREE_D_BASE_URL = 'https://aher-dev.github.io/3DAnatomy/';
+/**
+ * Basis-URL der externen 3D-Anatomie-App (eigene GitHub-Pages-App).
+ *
+ * Zeigt bewusst auf **V2**: die alte App (`/3DAnatomy/`) lädt three.js zur Laufzeit von
+ * cdn.jsdelivr.net nach — ein externer Abruf mit IP-Übertragung an ein fremdes CDN, den
+ * wir unseren Nutzern nicht zumuten. V2 bündelt three.js lokal (CSP `default-src 'self'`)
+ * und macht keinen einzigen externen Request. Deep-Link-Vertrag und Muskel-Mapping sind
+ * in beiden Versionen identisch (118 Keys).
+ *
+ * ACHTUNG: V2 ist noch **nicht offiziell veröffentlicht**. Der Link ist vorausschauend
+ * gesetzt. Vor einem öffentlichen Muskelfinder-Deploy die Checkliste in
+ * `docs/PROJECT_STATE.md` → „Offene Kopplung: 3D-App V2" abarbeiten. Diese Konstante ist
+ * die einzige Stelle, an der das Ziel hängt.
+ */
+export const THREE_D_BASE_URL = 'https://aher-dev.github.io/3DAnatomyV2/';
 
 const SUPPORTED_KEYS = new Set<string>(supportData.muscleKeys);
 
-/** Muskel-Key aus dem lateinischen Namen (identisch zur V1-Normalisierung). */
+/**
+ * Muskel-Key aus dem lateinischen Namen (Key-Format der 3D-App: `m_<name>`).
+ *
+ * `mm?\.` f\u00e4ngt auch den Plural \u201eMm." (z. B. \u201eMm. lumbricales I\u2013IV"). Vorher wurde
+ * nur \u201eM." gestrippt \u2014 die 14 Plural-Muskeln erzeugten `m_mm_lumbricales_i_iv`,
+ * trafen damit keinen Mapping-Key und bekamen keinen 3D-Button, obwohl die 3D-App
+ * sie kennt.
+ */
 export function buildMuscleKey(name = ''): string {
   const normalized = name
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
-    .replace(/^m\.\s*/, '')
+    .replace(/^mm?\.\s*/, '')
+    .replace(/^musculi\s+/, '')
     .replace(/^musculus\s+/, '')
     .replace(/[^a-z0-9]+/g, '_')
     .replace(/^_+|_+$/g, '')

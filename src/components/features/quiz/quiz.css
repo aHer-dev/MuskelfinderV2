@@ -92,6 +92,14 @@
   border: 1px solid var(--card-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--card-shadow);
+  transition: box-shadow 0.28s var(--ease-smooth), transform 0.28s var(--ease-smooth),
+    border-color 0.28s var(--ease-smooth);
+}
+
+.quiz-family:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--card-shadow-hover);
+  border-color: var(--hairline-strong);
 }
 
 .quiz-family__title {
@@ -332,6 +340,13 @@
 .quiz-option--wrong .quiz-option__badge {
   border-color: var(--danger);
   color: var(--danger);
+}
+
+/* Zweiter Kanal neben der Farbe (WCAG 1.4.1 „Use of Color"): ✓ an der richtigen,
+   ✕ an der falsch gewählten Option. */
+.quiz-option__mark {
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .quiz-card__feedback {

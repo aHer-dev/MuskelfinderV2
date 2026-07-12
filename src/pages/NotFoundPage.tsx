@@ -1,12 +1,20 @@
 import { Link } from 'react-router-dom'
-import { PlaceholderPage } from './PlaceholderPage'
+import { EmptyState } from '../components/ui/EmptyState'
 
 export function NotFoundPage() {
   return (
-    <PlaceholderPage title="Seite nicht gefunden">
-      <p>
-        Diese Route existiert nicht. Zurück zur <Link to="/suche">Suche</Link>.
-      </p>
-    </PlaceholderPage>
+    <section className="page">
+      <EmptyState
+        headingLevel={1}
+        icon="icInfo"
+        title="Seite nicht gefunden"
+        description="Diese Adresse gibt es nicht (mehr). Vielleicht ein alter Link oder ein Tippfehler."
+        action={
+          <Link to="/suche" className="btn btn--primary">
+            Zur Muskelsuche
+          </Link>
+        }
+      />
+    </section>
   )
 }

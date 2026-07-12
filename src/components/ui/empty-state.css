@@ -1,0 +1,46 @@
+/* Leerzustand — Icon, Überschrift, Erklärung, eine Handlung. Zentriert im
+   verfügbaren Raum, damit die Seite nicht oben angeheftet wirkt. */
+/* Wächst in den freien Raum der Seite (Elternteil ist eine Flex-Spalte) und zentriert
+   darin — der Seitenkopf bleibt aber oben stehen, wie auf allen anderen Seiten. */
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xl) var(--spacing-md);
+  text-align: center;
+}
+
+.empty-state__icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: var(--spacing-xs);
+  border-radius: var(--radius-lg);
+  background: var(--surface-sunken);
+  border: 1px solid var(--hairline);
+  color: var(--text-tertiary);
+}
+
+.empty-state__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.empty-state__text {
+  margin: 0;
+  max-width: 42ch;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.empty-state__action {
+  margin-top: var(--spacing-sm);
+}

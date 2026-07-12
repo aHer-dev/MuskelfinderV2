@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { QuizPhase, QuizQuestion } from '../../../types';
+import { Icon } from '../../ui/Icon';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'] as const;
 
@@ -30,6 +31,8 @@ interface QuestionCardProps {
 export function QuestionCard({ question, phase, selectedId, onAnswer }: QuestionCardProps) {
   const revealed = phase !== 'answering';
   const imageOptions = question.options.some((o) => o.imageUrl);
+  const correctLabel =
+    question.options.find((o) => o.id === question.correctId)?.label ?? '';
   const optionRefs = useRef<Array<HTMLButtonElement | null>>([]);
   // Roving-Tabindex: nur EINE Option liegt im Tab-Fluss; Pfeiltasten wandern
   // zwischen den Optionen, Enter/Space (nativer Button) wählt aus. Bei jeder
@@ -103,6 +106,14 @@ export function QuestionCard({ question, phase, selectedId, onAnswer }: Question
             ) : (
               <span className="quiz-option__label">{option.label}</span>
             )}
+            {/* Rot/Grün allein reicht nicht — bei Rot-Grün-Schwäche wäre sonst nicht
+                erkennbar, welche Option richtig war. */}
+            {revealed && option.id === question.correctId && (
+              <Icon name="icCheck" size={18} className="quiz-option__mark" />
+            )}
+            {revealed && option.id === selectedId && option.id !== question.correctId && (
+              <Icon name="icClose" size={18} className="quiz-option__mark" />
+            )}
           </button>
         ))}
       </div>
@@ -111,7 +122,7 @@ export function QuestionCard({ question, phase, selectedId, onAnswer }: Question
         {revealed
           ? selectedId === question.correctId
             ? 'Richtig!'
-            : 'Leider falsch — die richtige Antwort ist markiert.'
+            : `Leider falsch. Richtig ist: ${correctLabel}`
           : ''}
       </p>
     </div>

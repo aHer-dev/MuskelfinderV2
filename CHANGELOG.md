@@ -6,7 +6,104 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Changed
+- **Statistik entdoppelt:** Level und XP standen dreifach auf einem Screen (Kachel, Ring, Text).
+  Die Kachelreihe zeigt jetzt vier *verschiedene* Kennzahlen (Karten im Kasten, Gemeistert,
+  Quiz-Trefferquote, Quiz-Runden); Level/XP haben ihren Platz in der Level-Karte.
+  Kaputte Ziel-Copy („Noch **1** bis **1** gemeisterten Karten") korrigiert.
+- **Toast** auf dem Desktop nach unten **rechts** (unten-mittig legte er sich über den Inhalt);
+  mobil weiterhin mittig über der Tab-Leiste.
+- **Quiz-Kopfzeile** verständlicher: „Serie 0 · 0 Pkt." → „0 Punkte · 0 in Folge richtig".
+- **Such-Platzhalter** gekürzt („Muskel suchen …") — der lange Text war mobil abgeschnitten und
+  wiederholte nur die Lead-Zeile darüber.
+- **Schwierigkeits-Punkte** haben jetzt einen Tooltip; drei Punkte ohne Legende waren nicht deutbar.
+- **Design-/Layout-Feinschliff (hochwertigeres Erscheinungsbild).**
+  - **Rahmen-Fix:** Der Inhalt war auf dem Desktop links angeheftet (`margin-left` fix +
+    `margin-right:auto`), sodass die halbe Bildschirmbreite tot rechts lag. Jetzt hält die Shell
+    nur die Rail-Breite frei und der Inhalt **zentriert** sich mittig in der Restfläche.
+  - **Kopf-Primitives global geladen:** `pages.css` wurde bislang nur von der Platzhalterseite
+    importiert — dadurch waren `.page__eyebrow/__title/__body` auf allen echten Seiten wirkungslos.
+    Jetzt global; Eyebrows in Versalien, Titel skalieren per `clamp()` (~27→34 px), Lesetexte
+    (`.page__body`) auf ~70 Zeichen gedeckelt.
+  - **Vertikale Balance:** Quiz-Auswahl und leere Zustände (Lernkarten) sitzen mittig im freien
+    Raum statt oben angeheftet mit Leere darunter.
+  - **Karten:** kräftigere Ruhe-Elevation + klarer Hover-Lift (Muskel- & Quiz-Karten).
+  - **Toast** (Tagesbonus/XP) von oben-mittig nach **unten** verlegt (mobil über der Tab-Leiste).
+  - Breiten sauber getrennt: Grids/Dashboards nutzen die volle Spalte, Rechtliches 780 px,
+    Karteikasten-Verwaltung 940 px — jeweils zentriert.
+
+### Added
+- **`EmptyState`-Primitive** (`components/ui/EmptyState.tsx`): Icon, Überschrift, Erklärung und
+  **eine primäre Handlung**. Ersetzt die bisherigen beiläufigen Textzeilen bei leerem Karteikasten
+  (CTA „Muskeln hinzufügen"), 0 Suchtreffern (CTA „Filter zurücksetzen") und auf der 404-Seite
+  (CTA „Zur Muskelsuche"). Ohne CTA ist ein Leerzustand eine Sackgasse — und der leere Karteikasten
+  ist der Erstkontakt jedes neuen Nutzers mit dem Lernmodus.
+- **Abschluss-Leiste im mobilen Filter-Sheet** (`Sheet`-Prop `footer`): „Zurücksetzen" +
+  „N Ergebnisse anzeigen". Vorher gab es nur ein ✕ — die Wirkung der Filter war unsichtbar.
+- **Token `--accent-on-tint`** für Text auf getönter Akzentfläche.
+
+### Changed
+- **3D-Verlinkung zeigt auf die neue 3D-App (V2).** Der „In 3D ansehen"-Link ging auf
+  `/3DAnatomy/` (V1) — und **die lädt three.js zur Laufzeit von `cdn.jsdelivr.net`** nach. Jeder
+  Klick schickte damit die IP unserer Nutzer an ein fremdes CDN, also genau der externe Abruf, den
+  die Architektur-Grenze ausschließt. V2 (`/3DAnatomyV2/`) bündelt three.js lokal, setzt
+  `default-src 'self'` und macht **keinen einzigen** externen Request. Deep-Link-Vertrag
+  (`muscleKey`/`muscle`/`source`/`returnTo`) und Muskel-Mapping sind identisch (beide 118 Keys,
+  diffed). End-to-End verifiziert: Deep-Link hebt den Muskel hervor, „Zurück zum Muskelfinder"
+  funktioniert, null externe Hosts.
+- **Schriftdateien aus der Schwester-App `3DAnatomy 2.0` übernommen** (byte-identisch). Es ist
+  dieselbe Schrift in derselben Version (Sora 2.000, Manrope 4.504) — die Darstellung ändert sich
+  **nicht**. Der Gewinn ist eine gemeinsame Quelle: beide Apps sind gegenseitig verlinkt („In 3D
+  ansehen"), und identische Dateien schließen aus, dass die Typografie auseinanderläuft. Nebeneffekt:
+  Subset `latin-ext` statt `latin` (355 statt 223 Zeichen, +41 KB). Für Deutsch war `latin` bereits
+  vollständig — es fehlte kein Zeichen.
+
 ### Fixed
+- **14 Muskeln bekamen keinen 3D-Button, obwohl die 3D-App sie kennt.** `buildMuscleKey` strippte
+  nur das Präfix „M.", nicht den Plural „Mm." — „Mm. lumbricales I–IV" erzeugte den Key
+  `m_mm_lumbricales_i_iv` und traf damit keinen Mapping-Eintrag. Jetzt `mm?\.` (plus „Musculi").
+  **Muskeln mit 3D-Link: 111 → 121**; von den 118 Mapping-Keys finden jetzt *alle* ihren Muskel
+  (vorher 10 Waisen). Test läuft über den gesamten Datenbestand gegen das Mapping.
+- **Schriften fehlten auf der Lizenzseite.** Sora und Manrope sind Fremd-Assets (SIL OFL 1.1) und
+  gehören nach CLAUDE.md sichtbar attribuiert — `/quellen` hat jetzt einen Abschnitt „Schriften".
+- **App-Icons zeigten nicht das Markenlogo.** Favicon, Apple-Touch-Icon und alle PWA-Icons waren ein
+  handgezeichneter Platzhalter (kantiges „A" mit gerader Balken-Leiste) und hatten mit der Wortmarke
+  nichts zu tun — sichtbar im Browser-Tab und auf dem Homescreen. Jetzt aus dem echten Logo erzeugt
+  (`public/logo/af-logo.png`, weißes „A" mit orangem Schwung) auf der Marken-Kachel #1c1b18:
+  `favicon-32.png`, `apple-touch-icon.png` (180, ohne Alpha — iOS mag keins), `pwa-192/512` sowie
+  ein randloses `pwa-maskable-512` mit Logo in der 80-%-Sicherheitszone. Reproduzierbar über
+  `scripts/generate-icons.py`. Das Platzhalter-`favicon.svg` ist entfernt (auch aus dem
+  PWA-Precache, der es sonst weiter ausgeliefert hätte).
+- **Lernkarten-Rückseite nannte den Muskelnamen nicht.** Nach dem Aufdecken standen dort nur die
+  Fakten — welcher Muskel gemeint war, stand auf der weggedrehten Vorderseite. Damit ließ sich die
+  eigene Antwort nicht gegen die Lösung prüfen, also genau das, wofür eine Lernkarte da ist.
+- **Leeres Feld „Segmente" auf jeder dritten Lernkarte.** `segments` ist bei **48 von 150** Muskeln
+  leer (V1-Datenstand), das Label wurde trotzdem gerendert. Leere Fakten fallen jetzt raus
+  (`flashcards/facts.ts`, mit Test über den gesamten Datenbestand).
+- **404-Seite zeigte internen Projekt-Jargon** („Etappe 0 · Grundgerüst"). Ursache war die
+  `PlaceholderPage` aus Etappe 0, die nur noch von der 404-Seite benutzt wurde — jetzt entfernt.
+- **Doppeltes Lösch-Kreuz im Suchfeld:** `type=search` bringt in WebKit/Blink ein eigenes ✕ mit,
+  das neben dem eigenen Clear-Button stand.
+- **Deaktivierte Buttons sahen klickbar aus.** `.btn:disabled` setzte nur `opacity: .5`, ein
+  deaktivierter Primary blieb damit orange. Jetzt neutral (gedämpfte Fläche, gedämpfter Text).
+- **Karteikasten: Muskelnamen bis zur Unkenntlichkeit abgeschnitten** („M. abducto…" zweimal
+  nebeneinander). Name steht jetzt über der Region statt daneben.
+- **Quiz-Feedback funktionierte nur über Farbe** (WCAG 1.4.1): ✓/✗-Marker an den Optionen, und die
+  Rückmeldung benennt die richtige Antwort, statt „ist markiert" zu sagen.
+- **Kontrast:** `.chip--active` lag bei 4.47:1 (AA verlangt 4.5:1) — der Akzent-Tint hebt den
+  Untergrund an. Neuer Token `--accent-on-tint` (#b34400 im Light-Theme). Der Karteikasten entstand
+  erst in Etappe 6, also nach dem A11y-Audit aus Etappe 5.
+- **Seitenkopf-Regression:** die vertikale Zentrierung aus dem letzten Commit zentrierte die ganze
+  Sektion **inklusive Titel** — Lernkarten- und Quiz-Titel rutschten in die Bildschirmmitte, andere
+  Seiten nicht. Der Kopf steht jetzt überall oben, nur der Leerzustand füllt den freien Raum.
+- **Emoji im UI durch Sprite-Icons ersetzt.** Rohe Emoji (`📋 🏆 ⚡ 🎉 ⚑ ★`) rendern je nach
+  Betriebssystem/Font unterschiedlich — auf Linux/Chromium erschienen `📋` (Lernkarten-Kopf) und
+  `🏆` (Statistik-Ziele) als leeres Kästchen (fehlendes Glyph). Sie brachen zudem die monochrome
+  Strich-Bildsprache des Icon-Sprites. Jetzt: `icList` (+ `icArrow`) im Lernkarten-Kopf, `icFlag`
+  am Schwierig-Marker, `icCheck` in der Sitzungs-Zusammenfassung, `icTrophy`/`icFlame` bei den
+  Zielen, `icTrophy` im Level-Up-Toast. Neues Symbol `icFlag` im Sprite (24er-Raster, Strich 1.6,
+  `currentColor`) — `icBookmark` wäre kollidiert (belegt für „Merken" im Detail). Keine neue
+  Abhängigkeit: das Sprite deckte alles bis auf die Flagge ab.
 - Lernkarten: Bewertungs-Buttons (Falsch/Unsicher/Richtig) waren vor dem Aufdecken als
   **deaktivierte** Buttons sichtbar — ein Klick tat nichts und wirkte wie ein Bug. Jetzt wie V1:
   vor dem Aufdecken ein klarer **„Karte aufdecken"**-Button, die Bewertung erscheint erst nach dem
