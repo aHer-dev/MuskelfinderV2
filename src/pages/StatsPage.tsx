@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { getRegions } from '../data';
 import { regionLabel } from '../data/labels';
 import { useStats } from '../hooks/useStats';
@@ -28,6 +29,15 @@ export function StatsPage() {
       <header className="stats__header">
         <p className="page__eyebrow">Dein Fortschritt</p>
         <h1 className="page__title">Statistik</h1>
+        {/* Der Karteikasten liegt unter „Fortschritt" (ADR 0007) — er hat keinen
+            eigenen Tab mehr, muss von hier aus aber in einem Klick erreichbar sein. */}
+        <Link to="/karteikasten" className="stats__manage">
+          <Icon name="icList" size={16} />
+          <span>
+            Karteikasten verwalten{stats.deckSize > 0 ? ` (${stats.deckSize})` : ''}
+          </span>
+          <Icon name="icArrow" size={16} />
+        </Link>
       </header>
 
       {/* Vier verschiedene Kennzahlen — Level und XP standen hier doppelt, sie haben

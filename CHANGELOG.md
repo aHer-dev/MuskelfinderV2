@@ -7,6 +7,16 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- **Etappe 7b — Route `/heute` + Navigation nach Absichten** (ADR 0007): Die App öffnet nicht mehr
+  auf einer Liste mit 150 Muskeln, sondern auf **einem Vorschlag**. Neue `TodayPage` mit
+  Diagnosezeile („5 Karten fällig · 2 davon Obere Extremität — deine schwächste Region · ca. 2 Min"),
+  **genau einem Primärbutton** je Zustand, ruhigen Sekundär-Aktionen (Quiz · Karteikasten ·
+  Nachschlagen) und klein gehaltenem Fortschritt. Der Button startet die Sitzung **mit genau den
+  Karten aus dem Tagesplan, in dessen Reihenfolge** (`SessionOptions.names`, validiert per
+  `readSessionHandoff`) — kein Umweg über den Setup-Screen. Im Zustand „nichts fällig" legt er die
+  vorgeschlagenen neuen Muskeln an und lernt sie sofort; bei leerem Kasten führt er in den
+  Karteikasten (das Onboarding baut 7c). Die Formulierung entsteht im UI, die Datenschicht liefert
+  weiterhin nur Zahlen und Codes.
 - **Etappe 7a — Empfehlungs-Engine** (`src/data/today.ts`): `getTodayPlan()` beantwortet als reine
   Funktion, was heute dran ist, und gibt einen getypten `TodayPlan` zurück — Zahlen und Codes, keine
   Sätze (die Formulierung gehört ins UI, 7b). **Kein Zustand ohne Vorschlag:** leerer Kasten →
@@ -34,6 +44,11 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   je Schritt ein Link direkt ins Briefing.
 
 ### Changed
+- **Navigation auf vier Absichten** (7b): Heute · Suche · Lernen · Fortschritt — statt sechs
+  gleichrangiger Werkzeuge. **Karteikasten und Quiz verlieren nur den Tab-Rang, nicht die
+  Erreichbarkeit:** der Karteikasten hängt jetzt sichtbar unter *Fortschritt*, das Quiz unter
+  *Lernen*; beide Routen bleiben deep-linkbar (Reload auf allen Routen live geprüft). `/` leitet
+  auf `/heute` statt auf `/suche`.
 - **Statistik entdoppelt:** Level und XP standen dreifach auf einem Screen (Kachel, Ring, Text).
   Die Kachelreihe zeigt jetzt vier *verschiedene* Kennzahlen (Karten im Kasten, Gemeistert,
   Quiz-Trefferquote, Quiz-Runden); Level/XP haben ihren Platz in der Level-Karte.

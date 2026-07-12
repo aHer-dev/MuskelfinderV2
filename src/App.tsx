@@ -9,6 +9,7 @@ import { useDailyBonus } from './hooks/useDailyBonus'
  * Route-Code-Splitting (Etappe 5): jede Seite ist ein eigener Chunk via React.lazy,
  * damit der Erst-Load nur die Shell + Startroute zieht. Suspense-Fallback = RouteFallback.
  */
+const TodayPage = lazy(() => import('./pages/TodayPage').then((m) => ({ default: m.TodayPage })))
 const SearchPage = lazy(() => import('./pages/SearchPage').then((m) => ({ default: m.SearchPage })))
 const MuscleDetailPage = lazy(() =>
   import('./pages/MuscleDetailPage').then((m) => ({ default: m.MuscleDetailPage })),
@@ -44,7 +45,10 @@ function App() {
       <AppShell>
         <Suspense fallback={<RouteFallback />}>
           <Routes>
-            <Route path="/" element={<Navigate to="/suche" replace />} />
+            {/* Einstieg ist der Vorschlag, nicht der Katalog (ADR 0007). Die abgestuften
+                Routen (/karteikasten, /quiz) bleiben erreichbar — Deep-Links brechen nicht. */}
+            <Route path="/" element={<Navigate to="/heute" replace />} />
+            <Route path="/heute" element={<TodayPage />} />
             <Route path="/suche" element={<SearchPage />} />
             <Route path="/muskel/:id" element={<MuscleDetailPage />} />
             <Route path="/lernkarten" element={<FlashcardsPage />} />

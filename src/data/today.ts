@@ -76,6 +76,8 @@ export interface TodayPlan {
   dailyDose: number;
   /** Schwächste Region mit fälligen Karten (bzw. mit Vorschlägen), sonst null. */
   focusRegion: RegionId | null;
+  /** Wie viele der heutigen Karten (bzw. Vorschläge) in `focusRegion` liegen — „8 davon Schulter". */
+  focusRegionCount: number;
   /** Muskeln (`nameLatin`), die noch nicht im Kasten sind — nach Pfad/Schwierigkeit. */
   newSuggestions: string[];
   /** Schätzung für die heutige Auswahl. 0, wenn nichts zu tun ist. */
@@ -250,12 +252,17 @@ export function getTodayPlan({
   const focusRegion = isReview ? weakestRegion(dueCards, mastery, regionOf) : focusForNew;
   const count = isReview ? dueTotal : newSuggestions.length;
 
+  const focused = isReview ? dueCards : newSuggestions;
+  const focusRegionCount =
+    focusRegion === null ? 0 : focused.filter((name) => regionOf(name) === focusRegion).length;
+
   return {
     kind,
     dueCards,
     dueTotal,
     dailyDose: dose,
     focusRegion,
+    focusRegionCount,
     newSuggestions,
     estimatedMinutes: estimateMinutes(isReview ? dueCards.length : newSuggestions.length),
     deckSize,

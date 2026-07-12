@@ -8,10 +8,10 @@
 - Datum: 2026-07-12
 - Branch: `main` (Design-Feinschliff und Produkt-Roadmap gemergt, `--no-ff`)
 - Status: **Migration abgeschlossen (Etappen 0–6, `v1.0` getaggt). Produktphase laeuft
-  (Etappen 7–9) — Statustafel in `docs/produkt-plan.md`. 7a fertig, naechster Schritt: 7b.**
+  (Etappen 7–9) — Statustafel in `docs/produkt-plan.md`. 7a + 7b fertig, naechster Schritt: 7c.**
   Der historische Verlauf steht unten.
-- Gate zuletzt gruen auf `feat/etappe-7a-empfehlungs-engine`:
-  `npm run lint && npm run test && npm run build` — **185 Tests**.
+- Gate zuletzt gruen auf `feat/etappe-7b-route-heute`:
+  `npm run lint && npm run test && npm run build` — **195 Tests**.
 
 ## Verlauf (Migration, abgeschlossen)
 - Etappe 0–4 abgeschlossen. **Etappe 5 (Haertung)** — Teil 1+2 umgesetzt:
@@ -151,16 +151,27 @@ befuellt werden, die Statistik zeigt Zahlen ohne Empfehlung.
 - Konzept-Mockups (visuell, extern): Heute-Screen und Produktkonzept, siehe `docs/produkt-plan.md`.
 
 ## Naechster Schritt
-**Etappe 7b — Route `/heute`** (UI zur Engine aus 7a; `/` leitet dorthin, Navigation auf vier
-Absichten). Briefing: `docs/tasks/2026-07-12-etappe-7b-route-heute.md`.
+**Etappe 7c — Onboarding (2 Fragen) + Auto-Seeding des Karteikastens.**
+Briefing: `docs/tasks/2026-07-12-etappe-7c-onboarding-seeding.md`.
+Anschlusspunkte: `TodayPage` zeigt bei leerem Kasten (`kind === 'needsOnboarding'`) heute nur einen
+Link auf `/karteikasten` — **7c ersetzt genau diesen CTA** durch die zwei Fragen + Seeding.
+`useTodayPlan` reicht `examDate` noch nicht durch; die Engine nimmt es bereits entgegen
+(`getTodayPlan({ examDate })`), 7c muss es nur persistieren und im Hook durchreichen.
 
-**7a ist fertig** (Branch `feat/etappe-7a-empfehlungs-engine`, noch nicht gemergt):
-`src/data/today.ts` liefert `getTodayPlan()` → getypter `TodayPlan` mit vier Zustaenden
-(`needsOnboarding` · `review` · `backlog` · `new`) — **kein Zustand ohne Vorschlag**. Priorisierung
-nach Verzug, Schwierig-Flag, Fach, Region-Schwaeche und Nachschlage-Haeufigkeit; Tagesdosis
-gedeckelt (Default 20, max 40 bei nahem Pruefungstermin). `lookupCounts` ist im Parametertyp schon
-vorgesehen — den Store dazu baut 7d. **7b konsumiert den Plan nur und formuliert die Texte; in der
-Datenschicht stehen bewusst keine Saetze.**
+**7a + 7b sind fertig** (Branches `feat/etappe-7a-empfehlungs-engine` →
+`feat/etappe-7b-route-heute`, noch nicht gemergt — 7b baut auf 7a auf):
+- **7a:** `src/data/today.ts` liefert `getTodayPlan()` → getypter `TodayPlan` mit vier Zustaenden
+  (`needsOnboarding` · `review` · `backlog` · `new`) — **kein Zustand ohne Vorschlag**. Priorisierung
+  nach Verzug, Schwierig-Flag, Fach, Region-Schwaeche und Nachschlage-Haeufigkeit; Tagesdosis
+  gedeckelt (Default 20, max 40 bei nahem Pruefungstermin). `lookupCounts` ist im Parametertyp schon
+  vorgesehen — den Store dazu baut 7d.
+- **7b:** Route `/heute` (`TodayPage` + `useTodayPlan`), `/` leitet dorthin. Navigation auf vier
+  Absichten (Heute · Suche · Lernen · Fortschritt); **Karteikasten und Quiz haben keinen Tab mehr,
+  bleiben aber verlinkt** (Karteikasten unter Fortschritt, Quiz unter Lernen) und deep-linkbar.
+  Der Primaerbutton uebergibt die **vorpriorisierte Auswahl** an `/lernkarten`
+  (`SessionOptions.names` + `readSessionHandoff`) — die Sitzung startet ohne Setup-Screen.
+  Verifiziert: axe 0 Verstoesse auf `/heute` (Light+Dark, beide Zustaende), Deep-Link-Reload auf
+  allen 7 Routen, End-to-End-Klick „Los" → laufende Sitzung.
 
 Offen (nur durch dich):
 - Bei oeffentlichem Deploy: `git remote add origin …` + Push (kein Remote konfiguriert).

@@ -356,3 +356,22 @@
 .backup-panel__msg--err {
   color: var(--danger);
 }
+
+/* ---- Zugang zum Karteikasten (7b) ------------------------------------- */
+/* Der Karteikasten hat keinen eigenen Tab mehr (ADR 0007) und hängt an dieser
+   Seite — der Link muss darum auffindbar sein, nicht dekorativ. */
+.stats__manage {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--spacing-sm);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-on-surface);
+  text-decoration: none;
+}
+
+.stats__manage:hover span {
+  text-decoration: underline;
+}

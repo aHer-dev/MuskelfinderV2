@@ -1,0 +1,147 @@
+/* =========================================================================
+   Heute-Screen (Etappe 7b) — ein Vorschlag, ein Primärbutton.
+   Nur Tokens. Mobil ist die Referenz: der Primärbutton sitzt in der Daumenzone,
+   Fortschritt und Sekundäraktionen stehen darunter.
+   ========================================================================= */
+
+.today {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  /* Ein Vorschlag braucht keine 1160px. Gedeckelt bleibt der Blick auf der einen
+     Entscheidung, statt über eine leere Fläche zu wandern. */
+  max-width: 780px;
+}
+
+/* ---- Hero: Diagnose + die eine Handlung ------------------------------- */
+.today__hero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background: var(--surface);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--card-shadow);
+}
+
+/* Die Diagnosezeile ist eine Liste — auf breiten Schirmen mit „·" getrennt in
+   einer Zeile, mobil untereinander (Trenner entfallen, sonst hängen sie im Leeren). */
+.today__diagnosis {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.today__diagnosis li:first-child {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.today__note {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--text-tertiary);
+}
+
+/* ---- Sekundäres: ruhig, nie in Konkurrenz zum Primärbutton ------------ */
+.today__subtitle {
+  margin: 0 0 var(--spacing-sm);
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+}
+
+.today__quick-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--spacing-sm);
+}
+
+.today__quick-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-height: var(--touch-min);
+  padding: 0 var(--spacing-md);
+  background: var(--surface);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
+  font-size: 0.92rem;
+  text-decoration: none;
+  transition: var(--transition-smooth);
+}
+
+.today__quick-link span {
+  flex: 1;
+}
+
+.today__quick-link:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+/* ---- Fortschritt: klein, untergeordnet, aber anklickbar --------------- */
+.today__progress {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  min-height: var(--touch-min);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--surface-sunken);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  color: var(--text-tertiary);
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: var(--transition-smooth);
+}
+
+.today__progress:hover {
+  color: var(--text-secondary);
+}
+
+.today__progress-text {
+  flex: 1;
+}
+
+@media (min-width: 640px) {
+  /* Ab hier passt die Diagnose in eine Zeile — mit Mittelpunkt-Trennern. */
+  .today__diagnosis {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: var(--spacing-sm);
+  }
+
+  /* Mobil ist der Primärbutton eine Daumenzone; auf Desktop wäre er als Balken
+     über die volle Kartenbreite nur laut. */
+  .today__hero .btn--block {
+    width: auto;
+    min-width: 260px;
+    align-self: flex-start;
+  }
+
+  .today__diagnosis li + li::before {
+    content: '·';
+    margin-right: var(--spacing-sm);
+    color: var(--text-faint);
+  }
+}

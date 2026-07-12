@@ -62,7 +62,7 @@ Drei tragende Entscheidungen (Details in den ADRs):
 | ID | Schritt | Briefing | Status | Branch | Blockiert durch |
 |----|---------|----------|--------|--------|-----------------|
 | 7a | Empfehlungs-Engine (`src/data/today.ts`), reine Selektoren, kein UI | [7a](tasks/2026-07-12-etappe-7a-empfehlungs-engine.md) | **fertig** | `feat/etappe-7a-empfehlungs-engine` | — |
-| 7b | Route `/heute` als Einstieg + Navigation auf vier Absichten | [7b](tasks/2026-07-12-etappe-7b-route-heute.md) | offen | — | 7a |
+| 7b | Route `/heute` als Einstieg + Navigation auf vier Absichten | [7b](tasks/2026-07-12-etappe-7b-route-heute.md) | **fertig** | `feat/etappe-7b-route-heute` | — |
 | 7c | Onboarding (2 Fragen) + Auto-Seeding des Karteikastens | [7c](tasks/2026-07-12-etappe-7c-onboarding-seeding.md) | offen | — | 7a, 7b |
 | 7d | Persistentes Suchfeld + Aufrufzähler + „Zuletzt nachgeschlagen“ (**B1**) | [7d](tasks/2026-07-12-etappe-7d-suchfeld-und-bruecke-b1.md) | offen | — | 7b |
 | 7e | Falschantwort-Erklärung (Template) + Detail-Sheet in der Session (**B2**) | [7e](tasks/2026-07-12-etappe-7e-falschantwort-erklaeren.md) | offen | — | — |

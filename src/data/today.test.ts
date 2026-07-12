@@ -177,6 +177,8 @@ describe('getTodayPlan — Priorisierung', () => {
     expect(result.dueTotal).toBe(2);
     expect(result.focusRegion).toBe('lower');
     expect(result.dueCards[0]).toBe('M. gluteus maximus');
+    // „1 davon Untere Extremität" — die Zahl für die Diagnosezeile (7b).
+    expect(result.focusRegionCount).toBe(1);
   });
 
   it('priorisiert mehrfach nachgeschlagene Muskeln höher', () => {

@@ -28,6 +28,32 @@ export interface SessionOptions {
   /** 0 = alle fälligen, sonst Obergrenze. */
   limit: number;
   scope: RegionScope;
+  /**
+   * Vorpriorisierte Auswahl (Etappe 7b): der Tagesplan aus `data/today.ts` hat die
+   * Karten bereits sortiert und gedeckelt. Ist sie gesetzt, gilt ihre Reihenfolge —
+   * `scope` entfällt, `limit` deckelt weiterhin. Nicht mehr fällige Namen fallen raus.
+   */
+  names?: string[];
+}
+
+/**
+ * Router-State, mit dem `/heute` eine fertige Auswahl an `/lernkarten` übergibt (7b).
+ * Bewusst validiert statt gecastet: der State kommt aus der History und kann alles sein.
+ */
+export function readSessionHandoff(state: unknown): SessionOptions | null {
+  if (typeof state !== 'object' || state === null) return null;
+  const start = (state as { start?: unknown }).start;
+  if (typeof start !== 'object' || start === null) return null;
+
+  const { names, limit, scope } = start as { names?: unknown; limit?: unknown; scope?: unknown };
+  if (!Array.isArray(names) || !names.every((n) => typeof n === 'string') || names.length === 0) {
+    return null;
+  }
+  return {
+    names,
+    limit: typeof limit === 'number' ? limit : 0,
+    scope: scope === 'upper' || scope === 'lower' || scope === 'trunk' || scope === 'head' ? scope : 'all',
+  };
 }
 
 export interface FlashcardSessionApi {
@@ -53,9 +79,17 @@ export interface FlashcardSessionApi {
   exit: () => void;
 }
 
-/** Fällige Karten für einen Bereich, optional auf `limit` gekürzt. */
+/** Fällige Karten für einen Bereich (oder eine vorgegebene Auswahl), optional auf `limit` gekürzt. */
 export function buildQueue(opts: SessionOptions): string[] {
   const store = useProgressStore.getState();
+
+  // Vorgegebene Auswahl: Reihenfolge übernehmen, nur die Fälligkeit noch prüfen.
+  if (opts.names) {
+    const due = new Set(store.getDueCards(opts.names));
+    const queue = opts.names.filter((name) => due.has(name));
+    return opts.limit > 0 ? queue.slice(0, opts.limit) : queue;
+  }
+
   let names: string[] | undefined;
   if (opts.scope !== 'all') {
     names = getMuscles()
