@@ -7,6 +7,18 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- **Etappe 7c — Onboarding in zwei Fragen + Auto-Seeding** (`src/data/seeding.ts`,
+  `components/features/onboarding/`): Der leere Karteikasten verschwindet als Problem. Beim
+  Erststart fragt `/heute` **„Was lernst du?"** (Physio · Ergo · Logo — die Wahl *ist* die Handlung,
+  kein „Weiter" dahinter) und **„Wann ist deine Prüfung?"** (Datum, überspringbar). Daraus legt
+  `seedDeck()` ein **Startdeck von 20 Karten** an — berufsgewichtet (Logo → Kopf/Hals inkl. Kau-,
+  Zungenbein- und Kehlkopfmuskulatur; Ergo → obere Extremität, Hand & Finger zuerst; Physio →
+  Extremitäten + Rumpf), innerhalb der Region die leichten Muskeln zuerst — und führt **direkt in
+  die erste Sitzung**, ohne Bestätigungsseite. Live gemessen: erste bewertete Karte nach zwei
+  Klicks. Das Prüfungsdatum speist die Tagesdosis aus 7a (näher = größer). Profil (Beruf, Termin)
+  liegt in einem eigenen Store `mf.profile` — **neben** dem Backup-Format, nicht darin: das
+  eingefrorene V1-Format (ADR 0002 §1) bleibt unangetastet, der Round-Trip-Test gegen die
+  V1-Fixtures grün. Neue Route `/start` macht das Profil aus *Fortschritt* heraus änderbar.
 - **Etappe 7b — Route `/heute` + Navigation nach Absichten** (ADR 0007): Die App öffnet nicht mehr
   auf einer Liste mit 150 Muskeln, sondern auf **einem Vorschlag**. Neue `TodayPage` mit
   Diagnosezeile („5 Karten fällig · 2 davon Obere Extremität — deine schwächste Region · ca. 2 Min"),
@@ -42,6 +54,12 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   Invarianten (kein Zustand ohne Primärbutton · Persistenz nur additiv · UI rendert nur · kein
   Timer im normalen Lernen …) und die Nicht-Ziele der gesamten Etappe. Aus der Statustafel führt
   je Schritt ein Link direkt ins Briefing.
+
+### Fixed
+- **Namensdubletten im Startdeck** (7c): Fünf lateinische Namen gibt es zweimal (Hand *und* Fuß,
+  z. B. `M. flexor digiti minimi brevis`). Da Karten nach `nameLatin` geschlüsselt sind (ADR 0002 §2),
+  sind zwei solche Muskeln **eine** Karte — ohne Sperre wären aus 20 versprochenen Karten stillschweigend
+  19 geworden. `seedDeck` dedupliziert jetzt beim Ziehen und füllt nach.
 
 ### Changed
 - **Navigation auf vier Absichten** (7b): Heute · Suche · Lernen · Fortschritt — statt sechs

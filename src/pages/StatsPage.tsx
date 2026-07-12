@@ -31,13 +31,22 @@ export function StatsPage() {
         <h1 className="page__title">Statistik</h1>
         {/* Der Karteikasten liegt unter „Fortschritt" (ADR 0007) — er hat keinen
             eigenen Tab mehr, muss von hier aus aber in einem Klick erreichbar sein. */}
-        <Link to="/karteikasten" className="stats__manage">
-          <Icon name="icList" size={16} />
-          <span>
-            Karteikasten verwalten{stats.deckSize > 0 ? ` (${stats.deckSize})` : ''}
-          </span>
-          <Icon name="icArrow" size={16} />
-        </Link>
+        <div className="stats__links">
+          <Link to="/karteikasten" className="stats__manage">
+            <Icon name="icList" size={16} />
+            <span>
+              Karteikasten verwalten{stats.deckSize > 0 ? ` (${stats.deckSize})` : ''}
+            </span>
+            <Icon name="icArrow" size={16} />
+          </Link>
+          {/* Das Lernprofil (Beruf, Prüfungstermin) steuert Startdeck und Tagesdosis —
+              es muss änderbar bleiben, ohne den Speicher zu löschen (7c). */}
+          <Link to="/start" className="stats__manage">
+            <Icon name="icTarget" size={16} />
+            <span>Lernprofil ändern</span>
+            <Icon name="icArrow" size={16} />
+          </Link>
+        </div>
       </header>
 
       {/* Vier verschiedene Kennzahlen — Level und XP standen hier doppelt, sie haben

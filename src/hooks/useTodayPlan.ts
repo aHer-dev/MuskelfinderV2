@@ -8,10 +8,12 @@
 
 import { useMemo } from 'react';
 import { getTodayPlan, type TodayPlan } from '../data/today';
+import { useProfileStore } from '../store/useProfileStore';
 import { useProgressStore } from '../store/useProgressStore';
 
 export function useTodayPlan(): TodayPlan {
   const cards = useProgressStore((s) => s.flashcards.cards);
+  const examDate = useProfileStore((s) => s.examDate);
 
-  return useMemo(() => getTodayPlan({ cards }), [cards]);
+  return useMemo(() => getTodayPlan({ cards, examDate }), [cards, examDate]);
 }

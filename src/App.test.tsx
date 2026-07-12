@@ -6,9 +6,9 @@ describe('App (Smoke)', () => {
   it('leitet die Wurzel auf den Heute-Screen um, nicht mehr auf die Suche (ADR 0007)', async () => {
     render(<App />)
     // Seiten werden lazy geladen (Etappe 5) — auf den aufgelösten Chunk warten.
-    // Ohne Karten begrüßt „Heute" mit dem Erstsetup-Vorschlag.
+    // Beim allerersten Start (kein Profil, kein Deck) ist das Onboarding der Vorschlag (7c).
     expect(
-      await screen.findByRole('heading', { level: 1, name: /Fang mit deinem Karteikasten an/i }),
+      await screen.findByRole('heading', { level: 1, name: /Was lernst du\?/i }),
     ).toBeInTheDocument()
   })
 

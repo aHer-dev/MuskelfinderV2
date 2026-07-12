@@ -10,6 +10,9 @@ import { useDailyBonus } from './hooks/useDailyBonus'
  * damit der Erst-Load nur die Shell + Startroute zieht. Suspense-Fallback = RouteFallback.
  */
 const TodayPage = lazy(() => import('./pages/TodayPage').then((m) => ({ default: m.TodayPage })))
+const OnboardingPage = lazy(() =>
+  import('./pages/OnboardingPage').then((m) => ({ default: m.OnboardingPage })),
+)
 const SearchPage = lazy(() => import('./pages/SearchPage').then((m) => ({ default: m.SearchPage })))
 const MuscleDetailPage = lazy(() =>
   import('./pages/MuscleDetailPage').then((m) => ({ default: m.MuscleDetailPage })),
@@ -49,6 +52,7 @@ function App() {
                 Routen (/karteikasten, /quiz) bleiben erreichbar — Deep-Links brechen nicht. */}
             <Route path="/" element={<Navigate to="/heute" replace />} />
             <Route path="/heute" element={<TodayPage />} />
+            <Route path="/start" element={<OnboardingPage />} />
             <Route path="/suche" element={<SearchPage />} />
             <Route path="/muskel/:id" element={<MuscleDetailPage />} />
             <Route path="/lernkarten" element={<FlashcardsPage />} />

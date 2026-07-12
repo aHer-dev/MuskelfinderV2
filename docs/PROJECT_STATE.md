@@ -8,10 +8,10 @@
 - Datum: 2026-07-12
 - Branch: `main` (Design-Feinschliff und Produkt-Roadmap gemergt, `--no-ff`)
 - Status: **Migration abgeschlossen (Etappen 0–6, `v1.0` getaggt). Produktphase laeuft
-  (Etappen 7–9) — Statustafel in `docs/produkt-plan.md`. 7a + 7b fertig, naechster Schritt: 7c.**
+  (Etappen 7–9) — Statustafel in `docs/produkt-plan.md`. 7a + 7b + 7c fertig, naechster Schritt: 7d.**
   Der historische Verlauf steht unten.
-- Gate zuletzt gruen auf `feat/etappe-7b-route-heute`:
-  `npm run lint && npm run test && npm run build` — **195 Tests**.
+- Gate zuletzt gruen auf `feat/etappe-7c-onboarding-seeding`:
+  `npm run lint && npm run test && npm run build` — **211 Tests**.
 
 ## Verlauf (Migration, abgeschlossen)
 - Etappe 0–4 abgeschlossen. **Etappe 5 (Haertung)** — Teil 1+2 umgesetzt:
@@ -151,15 +151,15 @@ befuellt werden, die Statistik zeigt Zahlen ohne Empfehlung.
 - Konzept-Mockups (visuell, extern): Heute-Screen und Produktkonzept, siehe `docs/produkt-plan.md`.
 
 ## Naechster Schritt
-**Etappe 7c — Onboarding (2 Fragen) + Auto-Seeding des Karteikastens.**
-Briefing: `docs/tasks/2026-07-12-etappe-7c-onboarding-seeding.md`.
-Anschlusspunkte: `TodayPage` zeigt bei leerem Kasten (`kind === 'needsOnboarding'`) heute nur einen
-Link auf `/karteikasten` — **7c ersetzt genau diesen CTA** durch die zwei Fragen + Seeding.
-`useTodayPlan` reicht `examDate` noch nicht durch; die Engine nimmt es bereits entgegen
-(`getTodayPlan({ examDate })`), 7c muss es nur persistieren und im Hook durchreichen.
+**Etappe 7d — Persistentes Suchfeld + Aufrufzaehler + „Zuletzt nachgeschlagen" (Bruecke B1).**
+Briefing: `docs/tasks/2026-07-12-etappe-7d-suchfeld-und-bruecke-b1.md`.
+Anschlusspunkt: Die Engine nimmt `lookupCounts` (Record<nameLatin, number>) **bereits entgegen** und
+priorisiert danach — 7d muss nur den `useLookupStore` bauen und ihn in `useTodayPlan` durchreichen
+(genau so, wie es 7c mit `examDate` gemacht hat). Muster fuer einen additiven Store, der das
+Backup-Format nicht anfasst: `src/store/useProfileStore.ts`.
 
-**7a + 7b sind fertig** (Branches `feat/etappe-7a-empfehlungs-engine` →
-`feat/etappe-7b-route-heute`, noch nicht gemergt — 7b baut auf 7a auf):
+**7a + 7b + 7c sind fertig** (Branch-Kette `feat/etappe-7a-empfehlungs-engine` →
+`feat/etappe-7b-route-heute` → `feat/etappe-7c-onboarding-seeding`, **noch nichts gemergt**):
 - **7a:** `src/data/today.ts` liefert `getTodayPlan()` → getypter `TodayPlan` mit vier Zustaenden
   (`needsOnboarding` · `review` · `backlog` · `new`) — **kein Zustand ohne Vorschlag**. Priorisierung
   nach Verzug, Schwierig-Flag, Fach, Region-Schwaeche und Nachschlage-Haeufigkeit; Tagesdosis
@@ -172,6 +172,15 @@ Link auf `/karteikasten` — **7c ersetzt genau diesen CTA** durch die zwei Frag
   (`SessionOptions.names` + `readSessionHandoff`) — die Sitzung startet ohne Setup-Screen.
   Verifiziert: axe 0 Verstoesse auf `/heute` (Light+Dark, beide Zustaende), Deep-Link-Reload auf
   allen 7 Routen, End-to-End-Klick „Los" → laufende Sitzung.
+- **7c:** Onboarding (2 Fragen) auf `/heute` beim Erststart + `src/data/seeding.ts`
+  (`seedDeck(profession)` → 20 Karten, berufsgewichtet, leichte zuerst). Neuer Store
+  `useProfileStore` (`mf.profile`: Beruf + Pruefungstermin) — **neben** dem Backup, nicht darin;
+  ADR 0002 bleibt unangetastet. Neue Route `/start` (Profil aendern, aus Fortschritt verlinkt).
+  Der Pruefungstermin speist die Tagesdosis. Verifiziert: axe 0 Verstoesse auf beiden
+  Onboarding-Screens (Light+Dark), kalter Erststart → erste bewertete Karte nach 2 Klicks.
+  **Wichtig fuer alle Folge-Tasks:** `nameLatin` ist NICHT eindeutig — 5 Namen gibt es zweimal
+  (Hand/Fuss). Karten schluesseln nach `nameLatin` (ADR 0002 §2), also sind das je EINE Karte.
+  Wer Namenslisten baut (Seeding, Sessions, Vorschlaege), muss deduplizieren.
 
 Offen (nur durch dich):
 - Bei oeffentlichem Deploy: `git remote add origin …` + Push (kein Remote konfiguriert).

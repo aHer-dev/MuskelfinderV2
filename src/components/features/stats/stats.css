@@ -375,3 +375,9 @@
 .stats__manage:hover span {
   text-decoration: underline;
 }
+
+.stats__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm) var(--spacing-lg);
+}

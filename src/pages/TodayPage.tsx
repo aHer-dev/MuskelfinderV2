@@ -10,8 +10,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { regionLabel } from '../data/labels';
 import type { TodayPlan } from '../data/today';
 import { useTodayPlan } from '../hooks/useTodayPlan';
+import { useCompleteOnboarding } from '../hooks/useCompleteOnboarding';
+import { useProfileStore } from '../store/useProfileStore';
 import { useProgressStore } from '../store/useProgressStore';
 import { xpView } from '../persistence/xp';
+import { OnboardingFlow } from '../components/features/onboarding/OnboardingFlow';
 import { EmptyState } from '../components/ui/EmptyState';
 import { Icon } from '../components/ui/Icon';
 import { ProgressRing } from '../components/ui/ProgressRing';
@@ -85,9 +88,22 @@ export function TodayPage() {
   const navigate = useNavigate();
   const addCards = useProgressStore((s) => s.addCards);
   const totalXP = useProgressStore((s) => s.xp.totalXP);
+  const profession = useProfileStore((s) => s.profession);
+  const completeOnboarding = useCompleteOnboarding();
   const xp = xpView(totalXP);
 
   const today = new Date().toLocaleDateString('de-DE', DATE_FORMAT);
+
+  /* Erststart (7c): leerer Kasten UND noch kein Profil. Dann ist das Onboarding der
+     Vorschlag — es füllt den Kasten und führt direkt in die erste Sitzung. Wer den
+     Kasten später leert, hat ein Profil und bekommt den Leerzustand darunter. */
+  if (plan.kind === 'needsOnboarding' && profession === null) {
+    return (
+      <section className="page today">
+        <OnboardingFlow onDone={completeOnboarding} />
+      </section>
+    );
+  }
 
   /** Sitzung mit einer bereits priorisierten Auswahl starten (Reihenfolge aus 7a). */
   const startSession = (names: string[]) => {

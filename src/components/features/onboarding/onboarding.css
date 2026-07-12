@@ -1,0 +1,124 @@
+/* =========================================================================
+   Onboarding (Etappe 7c) — zwei Fragen, ruhig gesetzt. Nur Tokens.
+   ========================================================================= */
+
+.onboarding {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  max-width: 620px;
+}
+
+.onboarding__question {
+  margin: 0;
+}
+
+.onboarding__hint {
+  margin: 0;
+  max-width: 52ch;
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.onboarding__hint--quiet {
+  font-size: 0.82rem;
+  color: var(--text-tertiary);
+}
+
+/* ---- Frage 1: die Wahl ist die Handlung ------------------------------- */
+.onboarding__choices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-xs);
+}
+
+.onboarding__choice {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  min-height: 64px;
+  padding: var(--spacing-md);
+  background: var(--surface);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--card-shadow);
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.onboarding__choice:hover {
+  border-color: var(--accent-border);
+  background: var(--surface-hover);
+}
+
+.onboarding__choice-label {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.onboarding__choice-meta {
+  flex: 1;
+  font-family: var(--font-ui);
+  font-size: 0.82rem;
+  color: var(--text-tertiary);
+}
+
+/* ---- Frage 2: Termin (überspringbar) ---------------------------------- */
+.onboarding__back {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 6px;
+  padding: var(--spacing-xs) 0;
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.onboarding__back:hover {
+  color: var(--text-secondary);
+}
+
+.onboarding__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.onboarding__field-label {
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+}
+
+.onboarding__date {
+  min-height: var(--touch-min);
+  padding: 0 var(--spacing-md);
+  background: var(--surface);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-field);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 1rem;
+}
+
+.onboarding__date:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+@media (min-width: 640px) {
+  .onboarding__choice {
+    align-items: baseline;
+  }
+}

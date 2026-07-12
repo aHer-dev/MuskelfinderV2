@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen, fireEvent, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { TodayPage } from './TodayPage'
+import { useProfileStore } from '../store/useProfileStore'
 import { useProgressStore } from '../store/useProgressStore'
 import { getMuscles } from '../data'
 import { dueDate } from '../persistence/leitner'
@@ -46,10 +47,13 @@ describe('TodayPage — jeder Zustand hat genau einen Primärbutton', () => {
   beforeEach(() => {
     localStorage.clear()
     useProgressStore.getState().resetProgress()
+    // Das Profil ist gesetzt: der Erststart (Onboarding, 7c) ist hier durch —
+    // getestet wird der Heute-Screen selbst.
+    useProfileStore.getState().setProfile('physio', null)
     navigate.mockClear()
   })
 
-  it('Kasten leer: führt zum Karteikasten statt in eine Sackgasse', () => {
+  it('Kasten leer (aber Profil vorhanden): führt zum Karteikasten statt in eine Sackgasse', () => {
     renderPage()
 
     expect(screen.getByRole('heading', { level: 1, name: /Karteikasten/i })).toBeInTheDocument()
