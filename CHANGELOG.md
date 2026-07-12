@@ -7,6 +7,17 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- **Etappe 8f (Stufe 1 + 2b) — Die 47 bildlosen Muskeln sehen absichtlich aus**
+  (`MusclePlaceholder`, [Prüfprotokoll](docs/3d-app-lizenzpruefung.md)): **Stufe 1 war eine
+  Lizenzprüfung, kein Code** — und sie ist **bestanden**. Nachgesehen wurde die Substanz, nicht die
+  Behauptung: **alle 3 772** ausgelieferten Modelldateien der eigenen 3D-App folgen dem
+  BodyParts3D-Schema `FJ<Nummer>.glb`, **alle 789** Bundle-Einträge sind BodyParts3D-Teile, **kein**
+  Modell enthält eingebettete Texturen, und die Suche nach kommerziellen Modellquellen (Zygote,
+  TurboSquid, Sketchfab, Visible Body …) liefert **null Treffer**. Renderings daraus wären CC BY 4.0.
+  **Umgesetzt ist trotzdem der Platzhalter (Stufe 2b)** — für alle 47: ein gesetzter,
+  typografischer Platz mit Name, Region und Subregion, ehrlich beschriftet („Für diesen Muskel liegt
+  kein lizenzfreies Bild vor."), **nur Tokens, kein Fremd-Asset**. Ein Platzhalter ist **kein Bild**
+  und bleibt aus den Bildquiz-Modi draußen (Regressionstest über alle drei Modi und alle 150 Muskeln).
 - **Etappe 8e — Eigene Notizen je Muskel** (`useNotesStore`, `MuscleNote`): Was die Dozentin im
   Unterricht sagt, steht in keinem Datensatz — es gehoert dorthin, wo der Muskel steht, nicht in eine
   fremde App. Freitext je Muskel, direkt auf der Detailseite, **ohne „Speichern"-Knopf** (debounced)
