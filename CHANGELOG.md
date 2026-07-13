@@ -57,6 +57,11 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   beiden Links in der Lernkarten-Kopfzeile.
 
 ### Fixed
+- **Der Tagesbonus feuerte auf dem leeren Karteikasten.** Seit ADR 0009 landet ein neuer Nutzer auf
+  dem Guide statt in einer Sitzung — und bekam dort „+10 XP · Tagesbonus" eingeblendet, **bevor er
+  irgendetwas getan hatte.** Er konnte an dieser Stelle noch gar nichts tun. Eine Belohnung fürs
+  bloße Erscheinen entwertet alle anderen; der Bonus gehört dem **Lernen**. Er läuft jetzt nach,
+  sobald die erste Karte im Kasten liegt — die Sperre gegen Doppelvergabe bleibt im Store.
 - **Zwei WCAG-AA-Kontrastfehler, die nie jemand gemessen hatte.** Beim Gegenprüfen des neuen Rahmens
   stand `/karteikasten` zum ersten Mal überhaupt unter axe — und lieferte prompt 24 Verstöße:
   Das Fach-Abzeichen (`.deck-fach`) setzte `--accent-on-surface` (#bd4800) auf die getönte Fläche
