@@ -9,6 +9,7 @@ import type { DataRow } from '../components/features/detail/DataList';
 import { ClinicalNote } from '../components/features/detail/ClinicalNote';
 import { ImageViewer } from '../components/features/detail/ImageViewer';
 import { MuscleNote } from '../components/features/detail/MuscleNote';
+import { PalpationSection } from '../components/features/detail/PalpationSection';
 import { DifficultyDots } from '../components/ui/DifficultyDots';
 import { Icon } from '../components/ui/Icon';
 import { SegmentedControl } from '../components/ui/SegmentedControl';
@@ -145,6 +146,11 @@ export function MuscleDetailPage() {
               {muscle.mnemonic && <p className="name-origin__mnemonic">{muscle.mnemonic}</p>}
             </section>
           )}
+
+          {/* Palpation (9d) steht in BEIDEN Niveaus: Physio-/Ergo-Schueler werden am
+              lebenden Koerper geprueft — das ist kein „Einfach"-Thema, sondern Pruefungsstoff.
+              Ohne Eintrag rendert hier gar nichts. */}
+          {muscle.palpation && <PalpationSection palpation={muscle.palpation} />}
 
           {muscle.clinicalNote && <ClinicalNote note={muscle.clinicalNote} />}
 

@@ -482,3 +482,85 @@
   color: var(--text-tertiary);
   white-space: nowrap;
 }
+
+/* ---- Palpation (Etappe 9d) --------------------------------------------
+   Eingeklappt: zaehlt nur, wenn man sie gerade braucht. `<details>` ist von Haus
+   aus tastaturbedienbar — kein eigenes Aufklapp-JS. */
+.palpation {
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--surface-sunken);
+}
+
+.palpation__summary {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  list-style: none;
+}
+
+.palpation__summary::-webkit-details-marker {
+  display: none;
+}
+
+.palpation__summary:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: -2px;
+  border-radius: var(--radius-lg);
+}
+
+.palpation__summary svg:first-child {
+  color: var(--accent-on-surface);
+}
+
+.palpation__chev {
+  margin-left: auto;
+  color: var(--text-faint);
+  transition: var(--transition-smooth);
+}
+
+.palpation[open] .palpation__chev {
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .palpation__chev {
+    transition: none;
+  }
+}
+
+.palpation__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin: 0;
+  padding: 0 var(--spacing-md) var(--spacing-md);
+}
+
+.palpation__row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.palpation__row dt {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+}
+
+.palpation__row dd {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}

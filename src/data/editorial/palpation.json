@@ -1,0 +1,4 @@
+{
+  "_hinweis": "Palpation (Etappe 9d). HANDGEPFLEGT — liegt bewusst NICHT in src/data/generated/, das ueberschreibt `npm run migrate:data`. Schluessel ist `nameLatin` (ADR 0002), nicht die Routing-id. Alle vier Felder sind optional; ein Feld, bei dem Unsicherheit besteht, bleibt LEER. Ein falscher Landmarken-Hinweis wird auswendig gelernt und am Patienten angewandt. Ein unbekannter Muskelname laesst den Build scheitern (kein stilles Schlucken). Vorschlag fuer die erste Charge: docs/palpation-vorschlag.md — er wandert erst nach fachlicher Freigabe hierher.",
+  "muskeln": {}
+}
