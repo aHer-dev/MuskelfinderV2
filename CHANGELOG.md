@@ -7,11 +7,27 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Changed
+- **Die Marke steht jetzt auf JEDER Seite** (`BrandMark` in der Kopfzeile der Shell). Sie hing
+  bisher an genau einer Route (`/heute`, in der `StandRail`) — und auf dem Handy, wo es keine
+  Icon-Rail gibt, stand nirgends, wessen App das überhaupt ist. Die Shell umschließt jede Route,
+  also trägt die Kopfzeile den Namen jetzt überall, ohne dass eine Seite etwas dafür tun muss.
+  Reihenfolge nach Ansage des Inhabers: **„Anatomie Fokus" oben, „Muskelfinder" darunter.**
+  Auf dem Desktop sitzt sie rechts (dort, wo sonst nichts steht), auf dem Handy als Kopfzeile über
+  der Suche — „rechts" ist in einer einspaltigen Ansicht bedeutungslos.
+- **Das Zeichen steht genau EINMAL pro Bildschirm.** Dafür ist es aus der Icon-Rail und aus der
+  `StandRail` verschwunden. Zweimal dasselbe Logo (links im Panel, rechts in der Kopfzeile) wäre
+  kein Branding, sondern ein Versehen. Der Weg nach Hause fehlt der Rail nicht: „Heute" ist ihr
+  erster Nav-Punkt — und die Wortmarke führt selbst nach `/heute`.
+- **Das Logo wird nicht mehr gestaucht.** Die Datei ist **985 × 892**, die Rail zwang sie in
+  30 × 30 und drückte den Keil um **10 %** zusammen. Jetzt stehen die echten Maße im Markup (der
+  Browser kennt damit das Verhältnis und reserviert den richtigen Kasten), das CSS setzt nur noch
+  die Höhe.
+
 ### Added
 - **Rechte Schiene „Dein Stand" auf `/heute`** (`StandRail`). Bei 1440 px lagen dort **444 px
   rechts brach** (gemessen), während Level, Serie und Fortschritt als winzige Textzeile unten am
-  Seitenende klebten. Die Schiene trägt jetzt: **die Marke** (das Logo, oben rechts, wo vorher
-  nichts war), Level-Ring + XP bis zum nächsten Level, Karteikasten-Größe, Serie + Freezes, den
+  Seitenende klebten. Die Schiene trägt: Level-Ring + XP bis zum nächsten Level,
+  Karteikasten-Größe, Serie + Freezes, den
   **Prüfungstermin-Countdown** und **das nächste Abzeichen** mit Üben-Knopf.
   **Sie erfindet keine Geometrie:** 320 px, `radius: 20px`, Glas, rechts — exakt das, was das
   Design-Handoff (§7) für die Filter-Sidebar der Suche vorgibt. Fortsetzung des bestehenden

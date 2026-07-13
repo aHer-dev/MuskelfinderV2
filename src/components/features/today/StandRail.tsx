@@ -28,7 +28,6 @@ import type { TodayPlan } from '../../../data/today';
 import { xpView } from '../../../persistence/xp';
 import { useProgressStore } from '../../../store/useProgressStore';
 import { useStreakStore } from '../../../store/useStreakStore';
-import { useThemeStore } from '../../../store/useThemeStore';
 import { Icon } from '../../ui/Icon';
 import { ProgressRing } from '../../ui/ProgressRing';
 import './stand-rail.css';
@@ -50,13 +49,11 @@ function tagenDativ(n: number): string {
 }
 
 export function StandRail({ plan, onPractice }: StandRailProps) {
-  const theme = useThemeStore((s) => s.theme);
   const cards = useProgressStore((s) => s.flashcards.cards);
   const totalXP = useProgressStore((s) => s.xp.totalXP);
   const streak = useStreakStore((s) => s.streak);
 
   const xp = xpView(totalXP);
-  const logo = `${import.meta.env.BASE_URL}logo/${theme === 'dark' ? 'af-logo.png' : 'af-logo-dark.png'}`;
 
   /* Das naechste Abzeichen = das, dem man am naechsten ist. `badges()` sortiert bereits so:
      unverdiente zuerst, danach nach Anteil absteigend. Der erste Unverdiente ist also genau
@@ -74,13 +71,9 @@ export function StandRail({ plan, onPractice }: StandRailProps) {
 
   return (
     <aside className="stand-rail" aria-label="Dein Stand">
-      <div className="stand-rail__brand">
-        <img src={logo} alt="" width={34} height={34} aria-hidden="true" />
-        <span className="stand-rail__brand-text">
-          <strong>Muskelfinder</strong>
-          <em>Anatomie Fokus</em>
-        </span>
-      </div>
+      {/* Die Marke stand bis Etappe 12b hier oben. Sie ist in die Kopfzeile der Shell
+          gewandert (`BrandMark`) — dort steht sie auf JEDER Seite statt nur auf dieser.
+          Die Schiene traegt jetzt nur noch den Stand, und das ist ihre ganze Aufgabe. */}
 
       {/* ── Level ──────────────────────────────────────────────────────── */}
       <section className="stand-rail__block" aria-labelledby="stand-level">
