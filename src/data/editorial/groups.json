@@ -10,7 +10,7 @@
     "Schlüssel der Mitglieder ist `nameLatin` (ADR 0002 §2), nicht die Routing-id.",
     "Ein unbekannter Name lässt die Tests scheitern — er verschwindet nicht still.",
     "",
-    "STATUS: Am 2026-07-13 vom Projektinhaber ABGENOMMEN. 14 Gruppen.",
+    "STATUS: Am 2026-07-13 vom Projektinhaber ABGENOMMEN. 14 Gruppen.\nNACHTRAG (2026-07-13): M. plantaris ist wieder MITGLIED der Wade. Bei der Abnahme\nstand er in 'related' — dadurch hatte die Gruppe nur 2 Mitglieder und fiel aus dem\nGruppen-Quiz (eine 4-Optionen-Frage braucht 3 Mitglieder + 1 Fremden). Der\nProjektinhaber hat das nach diesem Befund umentschieden.",
     "",
     "KEIN HYPOTHENAR — und das bitte nicht 'reparieren'. Drei seiner vier Mitglieder",
     "(abductor / flexor brevis / opponens digiti minimi) tragen einen nameLatin, den es",
@@ -26,7 +26,6 @@
     "",
     "Ein falscher Gruppen-Eintrag wird auswendig gelernt."
   ],
-
   "gruppen": [
     {
       "id": "rotatorenmanschette",
@@ -76,12 +75,10 @@
     {
       "id": "wade-oberflaechlich",
       "label": "Oberflächliche Wadenmuskulatur",
-      "note": "Der M. triceps surae — die stärksten Plantarflexoren. Der M. gastrocnemius zieht über das Kniegelenk, der M. soleus nicht; das ist die Prüfungsfrage. Der M. plantaris liegt in derselben Schicht, zählt hier aber nicht als Mitglied.",
+      "note": "Der M. triceps surae — die stärksten Plantarflexoren. Der M. gastrocnemius zieht über das Kniegelenk, der M. soleus nicht; das ist die Prüfungsfrage. Der M. plantaris liegt in derselben Schicht und ist ein schwacher, oft fehlender Muskel — er zählt hier trotzdem als Mitglied.",
       "muscles": [
         "M. gastrocnemius",
-        "M. soleus"
-      ],
-      "related": [
+        "M. soleus",
         "M. plantaris"
       ]
     },
