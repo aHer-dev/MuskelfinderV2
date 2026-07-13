@@ -1,9 +1,11 @@
 export {
+  CARD_MUSCLES,
   getMovements,
   getMuscleById,
   getMuscleByLatinName,
   getMuscles,
   getRegions,
+  isCardMuscle,
   MOVEMENTS,
   MUSCLES,
   REGIONS,

@@ -442,29 +442,35 @@ function CardScreen({
 
           {/* V1-Parität: erst aufdecken, dann bewerten — kein deaktivierter „Toter-Klick"-Zustand.
               Die Freitext-Stufe bewertet sich selbst und braucht die Leiste nicht. */}
-          {!produce &&
-            (revealed ? (
-              <>
-                <RatingBar onRate={rate} disabled={false} />
-                <p className="fc-controls-hint">
-                  <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd> bewerten · <kbd>F</kbd> schwierig ·
-                  mobil: wischen
-                </p>
-              </>
-            ) : (
-              <>
-                <button
-                  type="button"
-                  className="btn btn--primary btn--block"
-                  onClick={() => setRevealed(true)}
-                >
-                  Karte aufdecken
-                </button>
-                <p className="fc-controls-hint">
-                  <kbd>Space</kbd> oder tippen zum Aufdecken
-                </p>
-              </>
-            ))}
+          {/* Die Aktionsleiste klebt am unteren Rand (siehe `.fc-actions`): Auf dem Handy ist
+              die Karte hoeher als der Bildschirm, und ohne das Kleben lag der einzige Knopf
+              der Sitzung unter der Falz — jede Karte kostete ein Scrollen. */}
+          {!produce && (
+            <div className="fc-actions">
+              {revealed ? (
+                <>
+                  <RatingBar onRate={rate} disabled={false} />
+                  <p className="fc-controls-hint">
+                    <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd> bewerten · <kbd>F</kbd> schwierig ·
+                    mobil: wischen
+                  </p>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    className="btn btn--primary btn--block"
+                    onClick={() => setRevealed(true)}
+                  >
+                    Karte aufdecken
+                  </button>
+                  <p className="fc-controls-hint">
+                    <kbd>Space</kbd> oder tippen zum Aufdecken
+                  </p>
+                </>
+              )}
+            </div>
+          )}
         </>
       ) : (
         <div className="flashcards__empty">

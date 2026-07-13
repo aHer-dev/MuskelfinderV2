@@ -66,3 +66,44 @@ describe('DeckManagerPage', () => {
     expect(box).toHaveAccessibleName(/Karten in deinem Kasten/i)
   })
 })
+
+/* Gemessen am Build (2026-07-13): Wer „Obere Extremitaet" waehlte, bekam 53 Karten — und sah
+   56 Zeilen. Drei `nameLatin` gibt es zweimal (Hand/Fuss), und die Tabelle lief ueber die
+   150 Muskeln statt ueber die Karten. Wer die Fuss-Zeile entfernte, loeschte die Handkarte
+   gleich mit: Es ist derselbe Schluessel. */
+describe('doppelte Muskelnamen ergeben EINE Zeile', () => {
+  const ZWILLING = 'M. abductor digiti minimi' // Hand UND Fuss
+
+  beforeEach(() => {
+    localStorage.clear()
+    useProgressStore.getState().resetProgress()
+  })
+
+  it('zeigt eine Karte als genau eine Zeile — nicht als zwei', () => {
+    useProgressStore.getState().addCards([ZWILLING])
+    renderPage()
+
+    const zeilen = within(screen.getByRole('table'))
+      .getAllByRole('row')
+      .filter((row) => within(row).queryByText(ZWILLING))
+
+    expect(Object.keys(useProgressStore.getState().flashcards.cards)).toHaveLength(1)
+    expect(zeilen).toHaveLength(1)
+  })
+
+  it('entfernt die Karte, ohne eine zweite Zeile stehen zu lassen', () => {
+    useProgressStore.getState().addCards([ZWILLING])
+    renderPage()
+
+    fireEvent.click(screen.getByRole('button', { name: new RegExp(`${ZWILLING} aus Karteikasten`) }))
+
+    expect(useProgressStore.getState().flashcards.cards).toEqual({})
+    expect(screen.getByRole('heading', { name: /Noch keine Karten/i })).toBeInTheDocument()
+  })
+
+  it('bietet den Zwilling in der Auswahlliste nur einmal an', () => {
+    renderPage()
+    // Vor der Entdopplung standen Hand UND Fuss hier — beide legten dieselbe Karte an.
+    expect(screen.getAllByText(ZWILLING)).toHaveLength(1)
+  })
+})

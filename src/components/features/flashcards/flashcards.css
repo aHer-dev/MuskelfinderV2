@@ -485,6 +485,38 @@
 }
 
 /* ---- Steuerungs-Hinweis ----------------------------------------------- */
+/* ---- Aktionsleiste: Aufdecken/Bewerten bleiben unter dem Daumen ---------
+   Die Karte ist auf dem Handy hoeher als der Bildschirm — und zwar zwangslaeufig: Fuer den
+   3D-Flip liegen Vorder- und Rueckseite in DERSELBEN Grid-Zelle (`.flashcard__inner`), also
+   ist die fast leere Vorderseite immer so hoch wie die volle Rueckseite. Gemessen auf 390 px:
+   931 px Karte bei 664 px Viewport. „Karte aufdecken" und die drei Bewertungsknoepfe lagen
+   damit bei y=872 — unter der Falz. Eine Sitzung mit 20 Karten kostete 20-mal Scrollen.
+
+   Darum klebt die Leiste am unteren Rand, solange die Sitzung laenger als der Schirm ist.
+   `bottom` ist dieselbe 96-px-Reserve, die die Shell schon fuer die Tab-Leiste freihaelt
+   (`.shell--mobile .content`) — die Leiste legt sich also NICHT auf die Navigation.
+   Nur unterhalb von 1024 px: darueber gibt es keine Tab-Leiste, und die Karte passt. */
+.fc-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+@media (max-width: 1023.98px) {
+  .fc-actions {
+    position: sticky;
+    bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+    z-index: var(--z-base);
+    padding: var(--spacing-sm);
+    background: var(--glass-panel);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--glass-shadow);
+  }
+}
+
 .fc-controls-hint {
   text-align: center;
   font-family: var(--font-ui);

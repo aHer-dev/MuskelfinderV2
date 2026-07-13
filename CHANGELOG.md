@@ -7,6 +7,32 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Fixed
+- **Wer „Obere Extremität" wählte, bekam Fußmuskeln in den Karteikasten.** Gefunden beim
+  Mobil-Durchlauf als Schülerin: Der Knopf verspricht **53** Karten — die Kasten-Tabelle zeigte
+  **56 Zeilen**, drei davon „Untere Extremität". Die erste Karte der allerersten Sitzung war
+  **`M. abductor digiti minimi`** mit Fuß-Fakten (Tuber calcanei, Kleinzehe).
+  Ursache: Fünf `nameLatin` gibt es **zweimal** (Hand/Fuß bzw. zweimal im Kopf). Karten sind nach
+  `nameLatin` geschlüsselt (ADR 0002 §2), also ist so ein Paar EINE Karte — `addCards` entdoppelt
+  längst. Der Fehler saß auf der **Lese-Seite**: `DeckManagerPage` und `quizPool` liefen über die
+  **150 Muskeln** und behielten die, deren Name ein Kartenschlüssel ist — für EINE Karte fanden sie
+  **ZWEI** Muskeln. Folgen: widersprüchliche Zahlen (Quiz „Karteikasten 56", Sitzung „53 Karten"),
+  und **„Entfernen" löschte beide Zeilen auf einmal**, weil es derselbe Schlüssel ist.
+  Neu ist `isCardMuscle` / `CARD_MUSCLES` (`src/data/loader.ts`): genau **ein** Muskel je
+  Schlüssel — und zwar der, den `getMuscleByLatinName` liefert, also der, den die Lernkarte
+  **rendert**. Jede andere Wahl zeigte eine Zeile, die nicht zur Karte gehört.
+  Die Distraktoren bleiben unangetastet (sie kommen aus dem ganzen Bestand, 8b), `quizSeriesKey`
+  bleibt bitgleich (ADR 0002).
+  **Das ist eine Entdopplung, keine Heilung** — der Hand-Kleinfingerballen bleibt über Karten
+  unlernbar, weil sein Schlüssel auf den Fußmuskel auflöst. Siehe `docs/todo.md`.
+- **Auf dem Handy kostete jede Karte ein Scrollen.** Gemessen (390 × 664): „Karte aufdecken" und
+  die drei Bewertungsknöpfe lagen bei **y = 872** — unter der Falz. Eine Sitzung mit 20 Karten hieß
+  20-mal scrollen, bevor man überhaupt bewerten konnte. Die Aktionen sitzen jetzt in einer
+  **klebenden Leiste** (`.fc-actions`, `position: sticky`) über der Tab-Leiste; sie nutzt dieselbe
+  96-px-Reserve, die die Shell ohnehin freihält, legt sich also nicht auf die Navigation.
+  Nur unterhalb von 1024 px — darüber gibt es keine Tab-Leiste.
+- **Ein Test schlug je nach Uhrzeit fehl.** `StandRail.test.tsx` baute den Prüfungstermin über
+  `toISOString()` (UTC) und zählte in den Stunden nach lokaler Mitternacht 9 statt 10 Tage. Das
+  Datum wird jetzt lokal zusammengesetzt — so, wie der Datumswähler der App es auch liefert.
 - **Die scrollenden Tabellen waren per Tastatur nicht erreichbar** (WCAG 2.1.1). Die Fächer-Tabelle
   (`/anleitung`) und die Karteikasten-Tabelle (`/karteikasten`) scrollen auf dem Handy waagerecht,
   enthalten aber kein fokussierbares Element, das den Scroll mitzöge — mit `Tab` kam man nie an die

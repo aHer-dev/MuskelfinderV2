@@ -5,7 +5,7 @@
 > docs/migration-plan.md (abgeschlossen), docs/architecture.md und den ADRs.
 
 ## Stand
-- Datum: 2026-07-13
+- Datum: 2026-07-14
 - Branch: `main` · **Remote: github.com/aHer-dev/MuskelfinderV2** · Live: `aher-dev.github.io/MuskelfinderV2/`
 - Status: **Migration abgeschlossen (Etappen 0–6, `v1.0`). ETAPPE 7 KOMPLETT (7a–7f). ETAPPE 8
   KOMPLETT (8a–8f). ETAPPE 9 KOMPLETT (9a–9d). ETAPPE 10 KOMPLETT (10a–10f). ETAPPE 11 (Zeitdruck) — code-seitig. Offen ist
@@ -17,7 +17,7 @@
   niemandem mehr ungefragt Karten in den Kasten.**
   **ALLE VIER BRUECKEN STEHEN:** B1 (7d), B2 (7e), B3 (**9c**), B4 (8c).
   Statustafel: `docs/produkt-plan.md`. Offene Punkte: `docs/todo.md`.
-- Gate gruen: `npm run lint && npm run test && npm run build` — **574 Tests**.
+- Gate gruen: `npm run lint && npm run test && npm run build` — **583 Tests**.
 - A11y: axe 0 Verstoesse ueber **8 Routen x Light+Dark x Desktop+Handy** (Playwright+Chromium+axe-core)
   inkl. `/pruefung` in allen drei Zustaenden, der Abzeichen auf `/statistik`, der Palpations-Sektion
   (mit + ohne Eintrag), `/anleitung` und dem leeren `/heute`. 0 externe Requests.
@@ -333,6 +333,48 @@ steht damit auf JEDER Route — Desktop rechts, Handy als Kopfzeile ueber der Su
 Ansage: **„Anatomie Fokus" oben, „Muskelfinder" darunter.** Genau EINMAL pro Bildschirm: Das Zeichen
 ist dafuer aus der Icon-Rail und aus der `StandRail` verschwunden — ein Test bewacht das
 (`BrandMark.test.tsx`). Wer es in die Rail zurueckholt, hat zwei Logos auf einem Schirm.
+
+## ⚠️ EIN KARTEN-SCHLUESSEL, EIN MUSKEL (2026-07-14) — `isCardMuscle` / `CARD_MUSCLES`
+**Wer beim Lesen wieder ueber `getMuscles()` laeuft, baut den Fehler neu ein.**
+
+Beim Mobil-Durchlauf als Schuelerin gemessen: Der Knopf „Obere Extremitaet" verspricht **53**
+Karten — die Kasten-Tabelle zeigte **56 Zeilen**, drei davon „Untere Extremitaet". Die erste Karte
+der allerersten Sitzung war wieder **`M. abductor digiti minimi`**, diesmal mit **Fuss**-Fakten
+(Tuber calcanei, Kleinzehe). Nicht durch `seedDeck` (der ist geloescht) — durch den **Bereichs-Weg**.
+
+- Fuenf `nameLatin` gibt es **zweimal**. Karten sind nach `nameLatin` geschluesselt (ADR 0002 §2),
+  also ist so ein Paar **EINE** Karte — `addCards` entdoppelt laengst, und `regionMuscleNames`
+  auch. **Der Fehler sass auf der LESE-Seite:** `DeckManagerPage` und `quizPool` liefen ueber die
+  **150 Muskeln** und behielten die, deren Name ein Kartenschluessel ist — fuer EINE Karte fanden
+  sie **ZWEI** Muskeln.
+- Folgen, alle am Build nachgemessen: widerspruechliche Zahlen (Quiz „Karteikasten **56**",
+  Sitzung „**53** Karten"), Phantom-Zeilen, und **„Entfernen" loeschte beide Zeilen auf einmal** —
+  es ist derselbe Schluessel. Wer den Fussmuskel loswerden wollte, verlor die Handkarte mit.
+- **`isCardMuscle(muscle)` in `src/data/loader.ts` ist die einzige Regel:** wahr genau dann, wenn
+  `getMuscleByLatinName(m.nameLatin) === m`. Sie waehlt den Muskel, den die Lernkarte **rendert** —
+  jede andere Wahl zeigte eine Zeile, die nicht zur Karte gehoert. `CARD_MUSCLES` ist die fertige
+  Liste (145 statt 150). **Alles, was von Karten auf Muskeln schliesst, geht hier durch.**
+- `quizPool` entdoppelt nur die **`questions`**. Die **`distractors`** bleiben der ganze Bestand —
+  das ist die Regel aus 8b und sie gilt weiter. `quizSeriesKey` bleibt bitgleich (ADR 0002).
+
+**Das ist eine Entdopplung, KEINE Heilung.** Der Hand-Kleinfingerballen bleibt ueber Karten
+unlernbar (sein Schluessel loest auf den Fuss auf), und drei Karten in einem „Obere
+Extremitaet"-Kasten tragen weiter das Etikett „Untere Extremitaet". Das ist **dieselbe Wurzel, an
+der das Hypothenar gestorben ist** (siehe unten) — nur diesmal im Kartenweg statt in der Gruppe.
+Das echte Gegenmittel braucht einen eindeutigen `nameLatin` und **bricht ADR 0002**: Entscheidung
+des Projektinhabers, Optionen in `docs/todo.md`.
+
+## Die Aktionen der Lernsitzung kleben (2026-07-14)
+Gemessen auf 390 × 664: „Karte aufdecken" und die drei Bewertungsknoepfe lagen bei **y = 872** —
+unter der Falz. **Eine Sitzung mit 20 Karten kostete 20-mal Scrollen**, bevor man bewerten konnte.
+
+- `.fc-actions` ist `position: sticky` unterhalb von 1024 px (darueber gibt es keine Tab-Leiste).
+  `bottom` ist dieselbe **96-px-Reserve**, die `.shell--mobile .content` ohnehin freihaelt — die
+  Leiste legt sich damit **nicht** auf die Navigation. Wer eine zweite klebende Leiste baut, nimmt
+  denselben Wert.
+- **Der Kopf der Sitzung ist noch da:** ueber der Karte stehen Marke, Kopfzeilen-Suche, der Titel
+  „Lernkarten" und zwei Setup-Knoepfe — **445 px, mehr als die Karte selbst (443 px)**. Das war die
+  eigentliche Ursache der Falz, nicht die Kartenhoehe. Offen, siehe `docs/todo.md`.
 
 ## ⚠️ KEIN HYPOTHENAR — und das bitte nicht „reparieren"
 Drei seiner vier Mitglieder (`M. abductor digiti minimi`, `M. flexor digiti minimi brevis`,
