@@ -165,10 +165,22 @@ geoeffnet. Checkliste: `docs/release-v1.1.md`. Alles, was ohne den Projektinhabe
 (2) 3D-App V2 neu deployen — ihre datenschutz.html liefert 404 (Fix liegt dort als HEAD).
 (3) V1 (`aher-dev.github.io/Muskelfinder/`) ist noch live — Hinweis setzen oder abschalten.
 
-**Danach: Etappe 9 planen** (Briefings wie fuer Etappe 7 und 8). Etappe 9 ist seit den
-Entscheidungen E1-E5 nicht mehr blockiert:
-9a funktionelle Gruppen + Gruppen-Quiz · 9b Abzeichen · 9c Pruefungsmodus (schliesst **Bruecke B3**)
-· 9d Palpation.
+**ETAPPE 9 IST VOLLSTAENDIG GEBRIEFT** (Rahmen + 9a-9d, siehe Statustafel).
+Naechster Schritt: **9a — Funktionelle Gruppen.**
+Briefing: `docs/tasks/2026-07-13-etappe-9a-funktionelle-gruppen.md`.
+Empfohlene Reihenfolge: **9a → 9c → 9b → 9d** (9a zuerst, weil es den Projektinhaber blockiert:
+die Gruppen brauchen seine fachliche Freigabe — er kann pruefen, waehrend 9c gebaut wird).
+
+**Drei Fallen fuer Etappe 9 (am Code verifiziert):**
+1. **`useQuizGame` schreibt bei jeder Runde `commitRound(quizSeriesKey(...))`** (Zeile 103). Ein
+   Pruefungsmodus (9c) auf diesem Hook kippt seine Ergebnisse still in die normale Quiz-Bilanz und
+   verschmutzt den V1-Serien-Schluessel. ADR 0002 waere gebrochen.
+2. **`src/data/generated/` wird von `npm run migrate:data` ueberschrieben.** Gruppen (9a) und
+   Palpation (9d) gehoeren nach `src/data/editorial/`. Blaupause: `withEtymology` in
+   `src/data/etymology.ts`.
+3. **Subregionen sind KEINE funktionellen Gruppen.** 15 topographische Subregionen existieren bereits;
+   „Rotatorenmanschette" liegt *innerhalb* des Schultergürtels, und ein Muskel gehoert zu MEHREREN
+   Gruppen. Many-to-Many, keine Partition.
 
 **Zwei bewusste Auslassungen aus Etappe 8 — beide brauchen den Fachmann, nicht mehr Code:**
 1. **8f Stufe 2a (Renderings):** lizenzrechtlich freigegeben, aber Qualitaets-Gate offen (s. u.).
