@@ -431,7 +431,7 @@
   width: 38px;
   height: 38px;
   flex-shrink: 0;
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--control-border);
   background: transparent;
   border-radius: var(--radius-md);
   color: var(--text-secondary);
@@ -462,7 +462,7 @@
 }
 .fc-image-toggle {
   align-self: center;
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--control-border);
   background: transparent;
   color: var(--text-secondary);
   font-family: var(--font-ui);
@@ -574,7 +574,7 @@
 .type-card__input {
   width: 100%;
   padding: 14px var(--spacing-md);
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--control-border);
   border-radius: var(--radius-field);
   background: var(--surface-sunken);
   color: var(--text-primary);

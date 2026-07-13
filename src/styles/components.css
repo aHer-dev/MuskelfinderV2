@@ -51,10 +51,12 @@
 }
 
 /* `--danger-on-surface`, nicht `--danger`: Rot als SCHRIFT auf Weiss erreicht mit #d1493a
-   nur 4.44:1 — knapp unter AA. Als Flaeche/Markierung bleibt `--danger` unveraendert. */
+   nur 4.44:1 — knapp unter AA. Als Flaeche/Markierung bleibt `--danger` unveraendert.
+   Und `--danger-border`, nicht `--control-border`: Seit die Bedienelemente orange umrandet
+   sind, saehe der Gefahr-Knopf sonst aus wie roter Text in einem orangen Rahmen. */
 .btn--danger {
   background: transparent;
-  border-color: var(--control-border);
+  border-color: var(--danger-border);
   color: var(--danger-on-surface);
   font-weight: 600;
 }

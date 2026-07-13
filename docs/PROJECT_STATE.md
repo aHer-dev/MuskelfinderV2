@@ -152,9 +152,14 @@ ist weg.
 warmen Papier muss es sich gegen viel Licht behaupten, auf Schwarz leuchtet es von selbst). Es faerbt
 **nur Inhalts-Kaesten**.
 
-- **Bedienelemente behalten ihren neutralen Rahmen** (`--control-border`): Ihr Umriss ist keine
-  Dekoration, sondern traegt die Erkennbarkeit (WCAG 1.4.11) — und der Akzent gehoert dort dem
-  Fokus-Ring.
+- **Bedienelemente sind ebenfalls orange umrandet** (`--control-border`) — aber KRAEFTIGER, mit
+  `--accent-strong` (#e64500) statt dem Marken-Orange. Grund: Ihr Umriss ist keine Dekoration,
+  sondern traegt die Erkennbarkeit, und **WCAG 1.4.11 verlangt dafuer 3:1**. Das Marken-Orange
+  (#ff6a00) schafft auf Weiss nur **2.87:1** und verfehlt die Schwelle knapp. Gemessen:
+  **Light 4.03:1 · Dark 3.79:1**. (Der frueher dort stehende GRAUE Rahmen erreichte nur **1.39:1**
+  und hat 3:1 nie erfuellt — der Wechsel ist ein A11y-Gewinn, kein Kompromiss.)
+- **Der Gefahr-Knopf hat sein eigenes `--danger-border`.** Roter Text in einem orangen Rahmen
+  laese sich wie ein Fehler.
 - **Das echte Glas** (Rail, TabBar, Sheet, Toast) bleibt auf `--glass-border`: Es soll zuruecktreten.
 - **Rot und Orange als SCHRIFT brauchen eigene Toene.** Auf hellem Grund reichen die Flaechenfarben
   nicht fuer AA: `--accent-on-tint` (#b34400) fuer Akzent-Text auf `--accent-tint`,

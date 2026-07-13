@@ -171,7 +171,7 @@
 }
 
 .deck-remove {
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--control-border);
   background: transparent;
   color: var(--text-tertiary);
   font-family: var(--font-ui);
@@ -210,7 +210,7 @@
 .deck-search {
   width: 100%;
   padding: 10px var(--spacing-md);
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--control-border);
   border-radius: var(--radius-field);
   background: var(--surface-sunken);
   color: var(--text-primary);
