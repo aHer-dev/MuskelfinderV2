@@ -4,10 +4,30 @@
    Fortschritt und Sekundäraktionen stehen darunter.
    ========================================================================= */
 
+/* Zwei Spalten (Etappe 12): links der eine Vorschlag, rechts „Dein Stand".
+   Bei 1440 px lagen hier 444 px rechts brach, waehrend Level und Serie als winzige
+   Textzeile am Seitenende klebten.
+
+   Die Schwelle ist 1200px, nicht 1024px: Darunter bliebe fuer den Inhalt weniger als
+   500 px — dann ist eine Spalte ehrlicher als zwei zu enge. Unterhalb stapelt es, die
+   Schiene rutscht unter den Inhalt und es geht nichts verloren. */
+.today-layout {
+  display: grid;
+  gap: var(--spacing-lg);
+  align-items: start;
+}
+@media (min-width: 1200px) {
+  .today-layout {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: var(--spacing-xl);
+  }
+}
+
 .today {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
+  min-width: 0;
   /* Ein Vorschlag braucht keine 1160px. Gedeckelt bleibt der Blick auf der einen
      Entscheidung, statt über eine leere Fläche zu wandern. */
   max-width: 780px;
@@ -66,61 +86,12 @@
   color: var(--text-faint);
 }
 
-.today__quick-links {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: var(--spacing-sm);
-}
 
-.today__quick-link {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  min-height: var(--touch-min);
-  padding: 0 var(--spacing-md);
-  background: var(--surface);
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius-md);
-  color: var(--text-secondary);
-  font-family: var(--font-ui);
-  font-size: 0.92rem;
-  text-decoration: none;
-  transition: var(--transition-smooth);
-}
 
-.today__quick-link span {
-  flex: 1;
-}
 
-.today__quick-link:hover {
-  background: var(--surface-hover);
-  color: var(--text-primary);
-}
 
-/* ---- Fortschritt: klein, untergeordnet, aber anklickbar --------------- */
-.today__progress {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  min-height: var(--touch-min);
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: var(--surface-sunken);
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-md);
-  color: var(--text-tertiary);
-  font-family: var(--font-ui);
-  font-size: 0.85rem;
-  text-decoration: none;
-  transition: var(--transition-smooth);
-}
 
-.today__progress:hover {
-  color: var(--text-secondary);
-}
 
-.today__progress-text {
-  flex: 1;
-}
 
 @media (min-width: 640px) {
   /* Ab hier passt die Diagnose in eine Zeile — mit Mittelpunkt-Trennern. */
@@ -210,21 +181,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* ---- Tages-Streak (7f) ------------------------------------------------- */
-/* Nüchtern: eine Zahl in der Fortschrittszeile, kein Feuer, keine Animation.
-   Nie nur über Farbe — der Zustand steht immer als Text da (WCAG 1.4.1). */
-.today__streak {
-  color: var(--text-secondary);
-  font-variant-numeric: tabular-nums;
-}
-
-.today__freeze {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  color: var(--accent-on-surface);
-  font-variant-numeric: tabular-nums;
-}
 
 /* ── Erststart: der leere Kasten als Einstieg, nicht als Fehler (10c, ADR 0009) ──── */
 .today__start {
@@ -274,4 +230,45 @@
 
 .today__start .today__subtitle {
   margin: var(--spacing-sm) 0 0;
+}
+
+/* ---- Schnell starten (bleibt im INHALT, nicht in der Schiene — siehe TodayPage) ------ */
+.today__quick-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: var(--spacing-sm);
+}
+
+.today__quick-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-height: 52px;
+  padding: 10px var(--spacing-md);
+  background: var(--surface);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--card-shadow);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: var(--transition-smooth);
+}
+.today__quick-link span {
+  flex: 1;
+  min-width: 0;
+}
+.today__quick-link svg:first-child {
+  color: var(--accent-on-surface);
+  flex: none;
+}
+.today__quick-link:hover {
+  border-color: var(--accent-border);
+  box-shadow: var(--card-shadow-hover);
+}
+.today__quick-link:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
 }

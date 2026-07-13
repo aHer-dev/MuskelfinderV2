@@ -22,7 +22,6 @@
 
 | Was | Notiz |
 |---|---|
-| **Logo oben rechts, mit Anatomie-Bezug** | Vom Projektinhaber am 2026-07-13 gewünscht: *„ich hätte gerne oben rechts ein Logo mit Anatomie-Fokus, weil die Seite so leer ist."* Stimmt — die Kopfzeile ist ein breites Suchfeld, rechts daneben ist nichts. Es gibt bereits eine Wortmarke in der linken Leiste (`public/`-Icons, 192/512/maskable). **Lizenz beachten:** kein fremdes anatomisches Bildmaterial ohne geklärte Lizenz (CLAUDE.md). Eigene Zeichnung oder ein Rendering aus der eigenen 3D-App (BodyParts3D, CC BY 4.0, Attribution) wären zulässig. |
 | **3D-Renderings für die 47 bildlosen Muskeln** (8f Stufe 2a) | Zurückgestellt (2026-07-13). Lizenz **ist geklärt** ([Protokoll](3d-app-lizenzpruefung.md)), offen ist die **Qualität**: Nur 21 der 47 sind in der 3D-App überhaupt adressierbar, und der Deep-Link allein liefert kein brauchbares Bild (der Muskel liegt im Kontrollrendering hinter dem Unterkiefer). Ein Bild, auf dem der Muskel nicht zu erkennen ist, ist schlechter als kein Bild. |
 
 ## Entschieden und abgelehnt (nicht wieder vorschlagen)
