@@ -10,7 +10,7 @@
    ========================================================================= */
 
 import { beforeEach, describe, expect, it } from 'vitest';
-import { applyExamMiss, FACH_INTERVALS, isDue, newCard } from '../persistence/leitner';
+import { applyCorrect, applyExamMiss, FACH_INTERVALS, isDue, newCard } from '../persistence/leitner';
 import { createEmptyFlashcardsSection, createEmptyXpSection } from '../persistence/sanitize';
 import { useProgressStore } from './useProgressStore';
 import { buildQueue } from './useSessionStore';
@@ -35,8 +35,17 @@ beforeEach(() => {
 });
 
 describe('applyExamMiss — die Transition, die es vorher nicht gab', () => {
-  it('stuft eine Box zurück', () => {
-    expect(applyExamMiss(reifeKarte(5)).fach).toBe(4);
+  it('stuft zurück — auf höchstens Fach 2, wie jede vergessene Karte (Etappe 12)', () => {
+    /* Vorher fiel sie nur EIN Fach. Aus Fach 7 also auf 6 — und EIN Treffer im Debrief hob
+       sie zurück auf 7: 180 Tage weg, einen Tag nach der Pruefung, in der sie gefehlt hat.
+       Derselbe Fehler wie in `applyWrong`, nur einen Schritt tiefer versteckt. */
+    expect(applyExamMiss(reifeKarte(5)).fach).toBe(2);
+    expect(applyExamMiss(reifeKarte(7)).fach).toBe(2);
+  });
+
+  it('und ein Treffer im Debrief hebt sie NICHT zurück in ihr altes Fach', () => {
+    const verpasst = applyExamMiss(reifeKarte(7));
+    expect(applyCorrect(verpasst).fach).toBe(3); // nicht 7
   });
 
   it('kommt unter Fach 1 nicht weiter', () => {
@@ -76,7 +85,7 @@ describe('registerExamMisses — was der Debrief-Knopf tut', () => {
     useProgressStore.getState().registerExamMisses(['M. deltoideus']);
 
     const karte = useProgressStore.getState().flashcards.cards['M. deltoideus'];
-    expect(karte.fach).toBe(4);
+    expect(karte.fach).toBe(2); // höchstens Fach 2 (Etappe 12)
     expect(karte.totalCorrect).toBe(5); // die Historie bleibt stehen
     expect(isDue(karte)).toBe(true);
   });

@@ -30,6 +30,22 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   beiden Links in der Lernkarten-Kopfzeile.
 
 ### Fixed
+- **Eine vergessene Karte kam erst in 90 Tagen wieder** (ADR 0011). Eine falsch beantwortete Karte
+  fiel **genau ein Fach** zurück. Bei den Intervallen `1 · 3 · 7 · 14 · 30 · 90 · 180` hieß das:
+  Wer einen Muskel sechsmal richtig hatte (Fach 7) und ihn dann vergaß, sah ihn **erst in 90 Tagen
+  wieder** — er hatte gerade bewiesen, dass er ihn *nicht* weiß. Aus dem „gemeisterten" Fach 5
+  waren es immer noch 14 Tage.
+  **Es war auch nie echtes Leitner:** Das Original wirft eine falsche Karte zurück in Fach 1; das
+  „ein Fach zurück" war eine aufgeweichte Variante aus V1, die nie jemand hinterfragt hat.
+  Jetzt fällt sie auf **höchstens Fach 2** (3 Tage) und **immer mindestens ein Fach** — eine Regel
+  (`lapseFach`), zwei Aufrufer.
+  **Derselbe Fehler steckte einen Schritt tiefer im Prüfungsmodus:** Eine verpasste Karte aus Fach 7
+  landete auf Fach 6, und **ein** Treffer im Debrief hob sie zurück auf Fach 7 — 180 Tage weg, einen
+  Tag nach der Prüfung, in der sie gefehlt hat.
+  **Warum kein Test das gefangen hat:** Der einzige Rückfall-Test startete in Fach 3 — und Fach 3
+  landet unter der alten *und* der neuen Regel bei Fach 2. Die reifen Fächer waren nicht abgedeckt.
+  **ADR 0002 bleibt unberührt:** `fach` ist weiterhin 1–7, `nextDue` ein ISO-Datum, kein Feld ändert
+  sich. Nur die Übergangsregel. Ein Test prüft genau das.
 - **Der Karteikasten scrollte auf dem Handy seitlich** (375 px Viewport → 399 px Dokument). Die
   Tabelle selbst war unschuldig, sie scrollte brav in ihrem `overflow-x`-Container. Schuld war das
   `.visually-hidden`-Span in der Kopfzeile (die Screenreader-Beschriftung der Aktionsspalte):

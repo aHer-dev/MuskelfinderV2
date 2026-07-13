@@ -28,7 +28,7 @@ const STEPS: Array<{ title: string; body: string }> = [
   },
   {
     title: 'Was du kannst, kommt seltener — was du nicht kannst, kommt wieder',
-    body: 'Jede Karte liegt in einem von sieben Fächern. Richtig beantwortet heißt: ein Fach höher, längere Pause. Falsch heißt: zurück nach vorn, morgen wieder. Nichts daran ist Strafe — es ist nur der Abstand, der zum Behalten führt.',
+    body: 'Jede Karte liegt in einem von sieben Fächern. Richtig beantwortet heißt: ein Fach höher, längere Pause. Falsch heißt: zurück nach vorn, in wenigen Tagen wieder — egal, wie weit oben die Karte vorher lag. Was du vergessen hast, ist vergessen; da hilft es nichts, es dir erst in drei Monaten wieder zu zeigen.',
   },
   {
     title: 'Je besser du wirst, desto härter wird gefragt',

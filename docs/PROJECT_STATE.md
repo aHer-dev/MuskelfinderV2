@@ -17,7 +17,7 @@
   niemandem mehr ungefragt Karten in den Kasten.**
   **ALLE VIER BRUECKEN STEHEN:** B1 (7d), B2 (7e), B3 (**9c**), B4 (8c).
   Statustafel: `docs/produkt-plan.md`. Offene Punkte: `docs/todo.md`.
-- Gate gruen: `npm run lint && npm run test && npm run build` — **539 Tests**.
+- Gate gruen: `npm run lint && npm run test && npm run build` — **546 Tests**.
 - A11y: axe 0 Verstoesse (Playwright+Chromium+axe-core, Light+Dark) inkl. `/pruefung` in allen drei
   Zustaenden, der Abzeichen auf `/statistik`, der Palpations-Sektion (mit + ohne Eintrag) sowie neu
   `/anleitung` und dem leeren `/heute`. 0 externe Requests.
@@ -121,6 +121,31 @@ Die letzten vier offenen Fragen aus dem Brainstorming sind entschieden.
 - ⏸ **Leitner vs. SM-2/FSRS: WEITERHIN OFFEN.** Wir sind bei Leitner, weil ADR 0002 das
   Backup-Format einfriert — das war nie eine Entscheidung, es ist passiert. Anki ist hier
   nachweislich besser. Ein Wechsel braeche das Persistenzformat: eigener, grosser Task.
+
+## ⚠️ EINE VERGESSENE KARTE FAELLT AUF HOECHSTENS FACH 2 (ADR 0011, 2026-07-13)
+**Wer die Rueckstufung wieder auf „ein Fach zurueck" dreht, baut den Fehler neu ein.**
+
+Bis 2026-07-13 fiel eine falsch beantwortete Karte genau EIN Fach. Mit den Intervallen
+`1 · 3 · 7 · 14 · 30 · 90 · 180` hiess das gemessen: Wer einen Muskel sechsmal richtig hatte
+(Fach 7) und ihn dann vergass, sah ihn **erst in 90 TAGEN wieder**. Aus dem „gemeisterten" Fach 5
+waren es 14 Tage. Er hatte gerade bewiesen, dass er ihn NICHT weiss.
+
+- **`lapseFach(fach)` in `src/persistence/leitner.ts` ist die EINZIGE Rueckstufungs-Regel.**
+  Hoechstens `LAPSE_FACH` (= 2), und immer mindestens ein Fach runter. **`applyWrong` UND
+  `applyExamMiss` rufen sie beide auf** — zwei getrennte Regeln waren genau der Weg, auf dem der
+  Fehler entstanden ist.
+- **Der Fehler steckte auch im Pruefungsmodus:** Eine verpasste Karte aus Fach 7 landete auf Fach 6,
+  und EIN Treffer im Debrief hob sie zurueck auf 7 — 180 Tage weg, einen Tag nach der Pruefung.
+- **ADR 0002 ist NICHT beruehrt:** `fach` bleibt 1–7, `nextDue` ein ISO-Datum, kein Feld aendert
+  sich. Nur die Uebergangsregel. Ein Test prueft die Formattreue.
+- **Warum kein Test das gefangen hat:** Der einzige Rueckfall-Test startete in Fach 3 — und der
+  landet unter BEIDER Regeln bei 2. Die reifen Faecher waren nicht abgedeckt. Jetzt sind sie es.
+
+**Zu FSRS/Anki (Frage 5, weiterhin offen):** Ein Wechsel scheitert nicht am Backup-Format (das liesse
+sich additiv erweitern), sondern an **ADR 0008** — die Abrufhaerte wird AUS DEM LEITNER-FACH
+abgeleitet, und die Abzeichen (`fach >= 5`) haengen ebenfalls daran. Umbau, kein Austausch. Bei 150
+Muskeln ueber ein bis zwei Semester lohnt er nicht; der teure Teil war der 90-Tage-Fehler, und der
+ist weg.
 
 ## Kanonische Quellen
 - V1-Original: `../Muskelfinder` (`/home/pepperboy8/Documents/Muskelfinder`)
