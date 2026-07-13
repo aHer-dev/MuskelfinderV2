@@ -72,8 +72,7 @@ describe('indexByMuscle — Many-to-Many, keine Partition', () => {
 
 describe('Der echte Gruppenbestand', () => {
   it('lädt und ist gegen den Muskelbestand geprüft', () => {
-    expect(getGroups().length).toBeGreaterThanOrEqual(12);
-    expect(getGroups().length).toBeLessThanOrEqual(15);
+    expect(getGroups().length).toBe(14); // Abnahme 2026-07-13: 15 minus Hypothenar
   });
 
   it('jeder genannte Muskel existiert wirklich', () => {
@@ -94,10 +93,22 @@ describe('Der echte Gruppenbestand', () => {
     );
   });
 
-  it('der Hypothenar enthält NICHT den M. extensor digiti minimi', () => {
-    /* Das V1-Tag „kleinfinger" führt ihn — er ist aber ein Unterarmstrecker.
-       Genau deshalb sind Tags Vorschläge und keine Gruppen. */
-    expect(getGroupById('hypothenar')?.muscles).not.toContain('M. extensor digiti minimi');
+  it('ES GIBT KEINEN HYPOTHENAR — er ist mit nameLatin-Schlüsseln nicht darstellbar', () => {
+    /* Drei seiner vier Mitglieder (abductor/flexor brevis/opponens digiti minimi) tragen
+       einen nameLatin, den es ZWEIMAL gibt: Hand und Fuß. Karten sind nach nameLatin
+       geschlüsselt (ADR 0002 §2), also lösen sie auf die FUSS-Muskeln auf — die
+       Gruppenseite zeigte „Untere Extremität", und das Abzeichen „Hypothenar komplett"
+       hätte man mit den Fußkarten verdient. Am 2026-07-13 entfernt. Nicht wieder anlegen. */
+    expect(getGroupById('hypothenar')).toBeUndefined();
+
+    const doppelt = ['M. abductor digiti minimi', 'M. flexor digiti minimi brevis', 'M. opponens digiti minimi'];
+    for (const name of doppelt) {
+      expect(groupsOf(name), `${name} ist mehrdeutig und darf in keiner Gruppe stehen`).toEqual([]);
+    }
+  });
+
+  it('der Thenar bleibt — die pollicis-Namen sind eindeutig', () => {
+    expect(getGroupById('thenar')?.muscles).toContain('M. adductor pollicis');
   });
 
   it('die Hüft-Adduktoren enthalten NICHT den M. adductor pollicis (Hand)', () => {
@@ -185,5 +196,33 @@ describe('related — was mitgelernt wird, ohne dazuzugehören', () => {
     const wade = getGroupById('wade-oberflaechlich');
     expect(wade?.muscles.sort()).toEqual(['M. gastrocnemius', 'M. soleus']);
     expect(wade?.related).toEqual(['M. plantaris']);
+  });
+});
+
+/* ── Die Wache gegen den Hypothenar-Fehler (2026-07-13) ─────────────────── */
+
+describe('Kein mehrdeutiger Name darf eine Gruppe verfälschen', () => {
+  it('ein doppelt vergebener nameLatin ist nur erlaubt, wenn BEIDE dieselbe Region haben', () => {
+    /* Genau hieran ist der Hypothenar gescheitert: „M. abductor digiti minimi" gibt es
+       an der Hand UND am Fuß. Karten sind nach nameLatin geschlüsselt (ADR 0002 §2),
+       also löste die Gruppe still auf die Fußmuskeln auf — sichtbar an der Regionszeile,
+       und niemandem fiel es auf.
+
+       „M. nasalis" und „M. occipitofrontalis" sind ebenfalls doppelt, aber beide Hälften
+       liegen im Kopf. Sie sind darum unbedenklich — die Regel unterscheidet genau das. */
+    const proName = new Map<string, Set<string>>();
+    for (const m of MUSCLES) {
+      const regionen = proName.get(m.nameLatin) ?? new Set<string>();
+      regionen.add(m.region);
+      proName.set(m.nameLatin, regionen);
+    }
+
+    const gefaehrlich: string[] = [];
+    for (const g of getGroups()) {
+      for (const name of g.muscles) {
+        if ((proName.get(name)?.size ?? 0) > 1) gefaehrlich.push(`${g.id}: ${name}`);
+      }
+    }
+    expect(gefaehrlich).toEqual([]);
   });
 });

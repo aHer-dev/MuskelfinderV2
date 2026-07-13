@@ -180,22 +180,37 @@ fachliche Freigabe des Projektinhabers** (E2). Was er streicht, wird gestrichen.
 **9d ist gebaut** (Palpation, Sektion „Am Koerper finden") — **die MECHANIK. Die Daten nicht.**
 Reihenfolge: 9a ✅ → 9c ✅ → 9b ✅ → 9d ✅.
 
-## ETAPPE 9 IST CODE-SEITIG DURCH — offen ist nur noch der FACHMANN
-Es gibt **keinen naechsten Code-Task**. Was fehlt, kann kein Agent liefern:
-1. **Die 15 funktionellen Gruppen (9a)** brauchen die fachliche Freigabe des Projektinhabers (E2).
-   Sie sind bereits in der App; was er streicht, wird gestrichen.
-2. **Die 21 Palpationseintraege (9d)** liegen in `docs/palpation-vorschlag.md` und sind **NICHT in
-   der App** — `src/data/editorial/palpation.json` ist leer. Das Briefing verbietet KI-generierte
-   Palpationsanleitungen ohne fachliche Pruefung: Ein falscher Landmarken-Hinweis wird auswendig
-   gelernt und **am Patienten angewandt**. Nach Freigabe wandert der JSON-Block 1:1 in die Datei.
-   Fuer 4 Muskeln wurde **bewusst nichts** geschrieben (M. subscapularis, M. vastus intermedius,
-   M. gluteus minimus, M. semimembranosus — nicht bzw. kaum direkt tastbar).
-3. **Die Merksaetze (8d)** und die **3D-Renderings (8f Stufe 2a)** — beide seit Etappe 8 offen,
-   beide aus demselben Grund.
-4. **Der Quiz-Pool-Filter (8b)** braucht eine Produktentscheidung (zu kleine Pools: eine Frage
-   braucht 4 Optionen).
-5. **3DAnatomyV2 neu deployen** — ihre `datenschutz.html` liefert 404 (Fix liegt dort als HEAD).
-6. **V1 (`aher-dev.github.io/Muskelfinder/`) ist noch live** — Hinweis setzen oder abschalten.
+## ABNAHME DURCH DEN PROJEKTINHABER: ERFOLGT (2026-07-13)
+Er hat den Abnahmebogen durchgearbeitet. Ergebnis:
+- **Gruppen: 14 statt 15.** M. plantaris raus aus der Wade, M. quadratus lumborum „in Klammern"
+  bei der Bauchwand (neues Feld `related` — angezeigt, aber KEIN Mitglied: zaehlt weder im
+  Gruppen-Quiz noch im Abzeichen). **Hypothenar ENTFERNT** — siehe unten, nicht wieder anlegen.
+- **Merksaetze (8d): ganz entfernt.** Feld, Typ, Anzeige, Tests. Erledigt.
+- **Palpation (9d): alle 21 KI-Vorschlaege gestrichen.** Er holt die Texte aus dem **Skript seiner
+  Kollegen** und traegt sie selbst ein. **NIE wieder Palpationstexte erfinden oder vorschlagen.**
+  Ablauf: `docs/palpation-erfassen.md`. Bis dahin: bewusster Platzhalter auf der Detailseite.
+- **3D-Renderings (8f): zurueckgestellt.**
+- **3D-Datenschutz-404: macht er selbst.** V1 laeuft weiter, das ist ihm egal.
+
+**NAECHSTER CODE-TASK: Quiz-Pool-Filter (8b).** Er hat entschieden: **„Ja, Distraktoren von
+ausserhalb"** — der Quiz-Pool darf auf „nur falsch beantwortete" o. ae. eingeschraenkt werden, die
+falschen Antwortmoeglichkeiten kommen aber aus dem **ganzen** Bestand (sonst braeuchte man 4 Karten
+im Filter, um ueberhaupt eine Frage zu bauen). **`quizSeriesKey` muss bitgleich bleiben** — ein
+gefilterter Pool erzeugt einen ZUSAETZLICHEN Schluessel (ADR 0002). `questionForMuscle` und
+`eligibleFor` (aus 9c, `src/data/quiz.ts`) sind dafuer schon exportiert.
+
+## ⚠️ KEIN HYPOTHENAR — und das bitte nicht „reparieren"
+Drei seiner vier Mitglieder (`M. abductor digiti minimi`, `M. flexor digiti minimi brevis`,
+`M. opponens digiti minimi`) tragen einen `nameLatin`, den es **ZWEIMAL** gibt: einmal Hand, einmal
+Fuss. Karten sind nach `nameLatin` geschluesselt (ADR 0002 §2), also loeste die Gruppe still auf die
+**FUSS**-Muskeln auf: Die Gruppenseite zeigte „Untere Extremitaet", und das Abzeichen „Hypothenar
+komplett" haette man mit den **Fusskarten** verdient. Der Kleinfingerballen ist mit
+`nameLatin`-Schluesseln **nicht darstellbar**. Am 2026-07-13 entfernt.
+
+**Ein Test wacht darueber:** Kein mehrdeutiger Name darf in einer Gruppe stehen, dessen Doppel in
+einer ANDEREN Region liegt. (`M. nasalis` und `M. occipitofrontalis` sind ebenfalls doppelt, aber
+beide Haelften liegen im Kopf — unbedenklich, und die Regel unterscheidet genau das.) Der **Thenar**
+ist nicht betroffen: die `pollicis`-Namen sind eindeutig.
 
 **Aus 9b mitnehmen:**
 - **Ein Abzeichen ist eine Ableitung, kein Zustand** (`src/data/badges.ts`):
