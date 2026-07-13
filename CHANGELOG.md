@@ -7,29 +7,17 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Changed
-- **Der Kasten rahmt, die Knöpfe darin treten zurück.** Die Innenrahmen übertönten den Außenrahmen.
-  Jetzt: `--card-border` kräftiger (**60 % / 40 %**), `--control-border` so hell wie eben zulässig —
-  **#f56000 im Light-Modus, 62 % Orange im Dark-Modus**, beide gemessen **3,2:1**.
-  **Eine vollständige Umkehr ist nicht möglich, und das ist kein Versehen:** Ein
-  Bedienelement-Rahmen, der *heller* wäre als der Dekorationsrahmen, läge unter 3:1 und wäre nicht
-  mehr als Bedienelement erkennbar (WCAG 1.4.11). Auf Weiß schafft selbst das reine Marken-Orange
-  #ff6a00 nur **2,87:1**; #fa6500 nur 3,03:1. **#f56000 ist das hellste Orange, das noch durchgeht.**
-
 ### Changed
-- **Auch Buttons, Dropdowns und Eingabefelder haben jetzt orange Ränder** (Wunsch des
-  Projektinhabers) — und das ist, entgegen meiner ersten Einschätzung, **ein A11y-Gewinn**.
-  Nachgemessen: Der bisherige graue Rahmen erreichte auf Weiß nur **1,39:1** (Dark: 1,44:1).
-  WCAG 1.4.11 verlangt für Bedienelemente **3:1** — deren Umriss ist das, woran man sie *als*
-  Bedienelement erkennt. Der graue Rahmen hat das nie erfüllt.
-  **`--control-border` benutzt `--accent-strong` (#e64500), nicht das Marken-Orange (#ff6a00):**
-  Letzteres erreicht auf Weiß nur **2,87:1** und verfehlt die Schwelle knapp. Gemessene Werte jetzt:
-  **Light 4,03:1 · Dark 3,79:1** (außen) / **3,46:1** (gegen das Feld innen).
-  **Zwei Orange-Stufen, und die Unterscheidung ist der Punkt:** `--card-border` umrandet
-  Inhalts-Kästchen (reine Dekoration, darf zart sein); `--control-border` umrandet Bedienelemente
-  (keine Dekoration — trägt die Erkennbarkeit, muss kräftiger sein). Das echte Glas (Rail, TabBar,
-  Sheet, Toast) färbt weiterhin **nicht** mit.
-  Der Gefahr-Knopf bekommt ein eigenes `--danger-border`: Roter Text in einem orangen Rahmen läse
-  sich wie ein Fehler.
+- **Der Kasten trägt die Marke, die Knöpfe halten die Klappe.** Zwischenzeitlich waren auch Buttons,
+  Dropdowns und Eingabefelder orange umrandet — das wurde zurückgenommen: **Ein Akzent, der überall
+  ist, ist kein Akzent mehr.** Orange bedeutete dann nur noch „hier ist ein Ding" statt „hier ist
+  etwas wichtig", und der Primärknopf, die aktive Auswahl und die Zahlen mussten gegen ein Dutzend
+  orange Umrandungen ankämpfen. Jetzt: **Kästen orange, Bedienelemente neutral.**
+  **Der eigentliche Fehler war nie die Farbe, sondern die Deckkraft.** Der alte graue Rahmen
+  (`rgba(28,26,23,0.16)`) erreichte nur **1,39:1** — WCAG 1.4.11 verlangt für Bedienelemente **3:1**,
+  denn ihr Umriss ist das, woran man sie *als* Bedienelement erkennt. Der neue Wert ist ein **echtes
+  warmes Grau** (`#8a8279`, **3,78:1**; Dark: `rgba(255,255,255,0.42)`, **4,07:1**) — und damit
+  zugänglicher als jedes zulässige Orange (das hellste wäre #f56000 mit 3,20:1).
   Sechs Bedienelemente hingen noch am Glas- statt am Control-Token (`.deck-remove`, `.deck-search`,
   `.fc-icon-btn`, `.fc-image-toggle`, `.type-card__input`, `.muscle-note__field`) — begradigt.
 
