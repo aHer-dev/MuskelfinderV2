@@ -17,10 +17,13 @@
   niemandem mehr ungefragt Karten in den Kasten.**
   **ALLE VIER BRUECKEN STEHEN:** B1 (7d), B2 (7e), B3 (**9c**), B4 (8c).
   Statustafel: `docs/produkt-plan.md`. Offene Punkte: `docs/todo.md`.
-- Gate gruen: `npm run lint && npm run test && npm run build` — **570 Tests**.
-- A11y: axe 0 Verstoesse ueber **8 Routen x Light+Dark** (Playwright+Chromium+axe-core) inkl. `/pruefung` in allen drei
-  Zustaenden, der Abzeichen auf `/statistik`, der Palpations-Sektion (mit + ohne Eintrag) sowie neu
-  `/anleitung` und dem leeren `/heute`. 0 externe Requests.
+- Gate gruen: `npm run lint && npm run test && npm run build` — **574 Tests**.
+- A11y: axe 0 Verstoesse ueber **8 Routen x Light+Dark x Desktop+Handy** (Playwright+Chromium+axe-core)
+  inkl. `/pruefung` in allen drei Zustaenden, der Abzeichen auf `/statistik`, der Palpations-Sektion
+  (mit + ohne Eintrag), `/anleitung` und dem leeren `/heute`. 0 externe Requests.
+  **Der Pruef-Lauf legt jetzt erst Karten an, bevor er `/karteikasten` misst.** Ein frischer Browser
+  hat einen leeren Kasten — dann rendert die Deck-Tabelle gar nicht, und der Lauf hat sie jahrelang
+  nur uebersehen statt bestanden. Genau so blieb ihr fehlender Tab-Stop (WCAG 2.1.1) unentdeckt.
 - **8b ist erledigt:** Der Quiz-Pool-Filter ist gebaut (`src/data/quiz-pool.ts`). Die Antwort auf
   zu kleine Pools lautet: **die Distraktoren kommen von ausserhalb des Filters** — darum genuegt EINE
   passende Karte fuer eine vollstaendige 4-Optionen-Frage.

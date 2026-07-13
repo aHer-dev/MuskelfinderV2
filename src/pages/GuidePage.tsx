@@ -84,7 +84,15 @@ export function GuidePage() {
           Eine neue Karte startet in Fach 1. Jede richtige Antwort schiebt sie ein Fach weiter, jede
           falsche wirft sie zurück. Der Abstand sagt, wann du die Karte wiedersiehst.
         </p>
-        <div className="guide__table-wrap">
+        {/* Auf schmalen Schirmen scrollt die Tabelle waagerecht — und was scrollt, muss auch
+            die Tastatur erreichen (WCAG 2.1.1). Ohne `tabIndex` kaeme man mit Tab nie an die
+            dritte Spalte: In der Box steckt kein einziges fokussierbares Element, das den
+            Scroll mitziehen wuerde.
+
+            Der Name ist bewusst NICHT `aria-labelledby="guide-faecher"`: Der umgebende
+            `<section>` traegt diese Ueberschrift bereits: Zwei Landmarken mit identischem
+            Namen liest ein Screenreader als Dopplung vor (axe: `landmark-unique`). */}
+        <div className="guide__table-wrap" tabIndex={0} role="region" aria-label="Fächer-Tabelle">
           <table className="guide__table">
             <thead>
               <tr>

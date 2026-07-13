@@ -54,4 +54,15 @@ describe('DeckManagerPage', () => {
     fireEvent.click(removeBtn)
     expect(useProgressStore.getState().isInDeck('M. deltoideus')).toBe(false)
   })
+
+  it('die waagerecht scrollende Tabelle ist per Tastatur erreichbar (WCAG 2.1.1)', () => {
+    /* Die Box hat `overflow-x: auto` — auf dem Handy scrollt sie immer. Ohne Tab-Stop kaeme
+       eine Tastaturnutzerin nie an die rechte Spalte. axe meldete das als
+       `scrollable-region-focusable`. */
+    useProgressStore.getState().addCard('M. deltoideus')
+    const { container } = renderPage()
+    const box = container.querySelector('.deck-table-wrap')!
+    expect(box).toHaveAttribute('tabindex', '0')
+    expect(box).toHaveAccessibleName(/Karten in deinem Kasten/i)
+  })
 })
