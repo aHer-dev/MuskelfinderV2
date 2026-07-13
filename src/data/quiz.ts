@@ -119,7 +119,17 @@ function candidates(all: readonly Muscle[], field: (m: Muscle) => string): Candi
   return all.map((m) => ({ label: field(m), muscleId: m.id }));
 }
 
-/** Muskeln, die für den Modus taugliche Daten haben. */
+/**
+ * Muskeln, die für den Modus taugliche Daten haben.
+ *
+ * Exportiert für den Prüfungsmodus (9c): der stellt sein Set aus dem Karteikasten
+ * zusammen und muss vorher wissen, ob ein Muskel eine Bild- oder Innervationsfrage
+ * überhaupt hergibt — sonst stünde eine Frage ohne Bild da.
+ */
+export function eligibleFor(muscles: readonly Muscle[], mode: QuizMode): Muscle[] {
+  return eligible(muscles, mode);
+}
+
 function eligible(muscles: readonly Muscle[], mode: QuizMode): Muscle[] {
   const sub = MIXED_SUBMODES[mode]?.[0] ?? mode; // gemischte teilen die Anforderung der Submodi
   if (sub === 'innervation') return muscles.filter((m) => m.innervation.trim() !== '');
@@ -236,6 +246,26 @@ function imageOptionQuestion(
 }
 
 /**
+ * Eine Frage zu EINEM vorgegebenen Muskel. Die Distraktoren kommen aus `all` — das
+ * ist nicht dasselbe wie der Fragen-Pool: Der Prüfungsmodus (9c) fragt nur Muskeln
+ * aus dem Karteikasten ab, zieht die falschen Antworten aber aus dem ganzen Bestand.
+ * Ein Kasten mit vier Karten böte sonst vier immer gleiche Optionen.
+ */
+export function questionForMuscle(
+  muscle: Muscle,
+  mode: QuizMode,
+  all: readonly Muscle[],
+  rng: () => number,
+  qid: string,
+): QuizQuestion {
+  const submodes = MIXED_SUBMODES[mode];
+  const concrete = submodes ? submodes[Math.floor(rng() * submodes.length)] : mode;
+  return concrete === 'name-image'
+    ? imageOptionQuestion(muscle, all, rng, qid, mode)
+    : textQuestion(muscle, concrete, all, rng, qid, mode);
+}
+
+/**
  * Erzeugt bis zu `count` MC-Fragen für den Modus. Jede Frage hat 4 Optionen
  * (1 richtig + bis zu 3 Distraktoren), Reihenfolge gemischt. „Gemischt"-Modi lösen
  * je Frage zufällig auf eine konkrete Richtung auf; „name-image" nutzt Bild-Optionen.
@@ -248,13 +278,8 @@ export function generateQuiz(
 ): QuizQuestion[] {
   const pool = eligible(muscles, mode);
   const chosen = shuffle(pool, rng).slice(0, Math.min(count, pool.length));
-  const submodes = MIXED_SUBMODES[mode];
 
-  return chosen.map((muscle, qIndex) => {
-    const concrete = submodes ? submodes[Math.floor(rng() * submodes.length)] : mode;
-    const qid = `q${qIndex}-${muscle.id}`;
-    return concrete === 'name-image'
-      ? imageOptionQuestion(muscle, muscles, rng, qid, mode)
-      : textQuestion(muscle, concrete, muscles, rng, qid, mode);
-  });
+  return chosen.map((muscle, qIndex) =>
+    questionForMuscle(muscle, mode, muscles, rng, `q${qIndex}-${muscle.id}`),
+  );
 }

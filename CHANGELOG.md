@@ -7,6 +7,36 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- **Etappe 9c — Prüfungsmodus + Debrief (Brücke B3, die letzte offene)** (`src/data/exam.ts`,
+  `src/store/useExamStore.ts`, `/pruefung`): Die App prüft, **wie geprüft wird** — festes Set aus dem
+  Karteikasten, **kein Feedback bis zum Ende**, Timer (eine Minute pro Frage; er beendet die Prüfung,
+  er bestraft nicht). Die Fragen mischen die Abrufformen — Multiple Choice, Bild und **freier Abruf**,
+  denn so wird real geprüft (E1); Freitext ist die häufigste Form, nicht eine unter vielen.
+  **Der Wert steckt nicht im Timer, sondern im Debrief.** Es wertet nach *Struktur* aus statt als Note
+  (nach Region, nach Abrufform, nach benannten Verwechslungen aus 7e) und hat **genau einen
+  Primärbutton: „Jetzt aus den Fehlern lernen"**. Der legt die verpassten Muskeln in den Kasten — auch
+  die, die nie drin waren — und startet **sofort** eine Sitzung mit genau diesen Karten. **Das ist
+  Brücke B3; damit stehen alle vier.** Wer alles richtig hatte, bekommt den Knopf nicht zu sehen
+  (kein CTA ins Leere — Regel aus 8c). Die Sprache bleibt schuldfrei: „12 von 20 · hier lohnt sich
+  Zeit", kein Prozentwert, kein „durchgefallen".
+  **Neue Leitner-Transition `applyExamMiss`** (`src/persistence/leitner.ts`): Ein Prüfungsfehler stuft
+  **eine Box zurück** *und* macht die Karte **sofort fällig**. Beides ist nötig und keine bestehende
+  Transition konnte beides — `applyWrong` legt die Karte auf *morgen* (`buildQueue` filtert auf
+  `isDue`, die Debrief-Sitzung wäre **leer** gestartet), und ohne die Rückstufung höbe die Sitzung
+  eine gerade verpasste Karte beim ersten Treffer noch *über* ihr altes Fach. Das naheliegende
+  Schwierig-Flag (eine schwierige Karte ist immer fällig) wäre falsch gewesen: Es klebt, bis es jemand
+  von Hand entfernt. Intervalle, Fächergrenzen und `isDue` sind unangetastet; betroffen sind nur
+  V1-Felder (ADR 0002). **Die Prüfung vergibt keine XP** — sie bewertet, sie belohnt nicht.
+  ⚠️ **Die Prüfung schreibt in KEINE Quizserie.** `useQuizGame` committet bei jeder Runde in die
+  V1-Serien; ein Prüfungsmodus auf diesem Hook hätte jedes Ergebnis still in die normale Quiz-Bilanz
+  gekippt — und damit ausgerechnet die Zahl verfälscht, aus der die Statistik den „schwächster
+  Modus"-Knopf ableitet (8c). Der Prüfungs-Store ist eigenständig und **nicht persistiert**; ein Test
+  prüft am Quelltext nach, dass weder `useQuizStore`, `commitRound` noch `quizSeriesKey` vorkommen.
+  Der Serien-Schlüssel bleibt bitgleich (Regressionstest).
+  Verifiziert: 465 Tests grün · axe **0 Verstöße** über Einstieg, laufende Prüfung und Debrief in
+  Light **und** Dark · **0 externe Requests** · live durchgeklickt: 12 MC-Fragen beantwortet, **keine
+  einzige** verrät ihr Ergebnis (kein Farbcode, kein Haken, kein Satz, nichts gesperrt) · der
+  Debrief-Knopf landet in einer **laufenden** Sitzung mit exakt den verpassten Karten.
 - **Etappe 9a — Funktionelle Gruppen + Gruppen-Quiz** (`src/data/groups.ts`,
   `src/data/editorial/groups.json`, `/gruppe/:id`): Geprüft wird in **Zusammenhängen**, nicht Muskel
   für Muskel. **15 kuratierte Gruppen** (Rotatorenmanschette, Ischiocrurale, Quadriceps,

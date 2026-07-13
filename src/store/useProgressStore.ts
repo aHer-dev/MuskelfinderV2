@@ -13,6 +13,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import type { CardRating } from '../types';
 import {
   applyCorrect,
+  applyExamMiss,
   applyUnsure,
   applyWrong,
   endOfDay,
@@ -73,6 +74,13 @@ interface ProgressState {
   /* Lernen — Leitner-Transition + XP-Vergabe in einem Schritt. */
   reviewCard: (name: string, rating: CardRating) => XpAward;
   toggleDifficult: (name: string) => boolean;
+
+  /**
+   * Prüfungs-Fehltreffer verbuchen (9c): legt fehlende Karten an, stuft alle
+   * genannten eine Box zurück und macht sie sofort fällig. Keine XP, kein Streak,
+   * keine Quizserie — die Prüfung bewertet, sie belohnt nicht.
+   */
+  registerExamMisses: (names: string[]) => void;
 
   /* Weitere XP-Quellen. */
   awardStreak: (count: number) => XpAward;
@@ -181,6 +189,20 @@ export const useProgressStore = create<ProgressState>()(
           },
         }));
         return difficult;
+      },
+
+      registerExamMisses: (names) => {
+        if (names.length === 0) return;
+        const now = new Date();
+        set((s) => {
+          const cards = { ...s.flashcards.cards };
+          for (const name of names) {
+            // Ein Muskel, der noch nie im Kasten war, kommt erst hinein — und wird
+            // dann genauso verbucht wie jeder andere Fehltreffer (Fach 1 ist der Boden).
+            cards[name] = applyExamMiss(cards[name] ?? newCard(now), now);
+          }
+          return { flashcards: { ...s.flashcards, cards } };
+        });
       },
 
       awardStreak: (count) => {

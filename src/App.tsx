@@ -25,6 +25,7 @@ const DeckManagerPage = lazy(() =>
   import('./pages/DeckManagerPage').then((m) => ({ default: m.DeckManagerPage })),
 )
 const QuizPage = lazy(() => import('./pages/QuizPage').then((m) => ({ default: m.QuizPage })))
+const ExamPage = lazy(() => import('./pages/ExamPage').then((m) => ({ default: m.ExamPage })))
 const StatsPage = lazy(() => import('./pages/StatsPage').then((m) => ({ default: m.StatsPage })))
 const SourcesPage = lazy(() =>
   import('./pages/SourcesPage').then((m) => ({ default: m.SourcesPage })),
@@ -60,6 +61,7 @@ function App() {
             <Route path="/lernkarten" element={<FlashcardsPage />} />
             <Route path="/karteikasten" element={<DeckManagerPage />} />
             <Route path="/quiz" element={<QuizPage />} />
+            <Route path="/pruefung" element={<ExamPage />} />
             <Route path="/statistik" element={<StatsPage />} />
             <Route path="/quellen" element={<SourcesPage />} />
             <Route path="/datenschutz" element={<PrivacyPage />} />

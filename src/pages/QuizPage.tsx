@@ -1,14 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { QuestionCard } from '../components/features/quiz/QuestionCard';
 import { QuizProgress } from '../components/features/quiz/QuizProgress';
 import { QuizResult } from '../components/features/quiz/QuizResult';
+import { Icon } from '../components/ui/Icon';
 import { getRegions } from '../data';
 import { regionLabel } from '../data/labels';
 import { readQuizHandoff } from '../data/quiz';
 import { useQuizGame } from '../hooks/useQuizGame';
 import type { QuizMode, RegionId } from '../types';
 import '../components/features/quiz/quiz.css';
+import '../components/features/exam/exam.css';
 
 const REGION_ORDER = getRegions().map((r) => r.id) as RegionId[];
 
@@ -160,6 +162,23 @@ export function QuizPage() {
 
       {mode === null ? (
         <>
+          {/* Die Prüfung ist kein Quizmodus, sondern eine Standortbestimmung: festes Set,
+              kein Feedback zwischendurch, und danach wird aus jedem Fehler eine Karte (9c).
+              Sie steht darum ÜBER den Modi und schreibt in keine Quizserie. */}
+          <section className="quiz-exam-entry" aria-labelledby="quiz-exam-entry">
+            <h2 className="quiz-exam-entry__title" id="quiz-exam-entry">
+              <Icon name="icTarget" size={18} />
+              Prüfungsmodus
+            </h2>
+            <p className="quiz-exam-entry__desc">
+              20 Fragen aus deinem Kasten, gemischt über die Abrufformen, ohne Rückmeldung
+              zwischendurch. Am Ende siehst du, wo die Lücken sind — und übst sie sofort.
+            </p>
+            <Link to="/pruefung" className="btn btn--primary">
+              Prüfung starten
+            </Link>
+          </section>
+
           <div className="quiz-filter" role="group" aria-label="Quiz auf Bereiche einschränken">
             <span className="quiz-filter__label">Bereich</span>
             <div className="quiz-filter__chips">

@@ -73,6 +73,32 @@ export function applyUnsure(card: FlashcardCard, now: Date = new Date()): Flashc
   return { ...card, lastSeen: now.toISOString() };
 }
 
+/**
+ * Fehltreffer in der Prüfung (Etappe 9c) — eine eigene Transition, kein Ersatz für
+ * `applyWrong`.
+ *
+ * Zwei Dinge müssen hier gleichzeitig gelten, und keine bestehende Transition kann beide:
+ * 1. **Eine Box zurück.** Wer den Muskel in der Prüfung nicht wusste, weiß ihn nicht.
+ *    Ohne die Rückstufung hebt die Debrief-Sitzung ihn beim ersten Treffer sogar noch
+ *    ÜBER sein altes Fach — die Prüfung würde eine Lücke belohnen.
+ * 2. **Sofort wieder fällig.** `applyWrong` legt die Karte auf `dueDate(fach)`, also
+ *    frühestens auf morgen (Fach 1 = 1 Tag). Das Debrief übt sie aber JETZT: `buildQueue`
+ *    filtert auf `isDue`, und eine nicht fällige Karte fiele aus der Sitzung — der
+ *    Primärbutton führte ins Leere (die Regel aus 8c).
+ *
+ * Intervalle, Fächergrenzen und `isDue` bleiben unangetastet; es sind ausschließlich
+ * V1-Felder betroffen (ADR 0002). XP gibt es hier keine — die verdient die Sitzung danach.
+ */
+export function applyExamMiss(card: FlashcardCard, now: Date = new Date()): FlashcardCard {
+  return {
+    ...card,
+    fach: Math.max(MIN_FACH, card.fach - 1),
+    nextDue: now.toISOString(),
+    totalWrong: card.totalWrong + 1,
+    lastSeen: now.toISOString(),
+  };
+}
+
 /** Fällig = nextDue ≤ Tagesende ODER als schwierig markiert. */
 export function isDue(card: FlashcardCard, now: Date = new Date()): boolean {
   return new Date(card.nextDue) <= endOfDay(now) || card.difficult;

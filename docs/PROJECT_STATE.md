@@ -5,16 +5,18 @@
 > docs/migration-plan.md (abgeschlossen), docs/architecture.md und den ADRs.
 
 ## Stand
-- Datum: 2026-07-12
-- Branch: `main` · **Remote: github.com/aHer-dev/MuskelfinderV2** · Ziel-URL: `aher-dev.github.io/MuskelfinderV2/`
+- Datum: 2026-07-13
+- Branch: `main` · **Remote: github.com/aHer-dev/MuskelfinderV2** · Live: `aher-dev.github.io/MuskelfinderV2/`
 - Status: **Migration abgeschlossen (Etappen 0–6, `v1.0`). ETAPPE 7 KOMPLETT (7a–7f). ETAPPE 8
-  LAEUFT: 8a + 8c + 8b + 8e fertig** — die Abrufhaerte waechst mit der Beherrschung, keine Zahl in der
-  Statistik steht ohne Knopf, man kann gezielt an den Luecken ueben, und eigene Notizen stehen beim
-  Muskel, die Bildluecke sieht absichtlich aus, und der lateinische Name erklaert sich selbst.
-  **ETAPPE 8 IST KOMPLETT** (8a–8f). Offen bleiben nur zwei bewusste Auslassungen: Stufe 2a von 8f
-  (Renderings) und die Merksaetze aus 8d — beide brauchen den Fachmann, nicht mehr Code.
-  **Bruecke B4 ist eingeloest**; offen bleibt nur noch B3 (9c). Statustafel: `docs/produkt-plan.md`.
-- Gate gruen: `npm run lint && npm run test && npm run build` — **405 Tests**.
+  KOMPLETT (8a–8f). ETAPPE 9 LAEUFT: 9a + 9c fertig.** Die Abrufhaerte waechst mit der Beherrschung,
+  keine Zahl in der Statistik steht ohne Knopf, man kann gezielt an den Luecken ueben, eigene Notizen
+  stehen beim Muskel, der lateinische Name erklaert sich selbst, geprueft wird in Zusammenhaengen —
+  und die Pruefung wirft ihre Luecken direkt in die naechste Sitzung.
+  **ALLE VIER BRUECKEN STEHEN:** B1 (7d), B2 (7e), B3 (**9c**), B4 (8c).
+  Statustafel: `docs/produkt-plan.md`.
+- Gate gruen: `npm run lint && npm run test && npm run build` — **465 Tests**.
+- A11y: axe 0 Verstoesse (Playwright+Chromium+axe-core, Light+Dark) inkl. `/pruefung` in allen drei
+  Zustaenden (Einstieg, laufende Pruefung, Debrief). 0 externe Requests.
 - **Offen aus 8b (Entscheidung noetig):** Die Filter gibt es in der **Sitzung**, aber **nicht im
   Quiz**. Ein gefilterter Quiz-Pool braucht einen ZUSAETZLICHEN Serien-Schluessel (der bestehende
   muss bitgleich bleiben, ADR 0002) und eine Antwort auf zu kleine Pools (eine Frage braucht 4
@@ -168,14 +170,33 @@ geoeffnet. Checkliste: `docs/release-v1.1.md`. Alles, was ohne den Projektinhabe
 **ETAPPE 9 IST VOLLSTAENDIG GEBRIEFT** (Rahmen + 9a-9d, siehe Statustafel).
 **9a ist gebaut** (15 Gruppen, Gruppen-Quiz, Gruppenseite) — die Gruppenliste **wartet auf die
 fachliche Freigabe des Projektinhabers** (E2). Was er streicht, wird gestrichen.
-Naechster Schritt: **9c — Pruefungsmodus + Debrief (Bruecke B3).**
-Briefing: `docs/tasks/2026-07-13-etappe-9c-pruefungsmodus.md`.
-Reihenfolge: 9a ✅ → **9c** → 9b (braucht 9a) → 9d.
+**9c ist gebaut** (Pruefungsmodus `/pruefung` + Debrief) — **BRUECKE B3 IST EINGELOEST.**
+**Damit stehen ALLE VIER Bruecken** (B1 7d, B2 7e, B3 9c, B4 8c).
+Naechster Schritt: **9b — Kompetenz-Abzeichen** (braucht 9a).
+Briefing: `docs/tasks/2026-07-13-etappe-9b-abzeichen.md`. Danach 9d (Palpation).
+Reihenfolge: 9a ✅ → 9c ✅ → **9b** → 9d.
 
-**Drei Fallen fuer Etappe 9 (am Code verifiziert):**
-1. **`useQuizGame` schreibt bei jeder Runde `commitRound(quizSeriesKey(...))`** (Zeile 103). Ein
-   Pruefungsmodus (9c) auf diesem Hook kippt seine Ergebnisse still in die normale Quiz-Bilanz und
-   verschmutzt den V1-Serien-Schluessel. ADR 0002 waere gebrochen.
+**Aus 9c mitnehmen (gilt fuer alles, was Karten faellig machen will):**
+- **`applyExamMiss` in `src/persistence/leitner.ts` ist eine EIGENE Transition, kein Ersatz fuer
+  `applyWrong`.** Sie stuft eine Box zurueck UND macht die Karte sofort faellig. Beides ist noetig:
+  `applyWrong` legt die Karte auf `dueDate(fach)`, also fruehestens auf **morgen** — `buildQueue`
+  filtert auf `isDue`, die Debrief-Sitzung waere **leer** gestartet (die Regel aus 8c). Und ohne die
+  Rueckstufung hoebe die Sitzung eine gerade verpasste Karte beim ersten Treffer noch *ueber* ihr
+  altes Fach: Die Pruefung wuerde eine Luecke belohnen.
+- **Das Schwierig-Flag ist NICHT der Weg, eine Karte faellig zu machen.** Es macht sie zwar immer
+  faellig (`isDue`), aber es **klebt** — die Karte bliebe fuer immer „immer faellig", bis jemand sie
+  von Hand entmarkiert. Das Flag gehoert der Nutzerin, nicht dem System.
+- **Die Pruefung vergibt keine XP und keinen Streak.** Sie bewertet, sie belohnt nicht; verdient wird
+  in der Sitzung danach.
+- **`questionForMuscle` / `eligibleFor` (`src/data/quiz.ts`)** sind additiv exportiert: Fragen zu
+  EINEM vorgegebenen Muskel, Distraktoren aus dem **ganzen** Bestand. `generateQuiz` wuerfelt den Pool
+  selbst und taugt nicht, wenn man nur Karten aus dem Kasten abfragen will.
+
+**Drei Fallen fuer den Rest von Etappe 9 (am Code verifiziert):**
+1. **`useQuizGame` schreibt bei jeder Runde `commitRound(quizSeriesKey(...))`** (Zeile 110). Wer
+   darauf aufsetzt, kippt seine Ergebnisse still in die normale Quiz-Bilanz und verschmutzt den
+   V1-Serien-Schluessel. ADR 0002 waere gebrochen. **9c umgeht das mit einem eigenen, nicht
+   persistierten Store; ein Test prueft am Quelltext, dass die Namen dort nicht vorkommen.**
 2. **`src/data/generated/` wird von `npm run migrate:data` ueberschrieben.** Gruppen (9a) und
    Palpation (9d) gehoeren nach `src/data/editorial/`. Blaupause: `withEtymology` in
    `src/data/etymology.ts`.
