@@ -70,18 +70,21 @@
   --glass-shadow:    0 12px 40px rgba(60,54,44,0.13);
 
   /* Karten-Rahmen/Schatten.
-     `--card-border` ist im Light-Modus bewusst ein ZARTES ORANGE statt eines neutralen
-     Grautons (Wunsch des Projektinhabers, 2026-07-13): Auf dem warmen Papier bindet es die
-     Kaesten an die Marke, ohne laut zu werden.
+     `--card-border` ist ein ZARTES ORANGE statt eines neutralen Grautons (Wunsch des
+     Projektinhabers, 2026-07-13): Es bindet die Kaesten an die Marke, ohne laut zu werden.
 
-     Es faerbt NUR Inhalts-Kaesten. Bedienelemente (Eingabefelder, Buttons) behalten ihren
-     neutralen Rahmen — deren Umriss ist keine Dekoration, sondern traegt die Erkennbarkeit
-     (WCAG 1.4.11), und der Akzent gehoert dort dem Fokus-Ring. Das echte Glas (Leiste,
-     Tab-Bar, Sheet, Toast) bleibt ebenfalls neutral: Es soll zuruecktreten, nicht mitfaerben.
+     ZWEI ORANGE-STUFEN, und die Unterscheidung ist wichtig:
+     - `--card-border` (hier) umrandet **Inhalts-Kaesten**. Reine Dekoration, darum darf sie
+       zart sein — 45 % auf Papier, 26 % auf Schwarz (auf dem warmen Hellgrund muss sich das
+       Orange gegen viel Licht behaupten; auf Schwarz leuchtet es von selbst, gleiche
+       Deckkraft saehe dort wie ein Neonrahmen aus).
+     - `--control-border` (weiter unten) umrandet **Bedienelemente**. Das ist KEINE
+       Dekoration: Der Umriss ist das, woran man einen Button oder ein Feld als solches
+       erkennt — WCAG 1.4.11 verlangt dafuer 3:1. Darum ist er kraeftiger und benutzt den
+       dunkleren Akzentton.
 
-     45 % auf Papier gegen 26 % auf Schwarz: kein Versehen. Auf dem warmen Hellgrund muss das
-     Orange sich gegen viel Licht behaupten, auf Schwarz leuchtet es von selbst — gleiche
-     Deckkraft saehe dort wie ein Neonrahmen aus. */
+     **Das echte Glas** (Rail, TabBar, Sheet, Toast) bleibt auf `--glass-border` und faerbt
+     NICHT mit: Es soll zuruecktreten. */
   --card-border:     color-mix(in srgb, var(--accent) 45%, transparent);
   --card-shadow:     0 1px 2px rgba(28,26,23,0.04), 0 1px 3px rgba(28,26,23,0.05);
   --card-shadow-hover: 0 10px 30px rgba(60,54,44,0.13), 0 2px 6px rgba(60,54,44,0.08);
@@ -89,7 +92,23 @@
   /* Hairlines */
   --hairline:        rgba(28,26,23,0.08);
   --hairline-strong: rgba(28,26,23,0.14);
-  --control-border:  rgba(28,26,23,0.16);      /* Kbd-Hint / Input-Border */
+
+  /* Rahmen von BEDIENELEMENTEN (Buttons, Selects, Eingaben) — orange, auf Wunsch des
+     Projektinhabers (2026-07-13).
+
+     Hier steht bewusst `--accent-strong` und nicht `--accent`: Der Umriss eines
+     Bedienelements ist das, woran man es ALS Bedienelement erkennt, und WCAG 1.4.11
+     verlangt dafuer 3:1 gegen die Nachbarfarbe. Das Marken-Orange (#ff6a00) schafft auf
+     Weiss nur **2.87:1** — es verfehlt die Schwelle knapp. `--accent-strong` (#e64500)
+     erreicht **4.0:1**.
+
+     (Der alte GRAUE Rahmen erreichte uebrigens nur 1.5:1 — er verfehlte die Anforderung
+     deutlicher als jedes Orange. Der Wechsel macht die App an dieser Stelle nicht bunter,
+     sondern zugaenglicher.) */
+  --control-border:  var(--accent-strong);
+  /* Der Gefahr-Knopf darf KEINEN orangen Rahmen haben — roter Text in orangem Rahmen liest
+     sich wie ein Fehler. Er bekommt sein eigenes, gedaempftes Rot. */
+  --danger-border:   color-mix(in srgb, var(--danger-on-surface) 70%, transparent);
   --checkbox-border: rgba(28,26,23,0.24);
 
   /* Formularfelder — MUSS DECKEND SEIN, keine rgba-Transparenz (Etappe 10f).
@@ -156,7 +175,13 @@
 
   --hairline:        rgba(255,255,255,0.08);
   --hairline-strong: rgba(255,255,255,0.15);
-  --control-border:  rgba(255,255,255,0.14);
+
+  /* Auf Schwarz traegt das reine Marken-Orange muehelos (6.8:1 gegen den Grund) — hier
+     braucht es NICHT die dunklere Variante, die waere sogar schlechter lesbar. Auf 70 %
+     gedaempft, damit der Rahmen ein Rahmen bleibt und nicht leuchtet; das reicht noch
+     fuer ~3.8:1 (WCAG 1.4.11 verlangt 3:1). */
+  --control-border:  color-mix(in srgb, var(--accent) 70%, transparent);
+  --danger-border:   color-mix(in srgb, var(--danger) 70%, transparent);
   --checkbox-border: rgba(255,255,255,0.22);
 
   /* Deckend, siehe Light — hier war der Fehler sichtbar: 5 % Weiss auf Schwarz ergab
@@ -201,7 +226,9 @@
     --glass-panel:rgba(15,16,20,0.82); --glass-border:rgba(255,255,255,0.08); --glass-shadow:0 12px 40px rgba(0,0,0,0.5);
     --card-border:color-mix(in srgb,var(--accent) 26%,transparent); --card-shadow:none;
     --hairline:rgba(255,255,255,0.08); --hairline-strong:rgba(255,255,255,0.15);
-    --control-border:rgba(255,255,255,0.14); --checkbox-border:rgba(255,255,255,0.22);
+    --control-border:color-mix(in srgb,var(--accent) 70%,transparent);
+    --danger-border:color-mix(in srgb,var(--danger) 70%,transparent);
+    --checkbox-border:rgba(255,255,255,0.22);
     --field-bg:#1b1e24;
     --text-primary:#f6f6f7; --text-secondary:#c9cace; --text-tertiary:#9a9ca2; --text-muted:#8a8d93; --text-faint:#6e7076;
     --accent-on-surface:#ff6a00; --accent-on-tint:#ff6a00;

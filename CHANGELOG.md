@@ -7,6 +7,24 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Changed
+- **Auch Buttons, Dropdowns und Eingabefelder haben jetzt orange Ränder** (Wunsch des
+  Projektinhabers) — und das ist, entgegen meiner ersten Einschätzung, **ein A11y-Gewinn**.
+  Nachgemessen: Der bisherige graue Rahmen erreichte auf Weiß nur **1,39:1** (Dark: 1,44:1).
+  WCAG 1.4.11 verlangt für Bedienelemente **3:1** — deren Umriss ist das, woran man sie *als*
+  Bedienelement erkennt. Der graue Rahmen hat das nie erfüllt.
+  **`--control-border` benutzt `--accent-strong` (#e64500), nicht das Marken-Orange (#ff6a00):**
+  Letzteres erreicht auf Weiß nur **2,87:1** und verfehlt die Schwelle knapp. Gemessene Werte jetzt:
+  **Light 4,03:1 · Dark 3,79:1** (außen) / **3,46:1** (gegen das Feld innen).
+  **Zwei Orange-Stufen, und die Unterscheidung ist der Punkt:** `--card-border` umrandet
+  Inhalts-Kästchen (reine Dekoration, darf zart sein); `--control-border` umrandet Bedienelemente
+  (keine Dekoration — trägt die Erkennbarkeit, muss kräftiger sein). Das echte Glas (Rail, TabBar,
+  Sheet, Toast) färbt weiterhin **nicht** mit.
+  Der Gefahr-Knopf bekommt ein eigenes `--danger-border`: Roter Text in einem orangen Rahmen läse
+  sich wie ein Fehler.
+  Sechs Bedienelemente hingen noch am Glas- statt am Control-Token (`.deck-remove`, `.deck-search`,
+  `.fc-icon-btn`, `.fc-image-toggle`, `.type-card__input`, `.muscle-note__field`) — begradigt.
+
+### Changed
 - **Zarter Orange-Rahmen um die Inhalts-Kästchen**, in beiden Themes (Wunsch des Projektinhabers).
   `--card-border` ist jetzt ein getönter Akzent statt eines neutralen Grautons — im Light-Modus mit
   **45 %**, im Dark-Modus mit **26 %**: Auf dem warmen Papier muss sich das Orange gegen viel Licht
