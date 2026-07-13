@@ -119,7 +119,7 @@ Prüfungsmodus und kommt mit **9c**.
 
 | ID | Schritt | Briefing | Status | Branch | Blockiert durch |
 |----|---------|----------|--------|--------|-----------------|
-| 9a | Funktionelle Gruppen (~12–15, generiert + geprüft) + Gruppen-Quiz | [9a](tasks/2026-07-13-etappe-9a-funktionelle-gruppen.md) | offen | — | — |
+| 9a | Funktionelle Gruppen (~12–15, generiert + geprüft) + Gruppen-Quiz | [9a](tasks/2026-07-13-etappe-9a-funktionelle-gruppen.md) | **fertig** (15 Gruppen — **warten auf fachliche Freigabe**) | `feat/etappe-9a-funktionelle-gruppen` | — |
 | 9b | Kompetenz-Abzeichen | [9b](tasks/2026-07-13-etappe-9b-abzeichen.md) | offen | — | **9a** |
 | 9c | Prüfungsmodus (schriftlich + mündlich/praktisch) + Debrief-Schleife (**B3**) | [9c](tasks/2026-07-13-etappe-9c-pruefungsmodus.md) | offen | — | — |
 | 9d | Palpations-Sektion je Muskel (optionales Feld, inkrementell) | [9d](tasks/2026-07-13-etappe-9d-palpation.md) | offen | — | — |

@@ -20,7 +20,7 @@ export function createRng(seed: number): () => number {
   };
 }
 
-function shuffle<T>(items: readonly T[], rng: () => number): T[] {
+export function shuffle<T>(items: readonly T[], rng: () => number): T[] {
   const result = [...items];
   for (let i = result.length - 1; i > 0; i--) {
     const j = Math.floor(rng() * (i + 1));
@@ -67,6 +67,7 @@ const MODE_CATEGORY: Record<QuizMode, string> = {
   image: 'Bild → Muskel',
   'name-image': 'Name → Bild',
   'image-mixed': 'Bild ↔ Name',
+  'group-odd-one-out': 'Funktionelle Gruppe',
 };
 
 /** „Gemischt"-Modi lösen je Frage zufällig auf eine ihrer konkreten Richtungen auf. */

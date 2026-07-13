@@ -1,0 +1,127 @@
+import { readFileSync } from 'node:fs';
+import { describe, expect, it } from 'vitest';
+import {
+  GroupDataError,
+  getGroups,
+  getGroupById,
+  groupsOf,
+  indexByMuscle,
+  readGroups,
+} from './groups';
+import { getMuscles } from './loader';
+
+const MUSCLES = getMuscles();
+const NAMES = new Set(MUSCLES.map((m) => m.nameLatin));
+
+describe('readGroups — die Validierung hat Zähne', () => {
+  it('nimmt eine saubere Gruppe an', () => {
+    const groups = readGroups(
+      { gruppen: [{ id: 'g', label: 'G', muscles: ['M. supraspinatus'] }] },
+      NAMES,
+    );
+    expect(groups).toEqual([{ id: 'g', label: 'G', muscles: ['M. supraspinatus'] }]);
+  });
+
+  it('LÄSST EINEN UNBEKANNTEN MUSKEL SCHEITERN — er verschwindet nicht still', () => {
+    /* Der wichtigste Test der Datei: Ein Tippfehler in groups.json würde die Gruppe
+       sonst still verkleinern. Eine unvollständige Rotatorenmanschette ist schlimmer
+       als gar keine — und niemand würde es merken. */
+    expect(() =>
+      readGroups({ gruppen: [{ id: 'g', label: 'G', muscles: ['M. supraspinatuz'] }] }, NAMES),
+    ).toThrow(GroupDataError);
+  });
+
+  it('lässt eine doppelte Gruppen-id scheitern', () => {
+    expect(() =>
+      readGroups({
+        gruppen: [
+          { id: 'g', label: 'A', muscles: [] },
+          { id: 'g', label: 'B', muscles: [] },
+        ],
+      }),
+    ).toThrow(GroupDataError);
+  });
+
+  it('lässt eine kaputte Gruppe scheitern, statt sie zu schlucken', () => {
+    expect(() => readGroups({ gruppen: [{ id: 'g' }] })).toThrow(GroupDataError);
+  });
+
+  it('verträgt eine leere oder fehlende Datei', () => {
+    expect(readGroups({})).toEqual([]);
+    expect(readGroups(null)).toEqual([]);
+    expect(readGroups({ gruppen: [] })).toEqual([]);
+  });
+
+  it('entfernt Namensdubletten innerhalb einer Gruppe (ADR 0002 §2)', () => {
+    const [g] = readGroups({
+      gruppen: [{ id: 'g', label: 'G', muscles: ['M. nasalis', 'M. nasalis'] }],
+    });
+    expect(g.muscles).toEqual(['M. nasalis']);
+  });
+});
+
+describe('indexByMuscle — Many-to-Many, keine Partition', () => {
+  it('ein Muskel kann in mehreren Gruppen stecken', () => {
+    const index = indexByMuscle([
+      { id: 'a', label: 'A', muscles: ['M. gracilis'] },
+      { id: 'b', label: 'B', muscles: ['M. gracilis'] },
+    ]);
+    expect(index.get('M. gracilis')?.map((g) => g.id)).toEqual(['a', 'b']);
+  });
+});
+
+describe('Der echte Gruppenbestand', () => {
+  it('lädt und ist gegen den Muskelbestand geprüft', () => {
+    expect(getGroups().length).toBeGreaterThanOrEqual(12);
+    expect(getGroups().length).toBeLessThanOrEqual(15);
+  });
+
+  it('jeder genannte Muskel existiert wirklich', () => {
+    const fehlend = getGroups().flatMap((g) =>
+      g.muscles.filter((n) => !NAMES.has(n)).map((n) => `${g.id}: ${n}`),
+    );
+    expect(fehlend).toEqual([]);
+  });
+
+  it('die Rotatorenmanschette ist vollständig und enthält nichts Fremdes', () => {
+    expect(getGroupById('rotatorenmanschette')?.muscles.sort()).toEqual(
+      [
+        'M. infraspinatus',
+        'M. subscapularis',
+        'M. supraspinatus',
+        'M. teres minor',
+      ].sort(),
+    );
+  });
+
+  it('der Hypothenar enthält NICHT den M. extensor digiti minimi', () => {
+    /* Das V1-Tag „kleinfinger" führt ihn — er ist aber ein Unterarmstrecker.
+       Genau deshalb sind Tags Vorschläge und keine Gruppen. */
+    expect(getGroupById('hypothenar')?.muscles).not.toContain('M. extensor digiti minimi');
+  });
+
+  it('die Hüft-Adduktoren enthalten NICHT den M. adductor pollicis (Hand)', () => {
+    expect(getGroupById('adduktoren-huefte')?.muscles).not.toContain('M. adductor pollicis');
+  });
+
+  it('ein Muskel ohne Gruppe ist kein Fehler', () => {
+    expect(groupsOf('M. deltoideus')).toEqual([]);
+    expect(groupsOf('gibt es nicht')).toEqual([]);
+  });
+
+  it('keine Gruppe ist leer oder ein Einzelmuskel mit Anhang', () => {
+    for (const g of getGroups()) {
+      expect(g.muscles.length, `${g.id} hat nur ${g.muscles.length} Muskeln`).toBeGreaterThanOrEqual(3);
+    }
+  });
+});
+
+/* ⚠️ Die Falle aus dem Rahmen-Briefing — als Test, nicht als Kommentar. */
+describe('Die Gruppen überleben eine Neu-Migration', () => {
+  it('liegen NICHT in src/data/generated/ (das schreibt migrate:data neu)', () => {
+    const script = readFileSync('scripts/migrate-v1-data.mjs', 'utf8');
+    expect(script).toContain('src/data/generated');
+    expect(script).not.toContain('editorial');
+    expect(() => readFileSync('src/data/editorial/groups.json', 'utf8')).not.toThrow();
+  });
+});

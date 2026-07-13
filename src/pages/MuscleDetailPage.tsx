@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getMuscleById } from '../data';
 import { movementLabel, regionLabel } from '../data/labels';
+import { groupsOf } from '../data/groups';
 import { isSupportedIn3D, threeDUrl } from '../data/threeD';
 import { DataList } from '../components/features/detail/DataList';
 import type { DataRow } from '../components/features/detail/DataList';
@@ -146,6 +147,20 @@ export function MuscleDetailPage() {
           )}
 
           {muscle.clinicalNote && <ClinicalNote note={muscle.clinicalNote} />}
+
+          {/* Geprueft wird in Zusammenhaengen (9a). Die Gruppe fuehrt zu den anderen
+              Mitgliedern — ein Muskel ohne Gruppe zeigt hier schlicht nichts. */}
+          {groupsOf(muscle.nameLatin).length > 0 && (
+            <ul className="detail__chips detail__chips--groups">
+              {groupsOf(muscle.nameLatin).map((group) => (
+                <li key={group.id}>
+                  <Link to={`/gruppe/${group.id}`} className="chip chip--link">
+                    {group.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
 
           {muscle.functions.length > 0 && (
             <ul className="detail__chips">

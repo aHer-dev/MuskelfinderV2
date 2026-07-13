@@ -52,6 +52,12 @@ const FAMILIES: QuizFamily[] = [
     desc: 'Welcher Nerv versorgt den Muskel?',
     directions: [{ mode: 'innervation', label: 'Starten' }],
   },
+  {
+    // Geprüft wird in Zusammenhängen, nicht Muskel für Muskel (9a).
+    title: 'Funktionelle Gruppen',
+    desc: 'Welcher Muskel gehört nicht dazu? — Rotatorenmanschette, Ischiocrurale, Kaumuskulatur …',
+    directions: [{ mode: 'group-odd-one-out', label: 'Starten' }],
+  },
 ];
 
 function QuizGame({
