@@ -47,11 +47,14 @@ describe('StandRail — „Dein Stand" auf /heute (Etappe 12)', () => {
     navigate.mockClear();
   });
 
-  it('trägt die Marke — das Logo sitzt oben rechts, wo vorher nichts war', () => {
+  it('trägt die Marke NICHT mehr — die steht seit 12b in der Kopfzeile, auf jeder Seite', () => {
+    /* Kurz stand sie hier: Damit hing das Logo an genau EINER Route (`/heute`), und auf dem
+       Handy — wo es keine Rail gibt — nirgends. Jetzt haengt sie in der Shell. Stuende sie
+       hier trotzdem noch, saehe man sie auf dieser Seite doppelt. */
     renderPage();
     const schiene = screen.getByRole('complementary', { name: 'Dein Stand' });
-    expect(schiene).toHaveTextContent('Muskelfinder');
-    expect(schiene).toHaveTextContent('Anatomie Fokus');
+    expect(schiene).not.toHaveTextContent('Anatomie Fokus');
+    expect(schiene.querySelector('img')).toBeNull();
   });
 
   it('zeigt Level und Karteikasten-Größe — bisher eine Textzeile am Seitenende', () => {

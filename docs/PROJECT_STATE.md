@@ -17,7 +17,7 @@
   niemandem mehr ungefragt Karten in den Kasten.**
   **ALLE VIER BRUECKEN STEHEN:** B1 (7d), B2 (7e), B3 (**9c**), B4 (8c).
   Statustafel: `docs/produkt-plan.md`. Offene Punkte: `docs/todo.md`.
-- Gate gruen: `npm run lint && npm run test && npm run build` — **558 Tests**.
+- Gate gruen: `npm run lint && npm run test && npm run build` — **570 Tests**.
 - A11y: axe 0 Verstoesse ueber **8 Routen x Light+Dark** (Playwright+Chromium+axe-core) inkl. `/pruefung` in allen drei
   Zustaenden, der Abzeichen auf `/statistik`, der Palpations-Sektion (mit + ohne Eintrag) sowie neu
   `/anleitung` und dem leeren `/heute`. 0 externe Requests.
@@ -323,8 +323,13 @@ Etappe 8 erledigt.
 **ES GIBT KEINEN OFFENEN CODE-TASK MEHR.** Offen sind nur noch Dinge, die der Projektinhaber
 erledigt — die vollstaendige Liste steht in **`docs/todo.md`**: Palpationstexte aus dem
 Kollegen-Skript (`docs/palpation-erfassen.md`), Kursabschnitte (`docs/curriculum-erfassen.md`), die
-3D-App neu deployen (ihre `datenschutz.html` liefert 404), 3D-Renderings (zurueckgestellt), Logo oben
-rechts.
+3D-App neu deployen (ihre `datenschutz.html` liefert 404), 3D-Renderings (zurueckgestellt).
+
+**Das Logo ist erledigt (12b).** Die Wortmarke haengt in der Kopfzeile der Shell (`BrandMark`) und
+steht damit auf JEDER Route — Desktop rechts, Handy als Kopfzeile ueber der Suche. Reihenfolge nach
+Ansage: **„Anatomie Fokus" oben, „Muskelfinder" darunter.** Genau EINMAL pro Bildschirm: Das Zeichen
+ist dafuer aus der Icon-Rail und aus der `StandRail` verschwunden — ein Test bewacht das
+(`BrandMark.test.tsx`). Wer es in die Rail zurueckholt, hat zwei Logos auf einem Schirm.
 
 ## ⚠️ KEIN HYPOTHENAR — und das bitte nicht „reparieren"
 Drei seiner vier Mitglieder (`M. abductor digiti minimi`, `M. flexor digiti minimi brevis`,

@@ -2,29 +2,25 @@ import { NavLink } from 'react-router-dom';
 import { Icon } from '../ui/Icon';
 import { ProgressRing } from '../ui/ProgressRing';
 import { ThemeToggle } from '../ui/ThemeToggle';
-import { useThemeStore } from '../../store/useThemeStore';
 import { useProgressStore } from '../../store/useProgressStore';
 import { xpView } from '../../persistence/xp';
 import { NAV_ITEMS } from './nav';
 
 /**
  * Desktop-Icon-Rail (Handoff §7): schwebendes Glas-Panel, 68px, radius 20px.
- * Logo themeabhängig, Icon-Nav mit aria-labels, unten Level-Ring + Theme-Toggle.
+ * Icon-Nav mit aria-labels, unten Level-Ring + Theme-Toggle.
+ *
+ * Das Logo stand bis Etappe 12b hier oben — ohne Namen, und auf dem Handy gab es die Rail
+ * gar nicht. Es sitzt jetzt als Wortmarke in der Kopfzeile (`BrandMark`) und damit auf jeder
+ * Seite. Zweimal dasselbe Zeichen auf einem Bildschirm waere kein Branding, sondern ein
+ * Versehen — und der Weg nach Hause fehlt hier nicht: „Heute" ist der erste Nav-Punkt.
  */
 export function IconRail() {
-  const theme = useThemeStore((s) => s.theme);
   const totalXP = useProgressStore((s) => s.xp.totalXP);
   const xp = xpView(totalXP);
-  const logo = `${import.meta.env.BASE_URL}logo/${theme === 'dark' ? 'af-logo.png' : 'af-logo-dark.png'}`;
 
   return (
     <nav className="rail" aria-label="Hauptnavigation">
-      <NavLink to="/heute" className="rail__brand" aria-label="Anatomie Fokus — Startseite">
-        <img src={logo} alt="Anatomie Fokus" width={30} height={30} />
-      </NavLink>
-
-      <div className="rail__divider" />
-
       <ul className="rail__nav">
         {NAV_ITEMS.map((item) => (
           <li key={item.to}>

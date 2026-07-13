@@ -17,39 +17,8 @@
   align-self: start;
 }
 
-/* ── Marke ─────────────────────────────────────────────────────────────── */
-.stand-rail__brand {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding-bottom: var(--spacing-md);
-  border-bottom: 1px solid var(--hairline);
-}
-.stand-rail__brand img {
-  flex: none;
-}
-.stand-rail__brand-text {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.25;
-  min-width: 0;
-}
-.stand-rail__brand-text strong {
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--text-primary);
-}
-.stand-rail__brand-text em {
-  font-family: var(--font-ui);
-  font-size: 11px;
-  font-style: normal;
-  font-weight: 600;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--accent-on-surface);
-}
+/* Der Marken-Block stand bis Etappe 12b hier oben — er sitzt jetzt in der Kopfzeile der
+   Shell (`.brand-mark`) und damit auf jeder Seite statt nur auf dieser. */
 
 /* ── Bloecke ───────────────────────────────────────────────────────────── */
 .stand-rail__block {

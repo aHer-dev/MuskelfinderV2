@@ -60,18 +60,8 @@
   box-shadow: var(--glass-shadow);
 }
 
-.rail__brand {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.rail__divider {
-  width: 36px;
-  height: 1px;
-  background: var(--hairline-strong);
-}
-
+/* Das Logo und der Trenner darunter standen bis Etappe 12b hier — sie sind in die
+   Kopfzeile gewandert (`.brand-mark`), wo der Name danebenpasst. */
 .rail__nav {
   list-style: none;
   margin: 0;
@@ -106,7 +96,6 @@
 }
 
 .rail-btn:focus-visible,
-.rail__brand:focus-visible,
 .rail__level:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
@@ -270,13 +259,99 @@
   }
 }
 
-/* ---- Kopfzeilen-Suche (7d) -------------------------------------------- */
-/* Nachschlagen bleibt von jeder Route aus einen Griff entfernt. Sie sitzt über
-   dem Seiteninhalt, nicht in der Rail: das Feld braucht Breite, kein Icon. */
-.header-search {
+/* ---- Kopfzeile: Marke + Suche (7d, 12b) ------------------------------- */
+/* Nachschlagen bleibt von jeder Route aus einen Griff entfernt (7d): Das Feld sitzt über
+   dem Seiteninhalt, nicht in der Rail — es braucht Breite, kein Icon. Seit 12b teilt es
+   sich die Zeile mit der Marke. */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
   margin-bottom: var(--spacing-lg);
 }
 
-.shell--mobile .header-search {
+/* Im DOM steht die Marke VOR der Suche — sie ist der Kopf der Seite, und genau so liest
+   ein Screenreader sie auch. `row-reverse` schiebt sie visuell nach rechts (dorthin, wo
+   sonst nichts steht), ohne die Reihenfolge im Markup zu verbiegen. */
+.shell--desktop .topbar {
+  flex-direction: row-reverse;
+}
+
+.header-search {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Handy: keine Rail, keine rechte Spalte — hier ist „rechts" bedeutungslos. Die Marke steht
+   als Kopfzeile über der Suche, wo eine Marke auf einem Telefon hingehört. */
+.shell--mobile .topbar {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--spacing-md);
   margin-bottom: var(--spacing-md);
+}
+
+/* ---- Wortmarke (12b) -------------------------------------------------- */
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xs);
+  margin: calc(var(--spacing-xs) * -1); /* Die Polsterung ist Klickfläche, kein Versatz. */
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: var(--transition-smooth);
+}
+
+.brand-mark:hover {
+  background: var(--surface-hover);
+}
+
+.brand-mark:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Die Datei ist 985 × 892. Höhe setzen, Breite rechnen lassen — sonst wird der Keil
+   gestaucht (genau das tat die Rail mit ihren 30 × 30). */
+.brand-mark img {
+  flex: none;
+  height: 38px;
+  width: auto;
+}
+
+.brand-mark__text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  min-width: 0;
+}
+
+.brand-mark__text strong {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+/* Der Produktname unter der Marke: kleiner, gesperrt, im Akzent — er nimmt den orangen
+   Bogen im Zeichen auf, statt mit der ersten Zeile um die Aufmerksamkeit zu streiten. */
+.brand-mark__text em {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-on-surface);
+}
+
+.shell--mobile .brand-mark img {
+  height: 32px;
+}
+
+.shell--mobile .brand-mark__text strong {
+  font-size: 15px;
 }
