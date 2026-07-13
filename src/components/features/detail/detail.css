@@ -418,12 +418,6 @@
   color: var(--text-secondary);
 }
 
-.name-origin__mnemonic {
-  margin: 0;
-  font-style: italic;
-  color: var(--text-secondary);
-}
-
 /* ---- Funktionelle Gruppen (9a) ---------------------------------------- */
 .chip--link {
   display: inline-flex;
@@ -563,4 +557,46 @@
   font-size: 0.92rem;
   line-height: 1.55;
   color: var(--text-secondary);
+}
+
+/* ---- „In Klammern": mitgelernt, aber kein Mitglied (Abnahme 2026-07-13) ----
+   Sichtbar getrennt von den Mitgliedern — sonst waere das Gruppen-Quiz
+   („Welcher gehoert NICHT dazu?") fachlich falsch. */
+.group-related {
+  margin-top: var(--spacing-lg);
+}
+
+.group-related__title {
+  margin: 0 0 var(--spacing-sm);
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+}
+
+.group-member--related {
+  background: transparent;
+  border-style: dashed;
+}
+
+.group-member--related .group-member__name {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Ohne Eintrag: ein bewusster Platzhalter, kein Nichts. Dieselbe Haltung wie bei der
+   Bildluecke aus 8f — die Luecke soll absichtlich aussehen, nicht vergessen. */
+.palpation-empty {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin: 0;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px dashed var(--hairline-strong);
+  border-radius: var(--radius-lg);
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  color: var(--text-faint);
 }

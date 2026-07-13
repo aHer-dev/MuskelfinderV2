@@ -6,11 +6,13 @@
     "lexikon: Bausteine lateinischer Muskelnamen (Wort -> Bedeutung). Der Loader setzt daraus",
     "die Herleitung eines Namens zusammen. Was hier nicht steht, wird weggelassen — nie geraten.",
     "",
-    "muskeln: Ausnahmen und Merksätze je Muskel (Schlüssel = nameLatin, ADR 0002 §2).",
-    "`etymologie` überschreibt die zusammengesetzte Herleitung, `merksatz` steht für sich.",
+    "muskeln: Ausnahmen je Muskel (Schlüssel = nameLatin, ADR 0002 §2). `etymologie`",
+    "überschreibt die zusammengesetzte Herleitung.",
     "",
-    "REGEL: Nichts erfinden. Ein falscher Merksatz ist schlimmer als keiner — er wird",
-    "auswendig gelernt. Im Zweifel bleibt das Feld leer."
+    "Das Feld `merksatz` gab es hier einmal. Es ist am 2026-07-13 auf Wunsch des",
+    "Projektinhabers ganz entfernt worden — es war nie einer geschrieben.",
+    "",
+    "REGEL: Nichts erfinden. Was hier nicht steht, wird weggelassen — nie geraten."
   ],
 
   "lexikon": {

@@ -29,8 +29,8 @@ export interface NamePart {
 export interface EtymologySource {
   /** Wortbaustein → Bedeutung. */
   lexikon: Record<string, string>;
-  /** Ausnahmen und Merksätze je `nameLatin`. */
-  muskeln: Record<string, { etymologie?: string; merksatz?: string }>;
+  /** Handgeschriebene Herleitung je `nameLatin` — überschreibt die zusammengesetzte. */
+  muskeln: Record<string, { etymologie?: string }>;
 }
 
 /** Die redaktionelle Datei, defensiv gelesen — sie wird von Hand gepflegt. */
@@ -86,17 +86,19 @@ export function composeEtymology(parts: NamePart[]): string | null {
 const SOURCE = readEtymologySource(editorial);
 
 /**
- * Reichert einen Muskel um Herleitung und Merksatz an (der Loader ruft das).
+ * Reichert einen Muskel um die Herleitung an (der Loader ruft das).
  *
- * Fehlt beides, bleibt der Muskel **unverändert** — die Detailseite rendert dann
+ * Fehlt sie, bleibt der Muskel **unverändert** — die Detailseite rendert dann
  * genau wie vorher, ohne leeren Kasten.
+ *
+ * Merksätze gab es hier einmal als Feld. Sie sind am 2026-07-13 auf Wunsch des
+ * Projektinhabers **ganz entfernt** worden: Es war nie einer geschrieben, und ein
+ * ungenutztes Feld ist toter Code.
  */
 export function withEtymology(muscle: Muscle, source: EtymologySource = SOURCE): Muscle {
   const manual = source.muskeln[muscle.nameLatin];
   const etymology =
     manual?.etymologie ?? composeEtymology(decomposeName(muscle.nameLatin, source.lexikon)) ?? undefined;
-  const mnemonic = manual?.merksatz;
 
-  if (etymology === undefined && mnemonic === undefined) return muscle;
-  return { ...muscle, etymology, mnemonic };
+  return etymology === undefined ? muscle : { ...muscle, etymology };
 }

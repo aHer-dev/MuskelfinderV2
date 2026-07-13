@@ -139,18 +139,18 @@ export function MuscleDetailPage() {
 
           {/* Der Name IST die Funktion — man muss ihn nur lesen koennen (8d). Das gehoert
               ins „Einfach"-Niveau; im Fachlichen bleibt es aus dem Weg. */}
-          {mode === 'easy' && (muscle.etymology || muscle.mnemonic) && (
+          {mode === 'easy' && muscle.etymology && (
             <section className="name-origin">
               <h2 className="name-origin__title">Den Namen verstehen</h2>
-              {muscle.etymology && <p className="name-origin__text">{muscle.etymology}</p>}
-              {muscle.mnemonic && <p className="name-origin__mnemonic">{muscle.mnemonic}</p>}
+              <p className="name-origin__text">{muscle.etymology}</p>
             </section>
           )}
 
           {/* Palpation (9d) steht in BEIDEN Niveaus: Physio-/Ergo-Schueler werden am
               lebenden Koerper geprueft — das ist kein „Einfach"-Thema, sondern Pruefungsstoff.
-              Ohne Eintrag rendert hier gar nichts. */}
-          {muscle.palpation && <PalpationSection palpation={muscle.palpation} />}
+              Ohne Eintrag steht dort ein Platzhalter: Die Luecke soll absichtlich aussehen,
+              nicht vergessen (Entscheidung des Projektinhabers, 2026-07-13). */}
+          <PalpationSection palpation={muscle.palpation} />
 
           {muscle.clinicalNote && <ClinicalNote note={muscle.clinicalNote} />}
 

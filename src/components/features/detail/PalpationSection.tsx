@@ -10,7 +10,8 @@ const ROWS: ReadonlyArray<{ key: keyof Palpation; label: string }> = [
 ];
 
 interface PalpationSectionProps {
-  palpation: Palpation;
+  /** Fehlt der Eintrag, steht hier ein bewusster Platzhalter — kein Nichts. */
+  palpation?: Palpation;
 }
 
 /**
@@ -20,11 +21,22 @@ interface PalpationSectionProps {
  * Prüfungsstoff („Zeig mir den M. supraspinatus"). Eingeklappt, weil sie nur zählt,
  * wenn man sie gerade braucht — `<details>` ist von Haus aus tastaturbedienbar.
  *
- * Leere Felder erzeugen keine Zeile: Wo nichts Gesichertes steht, steht nichts.
+ * **Ohne Eintrag steht hier ein Platzhalter, kein leerer Raum** (Entscheidung des
+ * Projektinhabers, 2026-07-13). Dieselbe Haltung wie bei der Bildlücke aus 8f: Die
+ * Lücke soll absichtlich aussehen. Die Texte kommen aus dem Skript und werden von Hand
+ * eingetragen — sie werden **nicht** erfunden (siehe `docs/palpation-erfassen.md`).
  */
 export function PalpationSection({ palpation }: PalpationSectionProps) {
-  const rows = ROWS.filter(({ key }) => palpation[key]);
-  if (rows.length === 0) return null;
+  const rows = palpation ? ROWS.filter(({ key }) => palpation[key]) : [];
+
+  if (rows.length === 0) {
+    return (
+      <p className="palpation-empty">
+        <Icon name="icTarget" size={16} />
+        <span>Noch kein Palpationshinweis hinterlegt.</span>
+      </p>
+    );
+  }
 
   return (
     <details className="palpation">
@@ -38,7 +50,7 @@ export function PalpationSection({ palpation }: PalpationSectionProps) {
         {rows.map(({ key, label }) => (
           <div key={key} className="palpation__row">
             <dt>{label}</dt>
-            <dd>{palpation[key]}</dd>
+            <dd>{palpation?.[key]}</dd>
           </div>
         ))}
       </dl>

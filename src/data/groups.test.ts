@@ -110,8 +110,12 @@ describe('Der echte Gruppenbestand', () => {
   });
 
   it('keine Gruppe ist leer oder ein Einzelmuskel mit Anhang', () => {
+    /* Zwei ist das Minimum: Der M. triceps surae besteht nach der Abnahme vom
+       2026-07-13 nur noch aus Gastrocnemius und Soleus (der M. plantaris steht in
+       Klammern). Eine Gruppe mit zwei Mitgliedern taugt fuer Gruppenseite und
+       Abzeichen — fuer eine 4-Optionen-Quizfrage nicht, sie wird dort uebersprungen. */
     for (const g of getGroups()) {
-      expect(g.muscles.length, `${g.id} hat nur ${g.muscles.length} Muskeln`).toBeGreaterThanOrEqual(3);
+      expect(g.muscles.length, `${g.id} hat nur ${g.muscles.length} Muskeln`).toBeGreaterThanOrEqual(2);
     }
   });
 });
@@ -123,5 +127,63 @@ describe('Die Gruppen überleben eine Neu-Migration', () => {
     expect(script).toContain('src/data/generated');
     expect(script).not.toContain('editorial');
     expect(() => readFileSync('src/data/editorial/groups.json', 'utf8')).not.toThrow();
+  });
+});
+
+/* ── „In Klammern": mitgelernt, aber kein Mitglied (Abnahme 2026-07-13) ──── */
+
+describe('related — was mitgelernt wird, ohne dazuzugehören', () => {
+  it('liest die Klammer-Muskeln, hält sie aber aus `muscles` heraus', () => {
+    const [g] = readGroups(
+      {
+        gruppen: [
+          {
+            id: 'g',
+            label: 'G',
+            muscles: ['M. rectus abdominis'],
+            related: ['M. quadratus lumborum'],
+          },
+        ],
+      },
+      NAMES,
+    );
+    expect(g.muscles).toEqual(['M. rectus abdominis']);
+    expect(g.related).toEqual(['M. quadratus lumborum']);
+  });
+
+  it('prüft auch die Klammer-Namen gegen den Bestand', () => {
+    expect(() =>
+      readGroups(
+        { gruppen: [{ id: 'g', label: 'G', muscles: [], related: ['M. gibt-es-nicht'] }] },
+        NAMES,
+      ),
+    ).toThrow(GroupDataError);
+  });
+
+  it('ein echtes Mitglied schlägt die Klammer — es steht nicht doppelt da', () => {
+    const [g] = readGroups({
+      gruppen: [
+        { id: 'g', label: 'G', muscles: ['M. nasalis'], related: ['M. nasalis'] },
+      ],
+    });
+    expect(g.muscles).toEqual(['M. nasalis']);
+    expect(g.related).toBeUndefined();
+  });
+
+  it('KLAMMER-MUSKELN SIND KEINE MITGLIEDER — sonst wäre das Gruppen-Quiz falsch', () => {
+    /* Der M. quadratus lumborum steht bei der Bauchwand in Klammern. Zählte er als
+       Mitglied, wäre er im Quiz „Welcher gehört NICHT dazu?" plötzlich eine falsche
+       Antwort — obwohl er fachlich sehr wohl NICHT dazugehört. */
+    const bauchwand = getGroupById('bauchwand');
+    expect(bauchwand?.muscles).not.toContain('M. quadratus lumborum');
+    expect(bauchwand?.related).toContain('M. quadratus lumborum');
+    expect(groupsOf('M. quadratus lumborum')).toEqual([]);
+  });
+
+  it('die Abnahme vom 2026-07-13 steckt in den echten Daten', () => {
+    // Wade: ohne M. plantaris (er steht jetzt in Klammern).
+    const wade = getGroupById('wade-oberflaechlich');
+    expect(wade?.muscles.sort()).toEqual(['M. gastrocnemius', 'M. soleus']);
+    expect(wade?.related).toEqual(['M. plantaris']);
   });
 });

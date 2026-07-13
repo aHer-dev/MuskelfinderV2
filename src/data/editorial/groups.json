@@ -64,10 +64,12 @@
     {
       "id": "wade-oberflaechlich",
       "label": "Oberflächliche Wadenmuskulatur",
-      "note": "M. triceps surae (Gastrocnemius + Soleus) und M. plantaris. Stärkste Plantarflexoren.",
+      "note": "Der M. triceps surae — die stärksten Plantarflexoren. Der M. gastrocnemius zieht über das Kniegelenk, der M. soleus nicht; das ist die Prüfungsfrage. Der M. plantaris liegt in derselben Schicht, zählt hier aber nicht als Mitglied.",
       "muscles": [
         "M. gastrocnemius",
-        "M. soleus",
+        "M. soleus"
+      ],
+      "related": [
         "M. plantaris"
       ]
     },
@@ -117,12 +119,15 @@
     {
       "id": "bauchwand",
       "label": "Bauchwand",
-      "note": "Die vier klassischen Bauchmuskeln. Der M. quadratus lumborum wird oft mitgelernt, gehört aber zur hinteren Bauchwand — er steht bewusst nicht hier.",
+      "note": "Die vier klassischen Bauchmuskeln. Der M. quadratus lumborum wird mitgelernt, gehört aber zur HINTEREN Bauchwand — er steht darum in Klammern und zählt nicht als Mitglied.",
       "muscles": [
         "M. rectus abdominis",
         "M. obliquus externus abdominis",
         "M. obliquus internus abdominis",
         "M. transversus abdominis"
+      ],
+      "related": [
+        "M. quadratus lumborum"
       ]
     },
     {

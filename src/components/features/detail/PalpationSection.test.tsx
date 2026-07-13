@@ -17,9 +17,17 @@ describe('PalpationSection', () => {
     expect(screen.queryByText('Verwechslungsgefahr')).not.toBeInTheDocument();
   });
 
-  it('rendert gar nichts, wenn alle Felder leer sind', () => {
-    const { container } = render(<PalpationSection palpation={{}} />);
-    expect(container).toBeEmptyDOMElement();
+  it('zeigt einen bewussten PLATZHALTER, wenn kein Eintrag da ist', () => {
+    /* Entscheidung des Projektinhabers (2026-07-13): Die Luecke soll absichtlich
+       aussehen, nicht vergessen — dieselbe Haltung wie bei der Bildluecke aus 8f.
+       Die Texte kommen aus dem Skript seiner Kollegen und werden von Hand eingetragen. */
+    render(<PalpationSection />);
+    expect(screen.getByText('Noch kein Palpationshinweis hinterlegt.')).toBeInTheDocument();
+  });
+
+  it('auch ein leerer Eintrag ergibt den Platzhalter, keine leere Sektion', () => {
+    render(<PalpationSection palpation={{}} />);
+    expect(screen.getByText('Noch kein Palpationshinweis hinterlegt.')).toBeInTheDocument();
   });
 
   it('ist eingeklappt und per Tastatur bedienbar (natives <details>)', () => {
