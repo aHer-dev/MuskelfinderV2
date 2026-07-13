@@ -7,6 +7,18 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Changed
+- **Zarter Orange-Rahmen um die Inhalts-Kästchen**, in beiden Themes (Wunsch des Projektinhabers).
+  `--card-border` ist jetzt ein getönter Akzent statt eines neutralen Grautons — im Light-Modus mit
+  32 %, im Dark-Modus mit **26 %**: Auf Schwarz leuchtet Orange von selbst, dieselbe Deckkraft wäre
+  dort ein Neonrahmen.
+  **Nur Inhalts-Kästchen.** Bedienelemente (Eingabefelder, Buttons) behalten ihren neutralen Rahmen
+  — deren Umriss ist keine Dekoration, sondern trägt die Erkennbarkeit (WCAG 1.4.11), und der Akzent
+  gehört dort dem Fokus-Ring. Das echte Glas (Leiste, Tab-Bar, Sheet, Toast) bleibt ebenfalls neutral.
+  Nebenbei begradigt: Vier echte Kästchen (`.deck-section`, `.legal-card`, `.fc-setup__due`,
+  `.type-card__prompt`) hingen am Glas- statt am Karten-Token — das war schon vorher inkonsistent
+  und wäre jetzt sichtbar geworden.
+
+### Changed
 - **Etappe 10 — Kaltstart & Orientierung. Das automatische Startdeck ist weg (ADR 0009).**
   Der Projektinhaber hat die App aus Schülersicht geöffnet und den Erststart für falsch befunden.
   Am Build nachgemessen: Zwei Klicks — und man stand in einer **laufenden Sitzung** mit 20 Karten,
@@ -30,6 +42,17 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   beiden Links in der Lernkarten-Kopfzeile.
 
 ### Fixed
+- **Zwei WCAG-AA-Kontrastfehler, die nie jemand gemessen hatte.** Beim Gegenprüfen des neuen Rahmens
+  stand `/karteikasten` zum ersten Mal überhaupt unter axe — und lieferte prompt 24 Verstöße:
+  Das Fach-Abzeichen (`.deck-fach`) setzte `--accent-on-surface` (#bd4800) auf die getönte Fläche
+  `--accent-tint` und erreichte damit **4.47:1** statt 4.5. Für **genau diesen Fall** war in Etappe 5
+  das Token `--accent-on-tint` (#b34400) angelegt worden — diese Stelle wurde damals übersehen. Jetzt
+  4.9:1.
+  Dazu `.btn--danger` („Zurücksetzen"): `--danger` (#d1493a) als **Schrift** auf Weiß erreicht nur
+  **4.44:1**. Neues Token `--danger-on-surface` (#c43e2e, 5.1:1); als Fläche/Markierung bleibt
+  `--danger` unverändert.
+  Beide Fehler haben **nichts** mit dem neuen Rahmen zu tun — sie waren nur nie geprüft worden.
+  Die axe-Läufe decken jetzt **8 Routen × Light + Dark** ab: 0 Verstöße.
 - **Eine vergessene Karte kam erst in 90 Tagen wieder** (ADR 0011). Eine falsch beantwortete Karte
   fiel **genau ein Fach** zurück. Bei den Intervallen `1 · 3 · 7 · 14 · 30 · 90 · 180` hieß das:
   Wer einen Muskel sechsmal richtig hatte (Fach 7) und ihn dann vergaß, sah ihn **erst in 90 Tagen

@@ -36,7 +36,7 @@
 
 .legal-card {
   background: var(--surface);
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--card-border);
   border-radius: var(--radius-lg);
   padding: var(--spacing-lg);
 }

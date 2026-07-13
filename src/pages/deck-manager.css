@@ -42,7 +42,7 @@
   margin-top: var(--spacing-lg);
   padding: var(--spacing-lg);
   background: var(--surface);
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--card-border);
   border-radius: var(--radius-lg);
 }
 
@@ -152,7 +152,11 @@
   padding: 0 6px;
   border-radius: var(--radius-sm);
   background: var(--accent-tint);
-  color: var(--accent-on-surface);
+  /* `--accent-on-tint`, NICHT `--accent-on-surface`: Der Tint hebt den Untergrund an, und
+     `--accent-on-surface` faellt darauf auf 4.47:1 — knapp unter AA. Genau dafuer wurde
+     `--accent-on-tint` in Etappe 5 angelegt; diese Stelle wurde damals uebersehen (gemessen
+     am 2026-07-13, als /karteikasten zum ersten Mal unter axe stand). Jetzt 4.9:1. */
+  color: var(--accent-on-tint);
   font-size: 12px;
   font-weight: 700;
 }
