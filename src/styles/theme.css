@@ -73,21 +73,13 @@
      `--card-border` ist ein ZARTES ORANGE statt eines neutralen Grautons (Wunsch des
      Projektinhabers, 2026-07-13): Es bindet die Kaesten an die Marke, ohne laut zu werden.
 
-     ZWEI ORANGE-STUFEN, und die Unterscheidung ist wichtig:
-     - `--card-border` (hier) umrandet **Inhalts-Kaesten**. Reine Dekoration.
-     - `--control-border` (weiter unten) umrandet **Bedienelemente**. Das ist KEINE
-       Dekoration: Der Umriss ist das, woran man einen Button oder ein Feld als solches
-       erkennt — WCAG 1.4.11 verlangt dafuer **3:1**.
-
-     **Der Kasten rahmt, die Knoepfe darin treten zurueck** (Wunsch des Projektinhabers,
-     nachdem die Innenrahmen den Aussenrahmen uebertoenten). Deshalb ist `--card-border`
-     kraeftiger geworden (60 % / 40 %) und `--control-border` so hell wie eben zulaessig.
-
-     **Eine vollstaendige Umkehr ist NICHT moeglich, und das ist kein Versehen:** Ein
-     Bedienelement-Rahmen, der HELLER waere als dieser Dekorationsrahmen, laege unter 3:1 und
-     waere nicht mehr als Bedienelement erkennbar. Auf Weiss schafft selbst das reine
-     Marken-Orange (#ff6a00) nur 2.87:1. Wer die Innenrahmen weiter aufhellen will, nimmt den
-     Buttons ihre Erkennbarkeit — nicht tun.
+     **NUR die Kaesten sind orange. Bedienelemente NICHT** — sie tragen `--control-border`,
+     ein echtes warmes Grau (siehe dort). Das war zwischenzeitlich anders und wurde am
+     2026-07-13 zurueckgenommen: **Ein Akzent, der ueberall ist, ist kein Akzent mehr.** Sobald
+     auch jeder Knopf orange umrandet war, bedeutete Orange nur noch „hier ist ein Ding" statt
+     „hier ist etwas wichtig" — und der Primaerknopf, die aktive Auswahl und die Zahlen mussten
+     gegen ein Dutzend orange Umrandungen ankaempfen.
+     **Der Kasten traegt die Marke, die Knoepfe halten die Klappe.**
 
      **Das echte Glas** (Rail, TabBar, Sheet, Toast) bleibt auf `--glass-border` und faerbt
      NICHT mit: Es soll zuruecktreten. */
@@ -99,21 +91,20 @@
   --hairline:        rgba(28,26,23,0.08);
   --hairline-strong: rgba(28,26,23,0.14);
 
-  /* Rahmen von BEDIENELEMENTEN (Buttons, Selects, Eingaben) — orange, auf Wunsch des
-     Projektinhabers (2026-07-13).
+  /* Rahmen von BEDIENELEMENTEN (Buttons, Selects, Eingaben).
 
-     **#f56000 ist das HELLSTE Orange, das die 3:1 auf Weiss noch haelt** (gemessen: 3.20:1).
-     Gemessene Nachbarn: #fa6500 = 3.03:1 (zu knapp), #ff6a00 = **2.87:1** (faellt durch).
-     Vorher stand hier das gebrannte #e64500 (4.03:1) — es uebertoente die Kaesten, in denen
-     die Knoepfe liegen. Jetzt so hell wie eben zulaessig.
+     **Der Kasten traegt die Marke, die Knoepfe halten die Klappe** (entschieden 2026-07-13,
+     nachdem beides orange war und die Seite zu laut wurde). Ein Akzent, der ueberall ist, ist
+     kein Akzent mehr: Sobald jeder Knopf orange umrandet war, bedeutete Orange nur noch „hier
+     ist ein Ding" statt „hier ist etwas wichtig" — und der Primaerknopf, die aktive Auswahl und
+     die Zahlen mussten gegen ein Dutzend orange Umrandungen ankaempfen.
 
-     (Der frueher hier stehende GRAUE Rahmen erreichte nur 1.39:1 — er verfehlte die
-     Anforderung deutlicher als jedes Orange. Der Wechsel macht die App an dieser Stelle nicht
-     bunter, sondern zugaenglicher.) */
-  --control-border:  #f56000;
-  /* Der Gefahr-Knopf darf KEINEN orangen Rahmen haben — roter Text in orangem Rahmen liest
-     sich wie ein Fehler. Er bekommt sein eigenes, gedaempftes Rot. */
-  --danger-border:   color-mix(in srgb, var(--danger-on-surface) 70%, transparent);
+     **#8a8279 ist ein ECHTES warmes Grau, kein Hauch — und genau das ist der Punkt:**
+     Es erreicht **3.78:1** und erfuellt WCAG 1.4.11 (3:1 fuer Bedienelemente) damit besser als
+     jedes zulaessige Orange (das hellste waere #f56000 mit 3.20:1). Der frueher hier stehende
+     Wert `rgba(28,26,23,0.16)` schaffte nur **1.39:1** — der war der eigentliche Fehler, nicht
+     die Farbe. **Nicht wieder zu einem Alpha-Schleier verduennen.** */
+  --control-border:  #8a8279;
   --checkbox-border: rgba(28,26,23,0.24);
 
   /* Formularfelder — MUSS DECKEND SEIN, keine rgba-Transparenz (Etappe 10f).
@@ -179,11 +170,11 @@
   --hairline:        rgba(255,255,255,0.08);
   --hairline-strong: rgba(255,255,255,0.15);
 
-  /* **62 % ist der HELLSTE sichere Wert** — gemessen 3.20:1 gegen den Grund, exakt wie im
-     Light-Modus. Darunter faellt es durch: 60 % = 3.06:1 (zu knapp), 55 % = **2.74:1**.
-     Vorher 70 % (3.79:1) — das uebertoente die Kaesten, in denen die Knoepfe liegen. */
-  --control-border:  color-mix(in srgb, var(--accent) 62%, transparent);
-  --danger-border:   color-mix(in srgb, var(--danger) 70%, transparent);
+  /* Neutral wie im Light-Modus (der Kasten traegt die Marke, siehe dort) — aber als ECHTES
+     Grau: `rgba(255,255,255,0.42)` erreicht **3.9:1** gegen den Grund. Der frueher hier
+     stehende Wert `rgba(255,255,255,0.14)` schaffte nur **1.44:1** und verfehlte WCAG 1.4.11.
+     **Nicht wieder verduennen.** */
+  --control-border:  rgba(255,255,255,0.42);
   --checkbox-border: rgba(255,255,255,0.22);
 
   /* Deckend, siehe Light — hier war der Fehler sichtbar: 5 % Weiss auf Schwarz ergab
@@ -228,8 +219,7 @@
     --glass-panel:rgba(15,16,20,0.82); --glass-border:rgba(255,255,255,0.08); --glass-shadow:0 12px 40px rgba(0,0,0,0.5);
     --card-border:color-mix(in srgb,var(--accent) 40%,transparent); --card-shadow:none;
     --hairline:rgba(255,255,255,0.08); --hairline-strong:rgba(255,255,255,0.15);
-    --control-border:color-mix(in srgb,var(--accent) 62%,transparent);
-    --danger-border:color-mix(in srgb,var(--danger) 70%,transparent);
+    --control-border:rgba(255,255,255,0.42);
     --checkbox-border:rgba(255,255,255,0.22);
     --field-bg:#1b1e24;
     --text-primary:#f6f6f7; --text-secondary:#c9cace; --text-tertiary:#9a9ca2; --text-muted:#8a8d93; --text-faint:#6e7076;
