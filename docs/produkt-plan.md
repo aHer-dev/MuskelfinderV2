@@ -44,11 +44,13 @@ Drei tragende Entscheidungen (Details in den ADRs):
 |---|-------|----------|--------|
 | B1 | Suche → Lernen | Nachschlagen ist ein Lernsignal. Wer denselben Muskel dreimal sucht, kann ihn nicht → Aufrufzähler, „Zuletzt nachgeschlagen“, Ein-Klick-Karten. | 7d |
 | B2 | Lernen → Nachschlagen | Die Detailseite klappt als **Sheet in der Session** auf, statt wegzunavigieren. Wer die Session verlässt, kommt nicht zurück. | 7e |
-| B3 | Fehler → Karteikasten | Jedes Debrief seedet die verpassten Muskeln zurück in den Kasten. Der wertvolle Teil des Prüfungsmodus ist nicht der Timer. | 9c |
+| B3 | Fehler → Karteikasten | Jedes Debrief seedet die verpassten Muskeln zurück in den Kasten. Der wertvolle Teil des Prüfungsmodus ist nicht der Timer. | 9c ✅ |
 | B4 | Fortschritt → Handlung | Keine Zahl ohne Knopf. Jede ausgewiesene Schwäche hat eine Aktion daneben. | 8c ✅ |
 
-**Drei der vier Brücken stehen:** B1 (7d), B2 (7e), B4 (8c). Offen bleibt **B3** — sie hängt am
-Prüfungsmodus und kommt mit **9c**.
+**ALLE VIER BRÜCKEN STEHEN:** B1 (7d), B2 (7e), B4 (8c), **B3 (9c)**. Die App ist damit keine Sammlung
+von sieben Seiten mehr, sondern ein Kreis: Nachschlagen füllt den Kasten, ein Fehler im Quiz erklärt
+sich an Ort und Stelle, jede Zahl im Fortschritt hat einen Knopf — und die Prüfung wirft ihre Lücken
+direkt in die nächste Sitzung.
 
 ---
 
@@ -121,12 +123,17 @@ Prüfungsmodus und kommt mit **9c**.
 |----|---------|----------|--------|--------|-----------------|
 | 9a | Funktionelle Gruppen (~12–15, generiert + geprüft) + Gruppen-Quiz | [9a](tasks/2026-07-13-etappe-9a-funktionelle-gruppen.md) | **fertig** (15 Gruppen — **warten auf fachliche Freigabe**) | `feat/etappe-9a-funktionelle-gruppen` | — |
 | 9b | Kompetenz-Abzeichen | [9b](tasks/2026-07-13-etappe-9b-abzeichen.md) | offen | — | **9a** |
-| 9c | Prüfungsmodus (schriftlich + mündlich/praktisch) + Debrief-Schleife (**B3**) | [9c](tasks/2026-07-13-etappe-9c-pruefungsmodus.md) | offen | — | — |
+| 9c | Prüfungsmodus (schriftlich + mündlich/praktisch) + Debrief-Schleife (**B3**) | [9c](tasks/2026-07-13-etappe-9c-pruefungsmodus.md) | **fertig** (Brücke B3 eingelöst) | `feat/etappe-9c-pruefungsmodus` | — |
 | 9d | Palpations-Sektion je Muskel (optionales Feld, inkrementell) | [9d](tasks/2026-07-13-etappe-9d-palpation.md) | offen | — | — |
 
-*Empfohlene Reihenfolge: **9a → 9c → 9b → 9d.** 9a zuerst, weil es den **Projektinhaber** blockiert
-(die Gruppen brauchen seine fachliche Freigabe) — er kann pruefen, waehrend 9c gebaut wird. 9c ist der
-groesste Wurf (Bruecke **B3**) und haengt an nichts.*
+*Empfohlene Reihenfolge: **9a ✅ → 9c ✅ → 9b → 9d.** Es fehlen nur noch die Abzeichen (9b, braucht 9a)
+und die Palpation (9d).*
+
+**Aus 9c mitnehmen — die Transition, die es vorher nicht gab:** Ein Prüfungsfehler kann weder mit
+`applyWrong` (legt die Karte auf *morgen* → die Debrief-Sitzung startete leer) noch mit dem
+Schwierig-Flag (klebt für immer) verbucht werden. `applyExamMiss` stuft **eine Box zurück** und macht
+die Karte **sofort fällig** — beides ist nötig, sonst hebt die Debrief-Sitzung eine verpasste Karte
+beim ersten Treffer sogar noch *über* ihr altes Fach.
 
 > **Drei Fallen, am Code verifiziert:**
 > (1) **`useQuizGame` schreibt bei jeder Runde in die V1-Quizbilanz**
