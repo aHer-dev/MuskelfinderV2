@@ -57,6 +57,13 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   beiden Links in der Lernkarten-Kopfzeile.
 
 ### Fixed
+- **Die Wadengruppe war still aus dem Gruppen-Quiz gefallen.** Bei der Abnahme stand der
+  M. plantaris in `related` (angezeigt, aber kein Mitglied) — dadurch hatte die Gruppe nur **zwei**
+  Mitglieder, und eine „Welcher gehört nicht dazu?"-Frage braucht **drei** Mitglieder plus einen
+  Fremden. Die Frage wurde nie gestellt, und **nichts im UI hätte darauf hingewiesen.** Der
+  Projektinhaber hat nach diesem Befund umentschieden: Der Plantaris ist wieder Mitglied.
+  **Ein Test wacht jetzt darüber, dass jede Gruppe mindestens drei Mitglieder hat** — das ist die
+  eigentliche Lehre.
 - **Der Tagesbonus feuerte auf dem leeren Karteikasten.** Seit ADR 0009 landet ein neuer Nutzer auf
   dem Guide statt in einer Sitzung — und bekam dort „+10 XP · Tagesbonus" eingeblendet, **bevor er
   irgendetwas getan hatte.** Er konnte an dieser Stelle noch gar nichts tun. Eine Belohnung fürs

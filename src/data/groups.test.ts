@@ -192,10 +192,22 @@ describe('related — was mitgelernt wird, ohne dazuzugehören', () => {
   });
 
   it('die Abnahme vom 2026-07-13 steckt in den echten Daten', () => {
-    // Wade: ohne M. plantaris (er steht jetzt in Klammern).
+    /* Wade MIT M. plantaris. Bei der Abnahme stand er zunaechst in `related` — dadurch hatte die
+       Gruppe nur zwei Mitglieder und fiel aus dem Gruppen-Quiz (eine 4-Optionen-Frage braucht drei
+       Mitglieder + einen Fremden). Nach diesem Befund hat der Projektinhaber umentschieden.
+       `related` gibt es weiterhin, aber nur noch bei der Bauchwand (siehe Test darueber). */
     const wade = getGroupById('wade-oberflaechlich');
-    expect(wade?.muscles.sort()).toEqual(['M. gastrocnemius', 'M. soleus']);
-    expect(wade?.related).toEqual(['M. plantaris']);
+    expect(wade?.muscles.sort()).toEqual(['M. gastrocnemius', 'M. plantaris', 'M. soleus']);
+    expect(wade?.related).toBeUndefined();
+  });
+
+  it('jede Gruppe hat mindestens drei Mitglieder — sonst faellt sie still aus dem Quiz', () => {
+    /* Die Lehre aus der Wade: Zwei Mitglieder ergeben keine „Welcher gehoert nicht dazu?"-Frage,
+       und NICHTS im UI haette darauf hingewiesen. Wer eine Gruppe kuerzt, merkt es jetzt hier. */
+    for (const g of getGroups()) {
+      expect(g.muscles.length, `„${g.label}" hat nur ${g.muscles.length} Mitglied(er)`)
+        .toBeGreaterThanOrEqual(3);
+    }
   });
 });
 

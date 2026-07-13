@@ -92,12 +92,19 @@ describe('Nach der Abnahme vom 2026-07-13', () => {
     }
   });
 
-  it('die Wade fällt aus dem Quiz — zwei Mitglieder ergeben keine 4-Optionen-Frage', () => {
+  it('die Wade ist wieder im Quiz — DREI Mitglieder ergeben eine 4-Optionen-Frage', () => {
+    /* Bei der Abnahme stand der M. plantaris zunaechst in `related`. Dadurch hatte die Gruppe
+       nur ZWEI Mitglieder — und eine „Welcher gehoert nicht dazu?"-Frage braucht drei Mitglieder
+       plus einen Fremden. Die Wade fiel still aus dem Quiz. Nach diesem Befund hat der
+       Projektinhaber umentschieden: Der Plantaris ist wieder Mitglied. */
     const wade = getGroups().find((g) => g.id === 'wade-oberflaechlich');
-    expect(wade?.muscles).toHaveLength(2);
-    for (const q of quiz(30, 5)) {
-      expect(q.id).not.toBe('group-wade-oberflaechlich');
-    }
+    expect(wade?.muscles).toHaveLength(3);
+    expect(wade?.muscles).toContain('M. plantaris');
+    expect(wade?.related).toBeUndefined();
+
+    // Eine Gruppe mit drei Mitgliedern MUSS in einer ausreichend grossen Runde vorkommen koennen.
+    const ids = new Set(quiz(60, 5).map((q) => q.id));
+    expect(ids).toContain('group-wade-oberflaechlich');
   });
 
   it('ein „in Klammern"-Muskel DARF der Fremde sein — das ist die Prüfungsfrage', () => {
