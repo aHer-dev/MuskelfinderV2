@@ -7,6 +7,30 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- **Etappe 9b — Kompetenz-Abzeichen** (`src/data/badges.ts`, Panel unter *Fortschritt*): Abzeichen
+  messen **Können, nicht Anwesenheit**. Kein „7 Tage am Stück!", sondern **„Rotatorenmanschette
+  komplett"** — verdient ist es, wenn **jeder** Muskel der Gruppe (9a) in **Fach ≥ 5** steht. Angezeigt
+  wird der **Weg**, nicht der Pokal: Die offenen Abzeichen stehen oben (die am weitesten
+  fortgeschrittenen zuerst), jedes mit „3 von 4" und einem Fortschrittsbalken.
+  ⚠️ **Nichts davon wird gespeichert.** Ein Abzeichen ist eine Ableitung aus (Gruppe × Leitner-Box),
+  die jedes Mal neu aufgeht. Ein persistierter Abzeichen-Zustand wäre eine **zweite Wahrheit** neben
+  der Box (ADR 0008) und ein Backup-Schlüssel, den ältere Versionen nicht kennen (ADR 0002). Der
+  Nebeneffekt ist ein Feature: **Wer eine Karte vergisst, verliert das Abzeichen wieder** — Kompetenz
+  ist kein Besitz. Ein Test erzwingt genau das, ein zweiter, dass das Backup **keine** Abzeichen-Sektion
+  enthält.
+  **Keine Zahl ohne Knopf** (Regel aus 8c): Neben jedem offenen Abzeichen steht die Aktion, die
+  dorthin führt (`groupPractice`) — die noch nicht gemeisterten, **fälligen** Karten der Gruppe. Ist
+  heute nichts fällig, ist der Knopf **deaktiviert und sagt warum**.
+  Dabei eine Lücke geschlossen, die den Knopf sonst wertlos gemacht hätte: Ein Gruppenmuskel, der
+  **gar nicht im Kasten liegt**, hat kein Fach — kein Fälligkeitsfilter findet ihn, und das Abzeichen
+  wäre für immer bei „3 von 4" stehengeblieben. `groupPractice` nimmt ihn mit, der Knopf legt die
+  Karte an (frisch = sofort fällig), wie schon die Gruppenseite aus 9a.
+  Ein frisch verdientes Abzeichen meldet **ein** dezenter Toast (`useBadgeWatch`, Vergleich im
+  Arbeitsspeicher der laufenden Sitzung — auch das nicht persistiert). Kein Konfetti, kein Maskottchen;
+  `prefers-reduced-motion` gilt.
+  Verifiziert: 484 Tests grün · axe **0 Verstöße** (Light + Dark, verdient *und* offen) · live geprüft:
+  Karte fällt von Fach 6 auf 4 → das Abzeichen ist weg, der Knopf erscheint und führt in eine
+  **laufende** Sitzung. „Verdient" steht als **Wort** und Symbol da, nicht nur als Farbe.
 - **Etappe 9c — Prüfungsmodus + Debrief (Brücke B3, die letzte offene)** (`src/data/exam.ts`,
   `src/store/useExamStore.ts`, `/pruefung`): Die App prüft, **wie geprüft wird** — festes Set aus dem
   Karteikasten, **kein Feedback bis zum Ende**, Timer (eine Minute pro Frage; er beendet die Prüfung,

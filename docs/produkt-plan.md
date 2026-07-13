@@ -122,12 +122,17 @@ direkt in die nächste Sitzung.
 | ID | Schritt | Briefing | Status | Branch | Blockiert durch |
 |----|---------|----------|--------|--------|-----------------|
 | 9a | Funktionelle Gruppen (~12–15, generiert + geprüft) + Gruppen-Quiz | [9a](tasks/2026-07-13-etappe-9a-funktionelle-gruppen.md) | **fertig** (15 Gruppen — **warten auf fachliche Freigabe**) | `feat/etappe-9a-funktionelle-gruppen` | — |
-| 9b | Kompetenz-Abzeichen | [9b](tasks/2026-07-13-etappe-9b-abzeichen.md) | offen | — | **9a** |
+| 9b | Kompetenz-Abzeichen | [9b](tasks/2026-07-13-etappe-9b-abzeichen.md) | **fertig** (abgeleitet, nie gespeichert) | `feat/etappe-9b-abzeichen` | — |
 | 9c | Prüfungsmodus (schriftlich + mündlich/praktisch) + Debrief-Schleife (**B3**) | [9c](tasks/2026-07-13-etappe-9c-pruefungsmodus.md) | **fertig** (Brücke B3 eingelöst) | `feat/etappe-9c-pruefungsmodus` | — |
 | 9d | Palpations-Sektion je Muskel (optionales Feld, inkrementell) | [9d](tasks/2026-07-13-etappe-9d-palpation.md) | offen | — | — |
 
-*Empfohlene Reihenfolge: **9a ✅ → 9c ✅ → 9b → 9d.** Es fehlen nur noch die Abzeichen (9b, braucht 9a)
-und die Palpation (9d).*
+*Empfohlene Reihenfolge: **9a ✅ → 9c ✅ → 9b ✅ → 9d.** Es fehlt nur noch die Palpation (9d).*
+
+**Aus 9b mitnehmen:** Ein Abzeichen ist eine **Ableitung**, kein Zustand — es wird nirgends
+gespeichert, und wer eine Karte vergisst, verliert es wieder. Wer hier einen Backup-Schluessel
+anlegt, baut eine zweite Wahrheit neben der Leitner-Box (ADR 0008 + 0002). Und: Ein Gruppenmuskel,
+der **nicht im Kasten** liegt, hat kein Fach — kein Faelligkeitsfilter findet ihn. `groupPractice`
+nimmt ihn trotzdem mit, sonst bliebe das Abzeichen ewig bei „3 von 4".
 
 **Aus 9c mitnehmen — die Transition, die es vorher nicht gab:** Ein Prüfungsfehler kann weder mit
 `applyWrong` (legt die Karte auf *morgen* → die Debrief-Sitzung startete leer) noch mit dem
