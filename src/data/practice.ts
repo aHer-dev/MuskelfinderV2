@@ -141,6 +141,40 @@ export function weakCardsPractice(input: PracticeInput): PracticeSelection {
   return selection(due, 'nothingDue');
 }
 
+/* ---------- Abzeichen: „Die fehlenden Karten der Gruppe üben" ---------- */
+
+/**
+ * Der Weg zu einem Kompetenz-Abzeichen (9b): was der Gruppe noch zur Meisterschaft fehlt.
+ *
+ * Zwei Sorten von „fehlt", und beide müssen mit — sonst bliebe ein Abzeichen für immer bei
+ * „3 von 4" stehen:
+ * 1. **Karten unter Fach 5**, die heute **fällig** sind (Regel 1 dieser Datei).
+ * 2. **Muskeln, die gar nicht im Kasten liegen.** Sie haben kein Fach, also kann kein
+ *    Fälligkeitsfilter sie finden. Der Knopf legt sie an — wie schon die Gruppenseite aus
+ *    9a — und eine frische Karte ist sofort fällig (`newCard`), fällt also nicht wieder raus.
+ *
+ * ⚠️ Der Aufrufer muss `addCards(selection.names)` rufen, bevor er die Sitzung startet.
+ *
+ * @param groupMuscles `nameLatin` der Gruppenmuskeln (ADR 0002 §2).
+ */
+export function groupPractice(
+  input: PracticeInput,
+  groupMuscles: readonly string[],
+): PracticeSelection {
+  const { cards } = input;
+
+  const nochNichtImKasten = groupMuscles.filter((name) => !(name in cards));
+  const offenImKasten = new Set(
+    groupMuscles.filter((name) => name in cards && cards[name].fach < MASTERED_FACH),
+  );
+
+  // Alles im Kasten und alles gemeistert → das Abzeichen ist verdient.
+  if (nochNichtImKasten.length === 0 && offenImKasten.size === 0) return NOTHING('nothingToFix');
+
+  const due = prioritizeDueCards(input).filter((name) => offenImKasten.has(name));
+  return selection([...nochNichtImKasten, ...due], 'nothingDue');
+}
+
 /* ---------- Meilenstein: „Die Karten, die dem am nächsten sind" -------- */
 
 /**

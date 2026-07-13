@@ -44,6 +44,7 @@ const WEAKNESS_PANELS = [
   'Beherrschung nach Region',
   'Quiz-Bilanz je Modus',
   'Ziele',
+  'Kompetenz-Abzeichen',
 ];
 
 function panelOf(heading: string): HTMLElement {
@@ -153,5 +154,108 @@ describe('Ein CTA startet die Sitzung, die er verspricht', () => {
     deckPanel.getByRole('button', { name: 'Die schwachen Karten üben' }).click();
     const [, options] = navigate.mock.calls[0];
     expect(options.state.start.names).toHaveLength(2);
+  });
+});
+
+describe('Kompetenz-Abzeichen (9b)', () => {
+  /* Die Rotatorenmanschette aus 9a — vier Muskeln, ein Abzeichen. */
+  const MANSCHETTE = [
+    'M. supraspinatus',
+    'M. infraspinatus',
+    'M. teres minor',
+    'M. subscapularis',
+  ];
+
+  function badgeRow(label: string): HTMLElement {
+    const link = screen.getByRole('link', { name: label });
+    const row = link.closest('li');
+    if (!row) throw new Error(`Keine Abzeichen-Zeile zu „${label}"`);
+    return row;
+  }
+
+  it('zeigt den Weg, nicht nur den Pokal', () => {
+    seedDeck(Object.fromEntries(MANSCHETTE.map((n, i) => [n, card(i === 0 ? 4 : 5)])));
+    renderPage();
+
+    expect(within(badgeRow('Rotatorenmanschette')).getByText('3 von 4')).toBeInTheDocument();
+  });
+
+  it('„verdient" steht als WORT da, nicht nur als Farbe', () => {
+    seedDeck(Object.fromEntries(MANSCHETTE.map((n) => [n, card(6)])));
+    renderPage();
+
+    expect(within(badgeRow('Rotatorenmanschette')).getByText('verdient')).toBeInTheDocument();
+    // Verdient heißt: nichts mehr zu üben — also auch kein Knopf.
+    expect(within(badgeRow('Rotatorenmanschette')).queryByRole('button')).not.toBeInTheDocument();
+  });
+
+  it('FÄLLT EINE KARTE ZURÜCK, IST DAS ABZEICHEN WIEDER WEG', () => {
+    seedDeck(Object.fromEntries(MANSCHETTE.map((n) => [n, card(6)])));
+    const { rerender } = renderPage();
+    expect(within(badgeRow('Rotatorenmanschette')).getByText('verdient')).toBeInTheDocument();
+
+    // Eine Karte rutscht zurueck — es gibt keinen gespeicherten Rest, der das ueberlebt.
+    seedDeck(Object.fromEntries(MANSCHETTE.map((n, i) => [n, card(i === 0 ? 4 : 6)])));
+    rerender(
+      <MemoryRouter>
+        <StatsPage />
+      </MemoryRouter>,
+    );
+
+    expect(within(badgeRow('Rotatorenmanschette')).queryByText('verdient')).not.toBeInTheDocument();
+    expect(within(badgeRow('Rotatorenmanschette')).getByText('3 von 4')).toBeInTheDocument();
+  });
+
+  it('der Knopf startet eine Sitzung mit GENAU den fehlenden, fälligen Karten', () => {
+    seedDeck({
+      'M. supraspinatus': card(4), // offen + faellig
+      'M. infraspinatus': card(6), // gemeistert
+      'M. teres minor': card(5), // gemeistert
+      'M. subscapularis': card(6, 30), // gemeistert, nicht faellig
+    });
+    renderPage();
+
+    within(badgeRow('Rotatorenmanschette'))
+      .getByRole('button', { name: 'Die fehlende Karte üben' })
+      .click();
+
+    expect(navigate).toHaveBeenCalledWith('/lernkarten', {
+      state: { start: { names: ['M. supraspinatus'], limit: 0, scope: 'all' } },
+    });
+  });
+
+  it('NIMMT EINEN MUSKEL MIT, DER NICHT IM KASTEN LIEGT — sonst bliebe das Abzeichen ewig offen', () => {
+    /* Ein Gruppenmuskel ohne Karte hat kein Fach; kein Fälligkeitsfilter findet ihn.
+       Der Knopf legt ihn an (frische Karte = sofort fällig) und übt ihn. */
+    seedDeck({
+      'M. supraspinatus': card(6),
+      'M. infraspinatus': card(6),
+      'M. teres minor': card(6),
+      // M. subscapularis fehlt komplett
+    });
+    renderPage();
+
+    within(badgeRow('Rotatorenmanschette'))
+      .getByRole('button', { name: 'Die fehlende Karte üben' })
+      .click();
+
+    expect(useProgressStore.getState().flashcards.cards['M. subscapularis']).toBeDefined();
+    expect(navigate).toHaveBeenCalledWith('/lernkarten', {
+      state: { start: { names: ['M. subscapularis'], limit: 0, scope: 'all' } },
+    });
+  });
+
+  it('ist nichts fällig, ist der Knopf deaktiviert — MIT Begründung', () => {
+    seedDeck({
+      'M. supraspinatus': card(4, 30), // offen, aber erst in 30 Tagen dran
+      'M. infraspinatus': card(6),
+      'M. teres minor': card(6),
+      'M. subscapularis': card(6),
+    });
+    renderPage();
+
+    const row = within(badgeRow('Rotatorenmanschette'));
+    expect(row.getByRole('button')).toBeDisabled();
+    expect(row.getByText('Heute nichts fällig — schon erledigt')).toBeInTheDocument();
   });
 });

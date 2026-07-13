@@ -1,13 +1,21 @@
 import { useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getRegions } from '../data';
+import { badges } from '../data/badges';
+import { getGroups } from '../data/groups';
 import { regionLabel } from '../data/labels';
-import { milestonePractice, weakCardsPractice, weakestRegionPractice } from '../data/practice';
+import {
+  groupPractice,
+  milestonePractice,
+  weakCardsPractice,
+  weakestRegionPractice,
+} from '../data/practice';
 import { weakestQuizMode } from '../data/stats';
 import { useStats } from '../hooks/useStats';
 import { useProgressStore } from '../store/useProgressStore';
 import { useLookupStore } from '../store/useLookupStore';
 import { BackupPanel } from '../components/features/stats/BackupPanel';
+import { BadgePanel, type BadgeRow } from '../components/features/stats/BadgePanel';
 import { CardBreakdown } from '../components/features/stats/CardBreakdown';
 import { PracticeCta } from '../components/features/stats/PracticeCta';
 import { ProgressRing } from '../components/ui/ProgressRing';
@@ -22,6 +30,7 @@ export function StatsPage() {
   const navigate = useNavigate();
 
   const cards = useProgressStore((s) => s.flashcards.cards);
+  const addCards = useProgressStore((s) => s.addCards);
   const lookups = useLookupStore((s) => s.lookups.entries);
 
   /* Die Auswahl hinter den Knöpfen. Sie kommt aus `data/practice.ts` und trifft
@@ -43,9 +52,33 @@ export function StatsPage() {
     };
   }, [cards, lookups, stats.masteryNext, stats.breakdown.mastered]);
 
+  /* Kompetenz-Abzeichen (9b): abgeleitet, nie gespeichert — und jedes offene trägt den
+     Knopf, der zu ihm führt (keine Zahl ohne Knopf). */
+  const badgeRows = useMemo<BadgeRow[]>(() => {
+    const lookupCounts: Record<string, number> = {};
+    for (const [name, entry] of Object.entries(lookups)) lookupCounts[name] = entry.count;
+
+    const byId = new Map(getGroups().map((g) => [g.id, g]));
+    return badges(cards).map((badge) => ({
+      badge,
+      selection: groupPractice(
+        { cards, lookupCounts },
+        byId.get(badge.id)?.muscles ?? [],
+      ),
+    }));
+  }, [cards, lookups]);
+
   /* Eine Sitzung mit genau diesen Karten — der Weg ist seit 7b gebaut. */
   const startSession = (names: string[]) => {
     navigate('/lernkarten', { state: { start: { names, limit: 0, scope: 'all' } } });
+  };
+
+  /* Der Abzeichen-Knopf legt fehlende Karten erst an: Ein Gruppenmuskel, der nicht im
+     Kasten liegt, hat kein Fach — ohne `addCards` bliebe das Abzeichen ewig bei „3 von 4".
+     Eine frische Karte ist sofort fällig, fällt also nicht aus `buildQueue` heraus. */
+  const practiceBadge = (names: string[]) => {
+    addCards(names);
+    startSession(names);
   };
 
   // Beste Quote (nach Genauigkeit, Antwortzahl als Tiebreak); nur bei ≥2 gespielten Modi.
@@ -270,6 +303,8 @@ export function StatsPage() {
             onStart={startSession}
           />
         </section>
+
+        <BadgePanel rows={badgeRows} onPractice={practiceBadge} />
 
         <BackupPanel />
       </div>

@@ -8,15 +8,17 @@
 - Datum: 2026-07-13
 - Branch: `main` · **Remote: github.com/aHer-dev/MuskelfinderV2** · Live: `aher-dev.github.io/MuskelfinderV2/`
 - Status: **Migration abgeschlossen (Etappen 0–6, `v1.0`). ETAPPE 7 KOMPLETT (7a–7f). ETAPPE 8
-  KOMPLETT (8a–8f). ETAPPE 9 LAEUFT: 9a + 9c fertig.** Die Abrufhaerte waechst mit der Beherrschung,
-  keine Zahl in der Statistik steht ohne Knopf, man kann gezielt an den Luecken ueben, eigene Notizen
-  stehen beim Muskel, der lateinische Name erklaert sich selbst, geprueft wird in Zusammenhaengen —
-  und die Pruefung wirft ihre Luecken direkt in die naechste Sitzung.
+  KOMPLETT (8a–8f). ETAPPE 9 LAEUFT: 9a + 9c + 9b fertig, nur 9d offen.** Die Abrufhaerte waechst mit
+  der Beherrschung, keine Zahl in der Statistik steht ohne Knopf, man kann gezielt an den Luecken
+  ueben, eigene Notizen stehen beim Muskel, der lateinische Name erklaert sich selbst, geprueft wird
+  in Zusammenhaengen, die Pruefung wirft ihre Luecken direkt in die naechste Sitzung — und Abzeichen
+  messen Koennen statt Anwesenheit.
   **ALLE VIER BRUECKEN STEHEN:** B1 (7d), B2 (7e), B3 (**9c**), B4 (8c).
   Statustafel: `docs/produkt-plan.md`.
-- Gate gruen: `npm run lint && npm run test && npm run build` — **465 Tests**.
+- Gate gruen: `npm run lint && npm run test && npm run build` — **484 Tests**.
 - A11y: axe 0 Verstoesse (Playwright+Chromium+axe-core, Light+Dark) inkl. `/pruefung` in allen drei
-  Zustaenden (Einstieg, laufende Pruefung, Debrief). 0 externe Requests.
+  Zustaenden (Einstieg, laufende Pruefung, Debrief) und der Abzeichen auf `/statistik`
+  (verdient + offen). 0 externe Requests.
 - **Offen aus 8b (Entscheidung noetig):** Die Filter gibt es in der **Sitzung**, aber **nicht im
   Quiz**. Ein gefilterter Quiz-Pool braucht einen ZUSAETZLICHEN Serien-Schluessel (der bestehende
   muss bitgleich bleiben, ADR 0002) und eine Antwort auf zu kleine Pools (eine Frage braucht 4
@@ -172,9 +174,21 @@ geoeffnet. Checkliste: `docs/release-v1.1.md`. Alles, was ohne den Projektinhabe
 fachliche Freigabe des Projektinhabers** (E2). Was er streicht, wird gestrichen.
 **9c ist gebaut** (Pruefungsmodus `/pruefung` + Debrief) — **BRUECKE B3 IST EINGELOEST.**
 **Damit stehen ALLE VIER Bruecken** (B1 7d, B2 7e, B3 9c, B4 8c).
-Naechster Schritt: **9b — Kompetenz-Abzeichen** (braucht 9a).
-Briefing: `docs/tasks/2026-07-13-etappe-9b-abzeichen.md`. Danach 9d (Palpation).
-Reihenfolge: 9a ✅ → 9c ✅ → **9b** → 9d.
+**9b ist gebaut** (Kompetenz-Abzeichen unter Fortschritt) — abgeleitet aus (Gruppe × Leitner-Box),
+**nirgends gespeichert**.
+Naechster Schritt: **9d — Palpations-Sektion** (der letzte Schritt der Etappe).
+Briefing: `docs/tasks/2026-07-13-etappe-9d-palpation.md`.
+Reihenfolge: 9a ✅ → 9c ✅ → 9b ✅ → **9d**.
+
+**Aus 9b mitnehmen:**
+- **Ein Abzeichen ist eine Ableitung, kein Zustand** (`src/data/badges.ts`):
+  `verdient(gruppe) ⇔ jeder Muskel hat fach >= MASTERED_FACH`. Es wird **nirgends gespeichert** —
+  wer es persistiert, baut eine zweite Wahrheit neben der Box (ADR 0008) und einen Backup-Schluessel,
+  den aeltere Versionen nicht kennen (ADR 0002). **Wer eine Karte vergisst, verliert das Abzeichen
+  wieder. Das ist Absicht.**
+- **Ein Gruppenmuskel ohne Karte hat kein Fach.** Kein Faelligkeitsfilter findet ihn — `groupPractice`
+  nimmt ihn darum trotzdem in die Auswahl, und der Knopf legt die Karte an (frisch = sofort faellig).
+  Ohne das bliebe ein Abzeichen ewig bei „3 von 4" stehen.
 
 **Aus 9c mitnehmen (gilt fuer alles, was Karten faellig machen will):**
 - **`applyExamMiss` in `src/persistence/leitner.ts` ist eine EIGENE Transition, kein Ersatz fuer

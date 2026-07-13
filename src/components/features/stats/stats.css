@@ -405,3 +405,72 @@
   color: var(--text-secondary);
   font-size: 0.9rem;
 }
+
+/* ---- Kompetenz-Abzeichen (Etappe 9b) ----------------------------------
+   Nüchtern: kein Konfetti, kein Maskottchen. Ein Abzeichen ist eine Ableitung
+   aus der Leitner-Box — es kann jederzeit wieder verschwinden. */
+.badges {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.badge {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md);
+  background: var(--surface-sunken);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+}
+
+/* „Verdient" traegt zusaetzlich Wort und Pokal-Symbol — Farbe allein reicht nicht. */
+.badge--earned {
+  border-color: var(--accent-border);
+}
+
+.badge__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-xs);
+}
+
+.badge__mark {
+  flex: none;
+  align-self: center;
+  color: var(--text-faint);
+}
+
+.badge--earned .badge__mark {
+  color: var(--accent-on-surface);
+}
+
+.badge__label {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.badge__label:hover {
+  text-decoration: underline;
+}
+
+.badge__state {
+  flex: none;
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-tertiary);
+}
+
+.badge--earned .badge__state {
+  color: var(--accent-on-surface);
+  font-weight: 600;
+}
