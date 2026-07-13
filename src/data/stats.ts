@@ -49,6 +49,7 @@ const QUIZ_MODE_LABELS: Record<string, string> = {
   image: 'Bild → Muskel',
   'name-image': 'Name → Bild',
   'image-mixed': 'Bild ↔ Name',
+  'group-odd-one-out': 'Funktionelle Gruppe',
 };
 
 function quizModeLabel(mode: string): string {

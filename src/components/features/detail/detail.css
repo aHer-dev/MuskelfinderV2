@@ -423,3 +423,62 @@
   font-style: italic;
   color: var(--text-secondary);
 }
+
+/* ---- Funktionelle Gruppen (9a) ---------------------------------------- */
+.chip--link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: var(--accent-on-tint);
+  background: var(--accent-tint);
+  text-decoration: none;
+}
+.chip--link:hover {
+  background: var(--accent-dim);
+}
+.chip--link:focus-visible {
+  outline: 2px solid var(--accent-border);
+  outline-offset: 2px;
+}
+
+.group-members {
+  list-style: none;
+  margin: var(--spacing-lg) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.group-member {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.group-member__link {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-decoration: none;
+  color: inherit;
+}
+.group-member__name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.group-member__meta {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+}
+.group-member__box {
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}

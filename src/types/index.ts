@@ -139,7 +139,8 @@ export type QuizMode =
   | 'origin-insertion-mixed'
   | 'image'                // Bild → Muskel
   | 'name-image'           // Name → Bild (Bild-Optionen)
-  | 'image-mixed';         // Bild↔Name gemischt
+  | 'image-mixed'          // Bild↔Name gemischt
+  | 'group-odd-one-out';   // „Welcher gehört NICHT zur Gruppe?" (9a)
 
 export interface QuizOption {
   id: string;              // = muscleId oder optionId

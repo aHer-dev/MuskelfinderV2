@@ -6,6 +6,28 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+- **Etappe 9a — Funktionelle Gruppen + Gruppen-Quiz** (`src/data/groups.ts`,
+  `src/data/editorial/groups.json`, `/gruppe/:id`): Geprüft wird in **Zusammenhängen**, nicht Muskel
+  für Muskel. **15 kuratierte Gruppen** (Rotatorenmanschette, Ischiocrurale, Quadriceps,
+  Adduktorengruppe, Hypothenar, autochthone Rückenmuskulatur medial/lateral, Kaumuskulatur,
+  supra-/infrahyoidal, Mimik …) decken **64 der 150 Muskeln** ab — wer in keine Gruppe gehört, gehört
+  in keine, und das ist kein Fehler. Gruppen sind eine **Many-to-Many-Dimension, keine Partition**:
+  Sie liegen *innerhalb* von Subregionen (Rotatorenmanschette ⊂ Schultergürtel), und ein Muskel kann
+  in mehreren stecken.
+  Der Vorschlag wurde **generiert** (`scripts/propose-groups.mjs` liest die 126 V1-Tags und schreibt
+  einen Prüfbericht), die Wahrheit **kuratiert** — das Skript schreibt `groups.json` **nie** selbst.
+  **Die Validierung hat Zähne:** Ein Muskelname, den es nicht gibt (Tippfehler), lässt den Test
+  **scheitern**, statt die Gruppe still zu verkleinern — eine unvollständige Rotatorenmanschette wäre
+  schlimmer als gar keine.
+  **Neuer Quizmodus** „Welcher Muskel gehört NICHT zur Gruppe …?" — der Fremde kommt aus **derselben
+  Region**, sonst wäre die Frage geschenkt. Der **V1-Serien-Schlüssel bleibt bitgleich**; der neue
+  Modus erzeugt einen *zusätzlichen* Key (ADR 0002, Regressionstest).
+  Die Gruppe ist auf der Detailseite verlinkt und führt zu einer Gruppenseite, die die fehlenden
+  Karten anlegt **und** sofort damit übt (kein CTA ins Leere — Regel aus 8c).
+  ⚠️ Die Daten liegen unter `src/data/editorial/` und **nicht** unter `generated/` (das überschreibt
+  `npm run migrate:data`). Ein Test wacht darüber.
+
 ## [1.1.0] — 2026-07-13
 
 **Vom Nachschlagewerk zum Lernbegleiter.** V1.0 konnte alles nachschlagen — aber sie öffnete auf einer

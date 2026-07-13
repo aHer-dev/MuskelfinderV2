@@ -1,0 +1,186 @@
+{
+  "_hinweis": [
+    "HANDGEPFLEGT. Liegt bewusst NICHT unter src/data/generated/ — den Ordner erzeugt",
+    "`npm run migrate:data` neu und würde alles hier löschen.",
+    "",
+    "Funktionelle Gruppen sind eine MANY-TO-MANY-Dimension, keine Partition: Ein Muskel",
+    "gehört zu mehreren Gruppen, und viele Muskeln gehören zu keiner. Wer in keine Gruppe",
+    "gehört, gehört in keine — das ist kein Fehler.",
+    "",
+    "Schlüssel der Mitglieder ist `nameLatin` (ADR 0002 §2), nicht die Routing-id.",
+    "Ein unbekannter Name lässt die Tests scheitern — er verschwindet nicht still.",
+    "",
+    "STATUS: Erste Charge, aus den V1-Tags erzeugt und kuratiert. WARTET AUF FACHLICHE",
+    "FREIGABE durch den Projektinhaber (E2). Was er streicht, wird gestrichen.",
+    "Ein falscher Gruppen-Eintrag wird auswendig gelernt."
+  ],
+
+  "gruppen": [
+    {
+      "id": "rotatorenmanschette",
+      "label": "Rotatorenmanschette",
+      "note": "Zentriert den Humeruskopf in der Pfanne. Klassische Prüfungsgruppe.",
+      "muscles": [
+        "M. supraspinatus",
+        "M. infraspinatus",
+        "M. teres minor",
+        "M. subscapularis"
+      ]
+    },
+    {
+      "id": "quadriceps",
+      "label": "M. quadriceps femoris",
+      "note": "Der einzige Strecker im Kniegelenk; nur der Rectus femoris überspringt zwei Gelenke.",
+      "muscles": [
+        "M. rectus femoris",
+        "M. vastus medialis",
+        "M. vastus intermedius",
+        "M. vastus lateralis"
+      ]
+    },
+    {
+      "id": "ischiocrural",
+      "label": "Ischiocrurale Gruppe",
+      "note": "Die „Hamstrings\": Extension in der Hüfte, Flexion im Knie. Caput breve ist die Ausnahme — es entspringt am Femur.",
+      "muscles": [
+        "M. biceps femoris – Caput longum",
+        "M. biceps femoris – Caput breve",
+        "M. semitendinosus",
+        "M. semimembranosus"
+      ]
+    },
+    {
+      "id": "adduktoren-huefte",
+      "label": "Adduktorengruppe der Hüfte",
+      "note": "Nicht zu verwechseln mit dem M. adductor pollicis (Hand) oder M. adductor hallucis (Fuß).",
+      "muscles": [
+        "M. adductor longus",
+        "M. adductor brevis",
+        "M. adductor magnus",
+        "M. gracilis",
+        "M. pectineus"
+      ]
+    },
+    {
+      "id": "wade-oberflaechlich",
+      "label": "Oberflächliche Wadenmuskulatur",
+      "note": "M. triceps surae (Gastrocnemius + Soleus) und M. plantaris. Stärkste Plantarflexoren.",
+      "muscles": [
+        "M. gastrocnemius",
+        "M. soleus",
+        "M. plantaris"
+      ]
+    },
+    {
+      "id": "thenar",
+      "label": "Daumenballen (Thenar)",
+      "muscles": [
+        "M. abductor pollicis brevis",
+        "M. flexor pollicis brevis",
+        "M. opponens pollicis",
+        "M. adductor pollicis"
+      ]
+    },
+    {
+      "id": "hypothenar",
+      "label": "Kleinfingerballen (Hypothenar)",
+      "note": "ACHTUNG: Der M. extensor digiti minimi trägt zwar das Tag „kleinfinger\", ist aber ein Unterarmstrecker und gehört NICHT zum Hypothenar.",
+      "muscles": [
+        "M. abductor digiti minimi",
+        "M. flexor digiti minimi brevis",
+        "M. opponens digiti minimi",
+        "M. palmaris brevis"
+      ]
+    },
+    {
+      "id": "autochthon-medial",
+      "label": "Autochthone Rückenmuskulatur — medialer Trakt",
+      "note": "Innervation: Rami dorsales der Spinalnerven — das gilt für die gesamte autochthone Muskulatur.",
+      "muscles": [
+        "Mm. interspinales",
+        "Mm. spinales",
+        "Mm. intertransversarii mediales",
+        "Mm. rotatores",
+        "M. semispinalis",
+        "Mm. multifidi"
+      ]
+    },
+    {
+      "id": "autochthon-lateral",
+      "label": "Autochthone Rückenmuskulatur — lateraler Trakt",
+      "muscles": [
+        "Mm. iliocostales",
+        "Mm. longissimi",
+        "Mm. splenii"
+      ]
+    },
+    {
+      "id": "bauchwand",
+      "label": "Bauchwand",
+      "note": "Die vier klassischen Bauchmuskeln. Der M. quadratus lumborum wird oft mitgelernt, gehört aber zur hinteren Bauchwand — er steht bewusst nicht hier.",
+      "muscles": [
+        "M. rectus abdominis",
+        "M. obliquus externus abdominis",
+        "M. obliquus internus abdominis",
+        "M. transversus abdominis"
+      ]
+    },
+    {
+      "id": "beckenboden",
+      "label": "Beckenboden",
+      "muscles": [
+        "M. levator ani",
+        "M. coccygeus",
+        "M. transversus perinei profundus",
+        "M. transversus perinei superficialis"
+      ]
+    },
+    {
+      "id": "kaumuskulatur",
+      "label": "Kaumuskulatur",
+      "note": "Alle vier werden vom N. mandibularis (V3) versorgt. Nur der laterale Pterygoideus öffnet den Mund.",
+      "muscles": [
+        "M. masseter",
+        "M. temporalis",
+        "M. pterygoideus medialis",
+        "M. pterygoideus lateralis"
+      ]
+    },
+    {
+      "id": "suprahyoidal",
+      "label": "Suprahyoidale Muskeln",
+      "note": "Heben das Zungenbein bzw. öffnen den Mund. Klassische Verwechslungsfalle — vier Namen, die sich um zwei Zeichen unterscheiden.",
+      "muscles": [
+        "M. mylohyoideus",
+        "M. geniohyoideus",
+        "M. stylohyoideus",
+        "M. digastricus"
+      ]
+    },
+    {
+      "id": "infrahyoidal",
+      "label": "Infrahyoidale Muskeln",
+      "note": "Senken das Zungenbein. Ebenfalls eine Verwechslungsfalle (siehe suprahyoidal).",
+      "muscles": [
+        "M. sternohyoideus",
+        "M. sternothyroideus",
+        "M. thyrohyoideus",
+        "M. omohyoideus"
+      ]
+    },
+    {
+      "id": "mimik",
+      "label": "Mimische Muskulatur",
+      "note": "Alle vom N. facialis (VII) versorgt — im Gegensatz zur Kaumuskulatur (V3). Das ist die Prüfungsfrage.",
+      "muscles": [
+        "M. orbicularis oris",
+        "M. orbicularis oculi",
+        "M. procerus",
+        "M. nasalis",
+        "M. corrugator supercilii",
+        "M. occipitofrontalis",
+        "Platysma"
+      ]
+    }
+  ]
+}

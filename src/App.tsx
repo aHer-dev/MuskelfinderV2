@@ -14,6 +14,7 @@ const OnboardingPage = lazy(() =>
   import('./pages/OnboardingPage').then((m) => ({ default: m.OnboardingPage })),
 )
 const SearchPage = lazy(() => import('./pages/SearchPage').then((m) => ({ default: m.SearchPage })))
+const GroupPage = lazy(() => import('./pages/GroupPage').then((m) => ({ default: m.GroupPage })))
 const MuscleDetailPage = lazy(() =>
   import('./pages/MuscleDetailPage').then((m) => ({ default: m.MuscleDetailPage })),
 )
@@ -55,6 +56,7 @@ function App() {
             <Route path="/start" element={<OnboardingPage />} />
             <Route path="/suche" element={<SearchPage />} />
             <Route path="/muskel/:id" element={<MuscleDetailPage />} />
+            <Route path="/gruppe/:id" element={<GroupPage />} />
             <Route path="/lernkarten" element={<FlashcardsPage />} />
             <Route path="/karteikasten" element={<DeckManagerPage />} />
             <Route path="/quiz" element={<QuizPage />} />

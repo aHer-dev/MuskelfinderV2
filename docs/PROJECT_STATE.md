@@ -166,10 +166,11 @@ geoeffnet. Checkliste: `docs/release-v1.1.md`. Alles, was ohne den Projektinhabe
 (3) V1 (`aher-dev.github.io/Muskelfinder/`) ist noch live — Hinweis setzen oder abschalten.
 
 **ETAPPE 9 IST VOLLSTAENDIG GEBRIEFT** (Rahmen + 9a-9d, siehe Statustafel).
-Naechster Schritt: **9a — Funktionelle Gruppen.**
-Briefing: `docs/tasks/2026-07-13-etappe-9a-funktionelle-gruppen.md`.
-Empfohlene Reihenfolge: **9a → 9c → 9b → 9d** (9a zuerst, weil es den Projektinhaber blockiert:
-die Gruppen brauchen seine fachliche Freigabe — er kann pruefen, waehrend 9c gebaut wird).
+**9a ist gebaut** (15 Gruppen, Gruppen-Quiz, Gruppenseite) — die Gruppenliste **wartet auf die
+fachliche Freigabe des Projektinhabers** (E2). Was er streicht, wird gestrichen.
+Naechster Schritt: **9c — Pruefungsmodus + Debrief (Bruecke B3).**
+Briefing: `docs/tasks/2026-07-13-etappe-9c-pruefungsmodus.md`.
+Reihenfolge: 9a ✅ → **9c** → 9b (braucht 9a) → 9d.
 
 **Drei Fallen fuer Etappe 9 (am Code verifiziert):**
 1. **`useQuizGame` schreibt bei jeder Runde `commitRound(quizSeriesKey(...))`** (Zeile 103). Ein

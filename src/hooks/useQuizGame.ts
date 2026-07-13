@@ -11,6 +11,8 @@
 import { useMemo, useState } from 'react';
 import { MUSCLES } from '../data';
 import { generateQuiz, quizSeriesKey } from '../data/quiz';
+import { generateGroupQuiz } from '../data/group-quiz';
+import { getGroups } from '../data/groups';
 import { useProgressStore } from '../store/useProgressStore';
 import { useQuizStore } from '../store/useQuizStore';
 import { notifyAward } from '../store/useToastStore';
@@ -47,6 +49,11 @@ export function useQuizGame(mode: QuizMode, count = 10, regions: RegionId[] = []
   const regionKey = [...regions].sort().join(',');
   const questions = useMemo(() => {
     const pool = regions.length ? MUSCLES.filter((m) => regions.includes(m.region)) : MUSCLES;
+    /* Der Gruppen-Modus (9a) fragt nach Zusammenhaengen, nicht nach einem Muskelfeld —
+       er hat darum einen eigenen Generator. Alles danach (Antwort, XP, Serie) ist gleich. */
+    if (mode === 'group-odd-one-out') {
+      return generateGroupQuiz({ groups: getGroups(), muscles: pool, count });
+    }
     return generateQuiz(pool, mode, count);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, count, regionKey]);
