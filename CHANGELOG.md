@@ -30,6 +30,12 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   beiden Links in der Lernkarten-Kopfzeile.
 
 ### Fixed
+- **Der Karteikasten scrollte auf dem Handy seitlich** (375 px Viewport → 399 px Dokument). Die
+  Tabelle selbst war unschuldig, sie scrollte brav in ihrem `overflow-x`-Container. Schuld war das
+  `.visually-hidden`-Span in der Kopfzeile (die Screenreader-Beschriftung der Aktionsspalte):
+  `position: absolute` ohne positionierten Vorfahren hängt am **Dokument**, landet an der x-Position
+  der *breiten* Tabelle und bläht damit die ganze Seite auf. `position: relative` auf
+  `.deck-table-wrap` hält es in der Box. Mobil ist der Hauptkontext dieser App — gemessen auf 375 px.
 - **Dark-Mode: Dropdown-Listen hoben sich nicht vom Hintergrund ab** (10f). `.fc-select` und die
   Suchfilter hatten `background: var(--surface-sunken)` — im Dark Mode `rgba(255,255,255,0.05)`,
   also **durchscheinend**. Chromium malt die Optionsliste eines `<select>` mit *exakt* dessen

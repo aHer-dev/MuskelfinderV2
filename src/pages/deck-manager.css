@@ -89,6 +89,14 @@
 /* ── In-Deck-Tabelle ──────────────────────────────────────────────── */
 .deck-table-wrap {
   overflow-x: auto;
+  /* `position: relative` ist hier kein Zierrat, sondern die Korrektur eines echten
+     Fehlers: In der Kopfzeile steht ein `.visually-hidden`-Span (die Screenreader-
+     Beschriftung der Aktionsspalte). Der ist `position: absolute` — ohne positionierten
+     Vorfahren haengt er am DOKUMENT statt an dieser Box, landet an der x-Position der
+     BREITEN Tabelle und blaeht damit die ganze Seite auf. Auf 375 px gemessen: Das
+     Dokument scrollte seitlich (399 px), obwohl die Tabelle selbst brav in ihrem
+     Container scrollte. Mit dieser Zeile bleibt der Span in der Box. */
+  position: relative;
 }
 
 .deck-table {
