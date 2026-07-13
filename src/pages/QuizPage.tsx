@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { QuestionCard } from '../components/features/quiz/QuestionCard';
 import { QuizProgress } from '../components/features/quiz/QuizProgress';
 import { QuizResult } from '../components/features/quiz/QuizResult';
+import { QuizTimer } from '../components/features/quiz/QuizTimer';
 import { Icon } from '../components/ui/Icon';
 import { getRegions, getMuscles } from '../data';
 import { regionLabel } from '../data/labels';
@@ -10,7 +11,10 @@ import {
   readQuizHandoff,
   QUIZ_SCOPES,
   QUIZ_SCOPE_LABELS,
+  QUIZ_TIME_LIMITS,
+  QUIZ_TIME_LIMIT_LABELS,
   type QuizScope,
+  type QuizTimeLimit,
 } from '../data/quiz';
 import { quizPoolSize } from '../data/quiz-pool';
 import { useQuizGame } from '../hooks/useQuizGame';
@@ -73,16 +77,18 @@ function QuizGame({
   mode,
   regions,
   scope,
+  timeLimit,
   onExit,
   onRestart,
 }: {
   mode: QuizMode;
   regions: RegionId[];
   scope: QuizScope;
+  timeLimit: QuizTimeLimit;
   onExit: () => void;
   onRestart: () => void;
 }) {
-  const game = useQuizGame(mode, 10, regions, scope);
+  const game = useQuizGame(mode, 10, regions, scope, timeLimit);
 
   if (game.total === 0) {
     return (
@@ -112,11 +118,20 @@ function QuizGame({
 
       <QuizProgress total={game.total} index={game.index} results={game.results} />
 
+      {game.timeLimit > 0 && (
+        <QuizTimer
+          limit={game.timeLimit}
+          remaining={game.remaining}
+          paused={game.phase !== 'answering'}
+        />
+      )}
+
       {game.question && (
         <QuestionCard
           question={game.question}
           phase={game.phase}
           selectedId={game.selectedId}
+          timedOut={game.timedOut}
           onAnswer={game.answer}
         />
       )}
@@ -145,6 +160,9 @@ export function QuizPage() {
   const [round, setRound] = useState(0);
   const [regions, setRegions] = useState<RegionId[]>([]);
   const [scope, setScope] = useState<QuizScope>('all');
+  /* Vorgabe 0 = ohne Uhr. Das ist nicht nur freundlich, sondern die Bedingung, unter der
+     ein Zeitlimit ueberhaupt zulaessig ist (WCAG 2.2.1): abschaltbar, und aus per Default. */
+  const [timeLimit, setTimeLimit] = useState<QuizTimeLimit>(0);
   const cards = useProgressStore((s) => s.flashcards.cards);
 
   /* Übergabe aus der Statistik (8c): „Diesen Modus üben" startet ihn direkt, ohne
@@ -267,6 +285,31 @@ export function QuizPage() {
             )}
           </div>
 
+          {/* Zeitdruck (Etappe 11). Aus per Default — wer ihn will, schaltet ihn ein. */}
+          <div className="quiz-filter" role="group" aria-label="Zeit pro Frage">
+            <span className="quiz-filter__label">Zeit pro Frage</span>
+            <div className="quiz-filter__chips">
+              {QUIZ_TIME_LIMITS.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  className={`chip${timeLimit === s ? ' chip--active' : ''}`}
+                  aria-pressed={timeLimit === s}
+                  onClick={() => setTimeLimit(s)}
+                >
+                  {QUIZ_TIME_LIMIT_LABELS[s]}
+                </button>
+              ))}
+            </div>
+            {timeLimit > 0 && (
+              <p className="quiz-filter__note">
+                Läuft die Zeit ab, zählt die Frage als falsch und die richtige Antwort wird
+                gezeigt. Runden unter der Uhr werden getrennt gewertet — sonst stünde eine Quote
+                unter Zeitdruck neben einer in Ruhe, als wäre sie dasselbe.
+              </p>
+            )}
+          </div>
+
           <ul className="quiz-modes">
             {FAMILIES.map((family) => (
               <li key={family.title} className="quiz-family">
@@ -290,10 +333,11 @@ export function QuizPage() {
         </>
       ) : (
         <QuizGame
-          key={`${mode}-${regionKey}-${activeScope}-${round}`}
+          key={`${mode}-${regionKey}-${activeScope}-${timeLimit}-${round}`}
           mode={mode}
           regions={regions}
           scope={activeScope}
+          timeLimit={timeLimit}
           onExit={() => setMode(null)}
           onRestart={() => setRound((r) => r + 1)}
         />

@@ -124,6 +124,30 @@ export function isQuizScope(value: unknown): value is QuizScope {
   return typeof value === 'string' && Object.hasOwn(QUIZ_SCOPE_LABELS, value);
 }
 
+/* ── Zeitdruck (Etappe 11, entschieden 2026-07-13) ───────────────────────────
+   Sekunden pro Frage. **0 ist die Vorgabe und heißt: kein Zeitlimit.**
+
+   Dass es abschaltbar ist und standardmäßig aus steht, ist kein Zufall, sondern die
+   Bedingung, unter der ein Zeitlimit überhaupt zulässig ist: WCAG 2.2.1 („Timing
+   Adjustable") verlangt, dass eine Nutzerin das Limit abschalten kann. Wer es einschaltet,
+   hat es selbst gewählt — und kann es jederzeit wieder ausschalten.
+
+   Die Werte sind Übungstempo, nicht Prüfungstempo: In einer echten schriftlichen Prüfung
+   hat man deutlich mehr als 30 Sekunden pro Frage. Hier geht es um den Abruf unter Druck,
+   nicht um eine Simulation. Darum heißen sie auch nicht „Prüfungstempo". */
+export const QUIZ_TIME_LIMITS = [0, 30, 15] as const;
+export type QuizTimeLimit = (typeof QUIZ_TIME_LIMITS)[number];
+
+export const QUIZ_TIME_LIMIT_LABELS: Record<QuizTimeLimit, string> = {
+  0: 'Ohne Zeit',
+  30: '30 Sekunden',
+  15: '15 Sekunden',
+};
+
+export function isQuizTimeLimit(value: unknown): value is QuizTimeLimit {
+  return (QUIZ_TIME_LIMITS as readonly number[]).includes(value as number);
+}
+
 /**
  * Serien-Key im V1-Format `<mode>::{"deckOnly":…,"regions":…,"subgroups":…}`.
  *
@@ -140,17 +164,20 @@ export function quizSeriesKey(
   mode: QuizMode,
   regions: RegionId[] = [],
   scope: QuizScope = 'all',
+  timeLimit: QuizTimeLimit = 0,
 ): string {
   const base = {
     deckOnly: scope !== 'all',
     regions: [...regions].sort(),
     subgroups: [] as string[],
   };
-  const signature =
-    scope === 'all' || scope === 'deck'
-      ? JSON.stringify(base)
-      : JSON.stringify({ ...base, filter: scope });
-  return `${mode}::${signature}`;
+  const mitFilter = scope === 'all' || scope === 'deck' ? base : { ...base, filter: scope };
+  /* Eine Runde unter Zeitdruck bekommt einen EIGENEN Schlüssel — dieselbe Regel wie beim
+     Karten-Filter (8b). 60 % unter der Uhr ist nicht dasselbe wie 60 % in Ruhe; liefen beide
+     in denselben Topf, wäre die „beste Quote" je Modus wertlos. Ohne Uhr (`0`) bleibt der
+     Text **bitgleich** — ADR 0002. */
+  const signature = timeLimit === 0 ? mitFilter : { ...mitFilter, timed: timeLimit };
+  return `${mode}::${JSON.stringify(signature)}`;
 }
 
 interface QuestionSpec {

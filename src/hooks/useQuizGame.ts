@@ -8,9 +8,14 @@
    gemeinsamen Fortschritts-Store (Gamification).
    ========================================================================= */
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { MUSCLES } from '../data';
-import { generateQuizFrom, quizSeriesKey, type QuizScope } from '../data/quiz';
+import {
+  generateQuizFrom,
+  quizSeriesKey,
+  type QuizScope,
+  type QuizTimeLimit,
+} from '../data/quiz';
 import { quizPool } from '../data/quiz-pool';
 import { generateGroupQuiz } from '../data/group-quiz';
 import { getGroups } from '../data/groups';
@@ -36,6 +41,12 @@ export interface QuizGameApi {
   xpEarned: number;
   /** Ergebnis je bereits beantworteter Frage (in Reihenfolge) — für die Fortschrittsleiste. */
   results: boolean[];
+  /** Sekunden pro Frage; 0 = ohne Uhr. Für die Anzeige, damit sie nichts nachrechnen muss. */
+  timeLimit: QuizTimeLimit;
+  /** Verbleibende Sekunden der laufenden Frage. Ohne Uhr immer 0. */
+  remaining: number;
+  /** Die aktuelle Frage endete, weil die Zeit ablief — nicht, weil falsch geklickt wurde. */
+  timedOut: boolean;
   answer: (optionId: string) => void;
   next: () => void;
   result: QuizResult | null;
@@ -46,6 +57,7 @@ export function useQuizGame(
   count = 10,
   regions: RegionId[] = [],
   scope: QuizScope = 'all',
+  timeLimit: QuizTimeLimit = 0,
 ): QuizGameApi {
   const awardXp = useProgressStore((s) => s.awardXp);
   const awardStreak = useProgressStore((s) => s.awardStreak);
@@ -85,6 +97,53 @@ export function useQuizGame(
 
   const question = questions[index] ?? null;
 
+  /* ── Zeitdruck (Etappe 11) ────────────────────────────────────────────────
+     Die Uhr laeuft gegen einen ZEITSTEMPEL, nicht gegen einen heruntergezaehlten
+     Zaehler: Ein Intervall in einem Hintergrund-Tab wird vom Browser gedrosselt, ein
+     Zaehler liefe dann zu langsam und die Frage bliebe unbegrenzt offen. Die Differenz
+     zu `deadline` stimmt immer. */
+  const [deadline, setDeadline] = useState<number | null>(null);
+  const [remaining, setRemaining] = useState(0);
+  const [timedOut, setTimedOut] = useState(false);
+
+  // Jede neue Frage startet die Uhr neu; das Aufdecken haelt sie an (deadline = null).
+  useEffect(() => {
+    if (timeLimit === 0 || phase !== 'answering' || question === null) {
+      setDeadline(null);
+      return;
+    }
+    setDeadline(Date.now() + timeLimit * 1000);
+    setRemaining(timeLimit);
+    setTimedOut(false);
+  }, [index, phase, timeLimit, question]);
+
+  useEffect(() => {
+    if (deadline === null) return;
+
+    const id = setInterval(() => {
+      const left = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+      setRemaining(left);
+      if (left > 0) return;
+
+      /* Sofort abraeumen: Ohne das koennte der naechste Tick nochmal feuern, bevor React
+         neu gerendert und die deadline geloescht hat — und ein zweites `false` in die
+         Ergebnisliste schieben. */
+      clearInterval(id);
+
+      /* Zeit abgelaufen = falsch. Aber ohne gewaehlte Option: `selectedId` bleibt null,
+         darum markiert die Karte nur die richtige Antwort und behauptet nicht, die Nutzerin
+         haette etwas Falsches angeklickt. Kein XP, Serie gerissen — wie bei einer echten
+         Falschantwort. */
+      setPhase('revealed');
+      setSelectedId(null);
+      setTimedOut(true);
+      setResults((r) => [...r, false]);
+      setStreak(0);
+    }, 250);
+
+    return () => clearInterval(id);
+  }, [deadline]);
+
   function answer(optionId: string) {
     if (phase !== 'answering' || !question) return;
     setSelectedId(optionId);
@@ -122,10 +181,15 @@ export function useQuizGame(
       setSelectedId(null);
     } else {
       setPhase('finished');
-      /* Ein eingeschraenkter Pool bekommt einen ZUSAETZLICHEN Serien-Schluessel — der
-         bestehende bleibt bitgleich (ADR 0002). Sonst verschmutzte eine Lueckenrunde
-         die Gesamtbilanz des Modus. */
-      commitRound(quizSeriesKey(mode, regions, effectiveScope), correctCount, questions.length);
+      /* Ein eingeschraenkter Pool UND eine Runde unter der Uhr bekommen je einen
+         ZUSAETZLICHEN Serien-Schluessel — der bestehende bleibt bitgleich (ADR 0002).
+         Sonst verschmutzte eine Lueckenrunde die Gesamtbilanz des Modus, und 60 % unter
+         Zeitdruck stuenden neben 60 % in Ruhe, als waeren sie dasselbe. */
+      commitRound(
+        quizSeriesKey(mode, regions, effectiveScope, timeLimit),
+        correctCount,
+        questions.length,
+      );
     }
   }
 
@@ -146,6 +210,9 @@ export function useQuizGame(
     score,
     xpEarned,
     results,
+    timeLimit,
+    remaining,
+    timedOut,
     answer,
     next,
     result,
