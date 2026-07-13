@@ -6,6 +6,42 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Changed
+- **Abnahme des Projektinhabers vom 2026-07-13 umgesetzt.**
+  - **Gruppen (9a):** Der **M. plantaris** ist kein Mitglied der Wadengruppe mehr, der
+    **M. quadratus lumborum** steht bei der Bauchwand „in Klammern". Dafür neu:
+    `MuscleGroup.related` — ein Muskel, der **mitgelernt wird, aber nicht dazugehört**. Er wird
+    angezeigt, zählt aber **nicht als Mitglied**: Hätte ich den Quadratus einfach in `muscles`
+    geschrieben, wäre er im Gruppen-Quiz („Welcher gehört NICHT dazu?") plötzlich eine *falsche*
+    Antwort gewesen — obwohl er fachlich sehr wohl nicht dazugehört — und das Kompetenz-Abzeichen
+    hätte ihn mitgefordert. Als `related` ist er im Gegenteil der **beste Distraktor**: genau die
+    Prüfungsfrage.
+  - **Merksätze (8d) ganz entfernt** — Feld, Typ, Anzeige, Stil, Tests. Es war nie einer
+    geschrieben; ein ungenutztes Feld ist toter Code.
+  - **Palpation (9d):** Alle 21 KI-Vorschläge **gestrichen**. Die Texte kommen aus dem Skript der
+    Kollegen des Projektinhabers und werden von Hand eingetragen — ein Agent schreibt hier nie wieder
+    etwas hinein (`docs/palpation-erfassen.md`). Ohne Eintrag steht auf der Detailseite jetzt ein
+    **bewusster Platzhalter** statt nichts: dieselbe Haltung wie bei der Bildlücke aus 8f — die Lücke
+    soll absichtlich aussehen, nicht vergessen.
+
+### Fixed
+- **Der Hypothenar zeigte Fußmuskeln — die Gruppe ist entfernt** (14 statt 15). Drei ihrer vier
+  Mitglieder (`M. abductor digiti minimi`, `M. flexor digiti minimi brevis`,
+  `M. opponens digiti minimi`) tragen einen `nameLatin`, den es **zweimal** gibt: einmal Hand, einmal
+  Fuß. Karten sind nach `nameLatin` geschlüsselt (ADR 0002 §2), also löste die Gruppe still auf die
+  **Fuß**muskeln auf — die Gruppenseite zeigte „Untere Extremität", das Quiz zog Distraktoren aus zwei
+  Regionen, und das Abzeichen „Hypothenar komplett" hätte man mit den **Fußkarten** verdient. Der
+  Kleinfingerballen ist mit `nameLatin`-Schlüsseln schlicht nicht darstellbar. Ein Test wacht ab jetzt
+  darüber, dass **kein mehrdeutiger Name in einer Gruppe steht**, dessen Doppel in einer *anderen*
+  Region liegt (`M. nasalis` und `M. occipitofrontalis` sind ebenfalls doppelt, aber beide Hälften
+  liegen im Kopf — sie sind unbedenklich, und die Regel unterscheidet genau das). Der **Thenar** ist
+  nicht betroffen: die `pollicis`-Namen sind eindeutig.
+- **Gruppen-Quiz: der Fremde konnte aus einer Region kommen, die gar nicht auf dem Schirm stand.**
+  `generateGroupQuiz` zog ihn aus den Regionen **aller** Mitglieder, zeigte aber nur drei — bei einer
+  Gruppe über zwei Regionen war er damit der einzige Fußpunkt unter drei Schulterpunkten, und die Frage
+  war geschenkt, ohne dass man die Gruppe kennen musste. Jetzt werden erst die Mitglieder gewählt, dann
+  der Fremde aus **deren** Region. (Aufgedeckt durch das Entfernen des M. plantaris.)
+
 ### Added
 - **Etappe 9d — Palpation je Muskel (Mechanik)** (`src/data/palpation.ts`,
   `src/data/editorial/palpation.json`, Sektion „Am Körper finden" auf der Detailseite): Physio- und

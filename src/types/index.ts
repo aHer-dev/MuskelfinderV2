@@ -77,8 +77,6 @@ export interface Muscle {
    * generierten Daten, die `npm run migrate:data` ueberschreibt.
    */
   etymology?: string;
-  /** Merksatz — nur von Hand gepflegt, nie generiert. Ein falscher Merksatz wird auswendig gelernt. */
-  mnemonic?: string;
   /**
    * Palpation (Etappe 9d): wo man den Muskel am lebenden Körper findet. Handgepflegt in
    * `src/data/editorial/palpation.json`, vom Loader dazugemischt — NICHT in den generierten

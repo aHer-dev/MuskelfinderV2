@@ -95,6 +95,35 @@ export function GroupPage() {
           );
         })}
       </ul>
+
+      {/* „In Klammern": wird mitgelernt, gehoert aber nicht dazu. Sichtbar getrennt —
+          sonst waere die Gruppe im Quiz („Welcher gehoert NICHT dazu?") falsch. */}
+      {group.related && group.related.length > 0 && (
+        <section className="group-related" aria-labelledby="group-related">
+          <h2 className="group-related__title" id="group-related">
+            Wird mitgelernt — gehört aber nicht dazu
+          </h2>
+          <ul className="group-members group-members--related">
+            {group.related.map((name) => {
+              const muscle = getMuscleByLatinName(name);
+              return (
+                <li key={name} className="group-member group-member--related">
+                  {muscle ? (
+                    <Link to={`/muskel/${muscle.id}`} className="group-member__link">
+                      <span className="group-member__name">({name})</span>
+                      <span className="group-member__meta">
+                        {regionLabel(muscle.region)} · {muscle.subregion}
+                      </span>
+                    </Link>
+                  ) : (
+                    <span className="group-member__name">({name})</span>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
     </section>
   );
 }

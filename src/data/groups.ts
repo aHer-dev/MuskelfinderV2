@@ -23,6 +23,17 @@ export interface MuscleGroup {
   label: string;
   /** Muskeln der Gruppe (`nameLatin`, ADR 0002 §2) — nicht die Routing-`id`. */
   muscles: string[];
+  /**
+   * Muskeln, die **mitgelernt werden, aber nicht dazugehören** — „in Klammern".
+   * Der M. quadratus lumborum steht so bei der Bauchwand: Jeder lernt ihn dort mit,
+   * fachlich gehört er zur hinteren Bauchwand.
+   *
+   * ⚠️ Sie sind **KEINE Mitglieder**. Sie zählen nicht fürs Gruppen-Quiz („Welcher gehört
+   * NICHT dazu?" — sonst wäre die richtige Antwort plötzlich falsch) und nicht fürs
+   * Kompetenz-Abzeichen (sonst müsste man sie meistern, um die Gruppe zu „können").
+   * Sie werden nur **angezeigt**.
+   */
+  related?: string[];
   /** Fachlicher Hinweis (Prüfungsfalle, Abgrenzung). Optional. */
   note?: string;
 }
@@ -57,9 +68,12 @@ export function readGroups(raw: unknown, known?: ReadonlySet<string>): MuscleGro
 
     // Namensdubletten (Hand/Fuß) sind laut ADR 0002 §2 DIESELBE Karte — einmal reicht.
     const muscles = [...new Set(g.muscles.filter((m): m is string => typeof m === 'string'))];
+    const related = [
+      ...new Set((g.related ?? []).filter((m): m is string => typeof m === 'string')),
+    ].filter((name) => !muscles.includes(name)); // Mitglied schlägt „in Klammern"
 
     if (known) {
-      const unbekannt = muscles.filter((name) => !known.has(name));
+      const unbekannt = [...muscles, ...related].filter((name) => !known.has(name));
       if (unbekannt.length > 0) {
         throw new GroupDataError(
           `Gruppe „${g.id}" nennt Muskeln, die es nicht gibt: ${unbekannt.join(', ')}`,
@@ -67,7 +81,13 @@ export function readGroups(raw: unknown, known?: ReadonlySet<string>): MuscleGro
       }
     }
 
-    groups.push({ id: g.id, label: g.label, muscles, ...(g.note ? { note: g.note } : {}) });
+    groups.push({
+      id: g.id,
+      label: g.label,
+      muscles,
+      ...(related.length > 0 ? { related } : {}),
+      ...(g.note ? { note: g.note } : {}),
+    });
   }
 
   return groups;

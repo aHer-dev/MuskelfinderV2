@@ -16,7 +16,7 @@ const SOURCE: EtymologySource = { lexikon: LEXIKON, muskeln: {} };
 
 /* Der Loader hat den echten Muskeln die Herleitung schon angehängt — für den Test
    des Merges brauchen wir sie roh, sonst prüfen wir nur unsere eigene Vorarbeit. */
-const { etymology: _e, mnemonic: _m, ...ROH } = getMuscles()[0];
+const { etymology: _e, ...ROH } = getMuscles()[0];
 
 function muscleNamed(nameLatin: string): Muscle {
   return { ...ROH, nameLatin };
@@ -78,11 +78,10 @@ describe('withEtymology — der Merge des Loaders', () => {
   it('ein handgeschriebener Text schlägt die Komposition', () => {
     const source: EtymologySource = {
       lexikon: LEXIKON,
-      muskeln: { 'M. flexor digitorum longus': { etymologie: 'Von Hand.', merksatz: 'Merk dir X.' } },
+      muskeln: { 'M. flexor digitorum longus': { etymologie: 'Von Hand.' } },
     };
     const result = withEtymology(muscleNamed('M. flexor digitorum longus'), source);
     expect(result.etymology).toBe('Von Hand.');
-    expect(result.mnemonic).toBe('Merk dir X.');
   });
 
   it('verträgt eine kaputte Datei, ohne die App mitzureißen', () => {
@@ -96,10 +95,6 @@ describe('Der echte Datenbestand', () => {
   it('jeder der 150 Muskeln hat eine Herleitung', () => {
     const ohne = getMuscles().filter((m) => !m.etymology);
     expect(ohne.map((m) => m.nameLatin)).toEqual([]);
-  });
-
-  it('kein Merksatz ist erfunden — sie bleiben leer, bis der Fachmann sie schreibt', () => {
-    expect(getMuscles().filter((m) => m.mnemonic)).toEqual([]);
   });
 
   it('keine Herleitung enthält ASCII-Umschrift statt Umlauten', () => {

@@ -10,8 +10,20 @@
     "Schlüssel der Mitglieder ist `nameLatin` (ADR 0002 §2), nicht die Routing-id.",
     "Ein unbekannter Name lässt die Tests scheitern — er verschwindet nicht still.",
     "",
-    "STATUS: Erste Charge, aus den V1-Tags erzeugt und kuratiert. WARTET AUF FACHLICHE",
-    "FREIGABE durch den Projektinhaber (E2). Was er streicht, wird gestrichen.",
+    "STATUS: Am 2026-07-13 vom Projektinhaber ABGENOMMEN. 14 Gruppen.",
+    "",
+    "KEIN HYPOTHENAR — und das bitte nicht 'reparieren'. Drei seiner vier Mitglieder",
+    "(abductor / flexor brevis / opponens digiti minimi) tragen einen nameLatin, den es",
+    "ZWEIMAL gibt: einmal Hand, einmal Fuss. Da Karten nach nameLatin geschluesselt sind",
+    "(ADR 0002 §2), loesen sie auf die FUSS-Muskeln auf: Die Gruppenseite zeigte 'Untere",
+    "Extremitaet', und das Abzeichen 'Hypothenar komplett' haette man mit den Fusskarten",
+    "verdient. Der Kleinfingerballen ist mit nameLatin-Schluesseln nicht darstellbar.",
+    "Der Thenar ist nicht betroffen (die pollicis-Namen sind eindeutig).",
+    "",
+    "'related' = wird mitgelernt, gehoert aber NICHT dazu ('in Klammern'). Diese Muskeln",
+    "werden nur angezeigt: Sie zaehlen NICHT als Mitglied — weder im Gruppen-Quiz",
+    "('Welcher gehoert NICHT dazu?') noch im Kompetenz-Abzeichen.",
+    "",
     "Ein falscher Gruppen-Eintrag wird auswendig gelernt."
   ],
 
@@ -64,10 +76,12 @@
     {
       "id": "wade-oberflaechlich",
       "label": "Oberflächliche Wadenmuskulatur",
-      "note": "M. triceps surae (Gastrocnemius + Soleus) und M. plantaris. Stärkste Plantarflexoren.",
+      "note": "Der M. triceps surae — die stärksten Plantarflexoren. Der M. gastrocnemius zieht über das Kniegelenk, der M. soleus nicht; das ist die Prüfungsfrage. Der M. plantaris liegt in derselben Schicht, zählt hier aber nicht als Mitglied.",
       "muscles": [
         "M. gastrocnemius",
-        "M. soleus",
+        "M. soleus"
+      ],
+      "related": [
         "M. plantaris"
       ]
     },
@@ -79,17 +93,6 @@
         "M. flexor pollicis brevis",
         "M. opponens pollicis",
         "M. adductor pollicis"
-      ]
-    },
-    {
-      "id": "hypothenar",
-      "label": "Kleinfingerballen (Hypothenar)",
-      "note": "ACHTUNG: Der M. extensor digiti minimi trägt zwar das Tag „kleinfinger\", ist aber ein Unterarmstrecker und gehört NICHT zum Hypothenar.",
-      "muscles": [
-        "M. abductor digiti minimi",
-        "M. flexor digiti minimi brevis",
-        "M. opponens digiti minimi",
-        "M. palmaris brevis"
       ]
     },
     {
@@ -117,12 +120,15 @@
     {
       "id": "bauchwand",
       "label": "Bauchwand",
-      "note": "Die vier klassischen Bauchmuskeln. Der M. quadratus lumborum wird oft mitgelernt, gehört aber zur hinteren Bauchwand — er steht bewusst nicht hier.",
+      "note": "Die vier klassischen Bauchmuskeln. Der M. quadratus lumborum wird mitgelernt, gehört aber zur HINTEREN Bauchwand — er steht darum in Klammern und zählt nicht als Mitglied.",
       "muscles": [
         "M. rectus abdominis",
         "M. obliquus externus abdominis",
         "M. obliquus internus abdominis",
         "M. transversus abdominis"
+      ],
+      "related": [
+        "M. quadratus lumborum"
       ]
     },
     {

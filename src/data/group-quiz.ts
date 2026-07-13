@@ -50,13 +50,22 @@ export function generateGroupQuiz({
     if (members.length < MIN_GROUP_SIZE) continue;
 
     const inGroup = new Set(group.muscles);
-    // Der Fremde kommt aus derselben Region — sonst ist die Frage geschenkt.
-    const regionen = new Set(members.map((m) => m.region));
+
+    /* Erst die Mitglieder waehlen, DANN den Fremden — und zwar aus der Region der
+       Mitglieder, die auch wirklich dastehen. Andersherum (Region aus ALLEN Mitgliedern)
+       konnte der Fremde aus einer Region stammen, die auf dem Schirm gar nicht vorkommt:
+       Dann ist er der einzige Fusspunkt unter drei Schulterpunkten — die Frage ist
+       geschenkt, ohne dass man die Gruppe kennen muesste. */
+    const gewaehlt = shuffle(members, rng).slice(0, OPTION_COUNT - 1);
+    const regionen = new Set(gewaehlt.map((m) => m.region));
+
+    /* Ein „in Klammern"-Muskel (`related`) steht bewusst NICHT in `inGroup` und darf
+       darum Distraktor sein — er ist sogar der beste: „Welcher gehoert NICHT zur
+       Bauchwand?" → M. quadratus lumborum ist genau die Pruefungsfrage. */
     const fremde = muscles.filter((m) => !inGroup.has(m.nameLatin) && regionen.has(m.region));
     if (fremde.length === 0) continue;
 
     const distraktor = shuffle(fremde, rng)[0];
-    const gewaehlt = shuffle(members, rng).slice(0, OPTION_COUNT - 1);
 
     const options = shuffle([...gewaehlt, distraktor], rng).map((m) => ({
       id: m.id,

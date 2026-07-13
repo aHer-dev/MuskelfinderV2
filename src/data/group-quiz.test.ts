@@ -73,3 +73,37 @@ describe('ADR 0002: der Serien-Schlüssel bleibt unangetastet', () => {
     );
   });
 });
+
+describe('Nach der Abnahme vom 2026-07-13', () => {
+  it('DER FREMDE STAMMT AUS DER REGION DER GEZEIGTEN MITGLIEDER, nicht der ganzen Gruppe', () => {
+    /* Der Bug, den das Entfernen des M. plantaris aufgedeckt hat: Es wurden nur DREI
+       Mitglieder gezeigt, der Fremde aber aus den Regionen ALLER Mitglieder gezogen.
+       Bei einer Gruppe, die zwei Regionen umspannt, konnte er damit der einzige
+       Fusspunkt unter drei Schulterpunkten sein — die Frage war geschenkt. */
+    const regionOf = new Map(MUSCLES.map((m) => [m.id, m.region]));
+    for (const q of quiz(30, 3)) {
+      const fremd = q.options.find((o) => o.id === q.correctId)!;
+      const gezeigt = q.options.filter((o) => o.id !== q.correctId);
+      const regionen = new Set(gezeigt.map((o) => regionOf.get(o.muscleId!)));
+      expect(
+        regionen.has(regionOf.get(fremd.muscleId!)),
+        `${fremd.label} passt zu keiner Region der gezeigten Mitglieder`,
+      ).toBe(true);
+    }
+  });
+
+  it('die Wade fällt aus dem Quiz — zwei Mitglieder ergeben keine 4-Optionen-Frage', () => {
+    const wade = getGroups().find((g) => g.id === 'wade-oberflaechlich');
+    expect(wade?.muscles).toHaveLength(2);
+    for (const q of quiz(30, 5)) {
+      expect(q.id).not.toBe('group-wade-oberflaechlich');
+    }
+  });
+
+  it('ein „in Klammern"-Muskel DARF der Fremde sein — das ist die Prüfungsfrage', () => {
+    const bauchwand = getGroups().find((g) => g.id === 'bauchwand')!;
+    expect(bauchwand.related).toContain('M. quadratus lumborum');
+    // Er steht nicht in `muscles`, ist also als Distraktor zugelassen.
+    expect(bauchwand.muscles).not.toContain('M. quadratus lumborum');
+  });
+});
