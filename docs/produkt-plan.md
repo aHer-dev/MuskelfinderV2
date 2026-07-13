@@ -124,9 +124,11 @@ direkt in die nächste Sitzung.
 | 9a | Funktionelle Gruppen (~12–15, generiert + geprüft) + Gruppen-Quiz | [9a](tasks/2026-07-13-etappe-9a-funktionelle-gruppen.md) | **fertig** (15 Gruppen — **warten auf fachliche Freigabe**) | `feat/etappe-9a-funktionelle-gruppen` | — |
 | 9b | Kompetenz-Abzeichen | [9b](tasks/2026-07-13-etappe-9b-abzeichen.md) | **fertig** (abgeleitet, nie gespeichert) | `feat/etappe-9b-abzeichen` | — |
 | 9c | Prüfungsmodus (schriftlich + mündlich/praktisch) + Debrief-Schleife (**B3**) | [9c](tasks/2026-07-13-etappe-9c-pruefungsmodus.md) | **fertig** (Brücke B3 eingelöst) | `feat/etappe-9c-pruefungsmodus` | — |
-| 9d | Palpations-Sektion je Muskel (optionales Feld, inkrementell) | [9d](tasks/2026-07-13-etappe-9d-palpation.md) | offen | — | — |
+| 9d | Palpations-Sektion je Muskel (optionales Feld, inkrementell) | [9d](tasks/2026-07-13-etappe-9d-palpation.md) | **Mechanik fertig** — erste Charge **wartet auf fachliche Freigabe** ([Vorschlag](palpation-vorschlag.md)) | `feat/etappe-9d-palpation` | Projektinhaber |
 
-*Empfohlene Reihenfolge: **9a ✅ → 9c ✅ → 9b ✅ → 9d.** Es fehlt nur noch die Palpation (9d).*
+*Reihenfolge: **9a ✅ → 9c ✅ → 9b ✅ → 9d ✅ (Mechanik).** Etappe 9 ist code-seitig durch.
+Offen ist nur noch, was **den Fachmann braucht**, nicht mehr Code: die Freigabe der 15 Gruppen (9a)
+und der 21 Palpationseintraege (9d).*
 
 **Aus 9b mitnehmen:** Ein Abzeichen ist eine **Ableitung**, kein Zustand — es wird nirgends
 gespeichert, und wer eine Karte vergisst, verliert es wieder. Wer hier einen Backup-Schluessel

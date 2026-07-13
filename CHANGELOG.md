@@ -7,6 +7,29 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- **Etappe 9d — Palpation je Muskel (Mechanik)** (`src/data/palpation.ts`,
+  `src/data/editorial/palpation.json`, Sektion „Am Körper finden" auf der Detailseite): Physio- und
+  Ergo-Schüler werden **am lebenden Körper** geprüft („Zeig mir den M. supraspinatus") — kein Feld der
+  App sagte bisher, **wo man ihn findet**. Vier optionale Freitextfelder je Muskel: `position`
+  (Lagerung), `landmarks` (knöcherne Orientierungspunkte), `technique` (Aufsuchen & Aktivieren),
+  `confusion` (Verwechslungsgefahr). Der Loader mischt sie zu; **fehlt der Eintrag, rendert die
+  Detailseite unverändert** — kein leerer Kasten, keine Überschrift ohne Text. Die Sektion ist
+  einklappbar (natives `<details>`, damit ohne eigenes JS tastaturbedienbar) und steht in **beiden**
+  Detailtiefen: Palpation ist kein „Einfach"-Thema, sondern Prüfungsstoff.
+  ⚠️ **Die Daten liegen unter `src/data/editorial/`**, nicht unter `generated/` — das überschreibt
+  `npm run migrate:data`. Die Migration wurde **real ausgeführt**: der Eintrag hat sie überlebt, und
+  die generierten Daten führen kein Palpationsfeld. Ein unbekannter `nameLatin` in `palpation.json`
+  **lässt den Build scheitern** statt still zu verschwinden (dieselbe zahnige Validierung wie bei den
+  Gruppen aus 9a).
+  **Die erste Charge ist NICHT in der App.** Das Briefing verbietet KI-generierte Palpationsanleitungen
+  ohne fachliche Prüfung — ein falscher Landmarken-Hinweis wird auswendig gelernt und am Patienten
+  angewandt. `palpation.json` ist darum leer; 21 vorgeschlagene Einträge liegen zur Freigabe in
+  [docs/palpation-vorschlag.md](docs/palpation-vorschlag.md), inklusive der vier Muskeln, für die
+  **bewusst nichts** geschrieben wurde (M. subscapularis, M. vastus intermedius, M. gluteus minimus,
+  M. semimembranosus — nicht bzw. kaum direkt tastbar).
+  Verifiziert: 501 Tests grün · axe **0 Verstöße** (Light + Dark, mit und ohne Eintrag) · live geprüft:
+  Sektion eingeklappt, per Enter aufklappbar, alle vier Felder gerendert; ein Muskel ohne Eintrag zeigt
+  **gar keine** Sektion.
 - **Etappe 9b — Kompetenz-Abzeichen** (`src/data/badges.ts`, Panel unter *Fortschritt*): Abzeichen
   messen **Können, nicht Anwesenheit**. Kein „7 Tage am Stück!", sondern **„Rotatorenmanschette
   komplett"** — verdient ist es, wenn **jeder** Muskel der Gruppe (9a) in **Fach ≥ 5** steht. Angezeigt

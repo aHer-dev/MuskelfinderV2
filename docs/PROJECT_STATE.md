@@ -8,17 +8,18 @@
 - Datum: 2026-07-13
 - Branch: `main` · **Remote: github.com/aHer-dev/MuskelfinderV2** · Live: `aher-dev.github.io/MuskelfinderV2/`
 - Status: **Migration abgeschlossen (Etappen 0–6, `v1.0`). ETAPPE 7 KOMPLETT (7a–7f). ETAPPE 8
-  KOMPLETT (8a–8f). ETAPPE 9 LAEUFT: 9a + 9c + 9b fertig, nur 9d offen.** Die Abrufhaerte waechst mit
-  der Beherrschung, keine Zahl in der Statistik steht ohne Knopf, man kann gezielt an den Luecken
-  ueben, eigene Notizen stehen beim Muskel, der lateinische Name erklaert sich selbst, geprueft wird
-  in Zusammenhaengen, die Pruefung wirft ihre Luecken direkt in die naechste Sitzung — und Abzeichen
-  messen Koennen statt Anwesenheit.
+  KOMPLETT (8a–8f). ETAPPE 9 KOMPLETT (9a–9d) — code-seitig. Offen ist nur noch, was den FACHMANN
+  braucht (siehe unten).** Die Abrufhaerte waechst mit der Beherrschung, keine Zahl in der Statistik
+  steht ohne Knopf, man kann gezielt an den Luecken ueben, eigene Notizen stehen beim Muskel, der
+  lateinische Name erklaert sich selbst, geprueft wird in Zusammenhaengen, die Pruefung wirft ihre
+  Luecken direkt in die naechste Sitzung, Abzeichen messen Koennen statt Anwesenheit — und die
+  Detailseite kann sagen, wo man den Muskel am Koerper findet.
   **ALLE VIER BRUECKEN STEHEN:** B1 (7d), B2 (7e), B3 (**9c**), B4 (8c).
   Statustafel: `docs/produkt-plan.md`.
-- Gate gruen: `npm run lint && npm run test && npm run build` — **484 Tests**.
+- Gate gruen: `npm run lint && npm run test && npm run build` — **501 Tests**.
 - A11y: axe 0 Verstoesse (Playwright+Chromium+axe-core, Light+Dark) inkl. `/pruefung` in allen drei
-  Zustaenden (Einstieg, laufende Pruefung, Debrief) und der Abzeichen auf `/statistik`
-  (verdient + offen). 0 externe Requests.
+  Zustaenden (Einstieg, laufende Pruefung, Debrief), der Abzeichen auf `/statistik` (verdient + offen)
+  und der Palpations-Sektion (mit + ohne Eintrag). 0 externe Requests.
 - **Offen aus 8b (Entscheidung noetig):** Die Filter gibt es in der **Sitzung**, aber **nicht im
   Quiz**. Ein gefilterter Quiz-Pool braucht einen ZUSAETZLICHEN Serien-Schluessel (der bestehende
   muss bitgleich bleiben, ADR 0002) und eine Antwort auf zu kleine Pools (eine Frage braucht 4
@@ -176,9 +177,25 @@ fachliche Freigabe des Projektinhabers** (E2). Was er streicht, wird gestrichen.
 **Damit stehen ALLE VIER Bruecken** (B1 7d, B2 7e, B3 9c, B4 8c).
 **9b ist gebaut** (Kompetenz-Abzeichen unter Fortschritt) — abgeleitet aus (Gruppe × Leitner-Box),
 **nirgends gespeichert**.
-Naechster Schritt: **9d — Palpations-Sektion** (der letzte Schritt der Etappe).
-Briefing: `docs/tasks/2026-07-13-etappe-9d-palpation.md`.
-Reihenfolge: 9a ✅ → 9c ✅ → 9b ✅ → **9d**.
+**9d ist gebaut** (Palpation, Sektion „Am Koerper finden") — **die MECHANIK. Die Daten nicht.**
+Reihenfolge: 9a ✅ → 9c ✅ → 9b ✅ → 9d ✅.
+
+## ETAPPE 9 IST CODE-SEITIG DURCH — offen ist nur noch der FACHMANN
+Es gibt **keinen naechsten Code-Task**. Was fehlt, kann kein Agent liefern:
+1. **Die 15 funktionellen Gruppen (9a)** brauchen die fachliche Freigabe des Projektinhabers (E2).
+   Sie sind bereits in der App; was er streicht, wird gestrichen.
+2. **Die 21 Palpationseintraege (9d)** liegen in `docs/palpation-vorschlag.md` und sind **NICHT in
+   der App** — `src/data/editorial/palpation.json` ist leer. Das Briefing verbietet KI-generierte
+   Palpationsanleitungen ohne fachliche Pruefung: Ein falscher Landmarken-Hinweis wird auswendig
+   gelernt und **am Patienten angewandt**. Nach Freigabe wandert der JSON-Block 1:1 in die Datei.
+   Fuer 4 Muskeln wurde **bewusst nichts** geschrieben (M. subscapularis, M. vastus intermedius,
+   M. gluteus minimus, M. semimembranosus — nicht bzw. kaum direkt tastbar).
+3. **Die Merksaetze (8d)** und die **3D-Renderings (8f Stufe 2a)** — beide seit Etappe 8 offen,
+   beide aus demselben Grund.
+4. **Der Quiz-Pool-Filter (8b)** braucht eine Produktentscheidung (zu kleine Pools: eine Frage
+   braucht 4 Optionen).
+5. **3DAnatomyV2 neu deployen** — ihre `datenschutz.html` liefert 404 (Fix liegt dort als HEAD).
+6. **V1 (`aher-dev.github.io/Muskelfinder/`) ist noch live** — Hinweis setzen oder abschalten.
 
 **Aus 9b mitnehmen:**
 - **Ein Abzeichen ist eine Ableitung, kein Zustand** (`src/data/badges.ts`):

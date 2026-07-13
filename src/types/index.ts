@@ -79,6 +79,28 @@ export interface Muscle {
   etymology?: string;
   /** Merksatz — nur von Hand gepflegt, nie generiert. Ein falscher Merksatz wird auswendig gelernt. */
   mnemonic?: string;
+  /**
+   * Palpation (Etappe 9d): wo man den Muskel am lebenden Körper findet. Handgepflegt in
+   * `src/data/editorial/palpation.json`, vom Loader dazugemischt — NICHT in den generierten
+   * Daten, die `npm run migrate:data` ueberschreibt. Fehlt der Eintrag, ist das Feld `undefined`
+   * und die Detailseite zeigt die Sektion gar nicht erst.
+   */
+  palpation?: Palpation;
+}
+
+/**
+ * Palpationshinweise — **alles optional**, alles Freitext. Ein Feld, bei dem man unsicher ist,
+ * bleibt leer: Ein falscher Landmarken-Hinweis wird auswendig gelernt und am Patienten angewandt.
+ */
+export interface Palpation {
+  /** Lagerung der Testperson. */
+  position?: string;
+  /** Knöcherne Orientierungspunkte. */
+  landmarks?: string;
+  /** Wie man ihn aktiviert und spürt (Widerstandstest). */
+  technique?: string;
+  /** Womit er typischerweise verwechselt wird. */
+  confusion?: string;
 }
 
 /* ---------- Suche & Filter --------------------------------------------- */
