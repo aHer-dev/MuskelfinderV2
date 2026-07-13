@@ -127,8 +127,8 @@ direkt in die nächste Sitzung.
 | 9d | Palpations-Sektion je Muskel (optionales Feld, inkrementell) | [9d](tasks/2026-07-13-etappe-9d-palpation.md) | **Mechanik fertig + abgenommen** · Texte traegt der Projektinhaber aus dem Kollegen-Skript nach ([Anleitung](palpation-erfassen.md)) | `feat/etappe-9d-palpation` | — |
 
 *Reihenfolge: **9a ✅ → 9c ✅ → 9b ✅ → 9d ✅.** Etappe 9 ist durch **und abgenommen** (2026-07-13).
-Naechster Code-Task: **Quiz-Pool-Filter (8b)** — der Projektinhaber hat entschieden:
-„Ja, Distraktoren von ausserhalb".*
+Der **Quiz-Pool-Filter (8b)** ist danach ebenfalls gebaut — damit gibt es **keinen offenen
+Code-Task mehr**.*
 
 **Aus 9b mitnehmen:** Ein Abzeichen ist eine **Ableitung**, kein Zustand — es wird nirgends
 gespeichert, und wer eine Karte vergisst, verliert es wieder. Wer hier einen Backup-Schluessel

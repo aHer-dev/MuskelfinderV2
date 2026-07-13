@@ -6,6 +6,28 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+- **Quiz-Pool-Filter (der offene Punkt aus 8b)** (`src/data/quiz-pool.ts`): Die Filter gab es seit 8b
+  in der **Lernsitzung**, aber nicht im **Quiz** — und der Haken war immer derselbe: Eine Quizfrage
+  braucht vier Optionen, wer nur drei Karten falsch beantwortet hat, bekäme keine einzige Frage.
+  Entscheidung des Projektinhabers (2026-07-13): **Die falschen Antworten kommen von außerhalb des
+  Filters.** Damit ist der Haken weg — **schon EINE passende Karte ergibt eine vollständige Frage**
+  (live verifiziert). Auswählbar sind: *Alle Muskeln · Mein Karteikasten · Nur falsch beantwortete ·
+  Nie gesehen · Als schwierig markiert*, jeweils mit der Zahl am Knopf; ein Umfang ohne Karten ist
+  deaktiviert statt eine leere Runde zu starten (Regel aus 8c).
+  **Zwei Töpfe, und sie sind ausdrücklich nicht derselbe:** Der **Bereichsfilter** (Region) grenzt
+  *beide* ein — er sagt „ich lerne gerade die obere Extremität", und dann wäre ein Fußmuskel als
+  falsche Antwort albern. Der **Karten-Filter** grenzt dagegen *nur die Fragen* ein: Er sagt etwas über
+  den eigenen Lernstand, nicht über den Stoff.
+  **ADR 0002:** Der bestehende Serien-Schlüssel bleibt **bitgleich** (Regressionstest). Das V1-Format
+  führt seit jeher ein Feld `deckOnly`, das immer auf `false` stand — es war für genau diesen Fall
+  vorgesehen. „Nur mein Karteikasten" erzeugt darum sogar **denselben** Schlüssel, den V1 dafür erzeugt
+  hätte; erst die feineren Filter hängen ein Feld an, das V1 nicht kennt, und **nur dann**. Jeder
+  Umfang hat seinen eigenen Schlüssel — eine Lückenrunde verschmutzt die Gesamtbilanz des Modus nicht.
+  Der Gruppen-Modus (9a) fragt weiterhin immer über den ganzen Bestand: Ein Karten-Filter ergibt dort
+  keinen Sinn, er fragt nach Zusammenhängen statt nach einzelnen Karten.
+  Verifiziert: 525 Tests grün · axe **0 Verstöße** (Light + Dark) auf Auswahl und laufendem Quiz.
+
 ### Changed
 - **Abnahme des Projektinhabers vom 2026-07-13 umgesetzt.**
   - **Gruppen (9a):** Der **M. plantaris** ist kein Mitglied der Wadengruppe mehr, der

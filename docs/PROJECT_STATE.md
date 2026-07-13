@@ -16,14 +16,13 @@
   Detailseite kann sagen, wo man den Muskel am Koerper findet.
   **ALLE VIER BRUECKEN STEHEN:** B1 (7d), B2 (7e), B3 (**9c**), B4 (8c).
   Statustafel: `docs/produkt-plan.md`.
-- Gate gruen: `npm run lint && npm run test && npm run build` — **501 Tests**.
+- Gate gruen: `npm run lint && npm run test && npm run build` — **525 Tests**.
 - A11y: axe 0 Verstoesse (Playwright+Chromium+axe-core, Light+Dark) inkl. `/pruefung` in allen drei
   Zustaenden (Einstieg, laufende Pruefung, Debrief), der Abzeichen auf `/statistik` (verdient + offen)
   und der Palpations-Sektion (mit + ohne Eintrag). 0 externe Requests.
-- **Offen aus 8b (Entscheidung noetig):** Die Filter gibt es in der **Sitzung**, aber **nicht im
-  Quiz**. Ein gefilterter Quiz-Pool braucht einen ZUSAETZLICHEN Serien-Schluessel (der bestehende
-  muss bitgleich bleiben, ADR 0002) und eine Antwort auf zu kleine Pools (eine Frage braucht 4
-  Optionen). Siehe Kasten in der Statustafel.
+- **8b ist erledigt:** Der Quiz-Pool-Filter ist gebaut (`src/data/quiz-pool.ts`). Die Antwort auf
+  zu kleine Pools lautet: **die Distraktoren kommen von ausserhalb des Filters** — darum genuegt EINE
+  passende Karte fuer eine vollstaendige 4-Optionen-Frage.
 
 ## Verlauf (Migration, abgeschlossen)
 - Etappe 0–4 abgeschlossen. **Etappe 5 (Haertung)** — Teil 1+2 umgesetzt:
@@ -192,12 +191,21 @@ Er hat den Abnahmebogen durchgearbeitet. Ergebnis:
 - **3D-Renderings (8f): zurueckgestellt.**
 - **3D-Datenschutz-404: macht er selbst.** V1 laeuft weiter, das ist ihm egal.
 
-**NAECHSTER CODE-TASK: Quiz-Pool-Filter (8b).** Er hat entschieden: **„Ja, Distraktoren von
-ausserhalb"** — der Quiz-Pool darf auf „nur falsch beantwortete" o. ae. eingeschraenkt werden, die
-falschen Antwortmoeglichkeiten kommen aber aus dem **ganzen** Bestand (sonst braeuchte man 4 Karten
-im Filter, um ueberhaupt eine Frage zu bauen). **`quizSeriesKey` muss bitgleich bleiben** — ein
-gefilterter Pool erzeugt einen ZUSAETZLICHEN Schluessel (ADR 0002). `questionForMuscle` und
-`eligibleFor` (aus 9c, `src/data/quiz.ts`) sind dafuer schon exportiert.
+**Quiz-Pool-Filter (8b): GEBAUT** (`src/data/quiz-pool.ts`). Damit ist der letzte offene Punkt aus
+Etappe 8 erledigt.
+- **Zwei Toepfe, und sie sind NICHT derselbe:** `questions` (worueber gefragt wird — der Karten-Filter
+  greift hier) und `distractors` (woraus die falschen Antworten kommen — der Karten-Filter greift hier
+  NIE). Genau darum genuegt **EINE** passende Karte fuer eine vollstaendige 4-Optionen-Frage.
+- Der **Bereichsfilter** (Region) grenzt dagegen **beide** Toepfe ein.
+- **`quizSeriesKey` bleibt bitgleich** (Regressionstest). Das V1-Feld `deckOnly` stand immer auf
+  `false` und war fuer genau diesen Fall da: „Nur mein Karteikasten" erzeugt denselben Key, den V1
+  erzeugt haette. Erst `wrong`/`unseen`/`difficult` haengen ein `filter`-Feld an — und **nur dann**.
+- Der **Gruppen-Modus ignoriert den Karten-Filter** (er fragt nach Zusammenhaengen, nicht nach
+  Karten) und benutzt immer `scope: 'all'`.
+
+**ES GIBT KEINEN OFFENEN CODE-TASK MEHR.** Offen sind nur noch Dinge, die der Projektinhaber
+erledigt: Palpationstexte aus dem Kollegen-Skript eintragen (`docs/palpation-erfassen.md`), die
+3D-App neu deployen (ihre `datenschutz.html` liefert 404), 3D-Renderings (zurueckgestellt).
 
 ## ⚠️ KEIN HYPOTHENAR — und das bitte nicht „reparieren"
 Drei seiner vier Mitglieder (`M. abductor digiti minimi`, `M. flexor digiti minimi brevis`,
