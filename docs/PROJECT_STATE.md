@@ -148,8 +148,9 @@ Muskeln ueber ein bis zwei Semester lohnt er nicht; der teure Teil war der 90-Ta
 ist weg.
 
 ## Design-Tokens: was der Akzent faerben darf — und was nicht (2026-07-13)
-`--card-border` ist in **beiden** Themes ein getoentes Orange (Light 32 %, Dark 26 % — auf Schwarz
-leuchtet der Akzent von selbst). Es faerbt **nur Inhalts-Kaesten**.
+`--card-border` ist in **beiden** Themes ein getoentes Orange (**Light 45 %, Dark 26 %** — auf dem
+warmen Papier muss es sich gegen viel Licht behaupten, auf Schwarz leuchtet es von selbst). Es faerbt
+**nur Inhalts-Kaesten**.
 
 - **Bedienelemente behalten ihren neutralen Rahmen** (`--control-border`): Ihr Umriss ist keine
   Dekoration, sondern traegt die Erkennbarkeit (WCAG 1.4.11) — und der Akzent gehoert dort dem
