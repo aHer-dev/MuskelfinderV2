@@ -40,4 +40,4 @@
 
 | Was | Notiz |
 |---|---|
-| **Leitner vs. SM-2/FSRS** | Frage 5 des Brainstormings — **nie entschieden.** Wir sind bei Leitner mit festen Intervallen, weil ADR 0002 das Backup-Format einfriert. Das war keine Entscheidung, das ist passiert. Anki ist hier nachweislich besser. Ein Wechsel bräche das Persistenzformat und wäre ein eigener, großer Task. |
+| **Leitner vs. SM-2/FSRS** | Frage 5 des Brainstormings — **weiterhin offen, aber entschärft.** Der teuerste Teil des Rückstands war der 90-Tage-Fehler bei vergessenen Karten; der ist mit [ADR 0011](decisions/0011-vergessene-karte-faellt-auf-fach-2.md) behoben. Was bleibt: Anki (FSRS) gibt jeder Karte ihr eigenes Intervall statt einer festen Leiter. Ein Wechsel scheitert **nicht** am Backup-Format (additiv erweiterbar), sondern an **ADR 0008** — die Abrufhärte wird aus dem Leitner-Fach abgeleitet, und die Abzeichen hängen auch daran. Umbau, kein Austausch. Bei 150 Muskeln über ein bis zwei Semester lohnt er vermutlich nicht. |
