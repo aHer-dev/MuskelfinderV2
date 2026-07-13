@@ -114,12 +114,28 @@ Prüfungsmodus und kommt mit **9c**.
 ### Etappe 9 — Die App wird prüfungsnah
 *Seit 2026-07-12 **nicht mehr blockiert** — E1, E2, E3 und E5 sind entschieden (Tabelle unten).*
 
-| ID | Schritt | Status | Branch | Blockiert durch |
-|----|---------|--------|--------|-----------------|
-| 9a | Funktionelle Gruppen (~12–15, generiert + geprüft) + Gruppen-Quiz | offen | — | — |
-| 9b | Kompetenz-Abzeichen | offen | — | 9a |
-| 9c | Prüfungsmodus (schriftlich + mündlich/praktisch) + Debrief-Schleife (**B3**) | offen | — | — |
-| 9d | Palpations-Sektion je Muskel (optionales Feld, inkrementell) | offen | — | — |
+**Rahmen-Briefing (vor jedem Task lesen):**
+[tasks/2026-07-13-etappe-9-uebersicht.md](tasks/2026-07-13-etappe-9-uebersicht.md)
+
+| ID | Schritt | Briefing | Status | Branch | Blockiert durch |
+|----|---------|----------|--------|--------|-----------------|
+| 9a | Funktionelle Gruppen (~12–15, generiert + geprüft) + Gruppen-Quiz | [9a](tasks/2026-07-13-etappe-9a-funktionelle-gruppen.md) | offen | — | — |
+| 9b | Kompetenz-Abzeichen | [9b](tasks/2026-07-13-etappe-9b-abzeichen.md) | offen | — | **9a** |
+| 9c | Prüfungsmodus (schriftlich + mündlich/praktisch) + Debrief-Schleife (**B3**) | [9c](tasks/2026-07-13-etappe-9c-pruefungsmodus.md) | offen | — | — |
+| 9d | Palpations-Sektion je Muskel (optionales Feld, inkrementell) | [9d](tasks/2026-07-13-etappe-9d-palpation.md) | offen | — | — |
+
+*Empfohlene Reihenfolge: **9a → 9c → 9b → 9d.** 9a zuerst, weil es den **Projektinhaber** blockiert
+(die Gruppen brauchen seine fachliche Freigabe) — er kann pruefen, waehrend 9c gebaut wird. 9c ist der
+groesste Wurf (Bruecke **B3**) und haengt an nichts.*
+
+> **Drei Fallen, am Code verifiziert:**
+> (1) **`useQuizGame` schreibt bei jeder Runde in die V1-Quizbilanz**
+> ([useQuizGame.ts:103](../src/hooks/useQuizGame.ts)). Ein Pruefungsmodus, der darauf aufsetzt, kippt
+> seine Ergebnisse still in die normale Quiz-Statistik und verschmutzt den V1-Serien-Schluessel
+> (ADR 0002). (2) **`src/data/generated/` wird von `npm run migrate:data` ueberschrieben** — Gruppen (9a)
+> und Palpation (9d) gehoeren nach `src/data/editorial/` (Blaupause: `withEtymology`).
+> (3) **Subregionen sind KEINE funktionellen Gruppen** — es gibt schon 15 topographische Subregionen;
+> „Rotatorenmanschette" liegt *innerhalb* des Schultergürtels. Gruppen sind **Many-to-Many**, keine Partition.
 
 ### Entscheidungen — **alle getroffen (2026-07-12)**
 
