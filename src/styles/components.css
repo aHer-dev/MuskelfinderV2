@@ -50,10 +50,12 @@
   border-color: var(--accent-strong);
 }
 
+/* `--danger-on-surface`, nicht `--danger`: Rot als SCHRIFT auf Weiss erreicht mit #d1493a
+   nur 4.44:1 — knapp unter AA. Als Flaeche/Markierung bleibt `--danger` unveraendert. */
 .btn--danger {
   background: transparent;
   border-color: var(--control-border);
-  color: var(--danger);
+  color: var(--danger-on-surface);
   font-weight: 600;
 }
 

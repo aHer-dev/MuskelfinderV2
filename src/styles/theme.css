@@ -69,8 +69,16 @@
   --glass-border:    rgba(28,26,23,0.09);
   --glass-shadow:    0 12px 40px rgba(60,54,44,0.13);
 
-  /* Karten-Rahmen/Schatten */
-  --card-border:     rgba(28,26,23,0.09);
+  /* Karten-Rahmen/Schatten.
+     `--card-border` ist im Light-Modus bewusst ein ZARTES ORANGE statt eines neutralen
+     Grautons (Wunsch des Projektinhabers, 2026-07-13): Auf dem warmen Papier bindet es die
+     Kaesten an die Marke, ohne laut zu werden.
+
+     Es faerbt NUR Inhalts-Kaesten. Bedienelemente (Eingabefelder, Buttons) behalten ihren
+     neutralen Rahmen — deren Umriss ist keine Dekoration, sondern traegt die Erkennbarkeit
+     (WCAG 1.4.11), und der Akzent gehoert dort dem Fokus-Ring. Das echte Glas (Leiste,
+     Tab-Bar, Sheet, Toast) bleibt ebenfalls neutral: Es soll zuruecktreten, nicht mitfaerben. */
+  --card-border:     color-mix(in srgb, var(--accent) 32%, transparent);
   --card-shadow:     0 1px 2px rgba(28,26,23,0.04), 0 1px 3px rgba(28,26,23,0.05);
   --card-shadow-hover: 0 10px 30px rgba(60,54,44,0.13), 0 2px 6px rgba(60,54,44,0.08);
 
@@ -95,6 +103,10 @@
 
   /* Akzent auf heller Fläche — DUNKLER (Kontrast!) für Text/Icons/Links; AA ≥4.5:1 */
   --accent-on-surface: #bd4800;
+  /* Dasselbe Problem für Rot: `--danger` (#d1493a) als TEXT auf Weiß erreicht nur 4.44:1 —
+     knapp unter AA (gemessen am „Zurücksetzen"-Knopf). Als Fläche/Markierung bleibt
+     `--danger` unverändert; nur wo Rot als Schrift steht, gilt dieser dunklere Ton (5.1:1). */
+  --danger-on-surface: #c43e2e;
   /* Text AUF getönter Akzentfläche (--accent-tint). Der Tint hebt den Untergrund an,
      dadurch fiel --accent-on-surface dort auf 4.47:1 — knapp unter AA. */
   --accent-on-tint:    #b34400;
@@ -130,7 +142,11 @@
   --glass-border:    rgba(255,255,255,0.08);
   --glass-shadow:    0 12px 40px rgba(0,0,0,0.50);
 
-  --card-border:     rgba(255,255,255,0.07);
+  /* Zartes Orange wie im Light-Modus — aber SCHWAECHER dosiert (26 % statt 32 %):
+     Auf Schwarz leuchtet der Akzent von selbst; dieselbe Deckkraft wie auf Papier waere
+     hier ein Neonrahmen. Gleiche Regel wie drueben: nur Inhalts-Kaesten, nicht die
+     Bedienelemente und nicht das Glas. */
+  --card-border:     color-mix(in srgb, var(--accent) 26%, transparent);
   --card-shadow:     none;
   --card-shadow-hover: 0 12px 34px rgba(0,0,0,0.50), 0 2px 8px rgba(0,0,0,0.40);
 
@@ -161,6 +177,8 @@
   /* Semantische Zustandsfarben auf Dunkel heller/klarer (Kontrast, distinkt vom Orange) */
   --success: #4ecb83;
   --danger:  #f2705f;
+  /* Auf Schwarz ist das Rot als Schrift schon hell genug — kein eigener Ton noetig. */
+  --danger-on-surface: #f2705f;
 
   /* Medien-Fenster ist im Dark-Modus ohnehin dunkel — gleiche Werte */
   --media-well:      radial-gradient(120% 100% at 50% 4%, #20232a 0%, #0b0c0e 70%);
@@ -177,7 +195,7 @@
     --stage-gradient:radial-gradient(135% 115% at 50% 8%,#181a1f 0%,#0b0c0e 56%,#060607 100%);
     --surface:rgba(255,255,255,0.035); --surface-sunken:rgba(255,255,255,0.05); --surface-hover:rgba(255,255,255,0.06);
     --glass-panel:rgba(15,16,20,0.82); --glass-border:rgba(255,255,255,0.08); --glass-shadow:0 12px 40px rgba(0,0,0,0.5);
-    --card-border:rgba(255,255,255,0.07); --card-shadow:none;
+    --card-border:color-mix(in srgb,var(--accent) 26%,transparent); --card-shadow:none;
     --hairline:rgba(255,255,255,0.08); --hairline-strong:rgba(255,255,255,0.15);
     --control-border:rgba(255,255,255,0.14); --checkbox-border:rgba(255,255,255,0.22);
     --field-bg:#1b1e24;
@@ -186,7 +204,7 @@
     --accent-tint:color-mix(in srgb,var(--accent) 16%,transparent);
     --accent-border:color-mix(in srgb,var(--accent) 50%,transparent); --accent-dim:color-mix(in srgb,var(--accent) 12%,transparent);
     --region-dot:#9a9ca2;
-    --success:#4ecb83; --danger:#f2705f;
+    --success:#4ecb83; --danger:#f2705f; --danger-on-surface:#f2705f;
   }
 }
 

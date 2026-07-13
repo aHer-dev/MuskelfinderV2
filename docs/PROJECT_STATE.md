@@ -18,7 +18,7 @@
   **ALLE VIER BRUECKEN STEHEN:** B1 (7d), B2 (7e), B3 (**9c**), B4 (8c).
   Statustafel: `docs/produkt-plan.md`. Offene Punkte: `docs/todo.md`.
 - Gate gruen: `npm run lint && npm run test && npm run build` — **546 Tests**.
-- A11y: axe 0 Verstoesse (Playwright+Chromium+axe-core, Light+Dark) inkl. `/pruefung` in allen drei
+- A11y: axe 0 Verstoesse ueber **8 Routen x Light+Dark** (Playwright+Chromium+axe-core) inkl. `/pruefung` in allen drei
   Zustaenden, der Abzeichen auf `/statistik`, der Palpations-Sektion (mit + ohne Eintrag) sowie neu
   `/anleitung` und dem leeren `/heute`. 0 externe Requests.
 - **8b ist erledigt:** Der Quiz-Pool-Filter ist gebaut (`src/data/quiz-pool.ts`). Die Antwort auf
@@ -146,6 +146,19 @@ sich additiv erweitern), sondern an **ADR 0008** — die Abrufhaerte wird AUS DE
 abgeleitet, und die Abzeichen (`fach >= 5`) haengen ebenfalls daran. Umbau, kein Austausch. Bei 150
 Muskeln ueber ein bis zwei Semester lohnt er nicht; der teure Teil war der 90-Tage-Fehler, und der
 ist weg.
+
+## Design-Tokens: was der Akzent faerben darf — und was nicht (2026-07-13)
+`--card-border` ist in **beiden** Themes ein getoentes Orange (Light 32 %, Dark 26 % — auf Schwarz
+leuchtet der Akzent von selbst). Es faerbt **nur Inhalts-Kaesten**.
+
+- **Bedienelemente behalten ihren neutralen Rahmen** (`--control-border`): Ihr Umriss ist keine
+  Dekoration, sondern traegt die Erkennbarkeit (WCAG 1.4.11) — und der Akzent gehoert dort dem
+  Fokus-Ring.
+- **Das echte Glas** (Rail, TabBar, Sheet, Toast) bleibt auf `--glass-border`: Es soll zuruecktreten.
+- **Rot und Orange als SCHRIFT brauchen eigene Toene.** Auf hellem Grund reichen die Flaechenfarben
+  nicht fuer AA: `--accent-on-tint` (#b34400) fuer Akzent-Text auf `--accent-tint`,
+  `--danger-on-surface` (#c43e2e) fuer rote Schrift auf Weiss. `--danger`/`--accent` bleiben die
+  Flaechenfarben. **Wer Akzent- oder Warnfarbe als Text setzt, nimmt die `-on-`-Variante.**
 
 ## Kanonische Quellen
 - V1-Original: `../Muskelfinder` (`/home/pepperboy8/Documents/Muskelfinder`)
