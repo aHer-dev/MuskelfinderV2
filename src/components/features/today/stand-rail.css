@@ -1,0 +1,154 @@
+/* StandRail — „Dein Stand", die rechte Schiene auf /heute (Etappe 12). Nur Tokens.
+   Geometrie aus dem Design-Handoff §7 (Filter-Sidebar): 320 px, radius 20px, Glas. */
+
+.stand-rail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  background: var(--glass-panel);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--glass-shadow);
+  /* Sie soll mitlaufen, nicht mitscrollen — der Stand ist immer sichtbar. */
+  position: sticky;
+  top: var(--spacing-lg);
+  align-self: start;
+}
+
+/* ── Marke ─────────────────────────────────────────────────────────────── */
+.stand-rail__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--hairline);
+}
+.stand-rail__brand img {
+  flex: none;
+}
+.stand-rail__brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  min-width: 0;
+}
+.stand-rail__brand-text strong {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+.stand-rail__brand-text em {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--accent-on-surface);
+}
+
+/* ── Bloecke ───────────────────────────────────────────────────────────── */
+.stand-rail__block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.stand-rail__title {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+/* ── Level ─────────────────────────────────────────────────────────────── */
+.stand-rail__level {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+.stand-rail__level-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.stand-rail__level-text strong {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.stand-rail__level-text span {
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  color: var(--text-tertiary);
+}
+
+.stand-rail__facts {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.stand-rail__facts li {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.stand-rail__facts svg {
+  flex: none;
+  color: var(--text-tertiary);
+}
+.stand-rail__facts strong {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+/* Der Termin ist die einzige Zahl hier, die von selbst kleiner wird — er darf auffallen. */
+.stand-rail__exam svg {
+  color: var(--accent-on-surface);
+}
+
+/* ── Abzeichen ─────────────────────────────────────────────────────────── */
+.stand-rail__badge-label {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  text-wrap: balance;
+  color: var(--text-primary);
+}
+
+.stand-rail__bar {
+  height: 6px;
+  background: var(--surface-sunken);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+.stand-rail__bar span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: var(--radius-pill);
+}
+
+.stand-rail__badge-count {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-tertiary);
+}

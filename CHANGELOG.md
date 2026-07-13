@@ -7,6 +7,26 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Changed
+### Added
+- **Rechte Schiene „Dein Stand" auf `/heute`** (`StandRail`). Bei 1440 px lagen dort **444 px
+  rechts brach** (gemessen), während Level, Serie und Fortschritt als winzige Textzeile unten am
+  Seitenende klebten. Die Schiene trägt jetzt: **die Marke** (das Logo, oben rechts, wo vorher
+  nichts war), Level-Ring + XP bis zum nächsten Level, Karteikasten-Größe, Serie + Freezes, den
+  **Prüfungstermin-Countdown** und **das nächste Abzeichen** mit Üben-Knopf.
+  **Sie erfindet keine Geometrie:** 320 px, `radius: 20px`, Glas, rechts — exakt das, was das
+  Design-Handoff (§7) für die Filter-Sidebar der Suche vorgibt. Fortsetzung des bestehenden
+  Entwurfs, keine neue Idee.
+  **Sie erfindet auch keine Daten:** jede Zahl kommt aus `getTodayPlan` (7a), `badges` (9b),
+  `xpView` oder `useStreakStore` (7f). Kein neuer Zustand, kein neuer Backup-Schlüssel.
+  **Nur auf `/heute`, und das ist Absicht:** Lernkarten, Quiz und Statistik nutzen bereits 1096 px —
+  dort müsste man Inhalt wegnehmen, um Platz zu schaffen. Der Guide bleibt schmal, weil Fließtext
+  auf ~68 Zeichen gehört. Eine Box, die nur existiert, damit rechts nichts fehlt, ist schlimmer als
+  der leere Platz.
+  Zwei Spalten ab 1200 px; darunter rutscht die Schiene unter den Inhalt. **„Schnell starten" bleibt
+  im Inhalt** — es kurz mit hineinzuräumen war ein Fehler: Die linke Spalte brach dann nach dem einen
+  Knopf ab, und Navigation hat links schon eine Heimat. Die Schiene sagt, *wo man steht*; sie führt
+  nicht.
+
 ### Changed
 - **Der Kasten trägt die Marke, die Knöpfe halten die Klappe.** Zwischenzeitlich waren auch Buttons,
   Dropdowns und Eingabefelder orange umrandet — das wurde zurückgenommen: **Ein Akzent, der überall

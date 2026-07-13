@@ -17,7 +17,7 @@
   niemandem mehr ungefragt Karten in den Kasten.**
   **ALLE VIER BRUECKEN STEHEN:** B1 (7d), B2 (7e), B3 (**9c**), B4 (8c).
   Statustafel: `docs/produkt-plan.md`. Offene Punkte: `docs/todo.md`.
-- Gate gruen: `npm run lint && npm run test && npm run build` — **546 Tests**.
+- Gate gruen: `npm run lint && npm run test && npm run build` — **558 Tests**.
 - A11y: axe 0 Verstoesse ueber **8 Routen x Light+Dark** (Playwright+Chromium+axe-core) inkl. `/pruefung` in allen drei
   Zustaenden, der Abzeichen auf `/statistik`, der Palpations-Sektion (mit + ohne Eintrag) sowie neu
   `/anleitung` und dem leeren `/heute`. 0 externe Requests.
@@ -164,6 +164,22 @@ warmen Papier muss es sich gegen viel Licht behaupten, auf Schwarz leuchtet es v
   nicht fuer AA: `--accent-on-tint` (#b34400) fuer Akzent-Text auf `--accent-tint`,
   `--danger-on-surface` (#c43e2e) fuer rote Schrift auf Weiss. `--danger`/`--accent` bleiben die
   Flaechenfarben. **Wer Akzent- oder Warnfarbe als Text setzt, nimmt die `-on-`-Variante.**
+
+## Die rechte Schiene auf `/heute` (`StandRail`, Etappe 12)
+Bei 1440 px lagen dort **444 px rechts brach** (gemessen), waehrend Level, Serie und Fortschritt als
+winzige Textzeile am Seitenende klebten.
+
+- **Geometrie ist nicht erfunden:** 320 px, `radius: 20px`, Glas, rechts — exakt das, was das
+  Design-Handoff (§7) fuer die Filter-Sidebar der Suche vorgibt. Zwei Spalten ab **1200 px**
+  (nicht 1024: darunter blieben dem Inhalt < 500 px). Unterhalb stapelt es.
+- **Daten sind nicht erfunden:** alles aus `getTodayPlan` (7a), `badges` (9b), `xpView`,
+  `useStreakStore` (7f). **Kein neuer Zustand, kein neuer Backup-Schluessel.**
+- **NUR auf `/heute`.** Lernkarten, Quiz und Statistik nutzen bereits 1096 px — dort muesste man
+  Inhalt wegnehmen. Der Guide bleibt schmal (Fliesstext gehoert auf ~68 Zeichen).
+  **Eine Box, die nur existiert, damit rechts nichts fehlt, ist schlimmer als der leere Platz.**
+- **Die Schiene sagt, WO man steht. Sie fuehrt nicht.** „Schnell starten" gehoert in den Inhalt;
+  Navigation hat links schon eine Heimat (Icon-Rail). Der Versuch, sie mit hineinzuraeumen, liess
+  die linke Spalte nach dem einen Knopf abbrechen.
 
 ## Kanonische Quellen
 - V1-Original: `../Muskelfinder` (`/home/pepperboy8/Documents/Muskelfinder`)
