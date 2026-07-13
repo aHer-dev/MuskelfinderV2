@@ -26,3 +26,18 @@
 | **3D-Renderings für die 47 bildlosen Muskeln** (8f Stufe 2a) | Zurückgestellt (2026-07-13). Lizenz **ist geklärt** ([Protokoll](3d-app-lizenzpruefung.md)), offen ist die **Qualität**: Nur 21 der 47 sind in der 3D-App überhaupt adressierbar, und der Deep-Link allein liefert kein brauchbares Bild (der Muskel liegt im Kontrollrendering hinter dem Unterkiefer). Ein Bild, auf dem der Muskel nicht zu erkennen ist, ist schlechter als kein Bild. |
 | **Wadengruppe fällt aus dem Gruppen-Quiz** | Folge deiner Abnahme („ohne Plantaris"): Die Gruppe hat nur noch 2 Mitglieder, eine 4-Optionen-Frage braucht 3 + einen Fremden. Gruppenseite und Abzeichen laufen normal. Sag Bescheid, wenn du den Plantaris als Mitglied zurück willst. |
 | **Tagesbonus feuert auf dem leeren Kasten** | Seit ADR 0009 landet man beim Erststart auf dem Guide — und bekommt dort „+10 XP · Tagesbonus", ohne etwas getan zu haben. Vorher startete sofort eine Sitzung, da passte es. Kosmetisch, aber schief. |
+
+## Entschieden und abgelehnt (nicht wieder vorschlagen)
+
+| Was | Entscheidung |
+|---|---|
+| **Audio / lateinische Aussprache** | **Nein** (2026-07-13). Trotz Logopädie-Bezug gestrichen. |
+| **Sozialer Vergleich, teilbarer Ergebnis-Link, Lernstand als Bild** | **Nein** (2026-07-13). Der Backup-Export bleibt der einzige Datenausgang — für den Gerätewechsel, nicht für den Vergleich. |
+| **Merksätze / Eselsbrücken** | **Nein** (2026-07-13, Abnahme). Feld, Typ und Anzeige wurden entfernt. |
+| **Automatisches Startdeck** | **Nein** (ADR 0009). Der Schüler wählt selbst. |
+
+## Offen, aber groß
+
+| Was | Notiz |
+|---|---|
+| **Leitner vs. SM-2/FSRS** | Frage 5 des Brainstormings — **nie entschieden.** Wir sind bei Leitner mit festen Intervallen, weil ADR 0002 das Backup-Format einfriert. Das war keine Entscheidung, das ist passiert. Anki ist hier nachweislich besser. Ein Wechsel bräche das Persistenzformat und wäre ein eigener, großer Task. |

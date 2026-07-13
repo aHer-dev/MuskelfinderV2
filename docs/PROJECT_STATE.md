@@ -8,7 +8,7 @@
 - Datum: 2026-07-13
 - Branch: `main` · **Remote: github.com/aHer-dev/MuskelfinderV2** · Live: `aher-dev.github.io/MuskelfinderV2/`
 - Status: **Migration abgeschlossen (Etappen 0–6, `v1.0`). ETAPPE 7 KOMPLETT (7a–7f). ETAPPE 8
-  KOMPLETT (8a–8f). ETAPPE 9 KOMPLETT (9a–9d). ETAPPE 10 KOMPLETT (10a–10f) — code-seitig. Offen ist
+  KOMPLETT (8a–8f). ETAPPE 9 KOMPLETT (9a–9d). ETAPPE 10 KOMPLETT (10a–10f). ETAPPE 11 (Zeitdruck) — code-seitig. Offen ist
   nur noch, was den FACHMANN braucht: `docs/todo.md`.** Die Abrufhaerte waechst mit der Beherrschung,
   keine Zahl in der Statistik steht ohne Knopf, man kann gezielt an den Luecken ueben, eigene Notizen
   stehen beim Muskel, der lateinische Name erklaert sich selbst, geprueft wird in Zusammenhaengen, die
@@ -17,7 +17,7 @@
   niemandem mehr ungefragt Karten in den Kasten.**
   **ALLE VIER BRUECKEN STEHEN:** B1 (7d), B2 (7e), B3 (**9c**), B4 (8c).
   Statustafel: `docs/produkt-plan.md`. Offene Punkte: `docs/todo.md`.
-- Gate gruen: `npm run lint && npm run test && npm run build` — **530 Tests**.
+- Gate gruen: `npm run lint && npm run test && npm run build` — **539 Tests**.
 - A11y: axe 0 Verstoesse (Playwright+Chromium+axe-core, Light+Dark) inkl. `/pruefung` in allen drei
   Zustaenden, der Abzeichen auf `/statistik`, der Palpations-Sektion (mit + ohne Eintrag) sowie neu
   `/anleitung` und dem leeren `/heute`. 0 externe Requests.
@@ -99,6 +99,28 @@ Formularfeld legen.
   konfiguriert → nichts gepusht). Etappe 5+6 inhaltlich abgeschlossen, volle V1-Paritaet.
 - Offen: Bei oeffentlichem Deploy Remote/`git remote add origin …` + Push durch dich; optional
   Impressum + eigene Domain/CNAME.
+
+## ETAPPE 11: ZEITDRUCK IM QUIZ — und DREI ABSAGEN (ADR 0010, 2026-07-13)
+Die letzten vier offenen Fragen aus dem Brainstorming sind entschieden.
+
+- ✅ **Zeitdruck: ja.** Sekunden pro Frage `0 | 30 | 15`, **`0` (aus) ist die Vorgabe** — das ist die
+  Bedingung, unter der ein Zeitlimit ueberhaupt zulaessig ist (**WCAG 2.2.1**: abschaltbar).
+  **Wer irgendwo sonst ein Zeitlimit einbaut, haelt sich an dieselbe Regel.**
+  Zeit abgelaufen = falsch, aber `selectedId` bleibt `null`: Die Karte behauptet NICHT, es sei etwas
+  Falsches angeklickt worden. Die Uhr laeuft gegen einen **Zeitstempel**, nicht gegen einen Zaehler
+  (ein Intervall wird im Hintergrund-Tab gedrosselt).
+  **ADR 0002:** Eine Runde unter der Uhr bekommt einen EIGENEN Serien-Schluessel (`"timed":15`) —
+  dieselbe Regel wie beim Karten-Filter (8b). Ohne Uhr bleibt der Schluessel **bitgleich**.
+  **Das ist jetzt Muster: Jeder Quiz-Parameter, der die SCHWIERIGKEIT aendert, braucht einen eigenen
+  Serien-Schluessel.**
+- ❌ **Audio / lateinische Aussprache: NEIN.** Vom Projektinhaber gestrichen, obwohl er Logopaedie
+  unterrichtet. **Nicht wieder vorschlagen.**
+- ❌ **Sozialer Vergleich / teilbarer Ergebnis-Link / Lernstand als Bild: NEIN.** Der Backup-Export
+  bleibt der einzige Weg, Daten aus der App zu bekommen — fuer den Geraetewechsel, nicht fuer den
+  Vergleich.
+- ⏸ **Leitner vs. SM-2/FSRS: WEITERHIN OFFEN.** Wir sind bei Leitner, weil ADR 0002 das
+  Backup-Format einfriert — das war nie eine Entscheidung, es ist passiert. Anki ist hier
+  nachweislich besser. Ein Wechsel braeche das Persistenzformat: eigener, grosser Task.
 
 ## Kanonische Quellen
 - V1-Original: `../Muskelfinder` (`/home/pepperboy8/Documents/Muskelfinder`)

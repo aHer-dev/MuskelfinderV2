@@ -47,6 +47,21 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   mehr weiter; die Seite führt jetzt selbst zurück nach `/heute`.
 
 ### Added
+- **Zeitdruck im Quiz** (Etappe 11, ADR 0010). Sekunden pro Frage: **aus · 30 · 15** — **aus ist die
+  Vorgabe.** Das ist nicht nur freundlich, sondern die Bedingung, unter der ein Zeitlimit überhaupt
+  zulässig ist: WCAG 2.2.1 verlangt, dass man es abschalten kann.
+  **Läuft die Zeit ab, zählt die Frage als falsch — aber die App behauptet nicht, man hätte falsch
+  geklickt.** `selectedId` bleibt `null`, es wird nur die *richtige* Antwort markiert, und die
+  Rückmeldung lautet „Zeit abgelaufen. Richtig ist: …", nicht „Leider falsch".
+  **Die Uhr läuft gegen einen Zeitstempel, nicht gegen einen Zähler:** Ein `setInterval` wird in
+  einem Hintergrund-Tab gedrosselt, ein heruntergezählter Zähler liefe zu langsam und die Frage
+  bliebe unbegrenzt offen.
+  **ADR 0002:** Eine Runde unter der Uhr bekommt einen **eigenen** Serien-Schlüssel (`"timed":15`) —
+  60 % unter Zeitdruck ist nicht dasselbe wie 60 % in Ruhe, und beides in einem Topf machte die
+  „beste Quote je Modus" wertlos. Ohne Uhr bleibt der Schlüssel **bitgleich** (Regressionstest).
+  Die Uhr selbst schweigt gegenüber Screenreadern (`role="timer"`, `aria-live="off"`) — eine Uhr,
+  die jede Sekunde ansagt, unterbräche Frage und Optionen permanent. Angesagt wird das *Ablaufen*,
+  über die ohnehin höfliche Rückmeldezeile. Keine blinkenden Elemente (WCAG 2.3.1).
 - **Guide `/anleitung` — die App erklärt sich** (10b). Wie hier gelernt wird: die sieben
   Leitner-Fächer mit ihren echten Abständen (Zahlen aus `FACH_INTERVALS`, nicht erfunden), der
   Tagesplan, die wachsende Abrufhärte, der Prüfungsmodus. Dauerhaft erreichbar über die Fußzeile.

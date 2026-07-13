@@ -570,3 +570,61 @@
   line-height: 1.5;
   color: var(--text-tertiary);
 }
+
+/* ── Zeitdruck (Etappe 11) ──────────────────────────────────────────────────
+   Der Balken traegt die Information, die Zahl bestaetigt sie. Kein Blinken (WCAG 2.3.1),
+   und die Farbe ist nie das EINZIGE Signal: Der Balken wird kuerzer, egal ob man Rot
+   sieht oder nicht. */
+.quiz-timer {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.quiz-timer__track {
+  flex: 1;
+  height: 6px;
+  background: var(--surface-sunken);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.quiz-timer__fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: var(--radius-pill);
+  /* Linear, nicht „smooth": Die Uhr soll gleichmaessig ablaufen, nicht am Ende bremsen.
+     Der Tick kommt alle 250 ms, die Animation ueberbrueckt genau diese Luecke. */
+  transition: width 250ms linear, background-color 200ms ease;
+}
+
+.quiz-timer--knapp .quiz-timer__fill {
+  background: var(--danger);
+}
+.quiz-timer--knapp .quiz-timer__value {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+/* Aufgedeckt: Die Uhr steht still und tritt zurueck — sie hat ihre Arbeit getan. */
+.quiz-timer--paused {
+  opacity: 0.4;
+}
+.quiz-timer--paused .quiz-timer__fill {
+  transition: none;
+}
+
+.quiz-timer__value {
+  min-width: 3.2ch;
+  text-align: right;
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quiz-timer__fill {
+    transition: none;
+  }
+}

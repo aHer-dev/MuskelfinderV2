@@ -26,11 +26,19 @@ interface QuestionCardProps {
   question: QuizQuestion;
   phase: QuizPhase;
   selectedId: string | null;
+  /** Die Frage endete, weil die Zeit ablief (Etappe 11) — nicht durch eine falsche Wahl. */
+  timedOut?: boolean;
   onAnswer: (optionId: string) => void;
 }
 
 /** Eine MC-Frage mit vier Optionen; nach der Antwort werden richtig/falsch markiert. */
-export function QuestionCard({ question, phase, selectedId, onAnswer }: QuestionCardProps) {
+export function QuestionCard({
+  question,
+  phase,
+  selectedId,
+  timedOut = false,
+  onAnswer,
+}: QuestionCardProps) {
   const revealed = phase !== 'answering';
   const imageOptions = question.options.some((o) => o.imageUrl);
   const correctLabel =
@@ -130,12 +138,17 @@ export function QuestionCard({ question, phase, selectedId, onAnswer }: Question
         ))}
       </div>
 
+      {/* Diese Zeile ist auch die Ansage fuer den Screenreader, wenn die Uhr ablaeuft — die
+          Uhr selbst schweigt bewusst (`aria-live="off"`, sonst tickte sie jede Sekunde
+          dazwischen). „Leider falsch" waere hier gelogen: Es wurde nichts falsch geklickt. */}
       <p className="quiz-card__feedback" role="status" aria-live="polite">
-        {revealed
-          ? selectedId === question.correctId
-            ? 'Richtig!'
-            : `Leider falsch. Richtig ist: ${correctLabel}`
-          : ''}
+        {!revealed
+          ? ''
+          : timedOut
+            ? `Zeit abgelaufen. Richtig ist: ${correctLabel}`
+            : selectedId === question.correctId
+              ? 'Richtig!'
+              : `Leider falsch. Richtig ist: ${correctLabel}`}
       </p>
 
       {/* Nicht nur WAS richtig war, sondern WARUM — sonst erkennt man die Lösung beim
