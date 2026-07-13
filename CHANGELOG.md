@@ -9,8 +9,8 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ### Changed
 - **Zarter Orange-Rahmen um die Inhalts-Kästchen**, in beiden Themes (Wunsch des Projektinhabers).
   `--card-border` ist jetzt ein getönter Akzent statt eines neutralen Grautons — im Light-Modus mit
-  32 %, im Dark-Modus mit **26 %**: Auf Schwarz leuchtet Orange von selbst, dieselbe Deckkraft wäre
-  dort ein Neonrahmen.
+  **45 %**, im Dark-Modus mit **26 %**: Auf dem warmen Papier muss sich das Orange gegen viel Licht
+  behaupten, auf Schwarz leuchtet es von selbst (gleiche Deckkraft wäre dort ein Neonrahmen).
   **Nur Inhalts-Kästchen.** Bedienelemente (Eingabefelder, Buttons) behalten ihren neutralen Rahmen
   — deren Umriss ist keine Dekoration, sondern trägt die Erkennbarkeit (WCAG 1.4.11), und der Akzent
   gehört dort dem Fokus-Ring. Das echte Glas (Leiste, Tab-Bar, Sheet, Toast) bleibt ebenfalls neutral.
