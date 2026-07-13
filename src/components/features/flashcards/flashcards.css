@@ -20,22 +20,41 @@
 .flashcards__links {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing-sm) var(--spacing-lg);
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
 }
 
+/* Waren bis Etappe 10e zwei 13px-Textlinks direkt unter der Ueberschrift — der
+   Projektinhaber hat sie beim Durchklicken schlicht uebersehen. Jetzt echte
+   Bedienelemente mit Flaeche und einem Klickziel deutlich ueber 24 px (WCAG 2.5.8). */
 .flashcards__manage {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  margin-top: var(--spacing-sm);
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px var(--spacing-md);
+  background: var(--surface-sunken);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-field);
   font-family: var(--font-ui);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  color: var(--accent-on-surface);
+  color: var(--text-primary);
   text-decoration: none;
+  transition: var(--transition-smooth);
 }
-.flashcards__manage:hover span {
-  text-decoration: underline;
+.flashcards__manage svg {
+  color: var(--accent-on-surface);
+  flex: none;
+}
+.flashcards__manage:hover {
+  background: var(--accent-tint);
+  border-color: var(--accent-border);
+  color: var(--accent-on-tint);
+}
+.flashcards__manage:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
 }
 
 .flashcards__empty,
@@ -350,18 +369,30 @@
   letter-spacing: 0.08em;
   color: var(--text-faint);
 }
+/* Deckender Hintergrund, kein `--surface-sunken` (Etappe 10f): Chromium malt die
+   Optionsliste mit exakt dieser Farbe. Ein durchscheinender Wert landete ungemischt
+   im Popup — 5 % Weiss auf Schwarz, ununterscheidbar vom Hintergrund. */
 .fc-select {
+  min-height: 44px;
   padding: 10px var(--spacing-md);
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--control-border);
   border-radius: var(--radius-field);
-  background: var(--surface-sunken);
+  background: var(--field-bg);
   color: var(--text-primary);
   font-family: var(--font-ui);
   font-size: 14px;
 }
+.fc-select:hover {
+  border-color: var(--hairline-strong);
+}
 .fc-select:focus-visible {
-  outline: 2px solid var(--accent-border);
-  outline-offset: 1px;
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+/* Firefox erbt die Option-Farben nicht vom Select — hier explizit. */
+.fc-select option {
+  background: var(--field-bg);
+  color: var(--text-primary);
 }
 
 .fc-setup__section {

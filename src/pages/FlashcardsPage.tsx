@@ -202,8 +202,6 @@ function SetupScreen({
   onFilter: (f: CardFilter) => void;
   onStart: () => void;
 }) {
-  const resetProgress = useProgressStore((s) => s.resetProgress);
-
   if (deckSize === 0) {
     return (
       <EmptyState
@@ -291,22 +289,6 @@ function SetupScreen({
       <div className="fc-setup__section">
         <h2 className="fc-setup__subtitle">Fächer-Übersicht</h2>
         <LeitnerBoxes counts={byFach} />
-      </div>
-
-      <div className="fc-setup__section">
-        <h2 className="fc-setup__subtitle">Speicherstand</h2>
-        <p className="fc-setup__hint">Fortschritt wird automatisch im Browser gespeichert.</p>
-        <button
-          type="button"
-          className="btn btn--danger"
-          onClick={() => {
-            if (confirm('Gesamten Lernfortschritt (Fächer + XP) wirklich zurücksetzen?')) {
-              resetProgress();
-            }
-          }}
-        >
-          Zurücksetzen
-        </button>
       </div>
     </div>
   );

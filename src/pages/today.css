@@ -225,3 +225,53 @@
   color: var(--accent-on-surface);
   font-variant-numeric: tabular-nums;
 }
+
+/* ── Erststart: der leere Kasten als Einstieg, nicht als Fehler (10c, ADR 0009) ──── */
+.today__start {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.today__start-lead {
+  margin: 0;
+  max-width: 62ch;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+
+/* Der Weg zur Anleitung ist ein echtes Bedienelement mit Flaeche — kein 13px-Textlink,
+   den man uebersieht (genau der Fehler, den 10e ueberall sonst behebt). */
+.today__start-guide {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-height: 48px;
+  padding: 10px var(--spacing-md);
+  background: var(--accent-tint);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-field);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent-on-tint);
+  text-decoration: none;
+  transition: var(--transition-smooth);
+}
+.today__start-guide span {
+  flex: 1;
+  min-width: 0;
+}
+.today__start-guide:hover {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.today__start-guide:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.today__start .today__subtitle {
+  margin: var(--spacing-sm) 0 0;
+}

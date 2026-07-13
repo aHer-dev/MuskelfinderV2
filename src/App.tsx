@@ -14,6 +14,7 @@ const TodayPage = lazy(() => import('./pages/TodayPage').then((m) => ({ default:
 const OnboardingPage = lazy(() =>
   import('./pages/OnboardingPage').then((m) => ({ default: m.OnboardingPage })),
 )
+const GuidePage = lazy(() => import('./pages/GuidePage').then((m) => ({ default: m.GuidePage })))
 const SearchPage = lazy(() => import('./pages/SearchPage').then((m) => ({ default: m.SearchPage })))
 const GroupPage = lazy(() => import('./pages/GroupPage').then((m) => ({ default: m.GroupPage })))
 const MuscleDetailPage = lazy(() =>
@@ -58,6 +59,8 @@ function App() {
                 Routen (/karteikasten, /quiz) bleiben erreichbar — Deep-Links brechen nicht. */}
             <Route path="/" element={<Navigate to="/heute" replace />} />
             <Route path="/heute" element={<TodayPage />} />
+            {/* Die App erklaert sich (10b): dauerhaft erreichbar, nicht nur beim Erststart. */}
+            <Route path="/anleitung" element={<GuidePage />} />
             <Route path="/start" element={<OnboardingPage />} />
             <Route path="/suche" element={<SearchPage />} />
             <Route path="/muskel/:id" element={<MuscleDetailPage />} />

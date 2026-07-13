@@ -1,0 +1,119 @@
+/* DeckStarter — die drei Wege in den Karteikasten (Etappe 10c). Nur Tokens. */
+
+.deck-starter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.deck-starter__way {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-lg);
+  background: var(--surface);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--card-shadow);
+}
+
+.deck-starter__way-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.deck-starter__way-title svg {
+  color: var(--accent-on-surface);
+  flex: none;
+}
+
+.deck-starter__way-hint,
+.deck-starter__placeholder {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+/* Der Platzhalter ist eine Zusage, kein Fehler — er bekommt eine eigene Fläche,
+   damit er nicht wie ein vergessener Absatz aussieht. */
+.deck-starter__placeholder {
+  padding: var(--spacing-md);
+  background: var(--surface-sunken);
+  border: 1px dashed var(--hairline-strong);
+  border-radius: var(--radius-md);
+  color: var(--text-tertiary);
+}
+
+.deck-starter__sections,
+.deck-starter__regions {
+  display: grid;
+  gap: var(--spacing-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.deck-starter__regions {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+/* Ein echtes Bedienelement, kein Textlink: volle Fläche, sichtbarer Rand,
+   Klickziel deutlich über den 24 px aus WCAG 2.5.8. */
+.deck-starter__section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  width: 100%;
+  min-height: 48px;
+  padding: 10px var(--spacing-md);
+  background: var(--surface-sunken);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-field);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+.deck-starter__section:hover {
+  background: var(--accent-tint);
+  border-color: var(--accent-border);
+  color: var(--accent-on-tint);
+}
+.deck-starter__section:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.deck-starter__section-label {
+  min-width: 0;
+}
+
+/* Die Zahl ist das Versprechen: so viele Karten bekommst du. */
+.deck-starter__count {
+  flex: none;
+  min-width: 30px;
+  padding: 2px 8px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.deck-starter__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}

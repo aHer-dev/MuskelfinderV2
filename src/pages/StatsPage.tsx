@@ -31,6 +31,7 @@ export function StatsPage() {
 
   const cards = useProgressStore((s) => s.flashcards.cards);
   const addCards = useProgressStore((s) => s.addCards);
+  const resetProgress = useProgressStore((s) => s.resetProgress);
   const lookups = useLookupStore((s) => s.lookups.entries);
 
   /* Die Auswahl hinter den Knöpfen. Sie kommt aus `data/practice.ts` und trifft
@@ -307,6 +308,28 @@ export function StatsPage() {
         <BadgePanel rows={badgeRows} onPractice={practiceBadge} />
 
         <BackupPanel />
+
+        {/* Stand bis Etappe 10e auf dem LERNBILDSCHIRM — ein roter Loeschknopf direkt unter
+            der Faecher-Uebersicht, den man im Vorbeigehen trifft. Er gehoert dorthin, wo die
+            anderen Datenaktionen liegen: neben das Backup, hinter eine Rueckfrage. */}
+        <section className="stats__panel">
+          <h2>Fortschritt zurücksetzen</h2>
+          <p className="stats__quiz-line">
+            Löscht alle Fächer und XP auf diesem Gerät. Der Karteikasten bleibt, der Lernstand ist
+            weg — und das lässt sich nicht rückgängig machen. Vorher ein Backup herunterladen.
+          </p>
+          <button
+            type="button"
+            className="btn btn--danger"
+            onClick={() => {
+              if (confirm('Gesamten Lernfortschritt (Fächer + XP) wirklich zurücksetzen?')) {
+                resetProgress();
+              }
+            }}
+          >
+            Zurücksetzen
+          </button>
+        </section>
       </div>
     </section>
   );

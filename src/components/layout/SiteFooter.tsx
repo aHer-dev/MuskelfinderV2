@@ -13,6 +13,13 @@ export function SiteFooter() {
         Bilder: BodyParts3D, © DBCLS, CC BY 4.0
       </p>
       <nav className="site-footer__links" aria-label="Rechtliches">
+        {/* Der Guide (10b) muss auch dann erreichbar sein, wenn der Kasten laengst voll ist. */}
+        <NavLink to="/anleitung" className="site-footer__link">
+          So lernst du hier
+        </NavLink>
+        <span className="site-footer__sep" aria-hidden="true">
+          ·
+        </span>
         <a
           className="site-footer__link"
           href={THREE_D_BASE_URL}

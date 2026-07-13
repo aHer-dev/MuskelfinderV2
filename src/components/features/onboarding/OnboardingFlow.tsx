@@ -2,15 +2,17 @@
    Onboarding — zwei Fragen, kein Konto, keine Tutorial-Slides (Etappe 7c).
    src/components/features/onboarding/OnboardingFlow.tsx
 
-   Ziel ist eine Zahl: die erste bewertete Karte unter 60 Sekunden. Darum wird
-   die Berufsfrage mit dem Klick beantwortet (die Wahl IST die Handlung, kein
-   „Weiter" dahinter), und die Prüfungsfrage ist überspringbar.
+   **Etappe 10 / ADR 0009:** Das Onboarding legt **keine Karten** mehr an und startet
+   **keine Sitzung**. Es fragt nur noch, wer da lernt — danach führt `/heute` den Schüler
+   durch den Guide und er wählt seine Karten selbst.
+
+   Warum der Beruf trotzdem bleibt, obwohl er kein Startdeck mehr erzeugt:
+   Er wird im Backup persistiert (ADR 0002, Sektion `profile`) und er trägt das Curriculum
+   — Kurs 1 der Logopädie ist nicht Kurs 1 der Physiotherapie.
    ========================================================================= */
 
 import { useState } from 'react';
-import { getMuscleByLatinName, getMuscles } from '../../../data';
-import { regionLabel } from '../../../data/labels';
-import { PROFESSION_LABELS, PROFESSIONS, seedDeck, type Profession } from '../../../data/seeding';
+import { PROFESSION_LABELS, PROFESSIONS, type Profession } from '../../../data/profession';
 import { Icon } from '../../ui/Icon';
 import './onboarding.css';
 
@@ -18,26 +20,18 @@ export interface OnboardingResult {
   profession: Profession;
   /** „YYYY-MM-DD" oder null (übersprungen). */
   examDate: string | null;
-  /** Das Startdeck (`nameLatin`) — schon in Lernreihenfolge. */
-  deck: string[];
 }
 
 interface OnboardingFlowProps {
   onDone: (result: OnboardingResult) => void;
 }
 
-/** Woraus das Startdeck besteht — als Vertrauenssignal, nicht als Statistik. */
-function deckPreview(deck: string[]): string {
-  const counts = new Map<string, number>();
-  for (const name of deck) {
-    const region = getMuscleByLatinName(name)?.region;
-    if (region) counts.set(regionLabel(region), (counts.get(regionLabel(region)) ?? 0) + 1);
-  }
-  const [top] = [...counts.entries()].sort((a, b) => b[1] - a[1]);
-  return top ? `${deck.length} Karten, Schwerpunkt ${top[0]}` : `${deck.length} Karten`;
-}
-
-const ALL_MUSCLES = getMuscles();
+/** Wofür der Beruf gebraucht wird — ehrlich, weil er keine Karten mehr anlegt. */
+const PROFESSION_PURPOSE: Record<Profession, string> = {
+  physio: 'Extremitäten, Rumpf, Palpation am Menschen',
+  ergo: 'Hand, Arm, Feinmotorik',
+  logo: 'Kau-, Zungenbein- und Kehlkopfmuskulatur',
+};
 
 export function OnboardingFlow({ onDone }: OnboardingFlowProps) {
   const [profession, setProfession] = useState<Profession | null>(null);
@@ -48,8 +42,8 @@ export function OnboardingFlow({ onDone }: OnboardingFlowProps) {
       <div className="onboarding">
         <h1 className="page__title onboarding__question">Was lernst du?</h1>
         <p className="onboarding__hint">
-          Danach legen wir dir ein Startdeck an — passend zu deinem Beruf. Änderbar bleibt es
-          jederzeit.
+          Damit die App weiß, welche Kursabschnitte zu dir gehören. Deinen Karteikasten stellst du
+          gleich selbst zusammen — die App legt dir nichts ungefragt hinein.
         </p>
 
         <div className="onboarding__choices">
@@ -61,9 +55,7 @@ export function OnboardingFlow({ onDone }: OnboardingFlowProps) {
               onClick={() => setProfession(p)}
             >
               <span className="onboarding__choice-label">{PROFESSION_LABELS[p]}</span>
-              <span className="onboarding__choice-meta">
-                {deckPreview(seedDeck(p, ALL_MUSCLES))}
-              </span>
+              <span className="onboarding__choice-meta">{PROFESSION_PURPOSE[p]}</span>
               <Icon name="icArrow" size={18} />
             </button>
           ))}
@@ -72,8 +64,7 @@ export function OnboardingFlow({ onDone }: OnboardingFlowProps) {
     );
   }
 
-  const deck = seedDeck(profession, ALL_MUSCLES);
-  const finish = (date: string | null) => onDone({ profession, examDate: date, deck });
+  const finish = (date: string | null) => onDone({ profession, examDate: date });
 
   return (
     <div className="onboarding">
@@ -103,15 +94,14 @@ export function OnboardingFlow({ onDone }: OnboardingFlowProps) {
         className="btn btn--primary btn--block"
         onClick={() => finish(examDate || null)}
       >
-        Startdeck anlegen und loslegen
+        Weiter
       </button>
       <button type="button" className="btn btn--ghost btn--block" onClick={() => finish(null)}>
         Ohne Datum weiter
       </button>
 
       <p className="onboarding__hint onboarding__hint--quiet">
-        Dein Startdeck: {deckPreview(deck)}. Alles bleibt auf diesem Gerät — kein Konto, keine
-        Übertragung.
+        Alles bleibt auf diesem Gerät — kein Konto, keine Übertragung.
       </p>
     </div>
   );

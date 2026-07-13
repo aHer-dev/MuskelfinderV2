@@ -127,8 +127,31 @@ direkt in die nächste Sitzung.
 | 9d | Palpations-Sektion je Muskel (optionales Feld, inkrementell) | [9d](tasks/2026-07-13-etappe-9d-palpation.md) | **Mechanik fertig + abgenommen** · Texte traegt der Projektinhaber aus dem Kollegen-Skript nach ([Anleitung](palpation-erfassen.md)) | `feat/etappe-9d-palpation` | — |
 
 *Reihenfolge: **9a ✅ → 9c ✅ → 9b ✅ → 9d ✅.** Etappe 9 ist durch **und abgenommen** (2026-07-13).
-Der **Quiz-Pool-Filter (8b)** ist danach ebenfalls gebaut — damit gibt es **keinen offenen
-Code-Task mehr**.*
+Der **Quiz-Pool-Filter (8b)** ist danach ebenfalls gebaut.*
+
+### Etappe 10 — Kaltstart & Orientierung
+
+Nicht geplant, sondern **ausgelöst**: Der Projektinhaber hat die App am 2026-07-13 aus Schülersicht
+geöffnet. Briefing: [Etappe 10](tasks/2026-07-13-etappe-10-kaltstart-orientierung.md).
+
+| ID | Schritt | Status |
+|---|---|---|
+| 10a | **Auto-Seeding raus** (ADR 0009) — `seeding.ts` gelöscht, `Profession` nach `data/profession.ts` (bleibt: sie ist im Backup, ADR 0002) | **fertig** |
+| 10b | Guide `/anleitung` — die App erklärt sich (Leitner-Fächer, Tagesplan, Abrufhärte) | **fertig** |
+| 10c | Neue Startseite bei leerem Kasten: Kurzerklärung + **drei Wege** in den Karteikasten | **fertig** |
+| 10d | Curriculum-Mechanik (`data/curriculum.ts` + leere `editorial/curriculum.json`) | **Mechanik fertig** · Abschnitte trägt der Projektinhaber ein ([Anleitung](curriculum-erfassen.md)) |
+| 10e | Aufräumen: Löschknopf vom Lernbildschirm nach `/statistik`; Textlinks → echte Bedienelemente (≥ 44 px) | **fertig** |
+| 10f | Dark-Mode: `--field-bg` deckend — die Optionsliste verschwamm mit dem Hintergrund | **fertig** |
+
+*Branch: `feat/etappe-10-kaltstart-orientierung`. **530 Tests grün**, axe 0 Verstöße (Light+Dark) auf
+`/heute` (leer), `/anleitung`, `/lernkarten`, `/statistik`, 0 externe Requests.*
+
+**Was ADR 0009 an ADR 0007 ändert:** Rahmen-Invariante 2 („jeder Zustand hat genau **einen**
+Primärbutton") gilt für den Zustand **leerer Kasten** nicht mehr — dort *ist* das Wählen die Aufgabe,
+und ein einzelner Primärbutton würde wieder für den Schüler entscheiden. Alle anderen Zustände
+behalten ihren einen Primärbutton; Tests wachen über beides.
+
+**Damit gibt es keinen offenen Code-Task mehr.** Was offen ist, steht in [todo.md](todo.md).
 
 **Aus 9b mitnehmen:** Ein Abzeichen ist eine **Ableitung**, kein Zustand — es wird nirgends
 gespeichert, und wer eine Karte vergisst, verliert es wieder. Wer hier einen Backup-Schluessel

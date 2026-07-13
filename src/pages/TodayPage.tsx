@@ -19,8 +19,8 @@ import { useProfileStore } from '../store/useProfileStore';
 import { useProgressStore } from '../store/useProgressStore';
 import { useStreakStore } from '../store/useStreakStore';
 import { xpView } from '../persistence/xp';
+import { DeckStarter } from '../components/features/onboarding/DeckStarter';
 import { OnboardingFlow } from '../components/features/onboarding/OnboardingFlow';
-import { EmptyState } from '../components/ui/EmptyState';
 import { Icon } from '../components/ui/Icon';
 import { ProgressRing } from '../components/ui/ProgressRing';
 import './today.css';
@@ -61,9 +61,11 @@ function diagnosis(plan: TodayPlan): string[] {
       : null;
 
   switch (plan.kind) {
+    /* Seit ADR 0009 rendert `/heute` für den leeren Kasten den Guide und den DeckStarter,
+       nicht diese Aufzählung — der Fall kommt hier nicht mehr an. `TodayPlan` ist ein
+       flaches Interface (keine diskriminierte Union), also verlangt der Switch die Marke
+       trotzdem. Leere Liste statt eines Satzes, der nirgends steht. */
     case 'needsOnboarding':
-      parts.push('Noch keine Karten im Kasten');
-      parts.push('Ohne Karten kann dich die App durch nichts durchführen');
       return parts;
 
     case 'new':
@@ -143,17 +145,23 @@ export function TodayPage() {
       </header>
 
       {plan.kind === 'needsOnboarding' ? (
-        <div className="today__hero">
-          <EmptyState
-            icon="icCards"
-            title="Dein Karteikasten ist leer"
-            description="Wähle die Muskeln aus, die du lernen willst — danach schlägt dir diese Seite jeden Tag genau eine Sitzung vor."
-            action={
-              <Link to="/karteikasten" className="btn btn--primary btn--block">
-                Muskeln auswählen
-              </Link>
-            }
-          />
+        /* Leerer Kasten heisst ab ADR 0009 nicht mehr „kaputt", sondern „du bist dran".
+           Statt eines Leerzustands mit einem Knopf steht hier, WIE hier gelernt wird —
+           und die drei Wege, den Kasten zu fuellen. */
+        <div className="today__start">
+          <p className="today__start-lead">
+            Dein Karteikasten ist leer — und das ist der richtige Anfang. Du entscheidest, was du
+            lernst; die App legt dir nichts ungefragt hinein. Danach schlägt dir diese Seite jeden
+            Tag genau eine Sitzung vor: das, was heute fällig ist, nicht alles auf einmal.
+          </p>
+          <Link to="/anleitung" className="today__start-guide">
+            <Icon name="icQuiz" size={16} />
+            <span>So lernst du hier — die Anleitung in zwei Minuten</span>
+            <Icon name="icArrow" size={16} />
+          </Link>
+
+          <h2 className="today__subtitle">Womit fängst du an?</h2>
+          <DeckStarter />
         </div>
       ) : (
         <div className="today__hero">

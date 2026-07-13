@@ -8,21 +8,57 @@
 - Datum: 2026-07-13
 - Branch: `main` · **Remote: github.com/aHer-dev/MuskelfinderV2** · Live: `aher-dev.github.io/MuskelfinderV2/`
 - Status: **Migration abgeschlossen (Etappen 0–6, `v1.0`). ETAPPE 7 KOMPLETT (7a–7f). ETAPPE 8
-  KOMPLETT (8a–8f). ETAPPE 9 KOMPLETT (9a–9d) — code-seitig. Offen ist nur noch, was den FACHMANN
-  braucht (siehe unten).** Die Abrufhaerte waechst mit der Beherrschung, keine Zahl in der Statistik
-  steht ohne Knopf, man kann gezielt an den Luecken ueben, eigene Notizen stehen beim Muskel, der
-  lateinische Name erklaert sich selbst, geprueft wird in Zusammenhaengen, die Pruefung wirft ihre
-  Luecken direkt in die naechste Sitzung, Abzeichen messen Koennen statt Anwesenheit — und die
-  Detailseite kann sagen, wo man den Muskel am Koerper findet.
+  KOMPLETT (8a–8f). ETAPPE 9 KOMPLETT (9a–9d). ETAPPE 10 KOMPLETT (10a–10f) — code-seitig. Offen ist
+  nur noch, was den FACHMANN braucht: `docs/todo.md`.** Die Abrufhaerte waechst mit der Beherrschung,
+  keine Zahl in der Statistik steht ohne Knopf, man kann gezielt an den Luecken ueben, eigene Notizen
+  stehen beim Muskel, der lateinische Name erklaert sich selbst, geprueft wird in Zusammenhaengen, die
+  Pruefung wirft ihre Luecken direkt in die naechste Sitzung, Abzeichen messen Koennen statt
+  Anwesenheit, die Detailseite kann sagen, wo man den Muskel am Koerper findet — **und die App legt
+  niemandem mehr ungefragt Karten in den Kasten.**
   **ALLE VIER BRUECKEN STEHEN:** B1 (7d), B2 (7e), B3 (**9c**), B4 (8c).
-  Statustafel: `docs/produkt-plan.md`.
-- Gate gruen: `npm run lint && npm run test && npm run build` — **525 Tests**.
+  Statustafel: `docs/produkt-plan.md`. Offene Punkte: `docs/todo.md`.
+- Gate gruen: `npm run lint && npm run test && npm run build` — **530 Tests**.
 - A11y: axe 0 Verstoesse (Playwright+Chromium+axe-core, Light+Dark) inkl. `/pruefung` in allen drei
-  Zustaenden (Einstieg, laufende Pruefung, Debrief), der Abzeichen auf `/statistik` (verdient + offen)
-  und der Palpations-Sektion (mit + ohne Eintrag). 0 externe Requests.
+  Zustaenden, der Abzeichen auf `/statistik`, der Palpations-Sektion (mit + ohne Eintrag) sowie neu
+  `/anleitung` und dem leeren `/heute`. 0 externe Requests.
 - **8b ist erledigt:** Der Quiz-Pool-Filter ist gebaut (`src/data/quiz-pool.ts`). Die Antwort auf
   zu kleine Pools lautet: **die Distraktoren kommen von ausserhalb des Filters** — darum genuegt EINE
   passende Karte fuer eine vollstaendige 4-Optionen-Frage.
+
+## ⚠️ ETAPPE 10: KEIN AUTOMATISCHES STARTDECK MEHR (ADR 0009, 2026-07-13)
+**Wer `seedDeck` wieder einbaut, dreht die wichtigste Produktkorrektur des Projekts zurueck.**
+
+Der Projektinhaber (Lehrkraft) hat die App aus Schuelersicht geoeffnet. Am Build nachgemessen:
+Zwei Klicks — und man stand in einer **laufenden Sitzung** mit 20 Karten, die man nie gewaehlt hatte.
+Die 20 waren nicht zufaellig, sondern **alphabetisch**: Sortierung nach Regionsquote, dann
+`difficulty`, dann Name — und allein in der unteren Extremitaet teilen sich **22 Muskeln den
+Schwierigkeitsgrad 1**. Die erste Karte, die ein Physio-Schueler je sah, war
+**`M. abductor digiti minimi`** (ein kleiner Fussmuskel). Die App erklaerte nirgends, woher die
+Karten kamen.
+
+- **Kein Codepfad legt mehr Karten ohne Nutzerhandlung an.** Zwei Tests wachen darueber
+  (`OnboardingPage.test.tsx`): einer am Verhalten, einer am Quelltext.
+- `src/data/seeding.ts` ist **geloescht**. `Profession`/`PROFESSIONS`/`PROFESSION_LABELS` liegen jetzt
+  in **`src/data/profession.ts`** — **nicht loeschen**: Der Beruf wird im Backup persistiert
+  (`sanitize.ts` validiert `physio|ergo|logo`), das faellt unter ADR 0002. Und er schluesselt das
+  Curriculum.
+- **ADR 0009 aendert die Rahmen-Invariante 2 aus ADR 0007 fuer genau EINEN Zustand:** Der leere
+  Kasten hat **keinen** einzigen Primaerbutton mehr — dort *ist* das Waehlen die Aufgabe. Alle
+  anderen Zustaende (`review`, `backlog`, `new`) behalten ihren einen Primaerbutton.
+- Der Erststart fuehrt jetzt auf **`/anleitung`-Kurzfassung + drei Wege** (Kursabschnitt · Bereich ·
+  einzeln). Die Zahl am Knopf ist die Zahl der Karten (nach `nameLatin` entdoppelt).
+
+**Curriculum (10d) ist die zweite leere redaktionelle Datei nach der Palpation.**
+`src/data/editorial/curriculum.json` ist **leer, und ein Test wacht darueber**. Kursabschnitte kommen
+vom Projektinhaber (`docs/curriculum-erfassen.md`) — **ein Agent erfindet hier nie einen Abschnitt.**
+Ein Kursabschnitt ist eine Behauptung darueber, was geprueft wird; eine geratene fuehrt zum falschen
+Stoff fuer die falsche Pruefung. Geschluesselt nach Beruf (Kurs 1 der Logopaedie ≠ Kurs 1 der Physio).
+
+**Dark-Mode-Falle (10f), gilt fuer JEDES neue `<select>`:** Chromium malt die Optionsliste mit
+**exakt der `background-color` des Selects**. Ein durchscheinender Wert (`--surface-sunken` =
+`rgba(255,255,255,0.05)`) landet ungemischt im Popup und verschwimmt mit dem Hintergrund. Es gibt
+dafuer das Token **`--field-bg`** — in beiden Themes **deckend**. Nie wieder eine rgba-Flaeche auf ein
+Formularfeld legen.
 
 ## Verlauf (Migration, abgeschlossen)
 - Etappe 0–4 abgeschlossen. **Etappe 5 (Haertung)** — Teil 1+2 umgesetzt:
@@ -204,8 +240,10 @@ Etappe 8 erledigt.
   Karten) und benutzt immer `scope: 'all'`.
 
 **ES GIBT KEINEN OFFENEN CODE-TASK MEHR.** Offen sind nur noch Dinge, die der Projektinhaber
-erledigt: Palpationstexte aus dem Kollegen-Skript eintragen (`docs/palpation-erfassen.md`), die
-3D-App neu deployen (ihre `datenschutz.html` liefert 404), 3D-Renderings (zurueckgestellt).
+erledigt — die vollstaendige Liste steht in **`docs/todo.md`**: Palpationstexte aus dem
+Kollegen-Skript (`docs/palpation-erfassen.md`), Kursabschnitte (`docs/curriculum-erfassen.md`), die
+3D-App neu deployen (ihre `datenschutz.html` liefert 404), 3D-Renderings (zurueckgestellt), Logo oben
+rechts.
 
 ## ⚠️ KEIN HYPOTHENAR — und das bitte nicht „reparieren"
 Drei seiner vier Mitglieder (`M. abductor digiti minimi`, `M. flexor digiti minimi brevis`,
