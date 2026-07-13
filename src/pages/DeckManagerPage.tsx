@@ -110,7 +110,15 @@ export function DeckManagerPage() {
             description="Wähle unten Muskeln aus und füge sie hinzu — einzeln oder gleich ein ganzer Bereich."
           />
         ) : (
-          <div className="deck-table-wrap">
+          /* Dieselbe Regel wie bei der Faecher-Tabelle im Guide: Die Box scrollt waagerecht (auf
+             dem Handy immer), also muss die Tastatur sie erreichen (WCAG 2.1.1) — sonst bleibt
+             die letzte Spalte fuer Tastaturnutzer ausserhalb des Sichtfelds. */
+          <div
+            className="deck-table-wrap"
+            tabIndex={0}
+            role="region"
+            aria-label="Karten in deinem Kasten"
+          >
             <table className="deck-table">
               <thead>
                 <tr>

@@ -6,6 +6,15 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Fixed
+- **Die scrollenden Tabellen waren per Tastatur nicht erreichbar** (WCAG 2.1.1). Die Fächer-Tabelle
+  (`/anleitung`) und die Karteikasten-Tabelle (`/karteikasten`) scrollen auf dem Handy waagerecht,
+  enthalten aber kein fokussierbares Element, das den Scroll mitzöge — mit `Tab` kam man nie an die
+  rechte Spalte. Beide Boxen sind jetzt Tab-Stopps mit Namen (`role="region"`).
+  Gefunden beim axe-Lauf zur Marke: Die Deck-Tabelle war bis dahin **nie geprüft**, weil ein
+  frischer Browser einen leeren Kasten hat und die Tabelle dann gar nicht rendert. Der
+  Prüf-Lauf legt jetzt erst Karten an.
+
 ### Changed
 - **Die Marke steht jetzt auf JEDER Seite** (`BrandMark` in der Kopfzeile der Shell). Sie hing
   bisher an genau einer Route (`/heute`, in der `StandRail`) — und auf dem Handy, wo es keine
