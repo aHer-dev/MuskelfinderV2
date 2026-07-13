@@ -4,10 +4,17 @@ import { QuestionCard } from '../components/features/quiz/QuestionCard';
 import { QuizProgress } from '../components/features/quiz/QuizProgress';
 import { QuizResult } from '../components/features/quiz/QuizResult';
 import { Icon } from '../components/ui/Icon';
-import { getRegions } from '../data';
+import { getRegions, getMuscles } from '../data';
 import { regionLabel } from '../data/labels';
-import { readQuizHandoff } from '../data/quiz';
+import {
+  readQuizHandoff,
+  QUIZ_SCOPES,
+  QUIZ_SCOPE_LABELS,
+  type QuizScope,
+} from '../data/quiz';
+import { quizPoolSize } from '../data/quiz-pool';
 import { useQuizGame } from '../hooks/useQuizGame';
+import { useProgressStore } from '../store/useProgressStore';
 import type { QuizMode, RegionId } from '../types';
 import '../components/features/quiz/quiz.css';
 import '../components/features/exam/exam.css';
@@ -57,7 +64,7 @@ const FAMILIES: QuizFamily[] = [
   {
     // Geprüft wird in Zusammenhängen, nicht Muskel für Muskel (9a).
     title: 'Funktionelle Gruppen',
-    desc: 'Welcher Muskel gehört nicht dazu? — Rotatorenmanschette, Ischiocrurale, Kaumuskulatur …',
+    desc: 'Welcher Muskel gehört nicht dazu? — Rotatorenmanschette, Ischiocrurale, Kaumuskulatur … Fragt immer über den ganzen Bestand.',
     directions: [{ mode: 'group-odd-one-out', label: 'Starten' }],
   },
 ];
@@ -65,15 +72,17 @@ const FAMILIES: QuizFamily[] = [
 function QuizGame({
   mode,
   regions,
+  scope,
   onExit,
   onRestart,
 }: {
   mode: QuizMode;
   regions: RegionId[];
+  scope: QuizScope;
   onExit: () => void;
   onRestart: () => void;
 }) {
-  const game = useQuizGame(mode, 10, regions);
+  const game = useQuizGame(mode, 10, regions, scope);
 
   if (game.total === 0) {
     return (
@@ -129,10 +138,14 @@ function QuizGame({
   );
 }
 
+const MUSCLES = getMuscles();
+
 export function QuizPage() {
   const [mode, setMode] = useState<QuizMode | null>(null);
   const [round, setRound] = useState(0);
   const [regions, setRegions] = useState<RegionId[]>([]);
+  const [scope, setScope] = useState<QuizScope>('all');
+  const cards = useProgressStore((s) => s.flashcards.cards);
 
   /* Übergabe aus der Statistik (8c): „Diesen Modus üben" startet ihn direkt, ohne
      Umweg über die Modus-Wahl. Pro Navigation genau einmal — sonst würde ein Abbruch
@@ -149,9 +162,25 @@ export function QuizPage() {
 
   const regionKey = useMemo(() => [...regions].sort().join(','), [regions]);
 
+  /* Wie viele Fragen jeder Umfang hergibt — die Zahl steht am Knopf, und ein Umfang ohne
+     Karten ist deaktiviert statt eine leere Runde zu starten (Regel aus 8c). */
+  const poolSizes = useMemo(() => {
+    const sizes = {} as Record<QuizScope, number>;
+    for (const s of QUIZ_SCOPES) {
+      sizes[s] = quizPoolSize({ muscles: MUSCLES, cards, regions, scope: s });
+    }
+    return sizes;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cards, regionKey]);
+
   function toggleRegion(id: RegionId) {
     setRegions((prev) => (prev.includes(id) ? prev.filter((r) => r !== id) : [...prev, id]));
   }
+
+  /* Ein Bereichswechsel kann den gewaehlten Umfang leerlaufen lassen („schwierig" in der
+     unteren Extremitaet: 0 Karten). Dann gilt wieder „Alle Muskeln" — abgeleitet, nicht
+     im State nachgezogen: eine Zustandsaenderung waehrend des Renderns waere fragil. */
+  const activeScope: QuizScope = poolSizes[scope] === 0 ? 'all' : scope;
 
   return (
     <section className="page quiz">
@@ -204,6 +233,40 @@ export function QuizPage() {
             </div>
           </div>
 
+          {/* Woher die FRAGEN kommen (8b, entschieden 2026-07-13). Die falschen Antworten
+              kommen unabhaengig davon aus dem ganzen Bestand — darum genuegt hier schon
+              EINE passende Karte fuer eine Frage. */}
+          <div className="quiz-filter" role="group" aria-label="Fragen aus diesen Karten">
+            <span className="quiz-filter__label">Fragen aus</span>
+            <div className="quiz-filter__chips">
+              {QUIZ_SCOPES.map((s) => {
+                const size = poolSizes[s];
+                const leer = size === 0;
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    className={`chip${activeScope === s ? ' chip--active' : ''}`}
+                    aria-pressed={activeScope === s}
+                    disabled={leer}
+                    onClick={() => setScope(s)}
+                  >
+                    {QUIZ_SCOPE_LABELS[s]}
+                    <span className="quiz-filter__count">
+                      {leer ? 'keine Karten' : size}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            {activeScope !== 'all' && (
+              <p className="quiz-filter__note">
+                Die falschen Antwortmöglichkeiten kommen aus dem ganzen Bestand — deshalb
+                reicht schon eine Karte für eine Frage.
+              </p>
+            )}
+          </div>
+
           <ul className="quiz-modes">
             {FAMILIES.map((family) => (
               <li key={family.title} className="quiz-family">
@@ -227,9 +290,10 @@ export function QuizPage() {
         </>
       ) : (
         <QuizGame
-          key={`${mode}-${regionKey}-${round}`}
+          key={`${mode}-${regionKey}-${activeScope}-${round}`}
           mode={mode}
           regions={regions}
+          scope={activeScope}
           onExit={() => setMode(null)}
           onRestart={() => setRound((r) => r + 1)}
         />

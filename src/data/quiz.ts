@@ -94,16 +94,62 @@ export function readQuizHandoff(state: unknown): QuizMode | null {
 }
 
 /**
- * Serien-Key im V1-Format `<mode>::{"deckOnly":…,"regions":…,"subgroups":…}`.
- * Ohne Bereichsfilter (`regions = []`) exakt der bisherige Key → ADR-0002-kompatibel;
- * ein Bereichsfilter erzeugt einen zusätzlichen (neuen) Serien-Schlüssel.
+ * Woher die **Fragen** kommen (Etappe 8b, entschieden am 2026-07-13).
+ * Die **falschen Antworten** kommen davon unabhängig immer aus dem ganzen Bestand —
+ * genau darum genügt hier schon EINE passende Karte für eine Frage.
  */
-export function quizSeriesKey(mode: QuizMode, regions: RegionId[] = []): string {
-  const signature = JSON.stringify({
-    deckOnly: false,
+export type QuizScope =
+  /** Der ganze Muskelbestand (bisheriges Verhalten). */
+  | 'all'
+  /** Nur was im Karteikasten liegt. */
+  | 'deck'
+  /** Karten, die schon mindestens einmal falsch beantwortet wurden. */
+  | 'wrong'
+  /** Karten, die noch nie bewertet wurden. */
+  | 'unseen'
+  /** Von Hand als schwierig markierte Karten. */
+  | 'difficult';
+
+export const QUIZ_SCOPE_LABELS: Record<QuizScope, string> = {
+  all: 'Alle Muskeln',
+  deck: 'Mein Karteikasten',
+  wrong: 'Nur falsch beantwortete',
+  unseen: 'Nie gesehen',
+  difficult: 'Als schwierig markiert',
+};
+
+export const QUIZ_SCOPES = Object.keys(QUIZ_SCOPE_LABELS) as QuizScope[];
+
+export function isQuizScope(value: unknown): value is QuizScope {
+  return typeof value === 'string' && Object.hasOwn(QUIZ_SCOPE_LABELS, value);
+}
+
+/**
+ * Serien-Key im V1-Format `<mode>::{"deckOnly":…,"regions":…,"subgroups":…}`.
+ *
+ * **Der bestehende Schlüssel bleibt bitgleich** (ADR 0002): Ohne Bereichsfilter und mit
+ * `scope: 'all'` kommt exakt der bisherige Text heraus. Jede Einschränkung erzeugt einen
+ * **zusätzlichen** Schlüssel, nie einen veränderten.
+ *
+ * Das Feld `deckOnly` stammt aus V1 und stand bisher immer auf `false` — es war für genau
+ * diesen Fall vorgesehen. „Nur mein Karteikasten" erzeugt darum sogar **denselben** Key,
+ * den V1 dafür erzeugt hätte. Erst die feineren Filter (`wrong`/`unseen`/`difficult`)
+ * brauchen ein Feld, das V1 nicht kennt — und das wird nur dann angehängt.
+ */
+export function quizSeriesKey(
+  mode: QuizMode,
+  regions: RegionId[] = [],
+  scope: QuizScope = 'all',
+): string {
+  const base = {
+    deckOnly: scope !== 'all',
     regions: [...regions].sort(),
-    subgroups: [],
-  });
+    subgroups: [] as string[],
+  };
+  const signature =
+    scope === 'all' || scope === 'deck'
+      ? JSON.stringify(base)
+      : JSON.stringify({ ...base, filter: scope });
   return `${mode}::${signature}`;
 }
 
@@ -266,9 +312,34 @@ export function questionForMuscle(
 }
 
 /**
+ * Fragen aus dem einen Topf, **falsche Antworten aus dem anderen** (Etappe 8b).
+ *
+ * Das ist die Entscheidung vom 2026-07-13: Wer „nur falsch beantwortete" filtert, hat
+ * vielleicht drei Karten — zu wenig für eine Frage mit vier Optionen. Kämen die
+ * Distraktoren aus demselben Topf, gäbe es gar keine Frage. Sie kommen darum von
+ * **außerhalb**, und damit genügt schon **eine** passende Karte.
+ */
+export function generateQuizFrom(
+  questionPool: readonly Muscle[],
+  distractorPool: readonly Muscle[],
+  mode: QuizMode,
+  count = 10,
+  rng: () => number = createRng(Date.now()),
+): QuizQuestion[] {
+  const pool = eligible(questionPool, mode);
+  const chosen = shuffle(pool, rng).slice(0, Math.min(count, pool.length));
+
+  return chosen.map((muscle, qIndex) =>
+    questionForMuscle(muscle, mode, distractorPool, rng, `q${qIndex}-${muscle.id}`),
+  );
+}
+
+/**
  * Erzeugt bis zu `count` MC-Fragen für den Modus. Jede Frage hat 4 Optionen
  * (1 richtig + bis zu 3 Distraktoren), Reihenfolge gemischt. „Gemischt"-Modi lösen
  * je Frage zufällig auf eine konkrete Richtung auf; „name-image" nutzt Bild-Optionen.
+ *
+ * Fragen und Distraktoren aus demselben Topf — der bisherige Fall.
  */
 export function generateQuiz(
   muscles: readonly Muscle[],
@@ -276,10 +347,5 @@ export function generateQuiz(
   count = 10,
   rng: () => number = createRng(Date.now()),
 ): QuizQuestion[] {
-  const pool = eligible(muscles, mode);
-  const chosen = shuffle(pool, rng).slice(0, Math.min(count, pool.length));
-
-  return chosen.map((muscle, qIndex) =>
-    questionForMuscle(muscle, mode, muscles, rng, `q${qIndex}-${muscle.id}`),
-  );
+  return generateQuizFrom(muscles, muscles, mode, count, rng);
 }

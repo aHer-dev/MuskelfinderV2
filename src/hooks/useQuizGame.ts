@@ -10,7 +10,8 @@
 
 import { useMemo, useState } from 'react';
 import { MUSCLES } from '../data';
-import { generateQuiz, quizSeriesKey } from '../data/quiz';
+import { generateQuizFrom, quizSeriesKey, type QuizScope } from '../data/quiz';
+import { quizPool } from '../data/quiz-pool';
 import { generateGroupQuiz } from '../data/group-quiz';
 import { getGroups } from '../data/groups';
 import { useProgressStore } from '../store/useProgressStore';
@@ -40,23 +41,37 @@ export interface QuizGameApi {
   result: QuizResult | null;
 }
 
-export function useQuizGame(mode: QuizMode, count = 10, regions: RegionId[] = []): QuizGameApi {
+export function useQuizGame(
+  mode: QuizMode,
+  count = 10,
+  regions: RegionId[] = [],
+  scope: QuizScope = 'all',
+): QuizGameApi {
   const awardXp = useProgressStore((s) => s.awardXp);
   const awardStreak = useProgressStore((s) => s.awardStreak);
   const commitRound = useQuizStore((s) => s.commitRound);
+  const cards = useProgressStore((s) => s.flashcards.cards);
+
+  /* Der Gruppen-Modus (9a) fragt nach Zusammenhaengen, nicht nach dem Lernstand einzelner
+     Karten — ein Karten-Filter ergibt dort keinen Sinn und wuerde nur einen sinnlosen
+     Serien-Schluessel erzeugen. Er fragt immer ueber den ganzen Bestand. */
+  const effectiveScope: QuizScope = mode === 'group-odd-one-out' ? 'all' : scope;
 
   // Bereichsfilter (V1 „Quiz-Filter"): leer = alle Muskeln.
   const regionKey = [...regions].sort().join(',');
   const questions = useMemo(() => {
-    const pool = regions.length ? MUSCLES.filter((m) => regions.includes(m.region)) : MUSCLES;
-    /* Der Gruppen-Modus (9a) fragt nach Zusammenhaengen, nicht nach einem Muskelfeld —
-       er hat darum einen eigenen Generator. Alles danach (Antwort, XP, Serie) ist gleich. */
+    const pool = quizPool({ muscles: MUSCLES, cards, regions, scope: effectiveScope });
+
     if (mode === 'group-odd-one-out') {
-      return generateGroupQuiz({ groups: getGroups(), muscles: pool, count });
+      return generateGroupQuiz({ groups: getGroups(), muscles: pool.distractors, count });
     }
-    return generateQuiz(pool, mode, count);
+
+    /* Fragen aus dem einen Topf, falsche Antworten aus dem anderen (8b, entschieden
+       2026-07-13). Sonst braeuchte „nur falsch beantwortete" mindestens vier Karten,
+       um ueberhaupt eine Frage zu ergeben. */
+    return generateQuizFrom(pool.questions, pool.distractors, mode, count);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, count, regionKey]);
+  }, [mode, count, regionKey, effectiveScope]);
 
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<QuizPhase>('answering');
@@ -107,7 +122,10 @@ export function useQuizGame(mode: QuizMode, count = 10, regions: RegionId[] = []
       setSelectedId(null);
     } else {
       setPhase('finished');
-      commitRound(quizSeriesKey(mode, regions), correctCount, questions.length);
+      /* Ein eingeschraenkter Pool bekommt einen ZUSAETZLICHEN Serien-Schluessel — der
+         bestehende bleibt bitgleich (ADR 0002). Sonst verschmutzte eine Lueckenrunde
+         die Gesamtbilanz des Modus. */
+      commitRound(quizSeriesKey(mode, regions, effectiveScope), correctCount, questions.length);
     }
   }
 

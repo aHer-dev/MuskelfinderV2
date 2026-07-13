@@ -554,3 +554,19 @@
   line-height: 1.45;
   color: var(--text-secondary);
 }
+
+/* ---- Fragen-Umfang (Etappe 8b, entschieden 2026-07-13) ----------------- */
+.quiz-filter__count {
+  margin-left: var(--spacing-xs);
+  font-variant-numeric: tabular-nums;
+  opacity: 0.75;
+}
+
+.quiz-filter__note {
+  margin: 0;
+  max-width: 62ch;
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--text-tertiary);
+}
