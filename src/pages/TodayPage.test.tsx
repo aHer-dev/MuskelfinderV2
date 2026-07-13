@@ -53,13 +53,34 @@ describe('TodayPage — jeder Zustand hat genau einen Primärbutton', () => {
     navigate.mockClear()
   })
 
-  it('Kasten leer (aber Profil vorhanden): führt zum Karteikasten statt in eine Sackgasse', () => {
+  /* ADR 0009 ändert die Rahmen-Invariante 2 für GENAU DIESEN EINEN Zustand.
+     Solange die App ein Startdeck von selbst anlegte, konnte der leere Kasten einen
+     einzigen Vorschlag haben („Muskeln auswählen"). Jetzt IST das Wählen die Aufgabe —
+     ein einzelner Primärbutton würde wieder für den Schüler entscheiden. Alle anderen
+     Zustände behalten ihren einen Primärbutton; die Tests darunter prüfen das. */
+  it('Kasten leer (aber Profil vorhanden): der Guide und drei Wege — statt EINER Vorgabe', () => {
     renderPage()
 
     expect(screen.getByRole('heading', { level: 1, name: /Karteikasten/i })).toBeInTheDocument()
-    const cta = primaryAction()
-    expect(cta).toHaveTextContent(/Muskeln auswählen/i)
-    expect(cta).toHaveAttribute('href', '/karteikasten')
+
+    // Kein aufgedrängter Primärbutton: Hier entscheidet der Schüler, nicht die App.
+    expect(document.querySelectorAll('.btn--primary')).toHaveLength(0)
+
+    expect(screen.getByRole('link', { name: /So lernst du hier/i })).toHaveAttribute(
+      'href',
+      '/anleitung',
+    )
+    expect(screen.getByRole('heading', { name: /Nach Kursabschnitt/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /Nach Bereich/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /Einzeln aussuchen/i })).toBeInTheDocument()
+  })
+
+  it('… und solange keine Kursabschnitte hinterlegt sind, steht dort ein Platzhalter', () => {
+    /* Die Abschnitte kommen vom Projektinhaber (docs/curriculum-erfassen.md).
+       Ein leeres Menü wäre eine Sackgasse — der Platzhalter ist eine Zusage. */
+    renderPage()
+
+    expect(screen.getByText(/Noch keine Kursabschnitte hinterlegt/i)).toBeInTheDocument()
   })
 
   it('Normalfall: nennt die fällige Zahl und startet die Sitzung mit genau diesen Karten', () => {

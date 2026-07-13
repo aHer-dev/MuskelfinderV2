@@ -1,0 +1,180 @@
+/* GuidePage — „So lernst du hier" (Etappe 10b). Nur Tokens. */
+
+.guide {
+  max-width: 68ch;
+}
+
+.guide__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.guide__lead {
+  margin: var(--spacing-sm) 0 0;
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+
+/* ── Die vier Schritte ─────────────────────────────────────────────────── */
+.guide__steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin: var(--spacing-xl) 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: guide;
+}
+
+.guide__step {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background: var(--surface);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--card-shadow);
+}
+
+/* Die Nummer ist echte Reihenfolge (erst wählen, dann üben, dann wiederholen),
+   kein Zierrat — darum trägt sie Gewicht. */
+.guide__step-num {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  background: var(--accent-tint);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent-on-tint);
+}
+
+.guide__step-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.guide__step-text p {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.guide__step-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  text-wrap: balance;
+  color: var(--text-primary);
+}
+
+/* ── Abschnitte ───────────────────────────────────────────────────────── */
+.guide__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-xl);
+}
+
+.guide__subtitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.guide__body,
+.guide__note {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+.guide__note {
+  color: var(--text-tertiary);
+}
+
+.guide__body a,
+.guide__note a {
+  color: var(--accent-on-surface);
+  font-weight: 600;
+}
+
+.guide__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin: 0;
+  padding-left: 1.15em;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+.guide__list strong {
+  color: var(--text-primary);
+}
+.guide__list kbd {
+  padding: 1px 5px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+/* ── Fächer-Tabelle ───────────────────────────────────────────────────── */
+.guide__table-wrap {
+  overflow-x: auto;
+}
+
+.guide__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-ui);
+  font-size: 14px;
+}
+.guide__table th,
+.guide__table td {
+  padding: 10px var(--spacing-sm);
+  text-align: left;
+  border-bottom: 1px solid var(--hairline);
+  white-space: nowrap;
+}
+.guide__table th {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.guide__table td {
+  color: var(--text-secondary);
+}
+
+.guide__fach {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.guide__meaning {
+  white-space: normal;
+}
+
+.guide__cta {
+  margin-top: var(--spacing-xl);
+}

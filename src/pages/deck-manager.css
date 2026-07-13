@@ -8,17 +8,34 @@
   margin-bottom: var(--spacing-lg);
 }
 
+/* War bis Etappe 10e ein grauer 13px-Textlink von gemessen 129 × 18 px — der einzige
+   Rueckweg zu den Lernkarten, und unter der WCAG-2.5.8-Mindestgroesse (24 × 24).
+   Jetzt ein echtes Bedienelement mit Flaeche. */
 .deck-manager__back {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
   margin-top: var(--spacing-sm);
+  padding: 8px var(--spacing-md);
+  background: var(--surface-sunken);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-field);
   font-family: var(--font-ui);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  color: var(--text-tertiary);
+  color: var(--text-primary);
   text-decoration: none;
+  transition: var(--transition-smooth);
 }
 .deck-manager__back:hover {
-  color: var(--accent-on-surface);
+  background: var(--accent-tint);
+  border-color: var(--accent-border);
+  color: var(--accent-on-tint);
+}
+.deck-manager__back:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
 }
 
 .deck-section {

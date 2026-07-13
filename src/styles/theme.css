@@ -80,6 +80,12 @@
   --control-border:  rgba(28,26,23,0.16);      /* Kbd-Hint / Input-Border */
   --checkbox-border: rgba(28,26,23,0.24);
 
+  /* Formularfelder — MUSS DECKEND SEIN, keine rgba-Transparenz (Etappe 10f).
+     Chromium malt die Optionsliste eines <select> mit exakt dessen `background-color`.
+     Steht dort ein durchscheinender Wert, bekommt das Popup ihn ungemischt ab und
+     verschwimmt mit dem Hintergrund. Genau das war der Dark-Mode-Fehler. */
+  --field-bg:        #ffffff;
+
   /* Text */
   --text-primary:    #1c1b18;   /* warmes Anthrazit */
   --text-secondary:  #55524c;
@@ -133,6 +139,10 @@
   --control-border:  rgba(255,255,255,0.14);
   --checkbox-border: rgba(255,255,255,0.22);
 
+  /* Deckend, siehe Light — hier war der Fehler sichtbar: 5 % Weiss auf Schwarz ergab
+     ein Grau, das sich weder als Feld noch als Optionsliste vom Hintergrund abhob. */
+  --field-bg:        #1b1e24;
+
   --text-primary:    #f6f6f7;
   --text-secondary:  #c9cace;
   --text-tertiary:   #9a9ca2;
@@ -170,6 +180,7 @@
     --card-border:rgba(255,255,255,0.07); --card-shadow:none;
     --hairline:rgba(255,255,255,0.08); --hairline-strong:rgba(255,255,255,0.15);
     --control-border:rgba(255,255,255,0.14); --checkbox-border:rgba(255,255,255,0.22);
+    --field-bg:#1b1e24;
     --text-primary:#f6f6f7; --text-secondary:#c9cace; --text-tertiary:#9a9ca2; --text-muted:#8a8d93; --text-faint:#6e7076;
     --accent-on-surface:#ff6a00; --accent-on-tint:#ff6a00;
     --accent-tint:color-mix(in srgb,var(--accent) 16%,transparent);

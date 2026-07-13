@@ -1,0 +1,8 @@
+{
+  "_hinweis": "Kursabschnitte (Etappe 10d). HANDGEPFLEGT. Die Abschnitte kommen vom Projektinhaber — er unterrichtet die Kurse. EIN AGENT ERFINDET HIER NIE EINEN ABSCHNITT: Ein Kursabschnitt ist eine Behauptung darueber, was geprueft wird; raet die KI ihn, lernt ein Schueler den falschen Stoff fuer die falsche Pruefung. Dieselbe Regel wie bei der Palpation (docs/palpation-erfassen.md), die am 2026-07-13 aus genau diesem Grund komplett gestrichen wurde. Anleitung: docs/curriculum-erfassen.md. Liegt bewusst NICHT unter src/data/generated/ (das ueberschreibt `npm run migrate:data`). Schluessel ist `nameLatin` (ADR 0002), nicht die Routing-id. Ein unbekannter Muskelname laesst den Build scheitern. Solange ein Beruf keine Abschnitte hat, zeigt die App einen bewussten Platzhalter statt einer leeren Auswahl.",
+  "kurse": {
+    "physio": [],
+    "ergo": [],
+    "logo": []
+  }
+}

@@ -6,7 +6,56 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Changed
+- **Etappe 10 — Kaltstart & Orientierung. Das automatische Startdeck ist weg (ADR 0009).**
+  Der Projektinhaber hat die App aus Schülersicht geöffnet und den Erststart für falsch befunden.
+  Am Build nachgemessen: Zwei Klicks — und man stand in einer **laufenden Sitzung** mit 20 Karten,
+  die man nie ausgewählt hatte. Die 20 waren nicht zufällig, sondern **alphabetisch**: `seedDeck`
+  sortierte nach Regionsquote, dann `difficulty`, dann Name — und weil sich allein in der unteren
+  Extremität **22 Muskeln den Schwierigkeitsgrad 1 teilen**, entschied praktisch das Alphabet.
+  Die erste Karte, die ein Physio-Schüler je sah, war **`M. abductor digiti minimi`** — ein kleiner
+  Fußmuskel. Die App erklärte nirgends, woher die Karten kamen oder dass man sie ändern durfte.
+  **Jetzt legt kein Codepfad mehr Karten ohne Zutun des Nutzers an** (ein Test wacht darüber).
+  `src/data/seeding.ts` ist ersatzlos gelöscht; `Profession` zieht nach `src/data/profession.ts` um
+  — löschen ginge nicht, sie wird im Backup persistiert (ADR 0002).
+  **ADR 0009 ändert die Rahmen-Invariante 2 aus ADR 0007 für genau einen Zustand:** Der leere
+  Kasten hat keinen einzigen Primärbutton mehr, denn dort *ist* das Wählen die Aufgabe. Alle
+  anderen Zustände behalten ihren einen Primärbutton.
+- **Der Löschknopf ist vom Lernbildschirm verschwunden** (10e). „Fortschritt zurücksetzen" stand
+  als roter Knopf direkt unter der Fächer-Übersicht auf `/lernkarten` — mitten im Lernweg. Er liegt
+  jetzt in `/statistik` neben dem Backup, wo die anderen Datenaktionen sind.
+- **Textlinks sind Bedienelemente geworden** (10e). Der einzige Rückweg vom Karteikasten zu den
+  Lernkarten war ein grauer 13-px-Textlink von gemessen **129 × 18 px** — unter der
+  WCAG-2.5.8-Mindestgröße für Klickziele (24 × 24). Jetzt 171 × 44 px mit Fläche. Dasselbe für die
+  beiden Links in der Lernkarten-Kopfzeile.
+
+### Fixed
+- **Dark-Mode: Dropdown-Listen hoben sich nicht vom Hintergrund ab** (10f). `.fc-select` und die
+  Suchfilter hatten `background: var(--surface-sunken)` — im Dark Mode `rgba(255,255,255,0.05)`,
+  also **durchscheinend**. Chromium malt die Optionsliste eines `<select>` mit *exakt* dessen
+  `background-color`: 5 % Weiß auf Schwarz ergab ein Grau, das mit dem Hintergrund verschwamm.
+  Neues Token **`--field-bg`**, in beiden Themes **deckend** (`#ffffff` / `#1b1e24`), plus explizite
+  `option`-Farben (Firefox erbt sie nicht). Betraf alle drei Lernkarten-Selects und die vier im
+  Suchfilter.
+- **`/start` endete nach dem Speichern in einer Sackgasse.** Ohne das Auto-Seeding navigierte nichts
+  mehr weiter; die Seite führt jetzt selbst zurück nach `/heute`.
+
 ### Added
+- **Guide `/anleitung` — die App erklärt sich** (10b). Wie hier gelernt wird: die sieben
+  Leitner-Fächer mit ihren echten Abständen (Zahlen aus `FACH_INTERVALS`, nicht erfunden), der
+  Tagesplan, die wachsende Abrufhärte, der Prüfungsmodus. Dauerhaft erreichbar über die Fußzeile.
+- **Neue Startseite bei leerem Karteikasten** (10c): Kurzerklärung, Link auf den Guide und **drei
+  gleichrangige Wege**, den Kasten zu füllen — Kursabschnitt · Bereich · einzeln aussuchen. Die Zahl
+  am Knopf ist die Zahl der Karten, die man bekommt (nach `nameLatin` entdoppelt, ADR 0002 §2 —
+  live verifiziert: „Kopf & Hals (22)" → genau 22 Karten).
+- **Curriculum-Mechanik** (10d, `src/data/curriculum.ts`): Kursabschnitte je Beruf, aus
+  `src/data/editorial/curriculum.json` — **die Datei ist leer, und ein Test wacht darüber.** Die
+  Abschnitte kommen vom Projektinhaber ([Anleitung](docs/curriculum-erfassen.md)); ein Kursabschnitt
+  ist eine Behauptung darüber, was geprüft wird, und eine geratene führt zum falschen Stoff für die
+  falsche Prüfung. Dieselbe Regel wie bei der Palpation. Ein unbekannter Muskelname lässt den Build
+  scheitern (inkl. der Gedankenstrich-Falle).
+- **[docs/todo.md](docs/todo.md)** — was offen ist und wer es machen muss. Neu darin: Logo oben
+  rechts mit Anatomie-Bezug (vom Projektinhaber gewünscht).
 - **Quiz-Pool-Filter (der offene Punkt aus 8b)** (`src/data/quiz-pool.ts`): Die Filter gab es seit 8b
   in der **Lernsitzung**, aber nicht im **Quiz** — und der Haken war immer derselbe: Eine Quizfrage
   braucht vier Optionen, wer nur drei Karten falsch beantwortet hat, bekäme keine einzige Frage.

@@ -13,7 +13,7 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import type { Profession } from '../data/seeding';
+import type { Profession } from '../data/profession';
 import type { ProfileSection } from '../persistence/types';
 
 interface ProfileState {

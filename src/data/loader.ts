@@ -6,6 +6,7 @@ import { validateMovements, validateMuscles, validateRegions } from './validatio
 import { withEtymology } from './etymology'
 import { initGroups } from './groups'
 import { initPalpation, withPalpation } from './palpation'
+import { initCurriculum } from './curriculum'
 
 /* Zwei HANDGEPFLEGTE Ebenen kommen hier dazu, beide von ausserhalb `generated/` (das
    ueberschreibt `npm run migrate:data`): die Herleitung des Namens (8d) und die
@@ -21,6 +22,7 @@ const movements = validateMovements(movementsData as unknown)
    auffallen und nicht still verschwinden. */
 initGroups(muscles)
 initPalpation(muscles)
+initCurriculum(muscles)
 
 const musclesById = new Map(muscles.map((muscle) => [muscle.id, muscle]))
 const musclesByName = new Map(muscles.map((muscle) => [muscle.nameLatin, muscle]))

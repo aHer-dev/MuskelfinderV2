@@ -165,15 +165,21 @@
   color: var(--text-faint);
 }
 
+/* Deckend, siehe `.fc-select` (Etappe 10f) — dieselbe Ursache, dieselbe Korrektur. */
 .filter-select select {
   min-height: var(--touch-min);
   padding: 0 var(--spacing-sm);
-  background: var(--surface-sunken);
+  background: var(--field-bg);
   color: var(--text-primary);
   border: 1px solid var(--control-border);
   border-radius: var(--radius-sm);
   font-family: var(--font-ui);
   font-size: 0.95rem;
+}
+
+.filter-select select option {
+  background: var(--field-bg);
+  color: var(--text-primary);
 }
 
 .filter-select select:focus-visible {

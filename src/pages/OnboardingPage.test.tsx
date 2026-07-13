@@ -1,3 +1,5 @@
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
+import { join, relative, resolve } from 'node:path'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
@@ -5,8 +7,6 @@ import { TodayPage } from './TodayPage'
 import { OnboardingPage } from './OnboardingPage'
 import { useProfileStore } from '../store/useProfileStore'
 import { useProgressStore } from '../store/useProgressStore'
-import { getMuscleByLatinName } from '../data'
-import { SEED_DECK_SIZE } from '../data/seeding'
 
 const navigate = vi.fn()
 vi.mock('react-router-dom', async () => {
@@ -22,7 +22,7 @@ function deckNames(): string[] {
   return Object.keys(useProgressStore.getState().flashcards.cards)
 }
 
-describe('Onboarding — zwei Fragen, dann sofort lernen', () => {
+describe('Onboarding — zwei Fragen, dann WÄHLT DER SCHÜLER (ADR 0009)', () => {
   beforeEach(() => {
     localStorage.clear()
     useProgressStore.getState().resetProgress()
@@ -51,27 +51,47 @@ describe('Onboarding — zwei Fragen, dann sofort lernen', () => {
     expect(document.querySelectorAll('.btn--primary')).toHaveLength(1)
   })
 
-  it('ohne Datum: Startdeck wird angelegt und die Sitzung startet sofort', () => {
+  it('DAS ONBOARDING LEGT KEINE EINZIGE KARTE AN — der Kern von ADR 0009', () => {
+    /* Bis zum 2026-07-13 standen hier 20 Karten und eine laufende Sitzung. Die erste
+       Karte, die ein Physio-Schueler je sah, war `M. abductor digiti minimi` — ein
+       Fussmuskel, ausgewaehlt vom Alphabet, den er nie gewaehlt hatte. */
     renderIn(<TodayPage />)
     fireEvent.click(screen.getByRole('button', { name: /Logopädie/ }))
     fireEvent.click(screen.getByRole('button', { name: /Ohne Datum weiter/i }))
 
-    const deck = deckNames()
-    expect(deck).toHaveLength(SEED_DECK_SIZE)
-    // Ein Logopädie-Startdeck beginnt am Kopf, nicht am Gesäß.
-    expect(deck.filter((n) => getMuscleByLatinName(n)?.region === 'head').length).toBeGreaterThan(10)
-    expect(deck).not.toContain('M. gluteus maximus')
-
+    expect(deckNames()).toEqual([])
     expect(useProfileStore.getState()).toMatchObject({ profession: 'logo', examDate: null })
-
-    // Keine Bestätigungsseite — direkt in die Sitzung mit den frischen Karten.
-    expect(navigate).toHaveBeenCalledTimes(1)
-    const [path, options] = navigate.mock.calls[0]
-    expect(path).toBe('/lernkarten')
-    expect(options.state.start.names.length).toBeGreaterThan(0)
+    // Und ganz besonders: KEIN Sprung in eine Sitzung.
+    expect(navigate).not.toHaveBeenCalled()
   })
 
-  it('mit Prüfungstermin: das Datum wird gemerkt und hebt die Tagesdosis an', () => {
+  it('stattdessen steht danach der Guide da — mit den drei Wegen in den Karteikasten', () => {
+    renderIn(<TodayPage />)
+    fireEvent.click(screen.getByRole('button', { name: /Physiotherapie/ }))
+    fireEvent.click(screen.getByRole('button', { name: /Ohne Datum weiter/i }))
+
+    expect(screen.getByRole('link', { name: /So lernst du hier/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /Nach Kursabschnitt/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /Nach Bereich/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /Einzeln aussuchen/i })).toBeInTheDocument()
+  })
+
+  it('erst der Klick des Schülers füllt den Kasten — und zwar mit dem, was draufsteht', () => {
+    renderIn(<TodayPage />)
+    fireEvent.click(screen.getByRole('button', { name: /Physiotherapie/ }))
+    fireEvent.click(screen.getByRole('button', { name: /Ohne Datum weiter/i }))
+    expect(deckNames()).toEqual([])
+
+    // „Kopf" ist der kleinste Bereich — die Zahl am Knopf ist die Zahl der Karten.
+    const kopf = screen.getByRole('button', { name: /Kopf/ })
+    const versprochen = Number(kopf.textContent?.match(/(\d+)\s*$/)?.[1])
+    expect(versprochen).toBeGreaterThan(0)
+
+    fireEvent.click(kopf)
+    expect(deckNames()).toHaveLength(versprochen)
+  })
+
+  it('mit Prüfungstermin: das Datum wird gemerkt — ohne dass Karten entstehen', () => {
     const inFiveDays = new Date()
     inFiveDays.setDate(inFiveDays.getDate() + 5)
     const iso = inFiveDays.toISOString().slice(0, 10)
@@ -79,14 +99,13 @@ describe('Onboarding — zwei Fragen, dann sofort lernen', () => {
     renderIn(<TodayPage />)
     fireEvent.click(screen.getByRole('button', { name: /Physiotherapie/ }))
     fireEvent.change(screen.getByLabelText(/Prüfungstermin/i), { target: { value: iso } })
-    fireEvent.click(screen.getByRole('button', { name: /Startdeck anlegen und loslegen/i }))
+    fireEvent.click(screen.getByRole('button', { name: /^Weiter$/ }))
 
     expect(useProfileStore.getState().examDate).toBe(iso)
-    // Dosis 40 statt 20 → das ganze Startdeck (20) kommt heute dran.
-    expect(navigate.mock.calls[0][1].state.start.names).toHaveLength(SEED_DECK_SIZE)
+    expect(deckNames()).toEqual([])
   })
 
-  it('wiederholbar über /start — auch wenn schon ein Profil existiert', () => {
+  it('über /start änderbar — und führt danach zurück nach /heute, nicht ins Nichts', () => {
     useProfileStore.getState().setProfile('physio', null)
     renderIn(<OnboardingPage />)
 
@@ -96,14 +115,37 @@ describe('Onboarding — zwei Fragen, dann sofort lernen', () => {
     fireEvent.click(screen.getByRole('button', { name: /Ohne Datum weiter/i }))
 
     expect(useProfileStore.getState().profession).toBe('ergo')
-    expect(deckNames().length).toBeGreaterThan(0)
+    expect(deckNames()).toEqual([])
+    expect(navigate).toHaveBeenCalledWith('/heute')
+  })
+})
+
+describe('Kein Codepfad legt Karten ohne Zutun des Nutzers an (ADR 0009)', () => {
+  /* Ein Regressionstest am Quelltext: Ein wiederauferstandenes Seeding-Modul wuerde still
+     Karten anlegen, und die Verhaltenstests oben pruefen nur den Weg ueber das Onboarding.
+     Nicht auf `seedDeck` als Wort pruefen — mehrere Testdateien haben eine gleichnamige
+     lokale Fixture-Hilfe, und die ist voellig in Ordnung. */
+  const SRC = resolve(__dirname, '..')
+
+  function sourceFiles(dir: string): string[] {
+    return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+      const full = join(dir, entry.name)
+      if (entry.isDirectory()) return sourceFiles(full)
+      return /\.tsx?$/.test(entry.name) ? [full] : []
+    })
+  }
+
+  it('das Seeding-Modul ist gelöscht — nicht auskommentiert, nicht ungenutzt: weg', () => {
+    expect(existsSync(join(SRC, 'data/seeding.ts'))).toBe(false)
   })
 
-  it('leerer Kasten MIT Profil zeigt den Leerzustand, nicht wieder das Onboarding', () => {
-    useProfileStore.getState().setProfile('physio', null)
-    renderIn(<TodayPage />)
+  it('niemand importiert es mehr, und `SEED_DECK_SIZE` existiert nirgends', () => {
+    const treffer = sourceFiles(SRC).filter((file) => {
+      if (file.endsWith('OnboardingPage.test.tsx')) return false // diese Datei benennt es ja
+      const code = readFileSync(file, 'utf8')
+      return /from\s+['"][^'"]*data\/seeding['"]/.test(code) || /\bSEED_DECK_SIZE\b/.test(code)
+    })
 
-    expect(screen.queryByRole('heading', { name: /Was lernst du\?/i })).not.toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /Muskeln auswählen/i })).toBeInTheDocument()
+    expect(treffer.map((f) => relative(SRC, f))).toEqual([])
   })
 })
