@@ -1,7 +1,13 @@
 /* GuidePage — „So lernst du hier" (Etappe 10b). Nur Tokens. */
 
+/* Die Spalte traegt den Satzspiegel — NICHT die Absaetze darin.
+   Vorher stand hier `68ch`, und das war die Falle: `ch` rechnet gegen die Schriftgroesse des
+   CONTAINERS (16 px), der Fliesstext in den Karten ist aber **14 px**. 68ch ergaben 680 px —
+   und darin 109 Zeichen pro Zeile statt der ~68, die gemeint waren.
+   Wuerde man stattdessen die Absaetze kappen, blieben die Karten breit und der Text hoerte
+   mittendrin auf: eine tote Rinne rechts IN jeder Karte. Die Karte soll ihren Text umschliessen. */
 .guide {
-  max-width: 68ch;
+  max-width: var(--measure);
 }
 
 .guide__header {

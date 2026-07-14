@@ -7,6 +7,20 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Fixed
+- **Der Primärknopf verfehlte im Hover den Kontrast** (WCAG 1.4.3). Gefunden im Desktop-Durchlauf:
+  Der Hover dunkelt ab (`--accent` #ff6a00 → `--accent-strong` #e64500) — aber die Schrift darauf
+  ist **near-black** (`--accent-on`), und gegen Schwarz heißt ein dunklerer Grund **weniger**
+  Kontrast, nicht mehr. Gemessen: Ruhe **6.06:1** ✓, Hover **4.32:1** ✗. `--accent-strong` ist jetzt
+  **#ef5800** (5.03:1) — der Knopf dunkelt weiter ab, nur nicht mehr über die Grenze hinaus.
+  Wer diesen Ton anfasst, rechnet ihn gegen `--accent-on` nach, nicht gegen Weiß.
+- **Fließtext lief bis zu 169 Zeichen pro Zeile.** Auf 1440 px maß `.stats__panel-sub` **169**
+  Zeichen, der Prüfungsmodus-Kasten **146**, der Guide **109** — während `PROJECT_STATE.md` „Fließtext
+  gehört auf ~68 Zeichen" als Regel führt. Über ~85 Zeichen findet das Auge den nächsten Zeilenanfang
+  nicht mehr zuverlässig. Neues Token **`--measure`** (52ch), angewandt auf den Fließtext.
+  Der Guide hatte schon `max-width: 68ch` — die Falle war, dass `ch` gegen die Schriftgröße des
+  **Containers** (16 px) rechnet, während der Text in den Karten **14 px** ist: 68ch ergaben 680 px
+  und darin 109 Zeichen. Jetzt trägt die **Spalte** den Satzspiegel, nicht der Absatz — sonst blieben
+  die Karten breit und der Text hörte mittendrin auf (tote Rinne rechts in jeder Karte).
 - **Jeder Link der App verfehlte im Hover den Kontrast — und Primärknöpfe wurden unlesbar.**
   `a:hover` setzte `--accent` (#ff6a00). Als Schrift auf Weiß sind das **2.87:1**; WCAG 1.4.3
   verlangt 4.5:1. Schlimmer war die **Spezifität**: `a:hover` ist `(0,1,1)` und schlug damit jede

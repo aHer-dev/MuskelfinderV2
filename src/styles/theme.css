@@ -13,9 +13,15 @@
 
   /* Akzent — Marken-Orange, in BEIDEN Themes identisch als Füllung */
   --accent:          #ff6a00;   /* Füllung: Buttons, aktiv, Checkbox, Ring, Fokus */
-  --accent-strong:   #e64500;
+  /* Der Hover-Ton des Primaerknopfs. War #e64500 und fiel damit unter AA: Die Schrift darauf
+     ist NEAR-BLACK (`--accent-on`), und ein dunklerer Grund heisst gegen Schwarz WENIGER
+     Kontrast, nicht mehr. Gemessen: Ruhe #ff6a00 = 6.06:1 ✓, Hover #e64500 = **4.32:1 ✗**
+     (WCAG 1.4.3 will 4.5). Der Knopf dunkelt weiter ab — nur nicht mehr so weit: #ef5800
+     kommt auf **5.03:1**.
+     **Wer diesen Ton anfasst, rechnet ihn gegen `--accent-on` nach, nicht gegen Weiss.** */
+  --accent-strong:   #ef5800;
   --accent-hi:       #ff9d3d;
-  --accent-gradient: linear-gradient(90deg, #e64500, #ff9d3d);   /* Progress/CTA */
+  --accent-gradient: linear-gradient(90deg, #e64500, #ff9d3d);   /* Progress/CTA: keine Schrift drauf */
   --accent-on:       #1a1a1a;   /* Text/Icon AUF gefülltem Orange (near-black, beide Themes) */
 
   /* Spacing */
@@ -35,6 +41,19 @@
 
   /* Touch / A11y */
   --touch-min: 44px;
+
+  /* Zeilenbreite (Satzspiegel). Der Desktop-Durchlauf hat auf 1440 px bis zu **169 Zeichen**
+     pro Zeile gemessen (`.stats__panel-sub`), das Quiz 146, der Guide 109 — waehrend der
+     PROJECT_STATE „Fliesstext gehoert auf ~68 Zeichen" als Regel fuehrt. Ueber ~85 Zeichen
+     findet das Auge den Zeilenanfang nicht mehr zuverlaessig wieder.
+     `ch` rechnet je Element gegen dessen EIGENE Schriftgroesse — ein Wert, der ueberall passt.
+     Gilt fuer FLIESSTEXT, nicht fuer Tabellen, Chips oder Zahlen.
+
+     **Nicht auf 68ch stellen.** `ch` ist die Breite der Ziffer „0", und die ist in Manrope
+     deutlich breiter als ein Durchschnittszeichen: 68ch ergaben nachgemessen ~90 echte
+     Zeichen. 52ch treffen die ~68, die wir wollen. Der Wert ist an der gerenderten Zeile
+     geeicht, nicht aus der Theorie geraten. */
+  --measure: 52ch;
 
   /* Fokus-Ring (Tastatur) — Akzent, in beiden Themes */
   --focus-ring: var(--accent);

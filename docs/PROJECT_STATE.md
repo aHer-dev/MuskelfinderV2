@@ -177,7 +177,27 @@ warmen Papier muss es sich gegen viel Licht behaupten, auf Schwarz leuchtet es v
   Pseudoklassen schreibt, kapselt sie in `:where()`** — sonst ueberstimmt die Basis die Bausteine.
 - **Der axe-Lauf prueft jetzt auch den HOVER-Zustand**, jede Link-Klasse einzeln. Der Fehler fiel
   nur auf, weil der Mauszeiger nach einem Klick zufaellig auf einem Link stehenblieb. Ein
-  Ruhezustand-Audit haette ihn nie gefunden.
+  Ruhezustand-Audit haette ihn nie gefunden. **Nach dem Hover 350 ms warten** — sonst misst axe
+  eine Farbe MITTEN in der CSS-Transition (gemessen: 4.49:1 auf einem Knopf, der in Ruhe 6.06:1 hat).
+- **Der Primaerknopf-Hover ist derselbe Fehler in Gruen** (behoben 2026-07-14): Der Hover dunkelt ab
+  (`--accent` → `--accent-strong`), aber die Schrift darauf ist **near-black** (`--accent-on`) — und
+  gegen Schwarz heisst dunkler **weniger** Kontrast. Ruhe 6.06:1 ✓, Hover war **4.32:1 ✗**.
+  `--accent-strong` ist jetzt **#ef5800** (5.03:1). **Wer diesen Ton anfasst, rechnet ihn gegen
+  `--accent-on` nach, nicht gegen Weiss.**
+
+## Satzspiegel: `--measure` (2026-07-14)
+Der Desktop-Durchlauf hat auf 1440 px **169 Zeichen pro Zeile** gemessen (`.stats__panel-sub`), im
+Quiz 146, im Guide 109 — waehrend diese Datei „Fliesstext gehoert auf ~68 Zeichen" als Regel fuehrt.
+Ueber ~85 Zeichen findet das Auge den naechsten Zeilenanfang nicht mehr zuverlaessig wieder.
+
+- **`--measure: 52ch`** ist das Token. **Nicht auf 68ch stellen:** `ch` ist die Breite der Ziffer
+  „0" und in Manrope deutlich breiter als ein Durchschnittszeichen — 68ch ergaben nachgemessen ~90
+  echte Zeichen. Der Wert ist an der gerenderten Zeile geeicht, nicht aus der Theorie geraten.
+- **Die SPALTE traegt den Satzspiegel, nicht der Absatz.** Der Guide hatte bereits `max-width: 68ch`
+  — am Container mit 16 px, waehrend der Text in den Karten 14 px ist. Kappt man stattdessen die
+  Absaetze, bleiben die Karten breit und der Text hoert mittendrin auf: eine tote Rinne rechts IN
+  jeder Karte. Die Karte soll ihren Text umschliessen.
+- Gilt fuer Fliesstext — **nicht** fuer Tabellen, Chips oder Zahlen.
 
 ## Die rechte Schiene auf `/heute` (`StandRail`, Etappe 12)
 Bei 1440 px lagen dort **444 px rechts brach** (gemessen), waehrend Level, Serie und Fortschritt als

@@ -70,6 +70,7 @@
 }
 
 .stats__panel-sub {
+  max-width: var(--measure); /* Satzspiegel — sonst 169 Zeichen pro Zeile auf 1440 px. */
   font-size: 0.85rem;
   color: var(--text-tertiary);
   font-variant-numeric: tabular-nums;
