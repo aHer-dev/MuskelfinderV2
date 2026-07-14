@@ -76,6 +76,25 @@ describe('Onboarding — zwei Fragen, dann WÄHLT DER SCHÜLER (ADR 0009)', () =
     expect(screen.getByRole('heading', { name: /Einzeln aussuchen/i })).toBeInTheDocument()
   })
 
+  /* Solange `curriculum.json` leer ist, ist „Nach Kursabschnitt" ein Platzhalter — und der
+     stand als ERSTE und groesste Karte da. Die allererste Wahl einer Schuelerin fuehrte damit
+     ins Leere, waehrend der Weg, der traegt (Bereich), unter der Falz lag. Der Platzhalter
+     bleibt (ADR 0009), aber er steht hinten, bis es Abschnitte gibt. */
+  it('ohne Kursabschnitte steht der benutzbare Weg VOR dem Platzhalter', () => {
+    renderIn(<TodayPage />)
+    fireEvent.click(screen.getByRole('button', { name: /Physiotherapie/ }))
+    fireEvent.click(screen.getByRole('button', { name: /Ohne Datum weiter/i }))
+
+    const wege = screen
+      .getAllByRole('heading', { level: 3 })
+      .map((h) => h.textContent?.trim())
+      .filter((t) => t && /Kursabschnitt|Bereich|Einzeln/.test(t))
+
+    expect(wege).toEqual(['Nach Bereich', 'Nach Kursabschnitt', 'Einzeln aussuchen'])
+    // Der Platzhalter ist NICHT verschwunden — er erklaert weiter, was hier einmal steht.
+    expect(screen.getByText(/Noch keine Kursabschnitte hinterlegt/i)).toBeInTheDocument()
+  })
+
   it('erst der Klick des Schülers füllt den Kasten — und zwar mit dem, was draufsteht', () => {
     renderIn(<TodayPage />)
     fireEvent.click(screen.getByRole('button', { name: /Physiotherapie/ }))

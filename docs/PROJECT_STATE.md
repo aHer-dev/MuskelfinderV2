@@ -17,8 +17,8 @@
   niemandem mehr ungefragt Karten in den Kasten.**
   **ALLE VIER BRUECKEN STEHEN:** B1 (7d), B2 (7e), B3 (**9c**), B4 (8c).
   Statustafel: `docs/produkt-plan.md`. Offene Punkte: `docs/todo.md`.
-- Gate gruen: `npm run lint && npm run test && npm run build` — **583 Tests**.
-- A11y: axe 0 Verstoesse ueber **8 Routen x Light+Dark x Desktop+Handy** (Playwright+Chromium+axe-core)
+- Gate gruen: `npm run lint && npm run test && npm run build` — **587 Tests**.
+- A11y: axe 0 Verstoesse ueber **8 Routen x Light+Dark x Desktop+Handy — inkl. HOVER-Zustand** (Playwright+Chromium+axe-core)
   inkl. `/pruefung` in allen drei Zustaenden, der Abzeichen auf `/statistik`, der Palpations-Sektion
   (mit + ohne Eintrag), `/anleitung` und dem leeren `/heute`. 0 externe Requests.
   **Der Pruef-Lauf legt jetzt erst Karten an, bevor er `/karteikasten` misst.** Ein frischer Browser
@@ -167,6 +167,17 @@ warmen Papier muss es sich gegen viel Licht behaupten, auf Schwarz leuchtet es v
   nicht fuer AA: `--accent-on-tint` (#b34400) fuer Akzent-Text auf `--accent-tint`,
   `--danger-on-surface` (#c43e2e) fuer rote Schrift auf Weiss. `--danger`/`--accent` bleiben die
   Flaechenfarben. **Wer Akzent- oder Warnfarbe als Text setzt, nimmt die `-on-`-Variante.**
+- **Und genau daran ist der HOVER jahrelang gescheitert** (behoben 2026-07-14): `a:hover` setzte
+  `--accent` (#ff6a00) — als Schrift auf Weiss **2.87:1**, WCAG 1.4.3 will 4.5:1. Der Hover
+  **dunkelt jetzt ab** (`--accent-on-tint`, 5.6:1) statt aufzuhellen.
+  **Die zweite Haelfte des Fehlers war die Spezifitaet:** `a:hover` ist `(0,1,1)` und schlug damit
+  JEDE Link-Klasse `(0,1,0)` — auch `.btn--primary`, dessen weisse Schrift beim Ueberfahren orange
+  wurde: **orange auf Orange.** Die Regel steht jetzt als `a:where(:hover)` auf `(0,0,1)`: ein
+  Vorgabewert, den Komponenten ueberschreiben duerfen. **Wer globale Element-Regeln mit
+  Pseudoklassen schreibt, kapselt sie in `:where()`** — sonst ueberstimmt die Basis die Bausteine.
+- **Der axe-Lauf prueft jetzt auch den HOVER-Zustand**, jede Link-Klasse einzeln. Der Fehler fiel
+  nur auf, weil der Mauszeiger nach einem Klick zufaellig auf einem Link stehenblieb. Ein
+  Ruhezustand-Audit haette ihn nie gefunden.
 
 ## Die rechte Schiene auf `/heute` (`StandRail`, Etappe 12)
 Bei 1440 px lagen dort **444 px rechts brach** (gemessen), waehrend Level, Serie und Fortschritt als
@@ -364,6 +375,23 @@ der das Hypothenar gestorben ist** (siehe unten) — nur diesmal im Kartenweg st
 Das echte Gegenmittel braucht einen eindeutigen `nameLatin` und **bricht ADR 0002**: Entscheidung
 des Projektinhabers, Optionen in `docs/todo.md`.
 
+## Handy-Regeln, die ab jetzt gelten (2026-07-14)
+- **Der Dark-Mode folgt dem Geraet.** `useThemeStore` startet auf der System-Praeferenz
+  (`matchMedia`), das No-Flash-Skript in `index.html` liest dieselbe Regel vor dem ersten Paint.
+  Wer einmal umschaltet, hat eine explizite Wahl — die wird persistiert und schlaegt das System.
+  Der frueher hier stehende `@media (prefers-color-scheme: dark)`-Block in `theme.css` war
+  **toter Code** (das Skript setzt `data-theme` immer, also traf `:not([data-theme])` nie zu) und
+  obendrein eine zweite Kopie der Tokens aus `[data-theme="dark"]`. Nicht wieder anlegen.
+- **Touch-Ziele: 44 px, aber nur unter 1024 px.** `--touch-min` gilt fuer echte Bedienelemente —
+  auf dem Desktop zielt eine Maus, dort bleibt das Bild wie gestaltet. **`.chip` ist auch ein
+  reines Etikett** (die Bewegungs-Tags auf den Suchtreffern): darum `button.chip`/`a.chip`, nie
+  `.chip`. Eine native Checkbox darf 17 px bleiben, wenn ihr `<label>` die Trefferflaeche ist.
+- **Quiz-Distraktoren kommen aus der Nachbarschaft** (`nearestFirst` in `src/data/quiz.ts`): erst
+  dieselbe Subregion, dann dieselbe Region, dann der Rest als Auffuellung. Der Rest MUSS drinbleiben
+  — sonst hat eine kleine Subregion keine vier Optionen (die Regel aus 8b). `quizSeriesKey` bleibt
+  unangetastet, aber **die Runden sind seitdem schwerer**: alte und neue Trefferquoten sind nur
+  bedingt vergleichbar.
+
 ## Die Aktionen der Lernsitzung kleben (2026-07-14)
 Gemessen auf 390 × 664: „Karte aufdecken" und die drei Bewertungsknoepfe lagen bei **y = 872** —
 unter der Falz. **Eine Sitzung mit 20 Karten kostete 20-mal Scrollen**, bevor man bewerten konnte.
@@ -372,9 +400,12 @@ unter der Falz. **Eine Sitzung mit 20 Karten kostete 20-mal Scrollen**, bevor ma
   `bottom` ist dieselbe **96-px-Reserve**, die `.shell--mobile .content` ohnehin freihaelt — die
   Leiste legt sich damit **nicht** auf die Navigation. Wer eine zweite klebende Leiste baut, nimmt
   denselben Wert.
-- **Der Kopf der Sitzung ist noch da:** ueber der Karte stehen Marke, Kopfzeilen-Suche, der Titel
-  „Lernkarten" und zwei Setup-Knoepfe — **445 px, mehr als die Karte selbst (443 px)**. Das war die
-  eigentliche Ursache der Falz, nicht die Kartenhoehe. Offen, siehe `docs/todo.md`.
+- **Der Kopf der Sitzung ist weg** (ebenfalls 2026-07-14): Ueber der Karte standen Marke,
+  Kopfzeilen-Suche, der Titel „Lernkarten" und zwei **Setup**-Knoepfe — **445 px, mehr als die
+  Karte selbst (443 px)**. Das war die eigentliche Ursache der Falz, nicht die Kartenhoehe.
+  Waehrend eine Karte laeuft, sind Titel, Untertitel und Setup-Links ausgeblendet; die Karte
+  beginnt bei **y = 278**. Die `h1` bleibt als `visually-hidden` stehen — ohne sie haette die Seite
+  keine Ueberschrift (axe-Regel `page-has-heading-one`).
 
 ## ⚠️ KEIN HYPOTHENAR — und das bitte nicht „reparieren"
 Drei seiner vier Mitglieder (`M. abductor digiti minimi`, `M. flexor digiti minimi brevis`,

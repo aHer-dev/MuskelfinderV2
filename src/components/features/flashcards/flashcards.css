@@ -8,6 +8,13 @@
   gap: var(--spacing-lg);
 }
 
+/* Waehrend eine Karte laeuft, traegt der Kopf nur noch die (unsichtbare) `h1`. `display:
+   contents` nimmt ihn aus dem Fluss — sonst zoege der `gap` der Spalte noch eine Luecke,
+   wo nichts mehr steht. */
+.flashcards__header--running {
+  display: contents;
+}
+
 .flashcards__session {
   display: flex;
   flex-direction: column;
@@ -649,4 +656,16 @@
   font-style: normal;
   font-weight: 600;
   color: var(--accent-on-surface);
+}
+
+/* Daumenmass (siehe components.css): die Sitzungsknoepfe waren 38 bzw. 32 px hoch. */
+@media (max-width: 1023.98px) {
+  .fc-icon-btn {
+    width: var(--touch-min);
+    height: var(--touch-min);
+  }
+
+  .fc-image-toggle {
+    min-height: var(--touch-min);
+  }
 }

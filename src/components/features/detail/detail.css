@@ -600,3 +600,12 @@
   font-size: 0.85rem;
   color: var(--text-faint);
 }
+
+/* Daumenmass (siehe components.css): der Rueckweg war eine 19 px hohe Textzeile. */
+@media (max-width: 1023.98px) {
+  .detail__back {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-min);
+  }
+}

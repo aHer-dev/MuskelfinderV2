@@ -35,16 +35,57 @@ interface Candidate {
   muscleId: string;
 }
 
+/* ---- Ein Distraktor muss WEHTUN ---------------------------------------------------------
+   Bis 2026-07-14 wurde der ganze Bestand gemischt und die ersten drei genommen. Gemessen an
+   einer echten Frage:
+
+     M. brachioradialis — Innervation?
+     A) N. femoralis  B) N. subscapularis  C) N. radialis  D) R. thyrohyoideus
+
+   Ein Bein-Nerv, ein Schulter-Nerv, ein Kehlkopf-Ast. Wer die Topografie grob kennt, loest
+   das durch Ausschluss — **ohne den Muskel zu kennen**. Eine Frage, die man ohne das gefragte
+   Wissen beantwortet, misst nichts und lehrt nichts.
+
+   Darum kommen die falschen Antworten jetzt aus der NACHBARSCHAFT: erst dieselbe Subregion
+   (Unterarm gegen Unterarm), dann dieselbe Region, dann der Rest. Der Rest bleibt als
+   Auffuellung drin — sonst haette eine kleine Subregion keine vier Optionen mehr, und genau
+   das war der Haken, den 8b geloest hat. Die Distraktoren kommen weiter von AUSSERHALB des
+   Karten-Filters (8b); nur ihre Reihenfolge ist jetzt nicht mehr blind.
+
+   `quizSeriesKey` bleibt unangetastet (ADR 0002) — es ist kein neuer Parameter, sondern eine
+   bessere Auswahl. Die Runden werden dadurch aber SCHWERER: eine Trefferquote von heute ist
+   mit einer von gestern nur noch bedingt vergleichbar. */
+function nearness(candidate: Muscle | undefined, target: Muscle): 0 | 1 | 2 {
+  if (!candidate) return 2;
+  if (candidate.subregion === target.subregion) return 0;
+  if (candidate.region === target.region) return 1;
+  return 2;
+}
+
+/** Kandidaten nach Nähe geschichtet, INNERHALB jeder Schicht gemischt. */
+function nearestFirst<T>(
+  items: readonly T[],
+  muscleOf: (item: T) => Muscle | undefined,
+  target: Muscle,
+  rng: () => number,
+): T[] {
+  const tiers: T[][] = [[], [], []];
+  for (const item of items) tiers[nearness(muscleOf(item), target)].push(item);
+  return tiers.flatMap((tier) => shuffle(tier, rng));
+}
+
 /**
- * Wählt bis zu `n` verschiedene Distraktoren (≠ correct). Jeder trägt seinen Muskel mit —
- * ohne diese Herkunft könnte die Erklärung (7e) den gewählten Distraktor nur noch über
- * seinen Text zurückraten.
+ * Wählt bis zu `n` verschiedene Distraktoren (≠ correct), die nächsten zuerst. Jeder trägt
+ * seinen Muskel mit — ohne diese Herkunft könnte die Erklärung (7e) den gewählten Distraktor
+ * nur noch über seinen Text zurückraten.
  */
 function pickDistractors(
   pool: readonly Candidate[],
   correct: string,
   n: number,
   rng: () => number,
+  target: Muscle,
+  byId: ReadonlyMap<string, Muscle>,
 ): Candidate[] {
   const seen = new Set<string>([correct]);
   const unique: Candidate[] = [];
@@ -53,7 +94,7 @@ function pickDistractors(
     seen.add(candidate.label);
     unique.push(candidate);
   }
-  return shuffle(unique, rng).slice(0, n);
+  return nearestFirst(unique, (c) => byId.get(c.muscleId), target, rng).slice(0, n);
 }
 
 const MODE_CATEGORY: Record<QuizMode, string> = {
@@ -267,7 +308,8 @@ function textQuestion(
   displayMode: QuizMode,
 ): QuizQuestion {
   const spec = specFor(muscle, concreteMode, all);
-  const distractors = pickDistractors(spec.distractorPool, spec.correctLabel, 3, rng);
+  const byId = new Map(all.map((m) => [m.id, m]));
+  const distractors = pickDistractors(spec.distractorPool, spec.correctLabel, 3, rng, muscle, byId);
   const picks = shuffle([{ label: spec.correctLabel, muscleId: muscle.id }, ...distractors], rng);
   const options = picks.map((candidate, oIndex) => ({
     id: `${qid}-o${oIndex}`,
@@ -297,7 +339,8 @@ function imageOptionQuestion(
   displayMode: QuizMode,
 ): QuizQuestion {
   const pool = all.filter((m) => m.images.length > 0 && m.id !== muscle.id);
-  const distractors = shuffle(pool, rng).slice(0, 3);
+  // Auch hier die Nachbarschaft zuerst: vier Bilder aus vier Koerperregionen verraten sich selbst.
+  const distractors = nearestFirst(pool, (m) => m, muscle, rng).slice(0, 3);
   const picks = shuffle([muscle, ...distractors], rng);
   const options = picks.map((m, oIndex) => ({
     id: `${qid}-o${oIndex}`,

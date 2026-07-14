@@ -69,29 +69,40 @@ export function FlashcardsPage() {
     [cards, scope, filter],
   );
 
+  /* Während eine Karte läuft, ist der Seitenkopf im Weg: Titel, Untertitel und die zwei
+     Setup-Links sind zusammen ~170 px — auf dem Handy stand damit MEHR Verwaltung über der
+     Karte als Karte (445 px Kopf zu 443 px Karte), und die Aktionen rutschten unter die Falz.
+     Anki und Duolingo räumen während einer Lektion alles weg außer Karte, Fortschritt und
+     Abbrechen; „Zur Übersicht" (←) im Sitzungskopf ist genau dieser Ausgang.
+     Die `h1` BLEIBT — sie wird nur unsichtbar. Eine Seite ohne Überschrift ist für
+     Screenreader (und für die axe-Regel `page-has-heading-one`) ein Rückschritt. */
+  const running = session.started && !session.done;
+
   return (
     <section className="page flashcards">
-      <header className="flashcards__header">
-        <p className="page__eyebrow">Spaced Repetition</p>
-        <h1 className="page__title">Lernkarten</h1>
+      <header className={`flashcards__header${running ? ' flashcards__header--running' : ''}`}>
+        {!running && <p className="page__eyebrow">Spaced Repetition</p>}
+        <h1 className={running ? 'visually-hidden' : 'page__title'}>Lernkarten</h1>
         {/* „Lernen" ist der Hub für beide Abrufformen: Karten und Quiz (ADR 0007 —
             das Quiz verliert den Tab-Rang, nicht die Erreichbarkeit). */}
-        <div className="flashcards__links">
-          <Link to="/karteikasten" className="flashcards__manage">
-            <Icon name="icList" size={16} />
-            <span>
-              Muskeln im Karteikasten verwalten{deckSize > 0 ? ` (${deckSize})` : ''}
-            </span>
-            <Icon name="icArrow" size={16} />
-          </Link>
-          {/* Die zehn Quizmodi behalten ihren Platz — als „Freies Üben" für alle, die
-              gezielt einen Modus wählen wollen (ADR 0008). */}
-          <Link to="/quiz" className="flashcards__manage">
-            <Icon name="icQuiz" size={16} />
-            <span>Freies Üben — Quizmodus selbst wählen</span>
-            <Icon name="icArrow" size={16} />
-          </Link>
-        </div>
+        {!running && (
+          <div className="flashcards__links">
+            <Link to="/karteikasten" className="flashcards__manage">
+              <Icon name="icList" size={16} />
+              <span>
+                Muskeln im Karteikasten verwalten{deckSize > 0 ? ` (${deckSize})` : ''}
+              </span>
+              <Icon name="icArrow" size={16} />
+            </Link>
+            {/* Die zehn Quizmodi behalten ihren Platz — als „Freies Üben" für alle, die
+                gezielt einen Modus wählen wollen (ADR 0008). */}
+            <Link to="/quiz" className="flashcards__manage">
+              <Icon name="icQuiz" size={16} />
+              <span>Freies Üben — Quizmodus selbst wählen</span>
+              <Icon name="icArrow" size={16} />
+            </Link>
+          </div>
+        )}
       </header>
 
       {!session.started ? (

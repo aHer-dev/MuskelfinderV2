@@ -474,3 +474,19 @@
   color: var(--accent-on-surface);
   font-weight: 600;
 }
+
+/* Daumenmass (siehe components.css): die Verwaltungs-Links waren 18 px hohe Textzeilen. */
+@media (max-width: 1023.98px) {
+  .stats__manage {
+    min-height: var(--touch-min);
+  }
+}
+
+/* Daumenmass (siehe components.css): Die Abzeichen-Namen sind Links zur Gruppenseite (22 px). */
+@media (max-width: 1023.98px) {
+  .badge__label {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-min);
+  }
+}

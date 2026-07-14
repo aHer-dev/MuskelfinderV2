@@ -208,28 +208,13 @@
   --media-faint:     #8a8d93;
 }
 
-/* System-Präferenz nur als Erst-Default, wenn KEIN data-theme gesetzt ist.
-   (Produkt-Default ist Light; der ThemeToggle setzt data-theme explizit.) */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
-    color-scheme: dark;
-    --bg:#0b0c0e; --bg-elevated:#16181d;
-    --stage-gradient:radial-gradient(135% 115% at 50% 8%,#181a1f 0%,#0b0c0e 56%,#060607 100%);
-    --surface:rgba(255,255,255,0.035); --surface-sunken:rgba(255,255,255,0.05); --surface-hover:rgba(255,255,255,0.06);
-    --glass-panel:rgba(15,16,20,0.82); --glass-border:rgba(255,255,255,0.08); --glass-shadow:0 12px 40px rgba(0,0,0,0.5);
-    --card-border:color-mix(in srgb,var(--accent) 40%,transparent); --card-shadow:none;
-    --hairline:rgba(255,255,255,0.08); --hairline-strong:rgba(255,255,255,0.15);
-    --control-border:rgba(255,255,255,0.42);
-    --checkbox-border:rgba(255,255,255,0.22);
-    --field-bg:#1b1e24;
-    --text-primary:#f6f6f7; --text-secondary:#c9cace; --text-tertiary:#9a9ca2; --text-muted:#8a8d93; --text-faint:#6e7076;
-    --accent-on-surface:#ff6a00; --accent-on-tint:#ff6a00;
-    --accent-tint:color-mix(in srgb,var(--accent) 16%,transparent);
-    --accent-border:color-mix(in srgb,var(--accent) 50%,transparent); --accent-dim:color-mix(in srgb,var(--accent) 12%,transparent);
-    --region-dot:#9a9ca2;
-    --success:#4ecb83; --danger:#f2705f; --danger-on-surface:#f2705f;
-  }
-}
+/* Hier stand bis 2026-07-14 eine Kopie der Dark-Tokens unter
+   `@media (prefers-color-scheme: dark) { :root:not([data-theme]) }`. Sie konnte NIE greifen:
+   Das No-Flash-Skript in `index.html` setzt `data-theme` bei JEDEM Laden — der Selektor
+   `:not([data-theme])` traf also nie zu, und ein Handy im Nachtmodus bekam trotzdem Weiss.
+   Die System-Praeferenz ist jetzt der Erst-Default des Stores (`useThemeStore`), und das
+   Skript liest sie vor dem ersten Paint. Damit reicht `[data-theme="dark"]` oben — eine
+   zweite Kopie der Tokens waere nur eine zweite Wahrheit. */
 
 /* Motion-Reduktion */
 @media (prefers-reduced-motion: reduce) {
@@ -247,4 +232,14 @@ body {
   text-rendering: optimizeLegibility;
 }
 a { color: var(--accent-on-surface); text-decoration: none; }
-a:hover { color: var(--accent); }
+/* ZWEI Fehler in einer Zeile — beide standen hier seit Etappe 4:
+   1. **Die Farbe.** Der Hover setzte `--accent` (#ff6a00). Als SCHRIFT auf Weiss sind das
+      **2.87:1**, WCAG 1.4.3 verlangt 4.5:1. Genau die Regel, die im PROJECT_STATE steht: Wer
+      den Akzent als Schrift setzt, nimmt die `-on-`-Variante. `--accent-on-tint` (#b34400)
+      kommt auf 5.6:1 — und ist DUNKLER als der Ruhezustand, der Hover bleibt also sichtbar.
+      Im Dark-Mode sind beide Toene ohnehin #ff6a00; dort aendert sich nichts.
+   2. **Die Spezifitaet.** `a:hover` ist (0,1,1) und schlug damit JEDE Link-Klasse (0,1,0) —
+      auch `.btn--primary`, dessen weisse Schrift im Hover orange wurde: orange auf Orange.
+      `:where()` zaehlt null, die Regel liegt jetzt auf (0,0,1) wie `a` selbst. Sie ist damit
+      ein VORGABEWERT, den jede Komponente ueberschreiben darf — statt eines Hammers. */
+a:where(:hover) { color: var(--accent-on-tint); }
