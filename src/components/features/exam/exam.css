@@ -29,6 +29,7 @@
 }
 
 .exam-intro__lead {
+  max-width: var(--measure); /* Satzspiegel. */
   margin: 0;
   font-family: var(--font-ui);
   font-size: 1rem;
@@ -425,6 +426,7 @@
 }
 
 .quiz-exam-entry__desc {
+  max-width: var(--measure); /* Satzspiegel — sonst 146 Zeichen pro Zeile. */
   margin: 0 0 var(--spacing-sm);
   font-size: 0.92rem;
   line-height: 1.5;
