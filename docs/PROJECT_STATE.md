@@ -209,28 +209,48 @@ Gefahren gegen den **echten Build** (Playwright+Chromium+axe, 1440×900, Hell+Du
   (`Object.entries(undefined)`) — und weil der Hash-Wechsel nicht neu laedt, sahen **alle
   Folgerouten** danach kaputt aus. **Je Route neu laden, sonst misst man einen Leichnam.**
 
-## ⚠️ DER GLEICHNAMIGE ZWILLING IST NIE EINE FALSCHE ANTWORT (2026-07-14)
-**Wer den Ausschluss in `pickDistractors` (`src/data/quiz.ts`) entfernt, baut den Fehler neu ein.**
+## ⚠️ KEINE FRAGE HAT ZWEI RICHTIGE ANTWORTEN (2026-07-15) — `gueltigeAntworten`
+**Wer die Sperre in `pickDistractors` (`src/data/quiz.ts`) aufweicht, baut den Fehler neu ein.**
 
-Bei **`muscle-to-function`** und **`innervation`** ist der Fragetext **nur der lateinische Name**
-(`specFor`) — und fuenf `nameLatin` gibt es zweimal. Dann stand die Innervation des **Fuss**zwillings
-als Option neben der des **Hand**muskels: **beide sind richtig fuer den gezeigten Namen**, eine davon
-wurde als falsch gewertet. Gemessen: **536 von 3000** Fragen ueber einen doppelten Namen (~18 %).
+Der Fragetext ist in JEDEM Modus **ein einzelnes Muskelfeld** — Name, Ursprung, Ansatz, Funktion,
+ein Bild. **Keins davon ist eindeutig.** Am echten Bestand nachgezaehlt:
 
-- **`M. nasalis` und `M. occipitofrontalis` sind hier die SCHLIMMSTEN**, nicht die harmlosesten:
-  Sie liegen in **derselben Subregion** — und `nearestFirst` holt die Distraktoren **bevorzugt** aus
-  der Nachbarschaft. Bei der Gruppen-Regel galten sie als „unbedenklich, weil beide Haelften im Kopf
-  liegen". **Fuer das Quiz kehrt sich genau das um.** Dieselbe Doppelung, entgegengesetzte Wirkung —
-  eine Regel aus einem Kontext traegt nicht in den naechsten.
-- Was die Label-Entdopplung in `pickDistractors` schon konnte: Modi, deren **Optionen Namen sind**
-  (`function-to-muscle`, `image`, `name-image`), waren nie betroffen — dort ist das Label des
-  Zwillings identisch und flog raus. **Nur die Modi, deren Optionen TEXTE ueber den Muskel sind,
-  hatten das Loch.** Nachgemessen: `correctId` zeigte nie auf den falschen Muskel (0 von 21 000) —
-  das war ein Fehlverdacht.
+| geteiltes Feld | Kollisionen | betroffene Muskeln |
+|---|---|---|
+| `insertion` | 12 | **29** |
+| `origin` | 10 | **23** |
+| `functionDescription` | 5 | 10 |
+| `nameLatin` | 5 | 10 |
+| erstes Bild | 2 | 6 (**das Quadriceps-Bild gehoert VIER Muskeln**) |
+
+Wer den Fragetext teilt, **antwortet auf ihn auch richtig** — und wurde trotzdem rot markiert.
+Gemessen ueber 16 800 Fragen, vorher: `name-image` **6,6 %** (zwei Optionen zeigten **dieselbe
+Bilddatei**, eine gruen, eine rot), `insertion-origin` **6,3 %**, `image` 3,8 %, `origin-insertion`
+3,5 %, `function-to-muscle` 1,1 %. Nachher: **0,0 % in allen sieben Modi.**
+
+- **Jeder Modus sagt selbst, welche Antworten richtig waeren** (`gueltigeAntworten` in `specFor`).
+  `pickDistractors` sperrt sie **alle**, nicht nur die eine gemeinte.
+- **Die Sperre geht nach ANTWORT, nicht nach MUSKEL** — und genau daran ist ein erster Versuch
+  gescheitert: **M. sartorius** hat einen anderen Ursprung als **M. gracilis** und rutscht durch
+  jeden muskelbasierten Filter — aber **beide setzen am Pes anserinus an**. Sein Ansatz ist damit
+  auf die Gracilis-Frage richtig. **Wer nur Muskeln aussiebt, laesst das Label stehen.**
+- **`name-image` siebt nach BILDDATEI, nicht nach `id`.** Der alte Filter (`m.id !== muscle.id`)
+  liess vier verschiedene IDs mit **derselben Datei** durch. 152 Dateien tragen 168 Referenzen.
+- **`M. nasalis`/`M. occipitofrontalis`: dieselbe Doppelung, entgegengesetzte Wirkung.** Bei der
+  Gruppen-Regel galten sie als „unbedenklich, weil beide Haelften im Kopf liegen" — fuers Quiz ist
+  genau das der **schlimmste** Fall: `nearestFirst` zieht Distraktoren bevorzugt aus derselben
+  Subregion, und dort steht der Zwilling. **Eine Regel aus einem Kontext traegt nicht in den
+  naechsten.**
+- **Es bleiben ueberall vier Optionen**, auch unter engem Bereichsfilter (die Regel aus 8b) — ein
+  Test prueft es je Region und Modus.
 - **`quizSeriesKey` ist unangetastet** (ADR 0002), kein Feld, kein Backup-Schluessel aendert sich.
-- **Es ist eine Entschaerfung, KEINE Heilung.** „Was macht M. abductor digiti minimi?" bleibt fuer
-  den Schueler mehrdeutig — die Frage ist nur wieder *beantwortbar*. Die Wurzel ist der doppelte
-  `nameLatin` (`docs/todo.md`), dieselbe wie beim Hypothenar und beim Kartenweg.
+- **Ein Fehlverdacht, damit ihn niemand nochmal jagt:** `correctId` zeigte NIE auf den falschen
+  Muskel (0 von 21 000), obwohl es ueber das Label aufgeloest wird.
+
+**Es ist eine Entschaerfung, KEINE Heilung.** „Was macht M. abductor digiti minimi?" bleibt fuer den
+Schueler mehrdeutig, und „Ursprung → Ansatz" nennt weiterhin keinen Muskelnamen — die Fragen sind nur
+wieder *beantwortbar*. Der echte Weg waere, den Muskel im Fragetext zu benennen: **Produktentscheidung,
+nicht Bugfix.** Wurzel: `docs/todo.md`.
 
 ## Satzspiegel: `--measure` (2026-07-14)
 Der Desktop-Durchlauf hat auf 1440 px **169 Zeichen pro Zeile** gemessen (`.stats__panel-sub`), im

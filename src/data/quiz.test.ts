@@ -142,25 +142,81 @@ describe('generateQuiz', () => {
     }
   });
 
-  /* Dasselbe gegen die ECHTEN Daten: `M. nasalis` und `M. occipitofrontalis` liegen sogar in
-     derselben Subregion — und `nearestFirst` zieht die Nachbarschaft zuerst. */
-  it('haelt das auch auf dem echten Bestand durch (nasalis, occipitofrontalis, digiti minimi)', () => {
-    const alle = getMuscles();
-    const doppelt = new Set(
-      alle.map((x) => x.nameLatin).filter((n, i, arr) => arr.indexOf(n) !== i),
-    );
-    expect(doppelt.size).toBe(5); // faellt das, hat sich der Datenstand geaendert
+  /* ══ KEINE FRAGE HAT ZWEI RICHTIGE ANTWORTEN ══════════════════════════════════════════════
+     Der Fragetext ist in jedem Modus EIN Muskelfeld — und keins davon ist eindeutig. Auf dem
+     echten Bestand teilen sich 10 Muskeln eine Funktion, 23 einen Ursprung, 29 einen Ansatz,
+     6 ein Bild und 10 einen Namen. Wer den Fragetext teilt, antwortet auf ihn auch richtig.
+     Vor dem Fix war bis zu jede 16. Frage so nicht beantwortbar (`insertion-origin`: 6,3 %).
 
-    for (const mode of ['muscle-to-function', 'innervation'] as const) {
+     Der Test rechnet die gueltigen Antworten UNABHAENGIG vom Generator nach — sonst pruefte er
+     nur, dass die Funktion tut, was sie tut. */
+  const GUELTIG: Partial<Record<QuizMode, { zeigt: (m: Muscle) => string; antwortet: (m: Muscle) => string }>> = {
+    'muscle-to-function': { zeigt: (m) => m.nameLatin, antwortet: (m) => m.functionDescription },
+    innervation: { zeigt: (m) => m.nameLatin, antwortet: (m) => m.innervation },
+    'function-to-muscle': { zeigt: (m) => m.functionDescription, antwortet: (m) => m.nameLatin },
+    'origin-insertion': { zeigt: (m) => m.origin, antwortet: (m) => m.insertion },
+    'insertion-origin': { zeigt: (m) => m.insertion, antwortet: (m) => m.origin },
+  };
+
+  it('bietet nie zwei richtige Antworten zur Wahl (echter Bestand, alle Textmodi)', () => {
+    const alle = getMuscles();
+
+    for (const [mode, regel] of Object.entries(GUELTIG) as [QuizMode, typeof GUELTIG[QuizMode]][]) {
       for (let seed = 1; seed <= 40; seed++) {
         for (const frage of generateQuiz(alle, mode, 20, createRng(seed))) {
           const gefragt = alle.find((x) => x.id === frage.muscleId)!;
-          if (!doppelt.has(gefragt.nameLatin)) continue;
-          const fremde = frage.options.filter((o) => o.id !== frage.correctId);
-          for (const o of fremde) {
-            const quelle = alle.find((x) => x.id === o.muscleId);
-            expect(quelle?.nameLatin).not.toBe(gefragt.nameLatin);
-          }
+          const gueltig = new Set(
+            alle.filter((m) => regel!.zeigt(m) === regel!.zeigt(gefragt)).map(regel!.antwortet),
+          );
+          const richtige = frage.options.filter((o) => gueltig.has(o.label));
+          expect(richtige).toHaveLength(1);
+          expect(richtige[0].id).toBe(frage.correctId);
+        }
+      }
+    }
+  });
+
+  /* „Welcher Muskel ist abgebildet?" — das Quadriceps-Bild gehoert VIER Muskeln. Jeder von ihnen
+     ist eine richtige Antwort auf dieses Bild. */
+  it('bietet unter einem geteilten Bild nur EINEN der Muskeln an (image)', () => {
+    const alle = getMuscles();
+    for (let seed = 1; seed <= 40; seed++) {
+      for (const frage of generateQuiz(alle, 'image', 20, createRng(seed))) {
+        const gezeigt = frage.imageUrl;
+        const gueltig = new Set(
+          alle.filter((m) => m.images.some((b) => b.url === gezeigt)).map((m) => m.nameLatin),
+        );
+        expect(frage.options.filter((o) => gueltig.has(o.label))).toHaveLength(1);
+      }
+    }
+  });
+
+  /* Die schlimmste Auspraegung: In „Name → Bild" sind die Optionen BILDER. Zwei Muskeln mit
+     derselben Bilddatei ergaben zwei optisch IDENTISCHE Kacheln — eine gruen, eine rot. */
+  it('zeigt nie zweimal dasselbe Bild zur Wahl (name-image)', () => {
+    const alle = getMuscles();
+    for (let seed = 1; seed <= 40; seed++) {
+      for (const frage of generateQuiz(alle, 'name-image', 20, createRng(seed))) {
+        const bilder = frage.options.map((o) => o.imageUrl);
+        expect(new Set(bilder).size).toBe(bilder.length);
+      }
+    }
+  });
+
+  /* Der schaerfere Filter darf keine Option kosten — vier bleiben Pflicht (Regel aus 8b),
+     auch wenn der Bereichsfilter den Topf klein macht. */
+  it('behaelt vier Optionen, auch unter engem Bereichsfilter', () => {
+    const alle = getMuscles();
+    const modi: QuizMode[] = [
+      'muscle-to-function', 'function-to-muscle', 'origin-insertion',
+      'insertion-origin', 'innervation', 'image', 'name-image',
+    ];
+    for (const region of ['upper', 'lower', 'trunk', 'head'] as const) {
+      const pool = alle.filter((m) => m.region === region);
+      for (const mode of modi) {
+        for (const frage of generateQuiz(pool, mode, 20, createRng(3))) {
+          expect(frage.options).toHaveLength(4);
+          expect(frage.options.some((o) => o.id === frage.correctId)).toBe(true);
         }
       }
     }

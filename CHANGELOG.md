@@ -7,17 +7,36 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Fixed
-- **Das Quiz bot den gleichnamigen Zwilling als „falsche" Antwort an.** Bei `muscle-to-function`
-  und `innervation` **ist** der Fragetext nur der lateinische Name (`specFor`) — und fünf `nameLatin`
-  gibt es zweimal (Hand/Fuß; `M. nasalis` und `M. occipitofrontalis` sogar in derselben Subregion,
-  wo `nearestFirst` die Distraktoren *bevorzugt* herholt). Dann stand die Innervation des
-  Fußzwillings neben der des Handmuskels: **beide richtig für den gezeigten Namen**, eine davon
-  als falsch gewertet. Gemessen traf das **536 von 3000** Fragen über einen doppelten Namen (~18 %).
-  `pickDistractors` schließt den gleichnamigen Muskel jetzt aus; zwei Tests wachen darüber (einer
-  synthetisch, einer gegen den echten Bestand). **`quizSeriesKey` bleibt unangetastet** (ADR 0002),
-  es ändert sich nichts an der Persistenz. **Das ist eine Entschärfung, keine Heilung:** Die Frage
-  „Was macht M. abductor digiti minimi?" bleibt für den Schüler mehrdeutig — sie ist nur wieder
-  *beantwortbar*. Die Wurzel bleibt der doppelte `nameLatin` (`docs/todo.md`).
+- **Das Quiz bot in jedem Modus zweite richtige Antworten als „falsch" an.** Der Fragetext ist
+  überall **ein einzelnes Muskelfeld** — Name, Ursprung, Ansatz, Funktion, ein Bild —, und **keins
+  davon ist eindeutig**. Am echten Bestand teilen sich **10 Muskeln eine Funktion**, **23 einen
+  Ursprung**, **29 einen Ansatz**, **6 ein Bild** (das Quadriceps-Bild gehört **vier** Muskeln)
+  und 10 einen Namen. Wer den Fragetext teilt, antwortet auf ihn auch richtig — und wurde trotzdem
+  rot markiert. Gemessen über 16 800 Fragen:
+
+  | Modus | vorher mehrdeutig |
+  |---|---|
+  | `name-image` | **6,6 %** — zwei Optionen zeigten **dieselbe Bilddatei**, eine grün, eine rot |
+  | `insertion-origin` | **6,3 %** — „Tuberositas tibiae" trifft alle vier Quadriceps-Köpfe |
+  | `image` | **3,8 %** — ein Bild, mehrere richtige Namen |
+  | `origin-insertion` | **3,5 %** — „Tuber ischiadicum" trifft mehrere Ischiocrurale |
+  | `function-to-muscle` | **1,1 %** — beide Obturatorii, beide Gemelli |
+  | `muscle-to-function`, `innervation` | **~18 %** der Fragen über einen doppelten `nameLatin` |
+
+  Jeder Modus sagt jetzt selbst, **welche Antworten auf seinen Fragetext richtig wären**
+  (`gueltigeAntworten` in `specFor`); `pickDistractors` sperrt sie **alle**, nicht mehr nur die
+  eine gemeinte. **Die Sperre geht nach Antwort, nicht nach Muskel** — daran war ein erster,
+  muskelbasierter Ausschluss gescheitert: M. sartorius hat einen anderen Ursprung als M. gracilis
+  und rutscht durch jeden Muskelfilter, aber **beide setzen am Pes anserinus an**, und damit ist
+  sein Ansatz auf die Gracilis-Frage richtig. `name-image` siebt zusätzlich nach **Bilddatei**
+  statt nach `id` (verschiedene IDs, dieselbe Datei). Nachher: **0,0 % in allen sieben Modi**,
+  und es bleiben überall vier Optionen — auch unter engem Bereichsfilter.
+  Vier Tests wachen darüber; sie rechnen die gültigen Antworten unabhängig vom Generator nach.
+  **`quizSeriesKey` bleibt unangetastet** (ADR 0002), keine Persistenz ändert sich.
+  **Das ist eine Entschärfung, keine Heilung:** „Was macht M. abductor digiti minimi?" bleibt für
+  den Schüler mehrdeutig — die Frage ist nur wieder *beantwortbar*. Ebenso bleibt „Ursprung →
+  Ansatz" eine Frage ohne Muskelnamen. Die Wurzel (doppelte `nameLatin`, geteilte Felder) steht
+  in `docs/todo.md`.
 - **Der „Entfernen"-Knopf im Karteikasten fiel im Hover unter AA.** `.deck-remove:hover` setzte
   `color: var(--danger)` — die **Flächen**farbe als **Schrift**. `theme.css` führt genau diesen Fall
   seit dem letzten Durchlauf als Regel („#d1493a als Text auf Weiß erreicht nur 4.44:1"), und die

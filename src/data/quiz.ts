@@ -81,30 +81,33 @@ function nearestFirst<T>(
  */
 function pickDistractors(
   pool: readonly Candidate[],
-  correct: string,
+  gueltig: ReadonlySet<string>,
   n: number,
   rng: () => number,
   target: Muscle,
   byId: ReadonlyMap<string, Muscle>,
 ): Candidate[] {
-  const seen = new Set<string>([correct]);
+  /* **Wer auf denselben Fragetext ebenfalls richtig antwortet, ist kein Distraktor.**
+     Das ist die ganze Regel, und sie gilt in JEDEM Modus — welche Antworten richtig sind, weiss
+     `specFor` (`gueltigeAntworten`). Frueher stand hier nur die EINE gemeinte Antwort; jede
+     zweite richtige rutschte als „falsche" Option durch.
+
+     Der Fehler sah in jedem Modus anders aus, war aber immer derselbe: „Welcher Muskel dreht den
+     Oberschenkel nach aussen?" mit BEIDEN Obturatorii zur Wahl. „Was entspringt am Tuber
+     ischiadicum?" mit zwei Ischiocruralen. „Welcher Muskel ist abgebildet?" unter dem
+     Quadriceps-Bild, das VIER Muskeln gehoert. Der Nutzer klickt eine richtige Antwort an und
+     bekommt sie rot — gemessen bis zu 6,3 % der Fragen (`insertion-origin`).
+
+     Dass die Sperre nach LABEL geht und nicht nach Muskel, ist der Kern: M. sartorius hat einen
+     anderen Ursprung als M. gracilis und rutscht durch jeden muskelbasierten Filter — aber beide
+     setzen am **Pes anserinus** an, und damit ist sein Ansatz auf die Gracilis-Frage richtig.
+
+     Die Sperre entdoppelt zugleich die Optionen: 121 Muskeln teilen sich eine Innervation, ohne
+     sie stuende dieselbe Antwort zweimal da. */
+  const seen = new Set<string>(gueltig);
   const unique: Candidate[] = [];
   for (const candidate of pool) {
     if (candidate.label.trim() === '' || seen.has(candidate.label)) continue;
-    /* **Der gleichnamige Zwilling ist nie eine falsche Antwort.** Fuenf `nameLatin` gibt es
-       zweimal (Hand/Fuss, und zweimal im Kopf). Bei `muscle-to-function` und `innervation` IST
-       der Fragetext nur dieser Name (`specFor`) — steht dann die Innervation des Fusszwillings
-       als Option neben der des Handmuskels, sind BEIDE richtig fuer den gezeigten Namen, und
-       eine davon wird als falsch gewertet. Gemessen traf das ~18 % der Fragen ueber einen
-       doppelten Namen.
-
-       Der Ausschluss gilt fuer alle Modi, nicht nur die beiden: Wo der Fragetext den Muskel
-       eindeutig benennt (`origin-insertion`), waere der Zwilling zwar ein zulaessiger
-       Distraktor — aber er ist einer von ~145, und eine Fallunterscheidung nach Modus waere
-       mehr Regel als Gewinn. Die Entdopplung nach Label darueber bleibt: sie faengt die
-       Modi ab, deren OPTIONEN Namen sind. */
-    const muskel = byId.get(candidate.muscleId);
-    if (muskel && muskel.nameLatin === target.nameLatin) continue;
     seen.add(candidate.label);
     unique.push(candidate);
   }
@@ -240,6 +243,22 @@ interface QuestionSpec {
   correctLabel: string;
   distractorPool: Candidate[];
   imageUrl?: string;
+  /**
+   * **Jede Antwort, die auf diesen Fragetext richtig waere** — nicht nur die eine, die gemeint war.
+   * Enthaelt `correctLabel` und alles, was ihm gleichsteht.
+   *
+   * Der Fragetext ist in fast jedem Modus ein einzelnes Muskelfeld: Name, Ursprung, Ansatz,
+   * Funktion, ein Bild. **Keins davon ist eindeutig.** Gemessen am echten Bestand teilen sich
+   * **10 Muskeln eine Funktion**, **23 einen Ursprung**, **29 einen Ansatz**, **6 ein Bild** (das
+   * Quadriceps-Bild gehoert VIER Muskeln) — und 10 einen Namen.
+   *
+   * Wichtig: Es zaehlt die **Antwort**, nicht der Muskel. Ein Kandidat kann einen anderen Ursprung
+   * haben und trotzdem richtig sein, weil sein ANSATZ derselbe Text ist wie der eines Muskels, der
+   * den Ursprung teilt. Genau daran ist ein erster, muskelbasierter Ausschluss gescheitert:
+   * „Os pubis, Ramus inferior" (M. gracilis) — und M. sartorius setzt ebenfalls am **Pes
+   * anserinus** an. Wer nur Muskeln aussiebt, laesst dieses Label stehen.
+   */
+  gueltigeAntworten: Set<string>;
 }
 
 /** Kandidatenliste aus einem Muskelfeld — Label plus Herkunft. */
@@ -269,45 +288,88 @@ function eligible(muscles: readonly Muscle[], mode: QuizMode): Muscle[] {
   return [...muscles];
 }
 
+/**
+ * Alle Antworten, die auf denselben Fragetext richtig waeren.
+ *
+ * `zeigtDieFrage` ist das Feld, AUS DEM die Frage gebaut ist (Name, Ursprung, Ansatz, Funktion,
+ * Bild); `antwortet` das Feld, das die Option traegt. Jeder Muskel, der den Fragetext teilt,
+ * liefert eine gueltige Antwort — und die darf nicht als Distraktor auftauchen.
+ */
+function gueltigeAntworten(
+  all: readonly Muscle[],
+  zeigtDieFrage: (m: Muscle) => boolean,
+  antwortet: (m: Muscle) => string,
+): Set<string> {
+  return new Set(all.filter(zeigtDieFrage).map(antwortet));
+}
+
 function specFor(muscle: Muscle, mode: QuizMode, all: readonly Muscle[]): QuestionSpec {
+  /* Jeder Modus sagt selbst, WELCHES Feld sein Fragetext ist — die Frage zeigt den Namen? Dann
+     meint sie auch den gleichnamigen Zwilling. Sie zeigt einen Ursprung? Dann meint sie jeden
+     Muskel, der dort entspringt. */
+  const teilt = (feld: (m: Muscle) => string) => (k: Muscle) => feld(k) === feld(muscle);
+
   switch (mode) {
     case 'muscle-to-function':
       return {
         prompt: muscle.nameLatin,
         correctLabel: muscle.functionDescription,
         distractorPool: candidates(all, (m) => m.functionDescription),
+        gueltigeAntworten: gueltigeAntworten(
+          all, teilt((m) => m.nameLatin), (m) => m.functionDescription,
+        ),
       };
     case 'innervation':
       return {
         prompt: muscle.nameLatin,
         correctLabel: muscle.innervation,
         distractorPool: candidates(all, (m) => m.innervation),
+        gueltigeAntworten: gueltigeAntworten(
+          all, teilt((m) => m.nameLatin), (m) => m.innervation,
+        ),
       };
     case 'origin-insertion':
       return {
         prompt: muscle.origin,
         correctLabel: muscle.insertion,
         distractorPool: candidates(all, (m) => m.insertion),
+        gueltigeAntworten: gueltigeAntworten(
+          all, teilt((m) => m.origin), (m) => m.insertion,
+        ),
       };
     case 'insertion-origin':
       return {
         prompt: muscle.insertion,
         correctLabel: muscle.origin,
         distractorPool: candidates(all, (m) => m.origin),
+        gueltigeAntworten: gueltigeAntworten(
+          all, teilt((m) => m.insertion), (m) => m.origin,
+        ),
       };
-    case 'image':
+    case 'image': {
+      /* Die Frage zeigt EIN Bild — und das Quadriceps-Bild gehoert vier Muskeln. Jeder, der
+         dieses Bild traegt, ist eine richtige Antwort auf „Welcher Muskel ist abgebildet?".
+         Nicht ueber `images[0]` vergleichen: ein Kandidat kann dasselbe Bild an zweiter Stelle
+         fuehren. */
+      const gezeigt = muscle.images[0]?.url;
+      const zeigtDasselbeBild = (k: Muscle) => k.images.some((b) => b.url === gezeigt);
       return {
         prompt: 'Welcher Muskel ist abgebildet?',
         correctLabel: muscle.nameLatin,
         distractorPool: candidates(all, (m) => m.nameLatin),
-        imageUrl: muscle.images[0]?.url,
+        imageUrl: gezeigt,
+        gueltigeAntworten: gueltigeAntworten(all, zeigtDasselbeBild, (m) => m.nameLatin),
       };
+    }
     case 'function-to-muscle':
     default:
       return {
         prompt: muscle.functionDescription,
         correctLabel: muscle.nameLatin,
         distractorPool: candidates(all, (m) => m.nameLatin),
+        gueltigeAntworten: gueltigeAntworten(
+          all, teilt((m) => m.functionDescription), (m) => m.nameLatin,
+        ),
       };
   }
 }
@@ -323,7 +385,9 @@ function textQuestion(
 ): QuizQuestion {
   const spec = specFor(muscle, concreteMode, all);
   const byId = new Map(all.map((m) => [m.id, m]));
-  const distractors = pickDistractors(spec.distractorPool, spec.correctLabel, 3, rng, muscle, byId);
+  const distractors = pickDistractors(
+    spec.distractorPool, spec.gueltigeAntworten, 3, rng, muscle, byId,
+  );
   const picks = shuffle([{ label: spec.correctLabel, muscleId: muscle.id }, ...distractors], rng);
   const options = picks.map((candidate, oIndex) => ({
     id: `${qid}-o${oIndex}`,
@@ -352,7 +416,27 @@ function imageOptionQuestion(
   qid: string,
   displayMode: QuizMode,
 ): QuizQuestion {
-  const pool = all.filter((m) => m.images.length > 0 && m.id !== muscle.id);
+  /* **Hier waren zwei Optionen buchstaeblich dasselbe Bild.** 152 Bilddateien tragen 168
+     Referenzen: Das Quadriceps-Bild gehoert VIER Muskeln, das Triceps-Bild zweien. Der Filter
+     stand auf `m.id !== muscle.id` — verschiedene IDs, dieselbe Datei. Fragte die Runde nach
+     `M. vastus intermedius`, standen bis zu vier optisch IDENTISCHE Kacheln zur Wahl, eine gruen,
+     eine rot. Gemessen: 6,6 % der Runden. Das ist nicht schwer, das ist unloesbar.
+
+     Darum wird nach der BILDDATEI ausgesiebt, nicht nach der ID — und der gleichnamige Zwilling
+     fliegt ebenfalls raus (er waere fuer den gezeigten Namen genauso richtig). Zwei Distraktoren
+     duerfen sich auch untereinander kein Bild teilen: zweimal dieselbe falsche Kachel sieht aus
+     wie ein Fehler und verschenkt eine Option. */
+  const gezeigt = muscle.images[0]?.url;
+  const belegt = new Set<string>(gezeigt ? [gezeigt] : []);
+  const pool: Muscle[] = [];
+  for (const m of all) {
+    const bild = m.images[0]?.url;
+    if (!bild || belegt.has(bild)) continue;
+    if (m.nameLatin === muscle.nameLatin) continue;
+    belegt.add(bild);
+    pool.push(m);
+  }
+
   // Auch hier die Nachbarschaft zuerst: vier Bilder aus vier Koerperregionen verraten sich selbst.
   const distractors = nearestFirst(pool, (m) => m, muscle, rng).slice(0, 3);
   const picks = shuffle([muscle, ...distractors], rng);
