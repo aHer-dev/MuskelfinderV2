@@ -270,26 +270,36 @@ winzige Textzeile am Seitenende klebten.
   `/assets/images/untere-ext/muscle_fibularis_tertius_lateral_1.jpg`.
 - TA-Codes fehlen in V1 und bleiben optional. Nicht erfinden.
 
-## Kopplung 3D-App V2: VEROEFFENTLICHT — ein Rest-Blocker (Stand 2026-07-13 geprueft)
-Der „In 3D ansehen"-Link zeigt seit `28c4033` auf **`https://aher-dev.github.io/3DAnatomyV2/`**
-(vorher V1 `/3DAnatomy/`). Das ist **bewusst so** — aber V2 ist **noch nicht offiziell
-veroeffentlicht**. Der Link ist vorausschauend gesetzt, damit beim Release nichts nachgezogen
-werden muss.
+## Kopplung 3D-App V2: LIVE UND GEPRUEFT — kein Blocker mehr (2026-07-14)
+Der „In 3D ansehen"-Link zeigt auf **`https://aher-dev.github.io/3DAnatomyV2/`**.
 
 **Warum V2 und nicht V1:** V1 laedt three.js zur Laufzeit per Import-Map von `cdn.jsdelivr.net`
 (live gemessen: 9 Requests). Das schickt die IP unserer Nutzer an ein fremdes CDN und verletzt die
-Architektur-Grenze „keine externen Laufzeit-Requests". V2 buendelt three.js lokal, setzt
-`default-src 'self'` und macht null externe Requests. Deep-Link-Vertrag
-(`muscleKey`/`muscle`/`source`/`returnTo`) und Mapping sind identisch (beide 118 Keys, diffed);
-End-to-End verifiziert (Muskel wird hervorgehoben, „Zurueck zum Muskelfinder" traegt).
+Architektur-Grenze „keine externen Laufzeit-Requests". V2 buendelt three.js lokal und macht null
+externe Requests. Deep-Link-Vertrag: `muscleKey`/`muscle`/`source`/`returnTo`.
 
-**Live-Pruefung am 2026-07-13 (curl):**
-- ✅ `aher-dev.github.io/3DAnatomyV2/` → **HTTP 200**, also veroeffentlicht. Die frueher hier
-      stehende Behauptung „noch nicht veroeffentlicht" ist ueberholt.
-- ✅ `aher-dev.github.io/Muskelfinder/` (V1) → HTTP 200, **noch live**.
-- ❌ `…/3DAnatomyV2/datenschutz.html` → **HTTP 404**. Der deployte Build ist aelter als die
-      `vite.config`, die sie als Input fuehrt. **Das ist der einzige verbleibende Blocker.**
-      Der Fix liegt im lokalen 3D-Repo bereits als HEAD (`f209896`) — pushen und neu deployen.
+**End-to-End LIVE geprueft am 2026-07-14** (echter Klick auf der veroeffentlichten Detailseite,
+nicht gegen einen lokalen Build): Detailseite → „In 3D ansehen" → neuer Tab → Muskel hervorgehoben
+→ „← Zurueck zum Muskelfinder" fuehrt zurueck. 24 Bedienelemente, Lizenz-Link und die
+CC-BY-Attribution sichtbar. **0 externe Requests.** Alle Rechtsseiten HTTP 200
+(`datenschutz.html`, `quellen-lizenzen.html`) — die 404 von 2026-07-13 ist behoben.
+
+### ⚠️ Die Falle, die uns das eingebrockt hat: der „Vorschau-Modus" der 3D-App
+Nach dem Redesign-Deploy fuehrte JEDER Klick auf „In 3D ansehen" in eine **tote App**: 0 Knoepfe,
+0 Links, kein Rueckweg, keine sichtbare CC-BY-Attribution. Nur ein Standbild.
+
+- Die 3D-App hat einen **Vorschau-Modus** (`js/integration/muskelfinderPreview.js`), der die
+  gesamte React-UI, `setupInteractions()` und `initRoomSettings()` abschaltet — gedacht als
+  **eingebettetes Vorschaubild**.
+- Er sprang an `source === 'muskelfinder' && (muscleKey || muscle)` an — **genau der Link, den
+  `threeDUrl()` baut**, und den die Detailseite per `<a target="_blank">` als NAVIGATION oeffnet.
+  Der Muskelfinder bettet nichts ein; es gibt hier kein einziges `<iframe>`.
+- **Behoben im 3D-Repo** (Commit `b12bf3b`, auf `main`, deployt): Die Vorschau verlangt jetzt einen
+  echten Rahmen (`window.self !== window.top`) oder ein ausdrueckliches `?preview=1`.
+  Sechs Tests wachen darueber (`js/integration/muskelfinderPreview.test.ts`).
+- **Lehre fuer uns:** Der Deep-Link ist ein Vertrag mit einem FREMDEN Repo. Wer dort deployt, kann
+  ihn brechen, ohne dass hier eine Zeile Code faellt — und kein Test von uns haette es gemerkt.
+  **Nach jedem 3D-Deploy den Link einmal live klicken.**
 
 Faellt die Entscheidung gegen V2, genuegt ein Zurueckdrehen von `THREE_D_BASE_URL`
 (`src/data/threeD.ts`) — die URL ist die einzige Stelle.
@@ -312,13 +322,18 @@ befuellt werden, die Statistik zeigt Zahlen ohne Empfehlung.
 - Konzept-Mockups (visuell, extern): Heute-Screen und Produktkonzept, siehe `docs/produkt-plan.md`.
 
 ## Naechster Schritt
-**RELEASE v1.1 — die App war NIE deployt.** Es gibt kein Git-Remote; kein Schueler hat sie je
-geoeffnet. Checkliste: `docs/release-v1.1.md`. Alles, was ohne den Projektinhaber ging, ist erledigt
-(Release-Blocker `base` behoben, unter echten Pages-Bedingungen verifiziert, Version 1.1.0).
-**Remote ist angelegt und `main` gepusht.** Offen und nur vom Projektinhaber loesbar:
-(1) Repo-Settings → Pages → Source = "GitHub Actions" (ein Schalter).
-(2) 3D-App V2 neu deployen — ihre datenschutz.html liefert 404 (Fix liegt dort als HEAD).
-(3) V1 (`aher-dev.github.io/Muskelfinder/`) ist noch live — Hinweis setzen oder abschalten.
+**DIE APP IST LIVE.** `aher-dev.github.io/MuskelfinderV2/` liefert HTTP 200 und traegt den aktuellen
+Stand (am ausgelieferten CSS nachgemessen, nicht gehofft). Der Pages-Schalter und der 3D-Deploy sind
+erledigt — beide Punkte, die hier frueher als „nur vom Projektinhaber loesbar" standen, sind zu.
+
+**Es gibt keinen offenen Code-Task mehr.** Offen ist nur noch, was den FACHMANN braucht, plus EINE
+Entscheidung, die an ADR 0002 ruehrt — vollstaendige Liste: `docs/todo.md`.
+- Palpationstexte aus dem Kollegen-Skript (`docs/palpation-erfassen.md`).
+- Kursabschnitte (`docs/curriculum-erfassen.md`) — solange leer, steht der Platzhalter HINTEN.
+- **Die drei doppelten `nameLatin`** (Hand/Fuss): Karten dazu tragen das falsche Etikett, der
+  Handmuskel ist ueber Karten nicht lernbar. Entdoppelt ist es, geheilt nicht. Optionen und ihr
+  Preis stehen in `docs/todo.md`.
+- V1 (`aher-dev.github.io/Muskelfinder/`) ist noch live — Hinweis setzen oder abschalten (dir egal).
 
 **ETAPPE 9 IST VOLLSTAENDIG GEBRIEFT** (Rahmen + 9a-9d, siehe Statustafel).
 **9a ist gebaut** (15 Gruppen, Gruppen-Quiz, Gruppenseite) — die Gruppenliste **wartet auf die
