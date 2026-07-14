@@ -7,6 +7,55 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Fixed
+- **Jeder Link der App verfehlte im Hover den Kontrast — und Primärknöpfe wurden unlesbar.**
+  `a:hover` setzte `--accent` (#ff6a00). Als Schrift auf Weiß sind das **2.87:1**; WCAG 1.4.3
+  verlangt 4.5:1. Schlimmer war die **Spezifität**: `a:hover` ist `(0,1,1)` und schlug damit jede
+  Link-Klasse `(0,1,0)` — auch `.btn--primary`, dessen weiße Schrift beim Überfahren orange wurde:
+  **orange auf Orange**. Der Hover dunkelt jetzt ab (`--accent-on-tint`, 5.6:1) und liegt via
+  `:where(:hover)` auf Spezifität `(0,0,1)` — er ist ein Vorgabewert, den Komponenten
+  überschreiben dürfen, statt eines Hammers.
+  Gefunden, weil der Mauszeiger nach einem Klick zufällig auf einem Link stehenblieb und axe den
+  Hover-Zustand mitmaß. Der Prüf-Lauf fährt jetzt **jede Link-Klasse einzeln an** — Handy und
+  Desktop, Light und Dark: 0 Verstöße.
+- **Der Dark-Mode ignorierte das Gerät.** In `theme.css` lag ein
+  `@media (prefers-color-scheme: dark)`-Block hinter `:root:not([data-theme])` — er konnte **nie**
+  greifen, weil das No-Flash-Skript in `index.html` `data-theme` bei jedem Laden setzt (Fallback
+  `light`). Ein Handy im Nachtmodus bekam trotzdem Weiß ins Gesicht. Die System-Präferenz ist jetzt
+  der **Erst-Default** (`useThemeStore` + dasselbe `matchMedia` im No-Flash-Skript); wer einmal
+  umschaltet, hat eine explizite Wahl, und die schlägt das System ab da. Der tote Block ist weg —
+  er war zudem eine zweite Kopie der Tokens aus `[data-theme="dark"]`.
+- **Touch-Ziele auf Handy-Größe gebracht** (nur unter 1024 px — auf dem Desktop zielt eine Maus).
+  WCAG 2.5.8 (24 px) war immer erfüllt, die Apple-HIG (44 px) durchgehend nicht: Chips 28 px,
+  Buttons 38 px, „Entfernen" im Kasten 29 px, Abzeichen-Links 22 px, Fußzeilen-Links 17 px, die
+  Wortmarke 41 px. Alle auf `--touch-min` (44 px), Chips auch in der **Breite** („Alle" war 41 px).
+  Dazu: Das Suchfeld ist 56 px hoch, der `<input>` darin war **24 px** — ein Tipp auf die Polsterung
+  landete im `div` statt im Feld (`align-self: stretch`).
+- **Wer „Obere Extremität" wählte, bekam Fußmuskeln in den Karteikasten.** Gefunden beim
+  Mobil-Durchlauf als Schülerin: Der Knopf verspricht **53** Karten — die Kasten-Tabelle zeigte
+  **56 Zeilen**, drei davon „Untere Extremität". Die erste Karte der allerersten Sitzung war
+  **`M. abductor digiti minimi`** mit Fuß-Fakten (Tuber calcanei, Kleinzehe).
+  Ursache: Fünf `nameLatin` gibt es **zweimal** (Hand/Fuß bzw. zweimal im Kopf). Karten sind nach
+  `nameLatin` geschlüsselt (ADR 0002 §2), also ist so ein Paar EINE Karte — `addCards` entdoppelt
+  längst. Der Fehler saß auf der **Lese-Seite**: `DeckManagerPage` und `quizPool` liefen über die
+  **150 Muskeln** und behielten die, deren Name ein Kartenschlüssel ist — für EINE Karte fanden sie
+  **ZWEI** Muskeln. Folgen: widersprüchliche Zahlen (Quiz „Karteikasten 56", Sitzung „53 Karten"),
+  und **„Entfernen" löschte beide Zeilen auf einmal**, weil es derselbe Schlüssel ist.
+  Neu ist `isCardMuscle` / `CARD_MUSCLES` (`src/data/loader.ts`): genau **ein** Muskel je
+  Schlüssel — und zwar der, den `getMuscleByLatinName` liefert, also der, den die Lernkarte
+  **rendert**. Jede andere Wahl zeigte eine Zeile, die nicht zur Karte gehört.
+  Die Distraktoren bleiben unangetastet (sie kommen aus dem ganzen Bestand, 8b), `quizSeriesKey`
+  bleibt bitgleich (ADR 0002).
+  **Das ist eine Entdopplung, keine Heilung** — der Hand-Kleinfingerballen bleibt über Karten
+  unlernbar, weil sein Schlüssel auf den Fußmuskel auflöst. Siehe `docs/todo.md`.
+- **Auf dem Handy kostete jede Karte ein Scrollen.** Gemessen (390 × 664): „Karte aufdecken" und
+  die drei Bewertungsknöpfe lagen bei **y = 872** — unter der Falz. Eine Sitzung mit 20 Karten hieß
+  20-mal scrollen, bevor man überhaupt bewerten konnte. Die Aktionen sitzen jetzt in einer
+  **klebenden Leiste** (`.fc-actions`, `position: sticky`) über der Tab-Leiste; sie nutzt dieselbe
+  96-px-Reserve, die die Shell ohnehin freihält, legt sich also nicht auf die Navigation.
+  Nur unterhalb von 1024 px — darüber gibt es keine Tab-Leiste.
+- **Ein Test schlug je nach Uhrzeit fehl.** `StandRail.test.tsx` baute den Prüfungstermin über
+  `toISOString()` (UTC) und zählte in den Stunden nach lokaler Mitternacht 9 statt 10 Tage. Das
+  Datum wird jetzt lokal zusammengesetzt — so, wie der Datumswähler der App es auch liefert.
 - **Die scrollenden Tabellen waren per Tastatur nicht erreichbar** (WCAG 2.1.1). Die Fächer-Tabelle
   (`/anleitung`) und die Karteikasten-Tabelle (`/karteikasten`) scrollen auf dem Handy waagerecht,
   enthalten aber kein fokussierbares Element, das den Scroll mitzöge — mit `Tab` kam man nie an die
@@ -16,6 +65,31 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   Prüf-Lauf legt jetzt erst Karten an.
 
 ### Changed
+- **Die Quiz-Distraktoren kommen aus der Nachbarschaft, nicht mehr aus dem ganzen Körper.**
+  `pickDistractors` mischte den gesamten Bestand und nahm die ersten drei. Gemessen an einer
+  echten Frage: *M. brachioradialis — Innervation?* → **N. femoralis · N. subscapularis ·
+  N. radialis · R. thyrohyoideus.** Ein Bein-Nerv, ein Schulter-Nerv, ein Kehlkopf-Ast — wer die
+  Topografie grob kennt, löst das durch Ausschluss, **ohne den Muskel zu kennen**. Eine Frage, die
+  man ohne das gefragte Wissen beantwortet, misst nichts und lehrt nichts.
+  Jetzt werden die falschen Antworten geschichtet: erst dieselbe **Subregion**, dann dieselbe
+  Region, dann der Rest. Der Rest bleibt als Auffüllung drin — sonst hätte eine kleine Subregion
+  keine vier Optionen mehr, und genau das war der Haken, den 8b gelöst hat.
+  `quizSeriesKey` bleibt unangetastet (ADR 0002); es ist kein neuer Parameter, sondern eine bessere
+  Auswahl. **Die Runden werden dadurch aber schwerer** — eine Trefferquote von heute ist mit einer
+  von gestern nur bedingt vergleichbar.
+- **Die Lernsitzung räumt den Seitenkopf weg.** Über der Karte standen Marke, Suchfeld, der Titel
+  „Lernkarten" und **zwei Knöpfe, die zum Setup gehören** — zusammen **445 px**, mehr als die Karte
+  selbst (443 px). Das war die eigentliche Ursache dafür, dass die Aktionen unter die Falz
+  rutschten. Während eine Karte läuft, sind Titel, Untertitel und die Setup-Links weg; die Karte
+  beginnt jetzt bei **y = 278 statt 445**. Anki und Duolingo räumen während einer Lektion genauso
+  auf. Die `h1` bleibt für Screenreader stehen (`visually-hidden`) — sonst hätte die Seite keine
+  Überschrift mehr.
+- **Der Erststart zeigt zuerst den Weg, der trägt.** Solange `curriculum.json` leer ist, war
+  „Nach Kursabschnitt" die **erste und größte** Karte — und ein Platzhalter. Die allererste Wahl
+  einer Schülerin führte damit ins Leere, während „Nach Bereich" unter der Falz lag. Der
+  Platzhalter bleibt (er erklärt, was dort einmal steht — ADR 0009), er rutscht nur nach hinten.
+  Sobald Kursabschnitte eingetragen sind, steht er wieder vorn. Sortiert wird im **DOM**, nicht per
+  CSS-`order` — sonst läse ein Screenreader eine andere Reihenfolge, als das Auge sieht (WCAG 2.4.3).
 - **Die Marke steht jetzt auf JEDER Seite** (`BrandMark` in der Kopfzeile der Shell). Sie hing
   bisher an genau einer Route (`/heute`, in der `StandRail`) — und auf dem Handy, wo es keine
   Icon-Rail gibt, stand nirgends, wessen App das überhaupt ist. Die Shell umschließt jede Route,

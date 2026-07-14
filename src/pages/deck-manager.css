@@ -288,3 +288,25 @@
   font-size: 11.5px;
   color: var(--text-tertiary);
 }
+
+/* Daumenmass (siehe components.css): „Entfernen" war 29 px hoch, in einer engen Tabellenzeile. */
+@media (max-width: 1023.98px) {
+  .deck-remove {
+    min-height: var(--touch-min);
+  }
+}
+
+/* Daumenmass (siehe components.css): Die Muskelnamen in der Tabelle sind Links (38 px), das
+   Suchfeld im Zugang war 41 px. Die native Checkbox bleibt 17 px — ihre Trefferflaeche ist das
+   `label` (`.deck-check`) drumherum, und das ist eine ganze Zeile hoch. */
+@media (max-width: 1023.98px) {
+  .deck-table__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-min);
+  }
+
+  .deck-search {
+    min-height: var(--touch-min);
+  }
+}

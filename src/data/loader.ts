@@ -51,3 +51,28 @@ export function getMuscleById(id: string): Muscle | undefined {
 export function getMuscleByLatinName(name: string): Muscle | undefined {
   return musclesByName.get(name)
 }
+
+/* ---- Karten-Schlüssel sind nicht eindeutig — Lesen darf trotzdem nicht doppeln ----------
+   Fuenf `nameLatin` gibt es ZWEIMAL (Hand/Fuss bzw. zweimal im Kopf). Karten sind nach
+   `nameLatin` geschluesselt (ADR 0002 §2), also ist so ein Paar EINE Karte — `addCards`
+   entdoppelt darum laengst.
+
+   Der Fehler entstand auf der LESE-Seite: Wer ueber die 150 Muskeln laeuft und die behaelt,
+   deren Name ein Kartenschluessel ist, findet fuer EINE Karte ZWEI Muskeln. Gemessen:
+   „Obere Extremitaet" (53 Karten) ergab 56 Zeilen im Kasten, das Quiz zaehlte 56, die
+   Sitzung 53 — und wer eine der beiden Zeilen entfernte, loeschte die andere gleich mit
+   (es ist derselbe Schluessel).
+
+   `isCardMuscle` waehlt genau EINEN Muskel je Schluessel, und zwar den, den
+   `getMuscleByLatinName` ohnehin liefert — also den, den die Lernkarte RENDERT. Jede andere
+   Wahl wuerde eine Zeile zeigen, die nicht zur Karte gehoert.
+
+   ACHTUNG, das ist eine Entdopplung, keine Heilung: Der Handmuskel bleibt ueber Karten
+   unlernbar, weil sein Schluessel auf den Fussmuskel aufloest. Das echte Gegenmittel waere
+   ein eindeutiger `nameLatin` — und der bricht ADR 0002. Siehe `docs/todo.md`. */
+export function isCardMuscle(muscle: Muscle): boolean {
+  return musclesByName.get(muscle.nameLatin) === muscle
+}
+
+/** Ein Muskel je Karten-Schluessel — die Menge, die als Karteikasten darstellbar ist. */
+export const CARD_MUSCLES: readonly Muscle[] = Object.freeze(muscles.filter(isCardMuscle))

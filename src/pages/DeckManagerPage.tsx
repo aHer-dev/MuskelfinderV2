@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getMuscles, getRegions } from '../data'
+import { CARD_MUSCLES, getRegions } from '../data'
 import { regionLabel } from '../data/labels'
 import { isDue } from '../persistence/leitner'
 import { useProgressStore } from '../store/useProgressStore'
@@ -9,7 +9,10 @@ import { EmptyState } from '../components/ui/EmptyState'
 import './deck-manager.css'
 
 const REGION_ORDER = getRegions().map((r) => r.id) as RegionId[]
-const ALL_MUSCLES = getMuscles()
+/* Ein Muskel je Karten-Schluessel. Ueber `getMuscles()` (alle 150) zu laufen hiesse: fuer
+   die fuenf doppelten Namen zwei Zeilen fuer EINE Karte — und „Entfernen" nimmt dann beide
+   mit, weil es derselbe Schluessel ist. Siehe `isCardMuscle` in `src/data/loader.ts`. */
+const ALL_MUSCLES = CARD_MUSCLES
 
 type RegionTab = RegionId | 'all'
 

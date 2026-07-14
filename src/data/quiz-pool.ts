@@ -77,10 +77,17 @@ export function quizPool({ muscles, cards, regions = [], scope }: QuizPoolInput)
   }
 
   const filter = cardFilterFor(scope);
-  const questions = distractors.filter((m) => {
+  const matching = distractors.filter((m) => {
     const card = cards[m.nameLatin];
     return card !== undefined && matchesCardFilter(card, filter);
   });
+  /* EINE Karte, EINE Frage. Fuenf `nameLatin` gibt es zweimal (Hand/Fuss) — ohne die
+     Entdopplung zaehlte „Mein Karteikasten" 56, waehrend die Sitzung 53 Karten kannte,
+     und das Quiz fragte nach dem Handmuskel, dessen Karte den Fussmuskel zeigt.
+     Dieselbe Regel wie der Namens-Index in `loader.ts` (der letzte Eintrag gewinnt), damit
+     die Frage genau den Muskel trifft, den die Karte rendert.
+     Nur die FRAGEN werden entdoppelt — die `distractors` bleiben der ganze Bestand (8b). */
+  const questions = [...new Map(matching.map((m) => [m.nameLatin, m])).values()];
 
   return {
     questions,

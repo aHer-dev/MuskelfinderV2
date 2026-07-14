@@ -330,3 +330,48 @@
   outline: 2px solid var(--focus-ring);
   outline-offset: 1px;
 }
+
+/* =========================================================================
+   Daumenmass (2026-07-14) — nur auf dem Handy.
+
+   WCAG 2.5.8 (AA) verlangt 24 px; das war immer erfuellt. Die Apple-HIG nennt **44 px**, und
+   daran lag die App durchgehend darunter: Chips 28, Buttons 38, „Entfernen" im Kasten 29,
+   die Icon-Knoepfe der Sitzung 38, das Sheet-Kreuz 36. Auf einem Telefon ist das der
+   Unterschied zwischen „getippt" und „danebengetippt" — gemessen an der Fussleiste, deren
+   Links 17 px hoch waren.
+
+   Nur unterhalb von 1024 px: Auf dem Desktop zielt eine Maus, dort bleibt das Bild so, wie es
+   gestaltet ist. Und nur an ECHTEN Bedienelementen — `.chip` ist auch ein reines Etikett
+   (die Bewegungs-Tags auf den Suchtreffern), darum `button.chip`/`a.chip` statt `.chip`.
+   ========================================================================= */
+@media (max-width: 1023.98px) {
+  .btn,
+  button.chip,
+  a.chip,
+  .segmented__btn {
+    min-height: var(--touch-min);
+  }
+
+  /* Chips sind `inline-block` — ohne Flex zentriert die Mindesthoehe den Text nicht.
+     `min-width` ebenfalls: Ein Chip wie „Alle" war 41 px breit — 44 gilt in BEIDE Richtungen. */
+  button.chip,
+  a.chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--touch-min);
+  }
+
+  /* Fussleiste: die Links standen als nackter Text in der Zeile. */
+  .site-footer__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-min);
+  }
+
+  /* Das Kreuz im Bottom-Sheet — 36 px, und es ist der einzige Weg zurueck. */
+  .sheet__close {
+    width: var(--touch-min);
+    height: var(--touch-min);
+  }
+}

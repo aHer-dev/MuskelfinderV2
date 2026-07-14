@@ -5,7 +5,7 @@
 > docs/migration-plan.md (abgeschlossen), docs/architecture.md und den ADRs.
 
 ## Stand
-- Datum: 2026-07-13
+- Datum: 2026-07-14
 - Branch: `main` · **Remote: github.com/aHer-dev/MuskelfinderV2** · Live: `aher-dev.github.io/MuskelfinderV2/`
 - Status: **Migration abgeschlossen (Etappen 0–6, `v1.0`). ETAPPE 7 KOMPLETT (7a–7f). ETAPPE 8
   KOMPLETT (8a–8f). ETAPPE 9 KOMPLETT (9a–9d). ETAPPE 10 KOMPLETT (10a–10f). ETAPPE 11 (Zeitdruck) — code-seitig. Offen ist
@@ -17,8 +17,8 @@
   niemandem mehr ungefragt Karten in den Kasten.**
   **ALLE VIER BRUECKEN STEHEN:** B1 (7d), B2 (7e), B3 (**9c**), B4 (8c).
   Statustafel: `docs/produkt-plan.md`. Offene Punkte: `docs/todo.md`.
-- Gate gruen: `npm run lint && npm run test && npm run build` — **574 Tests**.
-- A11y: axe 0 Verstoesse ueber **8 Routen x Light+Dark x Desktop+Handy** (Playwright+Chromium+axe-core)
+- Gate gruen: `npm run lint && npm run test && npm run build` — **587 Tests**.
+- A11y: axe 0 Verstoesse ueber **8 Routen x Light+Dark x Desktop+Handy — inkl. HOVER-Zustand** (Playwright+Chromium+axe-core)
   inkl. `/pruefung` in allen drei Zustaenden, der Abzeichen auf `/statistik`, der Palpations-Sektion
   (mit + ohne Eintrag), `/anleitung` und dem leeren `/heute`. 0 externe Requests.
   **Der Pruef-Lauf legt jetzt erst Karten an, bevor er `/karteikasten` misst.** Ein frischer Browser
@@ -167,6 +167,17 @@ warmen Papier muss es sich gegen viel Licht behaupten, auf Schwarz leuchtet es v
   nicht fuer AA: `--accent-on-tint` (#b34400) fuer Akzent-Text auf `--accent-tint`,
   `--danger-on-surface` (#c43e2e) fuer rote Schrift auf Weiss. `--danger`/`--accent` bleiben die
   Flaechenfarben. **Wer Akzent- oder Warnfarbe als Text setzt, nimmt die `-on-`-Variante.**
+- **Und genau daran ist der HOVER jahrelang gescheitert** (behoben 2026-07-14): `a:hover` setzte
+  `--accent` (#ff6a00) — als Schrift auf Weiss **2.87:1**, WCAG 1.4.3 will 4.5:1. Der Hover
+  **dunkelt jetzt ab** (`--accent-on-tint`, 5.6:1) statt aufzuhellen.
+  **Die zweite Haelfte des Fehlers war die Spezifitaet:** `a:hover` ist `(0,1,1)` und schlug damit
+  JEDE Link-Klasse `(0,1,0)` — auch `.btn--primary`, dessen weisse Schrift beim Ueberfahren orange
+  wurde: **orange auf Orange.** Die Regel steht jetzt als `a:where(:hover)` auf `(0,0,1)`: ein
+  Vorgabewert, den Komponenten ueberschreiben duerfen. **Wer globale Element-Regeln mit
+  Pseudoklassen schreibt, kapselt sie in `:where()`** — sonst ueberstimmt die Basis die Bausteine.
+- **Der axe-Lauf prueft jetzt auch den HOVER-Zustand**, jede Link-Klasse einzeln. Der Fehler fiel
+  nur auf, weil der Mauszeiger nach einem Klick zufaellig auf einem Link stehenblieb. Ein
+  Ruhezustand-Audit haette ihn nie gefunden.
 
 ## Die rechte Schiene auf `/heute` (`StandRail`, Etappe 12)
 Bei 1440 px lagen dort **444 px rechts brach** (gemessen), waehrend Level, Serie und Fortschritt als
@@ -333,6 +344,68 @@ steht damit auf JEDER Route — Desktop rechts, Handy als Kopfzeile ueber der Su
 Ansage: **„Anatomie Fokus" oben, „Muskelfinder" darunter.** Genau EINMAL pro Bildschirm: Das Zeichen
 ist dafuer aus der Icon-Rail und aus der `StandRail` verschwunden — ein Test bewacht das
 (`BrandMark.test.tsx`). Wer es in die Rail zurueckholt, hat zwei Logos auf einem Schirm.
+
+## ⚠️ EIN KARTEN-SCHLUESSEL, EIN MUSKEL (2026-07-14) — `isCardMuscle` / `CARD_MUSCLES`
+**Wer beim Lesen wieder ueber `getMuscles()` laeuft, baut den Fehler neu ein.**
+
+Beim Mobil-Durchlauf als Schuelerin gemessen: Der Knopf „Obere Extremitaet" verspricht **53**
+Karten — die Kasten-Tabelle zeigte **56 Zeilen**, drei davon „Untere Extremitaet". Die erste Karte
+der allerersten Sitzung war wieder **`M. abductor digiti minimi`**, diesmal mit **Fuss**-Fakten
+(Tuber calcanei, Kleinzehe). Nicht durch `seedDeck` (der ist geloescht) — durch den **Bereichs-Weg**.
+
+- Fuenf `nameLatin` gibt es **zweimal**. Karten sind nach `nameLatin` geschluesselt (ADR 0002 §2),
+  also ist so ein Paar **EINE** Karte — `addCards` entdoppelt laengst, und `regionMuscleNames`
+  auch. **Der Fehler sass auf der LESE-Seite:** `DeckManagerPage` und `quizPool` liefen ueber die
+  **150 Muskeln** und behielten die, deren Name ein Kartenschluessel ist — fuer EINE Karte fanden
+  sie **ZWEI** Muskeln.
+- Folgen, alle am Build nachgemessen: widerspruechliche Zahlen (Quiz „Karteikasten **56**",
+  Sitzung „**53** Karten"), Phantom-Zeilen, und **„Entfernen" loeschte beide Zeilen auf einmal** —
+  es ist derselbe Schluessel. Wer den Fussmuskel loswerden wollte, verlor die Handkarte mit.
+- **`isCardMuscle(muscle)` in `src/data/loader.ts` ist die einzige Regel:** wahr genau dann, wenn
+  `getMuscleByLatinName(m.nameLatin) === m`. Sie waehlt den Muskel, den die Lernkarte **rendert** —
+  jede andere Wahl zeigte eine Zeile, die nicht zur Karte gehoert. `CARD_MUSCLES` ist die fertige
+  Liste (145 statt 150). **Alles, was von Karten auf Muskeln schliesst, geht hier durch.**
+- `quizPool` entdoppelt nur die **`questions`**. Die **`distractors`** bleiben der ganze Bestand —
+  das ist die Regel aus 8b und sie gilt weiter. `quizSeriesKey` bleibt bitgleich (ADR 0002).
+
+**Das ist eine Entdopplung, KEINE Heilung.** Der Hand-Kleinfingerballen bleibt ueber Karten
+unlernbar (sein Schluessel loest auf den Fuss auf), und drei Karten in einem „Obere
+Extremitaet"-Kasten tragen weiter das Etikett „Untere Extremitaet". Das ist **dieselbe Wurzel, an
+der das Hypothenar gestorben ist** (siehe unten) — nur diesmal im Kartenweg statt in der Gruppe.
+Das echte Gegenmittel braucht einen eindeutigen `nameLatin` und **bricht ADR 0002**: Entscheidung
+des Projektinhabers, Optionen in `docs/todo.md`.
+
+## Handy-Regeln, die ab jetzt gelten (2026-07-14)
+- **Der Dark-Mode folgt dem Geraet.** `useThemeStore` startet auf der System-Praeferenz
+  (`matchMedia`), das No-Flash-Skript in `index.html` liest dieselbe Regel vor dem ersten Paint.
+  Wer einmal umschaltet, hat eine explizite Wahl — die wird persistiert und schlaegt das System.
+  Der frueher hier stehende `@media (prefers-color-scheme: dark)`-Block in `theme.css` war
+  **toter Code** (das Skript setzt `data-theme` immer, also traf `:not([data-theme])` nie zu) und
+  obendrein eine zweite Kopie der Tokens aus `[data-theme="dark"]`. Nicht wieder anlegen.
+- **Touch-Ziele: 44 px, aber nur unter 1024 px.** `--touch-min` gilt fuer echte Bedienelemente —
+  auf dem Desktop zielt eine Maus, dort bleibt das Bild wie gestaltet. **`.chip` ist auch ein
+  reines Etikett** (die Bewegungs-Tags auf den Suchtreffern): darum `button.chip`/`a.chip`, nie
+  `.chip`. Eine native Checkbox darf 17 px bleiben, wenn ihr `<label>` die Trefferflaeche ist.
+- **Quiz-Distraktoren kommen aus der Nachbarschaft** (`nearestFirst` in `src/data/quiz.ts`): erst
+  dieselbe Subregion, dann dieselbe Region, dann der Rest als Auffuellung. Der Rest MUSS drinbleiben
+  — sonst hat eine kleine Subregion keine vier Optionen (die Regel aus 8b). `quizSeriesKey` bleibt
+  unangetastet, aber **die Runden sind seitdem schwerer**: alte und neue Trefferquoten sind nur
+  bedingt vergleichbar.
+
+## Die Aktionen der Lernsitzung kleben (2026-07-14)
+Gemessen auf 390 × 664: „Karte aufdecken" und die drei Bewertungsknoepfe lagen bei **y = 872** —
+unter der Falz. **Eine Sitzung mit 20 Karten kostete 20-mal Scrollen**, bevor man bewerten konnte.
+
+- `.fc-actions` ist `position: sticky` unterhalb von 1024 px (darueber gibt es keine Tab-Leiste).
+  `bottom` ist dieselbe **96-px-Reserve**, die `.shell--mobile .content` ohnehin freihaelt — die
+  Leiste legt sich damit **nicht** auf die Navigation. Wer eine zweite klebende Leiste baut, nimmt
+  denselben Wert.
+- **Der Kopf der Sitzung ist weg** (ebenfalls 2026-07-14): Ueber der Karte standen Marke,
+  Kopfzeilen-Suche, der Titel „Lernkarten" und zwei **Setup**-Knoepfe — **445 px, mehr als die
+  Karte selbst (443 px)**. Das war die eigentliche Ursache der Falz, nicht die Kartenhoehe.
+  Waehrend eine Karte laeuft, sind Titel, Untertitel und Setup-Links ausgeblendet; die Karte
+  beginnt bei **y = 278**. Die `h1` bleibt als `visually-hidden` stehen — ohne sie haette die Seite
+  keine Ueberschrift (axe-Regel `page-has-heading-one`).
 
 ## ⚠️ KEIN HYPOTHENAR — und das bitte nicht „reparieren"
 Drei seiner vier Mitglieder (`M. abductor digiti minimi`, `M. flexor digiti minimi brevis`,

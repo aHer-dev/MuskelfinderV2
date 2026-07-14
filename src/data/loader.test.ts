@@ -1,7 +1,15 @@
 import { existsSync } from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { getMovements, getMuscleById, getMuscles, getRegions } from './loader'
+import {
+  CARD_MUSCLES,
+  getMovements,
+  getMuscleById,
+  getMuscleByLatinName,
+  getMuscles,
+  getRegions,
+  isCardMuscle,
+} from './loader'
 
 const publicRoot = path.join(process.cwd(), 'public')
 
@@ -55,6 +63,41 @@ describe('muscle data loader', () => {
       expect(image.attribution).toBeTruthy()
       expect(image.license).toBe('CC BY 4.0')
       expect(existsSync(path.join(publicRoot, image.url))).toBe(true)
+    }
+  })
+})
+
+/* Ein Karten-Schluessel ist ein `nameLatin`, und fuenf davon gibt es ZWEIMAL. Wer beim Lesen
+   ueber die 150 Muskeln laeuft, findet fuer EINE Karte ZWEI Muskeln — genau daran zeigte der
+   Karteikasten 56 Zeilen fuer 53 Karten, und „Entfernen" loeschte beide auf einmal. */
+describe('isCardMuscle — ein Muskel je Karten-Schluessel', () => {
+  it('haelt fest, dass fuenf Namen doppelt vergeben sind', () => {
+    const namen = getMuscles().map((m) => m.nameLatin)
+    const doppelt = [...new Set(namen.filter((n, i) => namen.indexOf(n) !== i))]
+
+    expect(doppelt.sort()).toEqual([
+      'M. abductor digiti minimi',
+      'M. flexor digiti minimi brevis',
+      'M. nasalis',
+      'M. occipitofrontalis',
+      'M. opponens digiti minimi',
+    ])
+  })
+
+  it('waehlt genau EINEN Muskel je nameLatin', () => {
+    const namen = CARD_MUSCLES.map((m) => m.nameLatin)
+
+    expect(new Set(namen).size).toBe(namen.length)
+    expect(CARD_MUSCLES).toHaveLength(new Set(getMuscles().map((m) => m.nameLatin)).size)
+  })
+
+  it('waehlt DEN Muskel, den die Karte auch rendert', () => {
+    // Sonst zeigte die Kasten-Zeile einen anderen Muskel als die Lernkarte darunter.
+    for (const muscle of CARD_MUSCLES) {
+      expect(getMuscleByLatinName(muscle.nameLatin)).toBe(muscle)
+    }
+    for (const muscle of getMuscles()) {
+      expect(isCardMuscle(muscle)).toBe(getMuscleByLatinName(muscle.nameLatin) === muscle)
     }
   })
 })

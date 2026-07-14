@@ -11,16 +11,24 @@
     <meta name="theme-color" content="#0b0c0e" media="(prefers-color-scheme: dark)" />
     <meta name="description" content="Muskelfinder — Nachschlagewerk & Lern-Tool für die Skelettmuskulatur." />
     <title>Anatomie Fokus · Muskelfinder</title>
-    <!-- Theme vor dem ersten Paint setzen (kein Flash). Liest den persistierten Zustand-Store. -->
+    <!-- Theme vor dem ersten Paint setzen (kein Flash). Liest den persistierten Zustand-Store;
+         ohne eigene Wahl gilt, was das Geraet eingestellt hat (dieselbe Regel wie in
+         `useThemeStore`) — sonst blendet die App ein Handy im Nachtmodus. -->
     <script>
       (function () {
+        function system() {
+          return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light';
+        }
+        var t;
         try {
           var raw = localStorage.getItem('mf.theme');
-          var t = raw ? (JSON.parse(raw).state || {}).theme : null;
-          document.documentElement.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light');
+          t = raw ? (JSON.parse(raw).state || {}).theme : null;
         } catch (e) {
-          document.documentElement.setAttribute('data-theme', 'light');
+          t = null;
         }
+        document.documentElement.setAttribute('data-theme', t === 'dark' || t === 'light' ? t : system());
       })();
     </script>
   </head>

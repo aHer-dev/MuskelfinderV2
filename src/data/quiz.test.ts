@@ -182,3 +182,51 @@ describe('generateQuiz', () => {
     }
   });
 });
+
+/* Vor dem 2026-07-14 wurde der ganze Bestand gemischt: „M. brachioradialis — Innervation?"
+   bot N. femoralis, N. subscapularis, N. radialis und R. thyrohyoideus an. Ein Bein-Nerv, ein
+   Schulter-Nerv, ein Kehlkopf-Ast — man loest das durch Ausschluss, ohne den Muskel zu kennen. */
+describe('Distraktoren kommen aus der Nachbarschaft', () => {
+  const NACHBARN: Muscle[] = [
+    m({ id: 'brachio', nameLatin: 'M. brachioradialis', region: 'upper', subregion: 'Unterarm' }),
+    m({ id: 'flexcarp', nameLatin: 'M. flexor carpi radialis', region: 'upper', subregion: 'Unterarm' }),
+    m({ id: 'extcarp', nameLatin: 'M. extensor carpi ulnaris', region: 'upper', subregion: 'Unterarm' }),
+    m({ id: 'supinator', nameLatin: 'M. supinator', region: 'upper', subregion: 'Unterarm' }),
+    m({ id: 'delt', nameLatin: 'M. deltoideus', region: 'upper', subregion: 'Schulter' }),
+    m({ id: 'soleus', nameLatin: 'M. soleus', region: 'lower', subregion: 'Wade' }),
+    m({ id: 'masseter', nameLatin: 'M. masseter', region: 'head', subregion: 'Kaumuskeln' }),
+    m({ id: 'rectus', nameLatin: 'M. rectus abdominis', region: 'trunk', subregion: 'Bauchwand' }),
+  ];
+
+  it('fuellt die falschen Antworten zuerst aus derselben Subregion', () => {
+    // Genug Nachbarn (3 weitere im Unterarm) — der Rest des Koerpers darf gar nicht drankommen.
+    for (const seed of [1, 2, 3, 7, 42]) {
+      const [frage] = generateQuiz(NACHBARN, 'muscle-to-function', 1, createRng(seed));
+      const gefragt = NACHBARN.find((x) => x.id === frage.muscleId)!;
+      if (gefragt.subregion !== 'Unterarm') continue;
+
+      const herkunft = frage.options
+        .filter((o) => o.id !== frage.correctId)
+        .map((o) => NACHBARN.find((x) => x.id === o.muscleId)?.subregion);
+
+      expect(herkunft).toEqual(['Unterarm', 'Unterarm', 'Unterarm']);
+    }
+  });
+
+  it('fuellt aus dem Rest auf, wenn die Nachbarschaft zu klein ist — vier Optionen bleiben Pflicht', () => {
+    // M. masseter ist der einzige Kaumuskel: ohne Auffuellung gaebe es keine vier Optionen (8b).
+    const nurEiner = NACHBARN.filter((x) => x.subregion !== 'Unterarm' || x.id === 'brachio');
+    const quiz = generateQuiz(nurEiner, 'muscle-to-function', nurEiner.length, createRng(5));
+
+    for (const frage of quiz) {
+      expect(frage.options).toHaveLength(4);
+      expect(new Set(frage.options.map((o) => o.label)).size).toBe(4);
+    }
+  });
+
+  it('bleibt deterministisch — gleicher Seed, gleiche Optionen', () => {
+    expect(generateQuiz(NACHBARN, 'innervation', 3, createRng(9))).toEqual(
+      generateQuiz(NACHBARN, 'innervation', 3, createRng(9)),
+    );
+  });
+})

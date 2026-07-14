@@ -53,6 +53,11 @@
 
 .search-field__input {
   flex: 1 1 auto;
+  /* Das Feld ist 56 px hoch (50 auf dem Handy) — der `input` darin war 24 px, und ein Tipp
+     auf die Polsterung landete im `div` statt im Feld. `stretch` macht die ganze Fläche zur
+     Trefferfläche; ein `label` drumherum täte dasselbe, aber das Feld hat schon ein
+     `aria-label`. */
+  align-self: stretch;
   border: none;
   outline: none;
   background: transparent;

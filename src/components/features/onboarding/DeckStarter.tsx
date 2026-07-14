@@ -42,10 +42,21 @@ export function DeckStarter() {
     [],
   );
 
-  return (
-    <div className="deck-starter">
-      {/* ── 1. Kursabschnitt ─────────────────────────────────────────── */}
-      <section className="deck-starter__way" aria-labelledby="way-kurs">
+  /* Der Kursabschnitt ist der Weg, den ein Schüler wirklich geht — SOBALD es Abschnitte gibt.
+     Solange `curriculum.json` leer ist, war er trotzdem die erste und größte Karte auf dem
+     Erststart-Bildschirm: Die allererste Wahl, die eine Schülerin traf, führte in einen
+     Platzhalter. Auf dem Handy stand über der ersten benutzbaren Option (Bereich) fast ein
+     ganzer Bildschirm Text.
+
+     Der Platzhalter BLEIBT (er erklärt, was hier einmal stehen wird — das ist bewusst so, ADR
+     0009). Er rutscht nur hinter den Weg, der heute trägt. Sobald der Projektinhaber Abschnitte
+     einträgt, steht er wieder vorn: Dann ist er die Antwort auf „womit fange ich an?". */
+  const kursZuerst = sections.length > 0;
+
+  /* Die Reihenfolge steht im DOM, nicht in der CSS-`order`: Sonst läse ein Screenreader (und
+     die Tabulatortaste) eine andere Reihenfolge als das Auge sieht — WCAG 2.4.3. */
+  const wegKurs = (
+    <section className="deck-starter__way" aria-labelledby="way-kurs">
         <h3 className="deck-starter__way-title" id="way-kurs">
           <Icon name="icList" size={18} />
           Nach Kursabschnitt
@@ -71,11 +82,12 @@ export function DeckStarter() {
               </li>
             ))}
           </ul>
-        )}
-      </section>
+      )}
+    </section>
+  );
 
-      {/* ── 2. Bereich ───────────────────────────────────────────────── */}
-      <section className="deck-starter__way" aria-labelledby="way-bereich">
+  const wegBereich = (
+    <section className="deck-starter__way" aria-labelledby="way-bereich">
         <h3 className="deck-starter__way-title" id="way-bereich">
           <Icon name="icCards" size={18} />
           Nach Bereich
@@ -95,12 +107,13 @@ export function DeckStarter() {
                 <span className="deck-starter__count">{region.names.length}</span>
               </button>
             </li>
-          ))}
-        </ul>
-      </section>
+        ))}
+      </ul>
+    </section>
+  );
 
-      {/* ── 3. Einzeln ───────────────────────────────────────────────── */}
-      <section className="deck-starter__way" aria-labelledby="way-einzeln">
+  const wegEinzeln = (
+    <section className="deck-starter__way" aria-labelledby="way-einzeln">
         <h3 className="deck-starter__way-title" id="way-einzeln">
           <Icon name="icSearch" size={18} />
           Einzeln aussuchen
@@ -108,15 +121,31 @@ export function DeckStarter() {
         <p className="deck-starter__way-hint">
           Du weißt genau, welche Muskeln du brauchst? Such sie und leg sie einzeln ab.
         </p>
-        <div className="deck-starter__links">
-          <Link to="/suche" className="btn btn--ghost">
-            Muskel suchen
-          </Link>
-          <Link to="/karteikasten" className="btn btn--ghost">
-            Karteikasten verwalten
-          </Link>
-        </div>
-      </section>
+      <div className="deck-starter__links">
+        <Link to="/suche" className="btn btn--ghost">
+          Muskel suchen
+        </Link>
+        <Link to="/karteikasten" className="btn btn--ghost">
+          Karteikasten verwalten
+        </Link>
+      </div>
+    </section>
+  );
+
+  return (
+    <div className="deck-starter">
+      {kursZuerst ? (
+        <>
+          {wegKurs}
+          {wegBereich}
+        </>
+      ) : (
+        <>
+          {wegBereich}
+          {wegKurs}
+        </>
+      )}
+      {wegEinzeln}
     </div>
   );
 }

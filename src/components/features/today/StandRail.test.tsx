@@ -98,7 +98,16 @@ describe('StandRail — „Dein Stand" auf /heute (Etappe 12)', () => {
   it('der Prüfungstermin zählt herunter — sonst steht er nirgends', () => {
     const inZehnTagen = new Date();
     inZehnTagen.setDate(inZehnTagen.getDate() + 10);
-    useProfileStore.getState().setProfile('physio', inZehnTagen.toISOString().slice(0, 10));
+    /* Das Datum LOKAL zusammensetzen, nicht ueber `toISOString()`: Das liefert UTC, und in
+       den Stunden nach lokaler Mitternacht steht dort noch der Vortag — der Test zaehlte
+       dann 9 statt 10 Tage und schlug je nach Uhrzeit fehl. Der Datumswaehler der App
+       liefert ebenfalls ein lokales `yyyy-mm-dd`. */
+    const lokal = [
+      inZehnTagen.getFullYear(),
+      String(inZehnTagen.getMonth() + 1).padStart(2, '0'),
+      String(inZehnTagen.getDate()).padStart(2, '0'),
+    ].join('-');
+    useProfileStore.getState().setProfile('physio', lokal);
 
     act(() => {
       useProgressStore.getState().addCards(['M. deltoideus']);

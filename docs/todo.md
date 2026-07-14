@@ -18,11 +18,43 @@
 | **3D-App neu deployen** — `aher-dev.github.io/3DAnatomyV2/datenschutz.html` liefert **HTTP 404** | Der Fix liegt im 3D-Repo bereits als HEAD (`f209896`). Nur pushen. Der einzige echte Makel an der öffentlichen App. |
 | **V1 abschalten oder Hinweis setzen** — `aher-dev.github.io/Muskelfinder/` ist noch live | Du sagtest: „läuft weiter, egal". Kein Blocker. |
 
+## ⚠️ Der Hand-Kleinfingerballen ist über Karten nicht lernbar (offen, braucht eine Entscheidung)
+
+Am 2026-07-14 beim Mobil-Durchlauf gefunden und **zur Hälfte** behoben.
+
+**Drei `nameLatin` gibt es zweimal, einmal Hand und einmal Fuß:**
+`M. abductor digiti minimi`, `M. flexor digiti minimi brevis`, `M. opponens digiti minimi`.
+(`M. nasalis` und `M. occipitofrontalis` sind ebenfalls doppelt, aber beide Hälften liegen im
+Kopf — dort ist es harmlos.)
+
+Karten sind nach `nameLatin` geschlüsselt (ADR 0002 §2), und der Namens-Index löst so ein Paar auf
+**genau einen** Muskel auf — auf den **Fuß**. Das heißt heute:
+
+- Wer „Obere Extremität" wählt, hat **drei Karten im Kasten, die als „Untere Extremität" rendern**
+  und Fuß-Fakten abfragen. Die Zahl am Knopf (53) stimmt, die Zeilen stimmen (53) — der **Inhalt**
+  dieser drei Karten nicht.
+- Der Handmuskel ist über Karten **gar nicht** lernbar. Nachschlagen geht (die Detailseite routet
+  über `id` und ist korrekt), Lernen nicht.
+- Es ist dieselbe Wurzel, an der schon die Gruppe **Hypothenar** gestorben ist (siehe
+  PROJECT_STATE). Damals wurde die Gruppe entfernt; der Kartenweg blieb.
+
+**Behoben ist nur die Entdopplung** (`isCardMuscle` / `CARD_MUSCLES`): keine Phantom-Zeilen mehr,
+keine widersprüchlichen Zahlen, „Entfernen" löscht nicht mehr zwei Karten auf einmal.
+
+**Das echte Gegenmittel bricht ADR 0002** und ist darum deine Entscheidung:
+
+| Weg | Preis |
+|---|---|
+| `nameLatin` eindeutig machen (z. B. `M. abductor digiti minimi (Fuß)`) | Bricht den Backup-Schlüssel. V1-Backups (V1 ist noch live!) verlieren diese Karten, es braucht eine Migrationsregel. Danach sind Hand und Fuß zwei echte Karten. |
+| Karten zusätzlich nach `id` schlüsseln | Sauberstes Datenmodell, größter Umbau — ADR 0002 §2 fällt. |
+| So lassen | Drei von 150 Muskeln bleiben falsch beschriftet und der Handmuskel unlernbar. |
+
 ## Design / Produkt (offen, nicht dringend)
 
 | Was | Notiz |
 |---|---|
 | **3D-Renderings für die 47 bildlosen Muskeln** (8f Stufe 2a) | Zurückgestellt (2026-07-13). Lizenz **ist geklärt** ([Protokoll](3d-app-lizenzpruefung.md)), offen ist die **Qualität**: Nur 21 der 47 sind in der 3D-App überhaupt adressierbar, und der Deep-Link allein liefert kein brauchbares Bild (der Muskel liegt im Kontrollrendering hinter dem Unterkiefer). Ein Bild, auf dem der Muskel nicht zu erkennen ist, ist schlechter als kein Bild. |
+| **Der Erststart ist immer noch textlastig** | Behoben ist die *Reihenfolge* („Nach Bereich" steht jetzt vor dem leeren Kursabschnitt-Platzhalter). Der erste Karten-Knopf liegt damit bei **y = 611** von 664 px — er ist sichtbar, aber gerade so. Darüber stehen weiterhin Marke, Suchfeld, Überschrift und fünf Zeilen Fließtext. Den Text zu kürzen ist eine **Textentscheidung des Inhabers**, kein Agenten-Job. |
 
 ## Entschieden und abgelehnt (nicht wieder vorschlagen)
 

@@ -355,3 +355,10 @@
 .shell--mobile .brand-mark__text strong {
   font-size: 15px;
 }
+
+/* Daumenmass (siehe components.css): Die Wortmarke ist ein Link nach `/heute` und war 41 px hoch. */
+@media (max-width: 1023.98px) {
+  .brand-mark {
+    min-height: var(--touch-min);
+  }
+}
