@@ -91,6 +91,20 @@ function pickDistractors(
   const unique: Candidate[] = [];
   for (const candidate of pool) {
     if (candidate.label.trim() === '' || seen.has(candidate.label)) continue;
+    /* **Der gleichnamige Zwilling ist nie eine falsche Antwort.** Fuenf `nameLatin` gibt es
+       zweimal (Hand/Fuss, und zweimal im Kopf). Bei `muscle-to-function` und `innervation` IST
+       der Fragetext nur dieser Name (`specFor`) — steht dann die Innervation des Fusszwillings
+       als Option neben der des Handmuskels, sind BEIDE richtig fuer den gezeigten Namen, und
+       eine davon wird als falsch gewertet. Gemessen traf das ~18 % der Fragen ueber einen
+       doppelten Namen.
+
+       Der Ausschluss gilt fuer alle Modi, nicht nur die beiden: Wo der Fragetext den Muskel
+       eindeutig benennt (`origin-insertion`), waere der Zwilling zwar ein zulaessiger
+       Distraktor — aber er ist einer von ~145, und eine Fallunterscheidung nach Modus waere
+       mehr Regel als Gewinn. Die Entdopplung nach Label darueber bleibt: sie faengt die
+       Modi ab, deren OPTIONEN Namen sind. */
+    const muskel = byId.get(candidate.muscleId);
+    if (muskel && muskel.nameLatin === target.nameLatin) continue;
     seen.add(candidate.label);
     unique.push(candidate);
   }

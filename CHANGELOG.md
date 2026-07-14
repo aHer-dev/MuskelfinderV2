@@ -7,6 +7,33 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Fixed
+- **Das Quiz bot den gleichnamigen Zwilling als „falsche" Antwort an.** Bei `muscle-to-function`
+  und `innervation` **ist** der Fragetext nur der lateinische Name (`specFor`) — und fünf `nameLatin`
+  gibt es zweimal (Hand/Fuß; `M. nasalis` und `M. occipitofrontalis` sogar in derselben Subregion,
+  wo `nearestFirst` die Distraktoren *bevorzugt* herholt). Dann stand die Innervation des
+  Fußzwillings neben der des Handmuskels: **beide richtig für den gezeigten Namen**, eine davon
+  als falsch gewertet. Gemessen traf das **536 von 3000** Fragen über einen doppelten Namen (~18 %).
+  `pickDistractors` schließt den gleichnamigen Muskel jetzt aus; zwei Tests wachen darüber (einer
+  synthetisch, einer gegen den echten Bestand). **`quizSeriesKey` bleibt unangetastet** (ADR 0002),
+  es ändert sich nichts an der Persistenz. **Das ist eine Entschärfung, keine Heilung:** Die Frage
+  „Was macht M. abductor digiti minimi?" bleibt für den Schüler mehrdeutig — sie ist nur wieder
+  *beantwortbar*. Die Wurzel bleibt der doppelte `nameLatin` (`docs/todo.md`).
+- **Der „Entfernen"-Knopf im Karteikasten fiel im Hover unter AA.** `.deck-remove:hover` setzte
+  `color: var(--danger)` — die **Flächen**farbe als **Schrift**. `theme.css` führt genau diesen Fall
+  seit dem letzten Durchlauf als Regel („#d1493a als Text auf Weiß erreicht nur 4.44:1"), und die
+  Regel war hier nicht angewandt. Gemessen: **4.44:1** ✗ (WCAG 1.4.3 will 4.5:1). Jetzt
+  `--danger-on-surface` (5.1:1). Der Rahmen darf die Flächenfarbe behalten — 1.4.11 verlangt nur 3:1.
+  Im Ruhezustand war der Knopf unauffällig; **nur der Hover fiel durch** — ein Ruhezustand-Audit
+  hätte ihn nie gefunden.
+- **Die Rechtsseiten liefen bis zu 111 Zeichen pro Zeile.** Der `--measure`-Durchgang hatte `today`,
+  `guide`, `exam` und `stats` erfasst, `legal.css` aber übersehen — dabei stehen dort die **längsten**
+  Fließtexte der App. `.legal` trug ein hartes `max-width: 780px`; gemessen auf 1440 px waren das
+  107–111 Zeichen. Jetzt trägt auch hier die **Spalte** das Maß (`var(--measure)`, 520 px) — gemessen
+  **71–72** Zeichen.
+- **Ein Kommentar in `TodayPage` behauptete das Gegenteil von ADR 0009.** Er sagte, das Onboarding
+  „füllt den Kasten und führt direkt in die erste Sitzung" — genau die Produktkorrektur, die Etappe 10
+  zurückgedreht hat. Der Code stimmte, nur die Erklärung daneben war die alte. Ein Agent, der ihr
+  glaubt, baut `seedDeck` wieder ein.
 - **Der Primärknopf verfehlte im Hover den Kontrast** (WCAG 1.4.3). Gefunden im Desktop-Durchlauf:
   Der Hover dunkelt ab (`--accent` #ff6a00 → `--accent-strong` #e64500) — aber die Schrift darauf
   ist **near-black** (`--accent-on`), und gegen Schwarz heißt ein dunklerer Grund **weniger**

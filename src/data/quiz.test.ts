@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { getMuscles } from './loader';
 import { createRng, generateQuiz, quizSeriesKey, readQuizHandoff } from './quiz';
 import type { Muscle, QuizMode } from '../types';
 
@@ -112,6 +113,57 @@ describe('generateQuiz', () => {
     const a = generateQuiz(MUSCLES, 'innervation', 4, createRng(99));
     const b = generateQuiz(MUSCLES, 'innervation', 4, createRng(99));
     expect(a).toEqual(b);
+  });
+
+  /* Fuenf `nameLatin` gibt es zweimal (Hand/Fuss, und zweimal im Kopf). Bei `muscle-to-function`
+     und `innervation` IST der Fragetext nur dieser Name — die Antwort des Zwillings waere fuer
+     den gezeigten Namen GENAUSO richtig, wuerde aber als falsch gewertet. Vor dem Fix traf das
+     gemessen ~18 % der Fragen ueber einen doppelten Namen (536 von 3000). */
+  it('bietet den gleichnamigen Zwilling nie als falsche Antwort an', () => {
+    const zwillinge = [
+      m({ id: 'hand', nameLatin: 'M. digiti minimi', region: 'upper',
+          functionDescription: 'Kleinfinger abspreizen', innervation: 'N. ulnaris' }),
+      m({ id: 'fuss', nameLatin: 'M. digiti minimi', region: 'lower',
+          functionDescription: 'Kleinzehe abspreizen', innervation: 'N. plantaris lateralis' }),
+      ...MUSCLES,
+    ];
+
+    for (const mode of ['muscle-to-function', 'innervation'] as const) {
+      for (let seed = 1; seed <= 60; seed++) {
+        for (const frage of generateQuiz(zwillinge, mode, zwillinge.length, createRng(seed))) {
+          const gefragt = zwillinge.find((x) => x.id === frage.muscleId)!;
+          const fremde = frage.options.filter((o) => o.muscleId !== gefragt.id);
+          for (const o of fremde) {
+            const quelle = zwillinge.find((x) => x.id === o.muscleId);
+            expect(quelle?.nameLatin).not.toBe(gefragt.nameLatin);
+          }
+        }
+      }
+    }
+  });
+
+  /* Dasselbe gegen die ECHTEN Daten: `M. nasalis` und `M. occipitofrontalis` liegen sogar in
+     derselben Subregion — und `nearestFirst` zieht die Nachbarschaft zuerst. */
+  it('haelt das auch auf dem echten Bestand durch (nasalis, occipitofrontalis, digiti minimi)', () => {
+    const alle = getMuscles();
+    const doppelt = new Set(
+      alle.map((x) => x.nameLatin).filter((n, i, arr) => arr.indexOf(n) !== i),
+    );
+    expect(doppelt.size).toBe(5); // faellt das, hat sich der Datenstand geaendert
+
+    for (const mode of ['muscle-to-function', 'innervation'] as const) {
+      for (let seed = 1; seed <= 40; seed++) {
+        for (const frage of generateQuiz(alle, mode, 20, createRng(seed))) {
+          const gefragt = alle.find((x) => x.id === frage.muscleId)!;
+          if (!doppelt.has(gefragt.nameLatin)) continue;
+          const fremde = frage.options.filter((o) => o.id !== frage.correctId);
+          for (const o of fremde) {
+            const quelle = alle.find((x) => x.id === o.muscleId);
+            expect(quelle?.nameLatin).not.toBe(gefragt.nameLatin);
+          }
+        }
+      }
+    }
   });
 
   it('klemmt die Anzahl auf die verfügbaren Muskeln', () => {

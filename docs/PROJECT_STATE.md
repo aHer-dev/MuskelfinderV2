@@ -185,6 +185,53 @@ warmen Papier muss es sich gegen viel Licht behaupten, auf Schwarz leuchtet es v
   `--accent-strong` ist jetzt **#ef5800** (5.03:1). **Wer diesen Ton anfasst, rechnet ihn gegen
   `--accent-on` nach, nicht gegen Weiss.**
 
+## Desktop-Durchlauf 2 — am Build nachgemessen (2026-07-14)
+Gefahren gegen den **echten Build** (Playwright+Chromium+axe, 1440×900, Hell+Dunkel, 14 Routen).
+
+- **ADR 0009 haelt — nachgewiesen, nicht geglaubt.** Frischer Browser, zwei Klicks durchs Onboarding:
+  **0 Karten im Kasten**, in `localStorage` steht **nur `mf.profile`**. Kein Primaerknopf auf dem
+  leeren Kasten. Erst der Klick auf „Obere Extremitaet" legt Karten an — **53 versprochen, 53
+  angelegt, 53 Zeilen in der Tabelle**. Die Entdopplung aus `isCardMuscle` traegt.
+  **Es landen keine zufaelligen Karten im Kasten.**
+- **Bekannt und unveraendert:** Drei dieser 53 Zeilen tragen das Etikett „Untere Extremitaet"
+  (die Hand/Fuss-Doppelnamen). Das ist die dokumentierte, **nicht geheilte** Wurzel aus
+  `docs/todo.md` — kein neuer Fehler.
+- **Der Hover ist die Fehlerquelle, die kein Ruhezustand-Audit findet.** axe meldete auf allen 14
+  Routen in Ruhe **0 Verstoesse** — und trotzdem fiel der „Entfernen"-Knopf im Karteikasten beim
+  Ueberfahren auf **4.44:1** durch (WCAG 1.4.3). **Das ist jetzt der dritte Hover-Fehler in Folge.**
+  Wer eine `:hover`-Regel schreibt, die eine **Farbe** setzt, prueft sie einzeln nach — der Ruhelauf
+  sagt darueber nichts.
+- **Falle beim PRUEFEN selbst (mich hat sie erwischt):** Ein Seed in `localStorage` **nach** dem
+  Laden bringt nichts — die App laeuft auf `HashRouter`, ein Routenwechsel laedt das Dokument
+  **nicht** neu, und `zustand` hydriert nie nach. Der Seed gehoert in ein `addInitScript`, und die
+  Sektionsformen muessen exakt `persistence/types.ts` treffen (`lookups.entries`, nicht flach;
+  der Quiz-Key heisst `mf.quizSeries`). Ein falsch geformter Store liess `/heute` **weiss** werden
+  (`Object.entries(undefined)`) — und weil der Hash-Wechsel nicht neu laedt, sahen **alle
+  Folgerouten** danach kaputt aus. **Je Route neu laden, sonst misst man einen Leichnam.**
+
+## ⚠️ DER GLEICHNAMIGE ZWILLING IST NIE EINE FALSCHE ANTWORT (2026-07-14)
+**Wer den Ausschluss in `pickDistractors` (`src/data/quiz.ts`) entfernt, baut den Fehler neu ein.**
+
+Bei **`muscle-to-function`** und **`innervation`** ist der Fragetext **nur der lateinische Name**
+(`specFor`) — und fuenf `nameLatin` gibt es zweimal. Dann stand die Innervation des **Fuss**zwillings
+als Option neben der des **Hand**muskels: **beide sind richtig fuer den gezeigten Namen**, eine davon
+wurde als falsch gewertet. Gemessen: **536 von 3000** Fragen ueber einen doppelten Namen (~18 %).
+
+- **`M. nasalis` und `M. occipitofrontalis` sind hier die SCHLIMMSTEN**, nicht die harmlosesten:
+  Sie liegen in **derselben Subregion** — und `nearestFirst` holt die Distraktoren **bevorzugt** aus
+  der Nachbarschaft. Bei der Gruppen-Regel galten sie als „unbedenklich, weil beide Haelften im Kopf
+  liegen". **Fuer das Quiz kehrt sich genau das um.** Dieselbe Doppelung, entgegengesetzte Wirkung —
+  eine Regel aus einem Kontext traegt nicht in den naechsten.
+- Was die Label-Entdopplung in `pickDistractors` schon konnte: Modi, deren **Optionen Namen sind**
+  (`function-to-muscle`, `image`, `name-image`), waren nie betroffen — dort ist das Label des
+  Zwillings identisch und flog raus. **Nur die Modi, deren Optionen TEXTE ueber den Muskel sind,
+  hatten das Loch.** Nachgemessen: `correctId` zeigte nie auf den falschen Muskel (0 von 21 000) —
+  das war ein Fehlverdacht.
+- **`quizSeriesKey` ist unangetastet** (ADR 0002), kein Feld, kein Backup-Schluessel aendert sich.
+- **Es ist eine Entschaerfung, KEINE Heilung.** „Was macht M. abductor digiti minimi?" bleibt fuer
+  den Schueler mehrdeutig — die Frage ist nur wieder *beantwortbar*. Die Wurzel ist der doppelte
+  `nameLatin` (`docs/todo.md`), dieselbe wie beim Hypothenar und beim Kartenweg.
+
 ## Satzspiegel: `--measure` (2026-07-14)
 Der Desktop-Durchlauf hat auf 1440 px **169 Zeichen pro Zeile** gemessen (`.stats__panel-sub`), im
 Quiz 146, im Guide 109 — waehrend diese Datei „Fliesstext gehoert auf ~68 Zeichen" als Regel fuehrt.
@@ -193,6 +240,11 @@ Ueber ~85 Zeichen findet das Auge den naechsten Zeilenanfang nicht mehr zuverlae
 - **`--measure: 52ch`** ist das Token. **Nicht auf 68ch stellen:** `ch` ist die Breite der Ziffer
   „0" und in Manrope deutlich breiter als ein Durchschnittszeichen — 68ch ergaben nachgemessen ~90
   echte Zeichen. Der Wert ist an der gerenderten Zeile geeicht, nicht aus der Theorie geraten.
+- **Nachtrag 2026-07-14 (zweiter Durchlauf): `legal.css` war uebersehen worden.** Der erste
+  Durchgang erfasste `today`, `guide`, `exam` und `stats` — ausgerechnet die Rechtsseiten
+  (`/quellen`, `/datenschutz`) nicht, und dort steht der **laengste Fliesstext der App**. Sie trugen
+  ein hartes `max-width: 780px`: gemessen **107–111** Zeichen pro Zeile, jetzt **71–72**.
+  **Wer ein Token einfuehrt, geht die Seiten durch, die es NICHT haben — nicht die, die es haben.**
 - **Die SPALTE traegt den Satzspiegel, nicht der Absatz.** Der Guide hatte bereits `max-width: 68ch`
   — am Container mit 16 px, waehrend der Text in den Karten 14 px ist. Kappt man stattdessen die
   Absaetze, bleiben die Karten breit und der Text hoert mittendrin auf: eine tote Rinne rechts IN

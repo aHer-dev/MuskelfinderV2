@@ -1,4 +1,10 @@
-.legal { width: 100%; max-width: 780px; margin-inline: auto; }
+/* Die Spalte traegt den Satzspiegel — nicht die Absaetze darin (dieselbe Regel wie im Guide).
+   Vorher stand hier `780px`: auf 1440 px ergab das gemessen 107–111 Zeichen pro Zeile, und ueber
+   ~85 findet das Auge den naechsten Zeilenanfang nicht mehr zuverlaessig wieder. Die Rechtsseiten
+   sind der laengste Fliesstext der App — hier faellt es am meisten ins Gewicht.
+   Kappte man stattdessen die Absaetze, blieben die Karten breit und der Text hoerte mittendrin
+   auf: eine tote Rinne rechts IN jeder Karte. Die Karte soll ihren Text umschliessen. */
+.legal { width: 100%; max-width: var(--measure); margin-inline: auto; }
 
 .legal__eyebrow {
   font-family: var(--font-ui);
