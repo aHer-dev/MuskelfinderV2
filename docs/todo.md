@@ -15,8 +15,10 @@
 
 | Was | Stand |
 |---|---|
-| **3D-App neu deployen** — `aher-dev.github.io/3DAnatomyV2/datenschutz.html` liefert **HTTP 404** | Der Fix liegt im 3D-Repo bereits als HEAD (`f209896`). Nur pushen. Der einzige echte Makel an der öffentlichen App. |
+| ~~3D-App neu deployen (datenschutz.html → 404)~~ | **ERLEDIGT 2026-07-14.** Alle Rechtsseiten liefern HTTP 200. |
+| ~~Pages-Schalter für den Muskelfinder~~ | **ERLEDIGT.** `aher-dev.github.io/MuskelfinderV2/` ist live und trägt den aktuellen Stand. |
 | **V1 abschalten oder Hinweis setzen** — `aher-dev.github.io/Muskelfinder/` ist noch live | Du sagtest: „läuft weiter, egal". Kein Blocker. |
+| **Nach jedem 3D-Deploy den Link einmal live klicken** | Kein Task, eine **Gewohnheit**. Der Deep-Link ist ein Vertrag mit einem fremden Repo: Ein Deploy dort kann ihn brechen, ohne dass hier eine Zeile Code fällt — und **kein Test von uns merkt es**. Genau so ist es am 2026-07-14 passiert (der „Vorschau-Modus" der 3D-App löschte die komplette Bedienoberfläche). |
 
 ## ⚠️ Der Hand-Kleinfingerballen ist über Karten nicht lernbar (offen, braucht eine Entscheidung)
 
