@@ -185,6 +185,32 @@ warmen Papier muss es sich gegen viel Licht behaupten, auf Schwarz leuchtet es v
   `--accent-strong` ist jetzt **#ef5800** (5.03:1). **Wer diesen Ton anfasst, rechnet ihn gegen
   `--accent-on` nach, nicht gegen Weiss.**
 
+## ⚠️ DAS PRUEF-GATE: `npm run verify` (2026-07-15)
+**Warum Bug um Bug auftauchte, obwohl 592 Tests gruen waren — und was das jetzt verhindert.**
+
+Die Unit-Tests hatten zwei blinde Flecken, und in genau denen sass fast jeder harte Bug:
+`quiz.test.ts` lief nur gegen **selbstgebaute Fixtures** (die sind per Konstruktion sauber — kein
+Fixture teilt sich je ein Feld), und es gab **keine eingecheckte Oberflaechen-/Ablaufpruefung** (jede
+visuelle Kontrolle wurde im Scratchpad neu gebaut und weggeworfen, darum fand jede NEUE Fehler).
+
+**`npm run verify`** buendelt jetzt vier Stufen, billig → teuer, und laeuft bei jedem Push
+(`.github/workflows/verify.yml`):
+- **`npm test`** — Verhalten. Die Quiz-Invarianten laufen jetzt ZUSAETZLICH gegen `getMuscles()`.
+- **`check:daten`** (`scripts/check-data.mjs`) — Integritaet (Bild-Dateien, IDs, Gruppen, Regionen)
+  als harter Fehler, PLUS ein **Kollisionsbericht fuer den Fachmann**: wo zwei Muskeln sich Name,
+  Funktion, Ursprung, Ansatz, Innervation oder Bild teilen. Das ist die Liste fachlicher Fragen
+  (z. B. `rhomboideus major`/`minor` mit woertlich gleichem Funktionstext).
+- **`check:oberflaeche`** (`scripts/check-surface.mjs`) — 14 Routen × Hell/Dunkel × Ruhe/**Hover**/
+  Fokus × leer/voll. axe, Ueberlauf, Satzspiegel. Faengt die Hover-Klasse, die ein Ruhe-Audit nie sah.
+- **`check:wege`** (`scripts/check-journey.mjs`) — frischer Browser, Kaltstart: 0 Karten (ADR 0009),
+  Bereich fuellen (versprochen == angelegt == Zeilen), Sitzung, JEDER Quizmodus, Pruefung.
+
+**DIE REGEL (in AGENTS.md verankert):** Jeder gefundene Fehler wird zu einer ZEILE in einer Pruefung,
+nicht nur zu einem Fix — und jede neue Pruefung wird gegengetestet (Fix zurueckdrehen → Pruefung muss
+fallen). So verifiziert: check:daten faellt bei kaputter Bildref, check:oberflaeche bei blassem Hover,
+check:wege bei wiedereingebautem `seedDeck`. **Was die Automatik NICHT kann — fachliche Richtigkeit —
+und der Rest: `docs/pruefstrategie.md`.**
+
 ## Desktop-Durchlauf 2 — am Build nachgemessen (2026-07-14)
 Gefahren gegen den **echten Build** (Playwright+Chromium+axe, 1440×900, Hell+Dunkel, 14 Routen).
 

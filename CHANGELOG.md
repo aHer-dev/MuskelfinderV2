@@ -6,6 +6,21 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+- **Prüf-Gate `npm run verify`** — bündelt lint · test · `check:daten` · build · `check:oberflaeche`
+  · `check:wege` und läuft bei jedem Push (`.github/workflows/verify.yml`). Grund: 592 grüne
+  Unit-Tests, und trotzdem tauchte Bug um Bug auf — weil die Tests nur gegen saubere Fixtures liefen
+  und es keine eingecheckte Oberflächen-/Ablaufprüfung gab. Drei neue Prüfungen schließen die Lücken:
+  - **`check:daten`** (`scripts/check-data.mjs`) — Integrität gegen den echten Bestand (Bild-Dateien
+    existieren, IDs eindeutig, Gruppen sauber, Regionen gültig) als harter Fehler, plus ein
+    **Kollisionsbericht** für den Fachmann (geteilte Felder = mögliche Datenfehler). Kein Browser.
+  - **`check:oberflaeche`** (`scripts/check-surface.mjs`, Playwright+axe) — 14 Routen × Hell/Dunkel ×
+    Ruhe/Hover/Fokus × leer/voll; axe, Überlauf, Satzspiegel. Fängt die Hover-Klasse.
+  - **`check:wege`** (`scripts/check-journey.mjs`, Playwright) — Kaltstart als Schülerin: kein
+    ungefragtes Deck (ADR 0009), Bereich füllen, Sitzung, jeder Quizmodus, Prüfung.
+  Alle drei sind gegengetestet (fallen bei zurückgedrehtem Fix). Regel in AGENTS.md verankert,
+  Details in `docs/pruefstrategie.md`.
+
 ### Fixed
 - **Das Quiz bot in jedem Modus zweite richtige Antworten als „falsch" an.** Der Fragetext ist
   überall **ein einzelnes Muskelfeld** — Name, Ursprung, Ansatz, Funktion, ein Bild —, und **keins

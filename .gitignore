@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Screenshots der Browser-Pruefungen (check:oberflaeche / check:wege)
+check-shots
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
