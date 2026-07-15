@@ -1,0 +1,35 @@
+# Volle Pruefung bei JEDEM Push und Pull Request — nicht nur vor dem Deploy.
+# Faengt die Fehlerklassen, die `npm test` allein nie sah: Daten-Kollisionen
+# (check:daten), Hover-/Kontrast-/Satzspiegel im Browser (check:oberflaeche) und
+# den Schueler-Durchlauf inkl. ADR-0009 (check:wege).
+#
+# Der Deploy-Workflow (deploy.yml) bleibt eigenstaendig und laeuft nur auf main.
+name: Verify
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Chromium fuer die Browser-Pruefungen (check:oberflaeche, check:wege).
+      # --with-deps zieht die noetigen System-Bibliotheken auf dem Runner nach.
+      - run: npx playwright install --with-deps chromium
+      # verify = lint && test && check:daten && build && check:oberflaeche && check:wege
+      - run: npm run verify
+      # Bei Fehler die Screenshots der Browser-Pruefungen sichern (falls vorhanden).
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: check-shots
+          path: check-shots/
+          if-no-files-found: ignore

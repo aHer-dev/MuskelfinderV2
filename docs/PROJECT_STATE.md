@@ -185,6 +185,99 @@ warmen Papier muss es sich gegen viel Licht behaupten, auf Schwarz leuchtet es v
   `--accent-strong` ist jetzt **#ef5800** (5.03:1). **Wer diesen Ton anfasst, rechnet ihn gegen
   `--accent-on` nach, nicht gegen Weiss.**
 
+## ⚠️ DAS PRUEF-GATE: `npm run verify` (2026-07-15)
+**Warum Bug um Bug auftauchte, obwohl 592 Tests gruen waren — und was das jetzt verhindert.**
+
+Die Unit-Tests hatten zwei blinde Flecken, und in genau denen sass fast jeder harte Bug:
+`quiz.test.ts` lief nur gegen **selbstgebaute Fixtures** (die sind per Konstruktion sauber — kein
+Fixture teilt sich je ein Feld), und es gab **keine eingecheckte Oberflaechen-/Ablaufpruefung** (jede
+visuelle Kontrolle wurde im Scratchpad neu gebaut und weggeworfen, darum fand jede NEUE Fehler).
+
+**`npm run verify`** buendelt jetzt vier Stufen, billig → teuer, und laeuft bei jedem Push
+(`.github/workflows/verify.yml`):
+- **`npm test`** — Verhalten. Die Quiz-Invarianten laufen jetzt ZUSAETZLICH gegen `getMuscles()`.
+- **`check:daten`** (`scripts/check-data.mjs`) — Integritaet (Bild-Dateien, IDs, Gruppen, Regionen)
+  als harter Fehler, PLUS ein **Kollisionsbericht fuer den Fachmann**: wo zwei Muskeln sich Name,
+  Funktion, Ursprung, Ansatz, Innervation oder Bild teilen. Das ist die Liste fachlicher Fragen
+  (z. B. `rhomboideus major`/`minor` mit woertlich gleichem Funktionstext).
+- **`check:oberflaeche`** (`scripts/check-surface.mjs`) — 14 Routen × Hell/Dunkel × Ruhe/**Hover**/
+  Fokus × leer/voll. axe, Ueberlauf, Satzspiegel. Faengt die Hover-Klasse, die ein Ruhe-Audit nie sah.
+- **`check:wege`** (`scripts/check-journey.mjs`) — frischer Browser, Kaltstart: 0 Karten (ADR 0009),
+  Bereich fuellen (versprochen == angelegt == Zeilen), Sitzung, JEDER Quizmodus, Pruefung.
+
+**DIE REGEL (in AGENTS.md verankert):** Jeder gefundene Fehler wird zu einer ZEILE in einer Pruefung,
+nicht nur zu einem Fix — und jede neue Pruefung wird gegengetestet (Fix zurueckdrehen → Pruefung muss
+fallen). So verifiziert: check:daten faellt bei kaputter Bildref, check:oberflaeche bei blassem Hover,
+check:wege bei wiedereingebautem `seedDeck`. **Was die Automatik NICHT kann — fachliche Richtigkeit —
+und der Rest: `docs/pruefstrategie.md`.**
+
+## Desktop-Durchlauf 2 — am Build nachgemessen (2026-07-14)
+Gefahren gegen den **echten Build** (Playwright+Chromium+axe, 1440×900, Hell+Dunkel, 14 Routen).
+
+- **ADR 0009 haelt — nachgewiesen, nicht geglaubt.** Frischer Browser, zwei Klicks durchs Onboarding:
+  **0 Karten im Kasten**, in `localStorage` steht **nur `mf.profile`**. Kein Primaerknopf auf dem
+  leeren Kasten. Erst der Klick auf „Obere Extremitaet" legt Karten an — **53 versprochen, 53
+  angelegt, 53 Zeilen in der Tabelle**. Die Entdopplung aus `isCardMuscle` traegt.
+  **Es landen keine zufaelligen Karten im Kasten.**
+- **Bekannt und unveraendert:** Drei dieser 53 Zeilen tragen das Etikett „Untere Extremitaet"
+  (die Hand/Fuss-Doppelnamen). Das ist die dokumentierte, **nicht geheilte** Wurzel aus
+  `docs/todo.md` — kein neuer Fehler.
+- **Der Hover ist die Fehlerquelle, die kein Ruhezustand-Audit findet.** axe meldete auf allen 14
+  Routen in Ruhe **0 Verstoesse** — und trotzdem fiel der „Entfernen"-Knopf im Karteikasten beim
+  Ueberfahren auf **4.44:1** durch (WCAG 1.4.3). **Das ist jetzt der dritte Hover-Fehler in Folge.**
+  Wer eine `:hover`-Regel schreibt, die eine **Farbe** setzt, prueft sie einzeln nach — der Ruhelauf
+  sagt darueber nichts.
+- **Falle beim PRUEFEN selbst (mich hat sie erwischt):** Ein Seed in `localStorage` **nach** dem
+  Laden bringt nichts — die App laeuft auf `HashRouter`, ein Routenwechsel laedt das Dokument
+  **nicht** neu, und `zustand` hydriert nie nach. Der Seed gehoert in ein `addInitScript`, und die
+  Sektionsformen muessen exakt `persistence/types.ts` treffen (`lookups.entries`, nicht flach;
+  der Quiz-Key heisst `mf.quizSeries`). Ein falsch geformter Store liess `/heute` **weiss** werden
+  (`Object.entries(undefined)`) — und weil der Hash-Wechsel nicht neu laedt, sahen **alle
+  Folgerouten** danach kaputt aus. **Je Route neu laden, sonst misst man einen Leichnam.**
+
+## ⚠️ KEINE FRAGE HAT ZWEI RICHTIGE ANTWORTEN (2026-07-15) — `gueltigeAntworten`
+**Wer die Sperre in `pickDistractors` (`src/data/quiz.ts`) aufweicht, baut den Fehler neu ein.**
+
+Der Fragetext ist in JEDEM Modus **ein einzelnes Muskelfeld** — Name, Ursprung, Ansatz, Funktion,
+ein Bild. **Keins davon ist eindeutig.** Am echten Bestand nachgezaehlt:
+
+| geteiltes Feld | Kollisionen | betroffene Muskeln |
+|---|---|---|
+| `insertion` | 12 | **29** |
+| `origin` | 10 | **23** |
+| `functionDescription` | 5 | 10 |
+| `nameLatin` | 5 | 10 |
+| erstes Bild | 2 | 6 (**das Quadriceps-Bild gehoert VIER Muskeln**) |
+
+Wer den Fragetext teilt, **antwortet auf ihn auch richtig** — und wurde trotzdem rot markiert.
+Gemessen ueber 16 800 Fragen, vorher: `name-image` **6,6 %** (zwei Optionen zeigten **dieselbe
+Bilddatei**, eine gruen, eine rot), `insertion-origin` **6,3 %**, `image` 3,8 %, `origin-insertion`
+3,5 %, `function-to-muscle` 1,1 %. Nachher: **0,0 % in allen sieben Modi.**
+
+- **Jeder Modus sagt selbst, welche Antworten richtig waeren** (`gueltigeAntworten` in `specFor`).
+  `pickDistractors` sperrt sie **alle**, nicht nur die eine gemeinte.
+- **Die Sperre geht nach ANTWORT, nicht nach MUSKEL** — und genau daran ist ein erster Versuch
+  gescheitert: **M. sartorius** hat einen anderen Ursprung als **M. gracilis** und rutscht durch
+  jeden muskelbasierten Filter — aber **beide setzen am Pes anserinus an**. Sein Ansatz ist damit
+  auf die Gracilis-Frage richtig. **Wer nur Muskeln aussiebt, laesst das Label stehen.**
+- **`name-image` siebt nach BILDDATEI, nicht nach `id`.** Der alte Filter (`m.id !== muscle.id`)
+  liess vier verschiedene IDs mit **derselben Datei** durch. 152 Dateien tragen 168 Referenzen.
+- **`M. nasalis`/`M. occipitofrontalis`: dieselbe Doppelung, entgegengesetzte Wirkung.** Bei der
+  Gruppen-Regel galten sie als „unbedenklich, weil beide Haelften im Kopf liegen" — fuers Quiz ist
+  genau das der **schlimmste** Fall: `nearestFirst` zieht Distraktoren bevorzugt aus derselben
+  Subregion, und dort steht der Zwilling. **Eine Regel aus einem Kontext traegt nicht in den
+  naechsten.**
+- **Es bleiben ueberall vier Optionen**, auch unter engem Bereichsfilter (die Regel aus 8b) — ein
+  Test prueft es je Region und Modus.
+- **`quizSeriesKey` ist unangetastet** (ADR 0002), kein Feld, kein Backup-Schluessel aendert sich.
+- **Ein Fehlverdacht, damit ihn niemand nochmal jagt:** `correctId` zeigte NIE auf den falschen
+  Muskel (0 von 21 000), obwohl es ueber das Label aufgeloest wird.
+
+**Es ist eine Entschaerfung, KEINE Heilung.** „Was macht M. abductor digiti minimi?" bleibt fuer den
+Schueler mehrdeutig, und „Ursprung → Ansatz" nennt weiterhin keinen Muskelnamen — die Fragen sind nur
+wieder *beantwortbar*. Der echte Weg waere, den Muskel im Fragetext zu benennen: **Produktentscheidung,
+nicht Bugfix.** Wurzel: `docs/todo.md`.
+
 ## Satzspiegel: `--measure` (2026-07-14)
 Der Desktop-Durchlauf hat auf 1440 px **169 Zeichen pro Zeile** gemessen (`.stats__panel-sub`), im
 Quiz 146, im Guide 109 — waehrend diese Datei „Fliesstext gehoert auf ~68 Zeichen" als Regel fuehrt.
@@ -193,6 +286,11 @@ Ueber ~85 Zeichen findet das Auge den naechsten Zeilenanfang nicht mehr zuverlae
 - **`--measure: 52ch`** ist das Token. **Nicht auf 68ch stellen:** `ch` ist die Breite der Ziffer
   „0" und in Manrope deutlich breiter als ein Durchschnittszeichen — 68ch ergaben nachgemessen ~90
   echte Zeichen. Der Wert ist an der gerenderten Zeile geeicht, nicht aus der Theorie geraten.
+- **Nachtrag 2026-07-14 (zweiter Durchlauf): `legal.css` war uebersehen worden.** Der erste
+  Durchgang erfasste `today`, `guide`, `exam` und `stats` — ausgerechnet die Rechtsseiten
+  (`/quellen`, `/datenschutz`) nicht, und dort steht der **laengste Fliesstext der App**. Sie trugen
+  ein hartes `max-width: 780px`: gemessen **107–111** Zeichen pro Zeile, jetzt **71–72**.
+  **Wer ein Token einfuehrt, geht die Seiten durch, die es NICHT haben — nicht die, die es haben.**
 - **Die SPALTE traegt den Satzspiegel, nicht der Absatz.** Der Guide hatte bereits `max-width: 68ch`
   — am Container mit 16 px, waehrend der Text in den Karten 14 px ist. Kappt man stattdessen die
   Absaetze, bleiben die Karten breit und der Text hoert mittendrin auf: eine tote Rinne rechts IN

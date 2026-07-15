@@ -21,6 +21,20 @@ docs/architecture.md · Prozess: AGENT_WORKFLOW.md
 - Test:  npm run test      (muss grün sein vor "fertig" — sobald Vitest steht)
 - Lint:  npm run lint
 - Build: npm run build
+- **Verify: npm run verify** — das volle Gate (lint · test · check:daten · build ·
+  check:oberflaeche · check:wege). **Vor jedem „fertig" laufen lassen.** Läuft auch bei
+  jedem Push automatisch (`.github/workflows/verify.yml`).
+  Einzeln: `check:daten` (Dateninvarianten + Kollisionsbericht für den Fachmann),
+  `check:oberflaeche` (axe/Hover/Satzspiegel im Browser), `check:wege` (Schüler-Durchlauf).
+  Warum es das gibt und was es NICHT kann: `docs/pruefstrategie.md`.
+
+## Prüf-Regel (hart)
+- **Jeder gefundene Fehler wird zu einer Zeile in einer der Prüfungen — nicht nur zu einem Fix.**
+  Ein Fix repariert einen Fall; eine Prüfung lässt die Klasse aussterben.
+- **Jede neue Prüfung gegentesten:** Fix zurückdrehen → Prüfung MUSS fallen → wiederherstellen.
+  Eine Prüfung, die auch ohne den Fehler grün ist, prüft nichts.
+- **Unit-Tests für Datenlogik laufen gegen den ECHTEN Bestand** (`getMuscles()`), nicht nur gegen
+  Fixtures — Fixtures sind per Konstruktion sauber und verstecken genau die Datenfehler.
 
 ## Architektur-Grenzen (hart)
 - Statische App, kein Server. Keine externen Laufzeit-Requests außer den Repo-Daten.

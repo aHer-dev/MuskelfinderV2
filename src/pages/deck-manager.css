@@ -183,9 +183,12 @@
   transition: var(--transition-smooth);
   white-space: nowrap;
 }
+/* Der Rahmen darf die Flaechenfarbe tragen (1.4.11 will 3:1), die SCHRIFT nicht:
+   `--danger` (#d1493a) auf Weiss erreicht gemessen 4.44:1 und verfehlt 1.4.3 (4.5:1).
+   Dafuer gibt es `--danger-on-surface` — dieselbe Regel wie beim Akzent-Hover. */
 .deck-remove:hover {
   border-color: var(--danger);
-  color: var(--danger);
+  color: var(--danger-on-surface);
 }
 .deck-remove:focus-visible {
   outline: 2px solid var(--focus-ring);

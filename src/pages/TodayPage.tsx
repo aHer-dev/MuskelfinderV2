@@ -104,8 +104,12 @@ export function TodayPage() {
   const today = new Date().toLocaleDateString('de-DE', DATE_FORMAT);
 
   /* Erststart (7c): leerer Kasten UND noch kein Profil. Dann ist das Onboarding der
-     Vorschlag — es füllt den Kasten und führt direkt in die erste Sitzung. Wer den
-     Kasten später leert, hat ein Profil und bekommt den Leerzustand darunter. */
+     Vorschlag — es fragt nur, WER hier lernt (Beruf, Prüfungstermin).
+
+     **Es legt keine Karte an und startet keine Sitzung** (ADR 0009): `useCompleteOnboarding`
+     merkt sich nur das Profil, danach rendert diese Seite von selbst weiter — in den Guide
+     und den `DeckStarter`, wo der Schüler seine Karten selbst wählt. Wer den Kasten später
+     leert, hat ein Profil und bekommt denselben Startbildschirm ohne die zwei Fragen. */
   if (plan.kind === 'needsOnboarding' && profession === null) {
     return (
       <section className="page today">

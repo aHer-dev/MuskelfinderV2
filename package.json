@@ -11,7 +11,12 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check:daten": "node scripts/check-data.mjs",
+    "check:oberflaeche": "node scripts/check-surface.mjs",
+    "check:wege": "node scripts/check-journey.mjs",
+    "check:browser": "npm run check:oberflaeche && npm run check:wege",
+    "verify": "npm run lint && npm run test && npm run check:daten && npm run build && npm run check:browser"
   },
   "dependencies": {
     "react": "^19.2.7",
