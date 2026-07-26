@@ -6,7 +6,7 @@ import {
   neueKarten,
   orderedJointGroups,
 } from './joint-groups';
-import { CARD_MUSCLES, getMuscles } from './loader';
+import { CARD_MUSCLES, getMuscleByLatinName, getMuscles } from './loader';
 import { PROFESSIONS } from './profession';
 
 /* Gegen den ECHTEN Bestand, nicht gegen Fixtures (AGENTS.md): Eine Gruppendefinition ist eine
@@ -106,6 +106,49 @@ describe('Gelenkgruppen — Zuschnitt', () => {
     expect(g.muscles).toContain('M. sternohyoideus');
     expect(g.muscles).toContain('M. thyrohyoideus');
     expect(g.muscles.length).toBeGreaterThanOrEqual(6);
+  });
+
+  it('KEIN Eintrag zeigt Fakten eines anderen Körperteils', () => {
+    /* Die harte Regel aus `isCardMuscle`: „Alles, was von Karten auf Muskeln schliesst, geht
+       hier durch." Der erste Wurf dieser Datei lief über alle 150 Muskeln — und die Gruppe
+       „Hand" enthielt dann `M. abductor digiti minimi`, `M. flexor digiti minimi brevis` und
+       `M. opponens digiti minimi`, deren Kartenschlüssel auf die FUSS-Muskeln auflösen. Ein
+       Ergo, der „Hand" klickte, bekam drei Karten mit Kleinzehen-Fakten.
+
+       Dieser Test vergleicht die Gruppe nicht mit dem Muskel, der ihre Bedingung erfüllt,
+       sondern mit dem, den die KARTE rendert. Er ist die Prüfzeile für dieselbe Wurzel, an
+       der `seedDeck` (ADR 0009), die Gruppe Hypothenar und die Kasten-Tabelle gestorben sind. */
+    const falsch: string[] = [];
+    for (const g of getJointGroups()) {
+      for (const name of g.muscles) {
+        const gerendert = getMuscleByLatinName(name);
+        if (gerendert === undefined) {
+          falsch.push(`${g.label}: „${name}" hat keinen Muskel-Datensatz`);
+          continue;
+        }
+        const passt =
+          g.subregions.includes(gerendert.subregion) ||
+          gerendert.joints.some((j) => g.joints.includes(j));
+        if (!passt) {
+          falsch.push(`${g.label}: „${name}" rendert ${gerendert.subregion} (${gerendert.region})`);
+        }
+      }
+    }
+    expect(falsch).toEqual([]);
+  });
+
+  it('die drei Hand/Fuß-Doppelnamen liegen NUR beim Fuß — dort rendern sie', () => {
+    /* Entdoppelt, nicht geheilt (`docs/todo.md`): Der Kartenschlüssel löst auf den Fuß auf,
+       also gehört der Eintrag zur Fußgruppe. Der HANDmuskel bleibt über Karten unlernbar —
+       das braucht eine Entscheidung zu ADR 0002 und ist kein Fehler dieser Datei. */
+    for (const name of [
+      'M. abductor digiti minimi',
+      'M. flexor digiti minimi brevis',
+      'M. opponens digiti minimi',
+    ]) {
+      expect(getJointGroup('hand')!.muscles, `${name} darf nicht in „Hand" stehen`).not.toContain(name);
+      expect(getJointGroup('sprunggelenk-fuss')!.muscles).toContain(name);
+    }
   });
 
   it('Mitglieder sind nach nameLatin entdoppelt (ADR 0002 §2)', () => {

@@ -59,9 +59,16 @@ await withApp(async ({ page, goto, errors, BASE }) => {
      das Huftgelenk oben; die Pruefung greift trotzdem nach dem LABEL, nicht nach der
      Position — sonst misst sie die Sortierung statt die Zahl. */
   L('\n2. Karteikasten fuellen — die Zahl am Knopf haelt Wort');
+  /* **HANDY-MASS fuer diese Station.** Auf 1440x900 passt der Startbildschirm fast ins Bild,
+     `scrollY` ist nach dem Klick ohnehin 0, und die Bildlauf-Behauptungen unten waeren
+     bedeutungslos gruen. Der Fehler war handyspezifisch: 1936 px Seite auf 664 px Schirm, der
+     Karten-Knopf bei y=611 — man klickt ihn nur gescrollt, und danach blieb die Seite stehen.
+     Nach der Station zurueck auf Desktop, damit Station 4 ihre Falz-Messung behaelt. */
+  await page.setViewportSize({ width: 390, height: 664 });
   const gruppenKnopf = page.locator('.jgp__group').filter({ hasText: 'Ellenbogen' }).first();
   pruefe(await gruppenKnopf.count() > 0, 'Die Gelenkgruppe „Ellenbogen" steht zur Wahl');
   const versprochen = parseInt((await gruppenKnopf.locator('.jgp__count').innerText()).trim(), 10);
+  await gruppenKnopf.scrollIntoViewIfNeeded();
   await gruppenKnopf.click();
   await page.waitForTimeout(500);
   const angelegt = await page.evaluate(() => {
@@ -76,6 +83,30 @@ await withApp(async ({ page, goto, errors, BASE }) => {
      den Stau-Fehler. In Suche und Filter bleiben sie. */
   const regionKnopf = await page.locator('.jgp__group, .deck-starter__section').filter({ hasText: /^Obere Extremität/ }).count();
   pruefe(regionKnopf === 0, 'Der 53-Karten-Knopf „Obere Extremität" ist aus dem Erststart verschwunden');
+
+  /* Der Bildschirm baut sich nach der ersten Gruppe komplett um: aus dem Startbildschirm wird
+     der Tagesplan. Auf dem Handy blieb die Scrollposition dabei stehen (gemessen y=549 von
+     1936 px) — die neue Ueberschrift und der Los-Knopf lagen UEBER dem Sichtfeld, und der
+     Schueler sah von seinen 17 neuen Karten nichts. */
+  const nachKlick = await page.evaluate(() => ({
+    scrollY: Math.round(window.scrollY),
+    h1Sichtbar: (() => {
+      const h = document.querySelector('main h1');
+      if (!h) return false;
+      const b = h.getBoundingClientRect();
+      return b.top >= 0 && b.bottom <= window.innerHeight;
+    })(),
+  }));
+  pruefe(nachKlick.scrollY === 0, `Nach dem Anlegen steht die Seite oben (scrollY=${nachKlick.scrollY})`);
+  pruefe(nachKlick.h1Sichtbar, 'Die neue Ueberschrift ist ohne Scrollen sichtbar');
+
+  /* Und die Begruessung darf keine erfundene Diagnose enthalten: Der Schueler hat noch keine
+     Karte beantwortet, also gibt es keine „schwaechste Region" (UX-Review 2026-07-26). */
+  const diagnose = await page.locator('.today__diagnosis').innerText().catch(() => '');
+  pruefe(!/schwächste Region/i.test(diagnose),
+    'Keine „schwaechste Region" ohne eine einzige beantwortete Karte');
+  pruefe(!/Stau/i.test(await page.locator('main h1').innerText()),
+    'Die Begruessung nennt keinen Stau, den es nicht gibt');
 
   await goto('/karteikasten');
   const zeilen = await page.locator('table tbody tr').count();
@@ -102,6 +133,8 @@ await withApp(async ({ page, goto, errors, BASE }) => {
   });
   pruefe(angelegt + versprochen2 === angelegt2,
     `„Schultergelenk" nach „Ellenbogen": ${versprochen2} versprochen == ${angelegt2 - angelegt} neu angelegt (Ueberlappung abgezogen)`);
+
+  await page.setViewportSize({ width: 1440, height: 900 });
 
   /* ---- STATION 3: /heute schlaegt jetzt eine Sitzung vor ---- */
   L('\n3. /heute fuehrt jetzt in die Sitzung');

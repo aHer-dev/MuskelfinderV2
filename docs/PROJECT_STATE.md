@@ -109,6 +109,16 @@ alle als Prüfzeile gegengetestet. Vier Regeln, die daraus für JEDEN Folge-Task
   die Auswahlliste im Karteikasten war 460 px auf einem 568-px-Schirm, jeder Wisch darin scrollte
   die Liste statt die Seite). **320 px ist Absicht:** Bei 390 px zeigt sich die Grid-Falle nicht.
 
+**Zwei Nachtraege vom selben Tag, beide aus dem Erstkontakt-Durchgang:**
+- **Keine Diagnose ohne Datengrundlage.** `/heute` nannte eine „schwaechste Region", bevor eine
+  einzige Karte beantwortet war (frische Karten = Fach 1 = Beherrschung 0 in JEDER Region).
+  `weakestRegion` schweigt jetzt, solange alle Regionen gleich stehen. **Wer einen bewertenden
+  Satz aus Daten baut, prueft erst, ob die Daten ihn tragen.**
+- **Eine Pruefzeile muss auf der Groesse laufen, auf der der Fehler lebt.** Die
+  Bildlauf-Behauptung („nach dem Anlegen steht die Seite oben") war auf 1440x900 bedeutungslos
+  gruen — dort ist `scrollY` ohnehin 0. Erst auf 390x664 faellt sie ohne den Fix (`scrollY=499`).
+  `check:wege` schaltet fuer diese Station darum ausdruecklich auf Handy-Mass.
+
 **Und eine Nebenwirkung, die kein DOM-Test fangen kann:** Uhr und Klick konnten dieselbe Quizfrage
 doppelt werten — der Intervall-Callback laeuft AUSSERHALB des React-Ereignisflusses, ein Klick im
 selben Frame sieht in `answer()` noch das alte `phase` aus seinem Closure. Ein Ref-Riegel wertet
@@ -153,6 +163,13 @@ Kniegelenk · Sprunggelenk & Fuss.
   der die Huefte lernen will, soll sie nicht suchen muessen. Ein Test prueft, dass jeder Beruf
   alle elf Gruppen erreicht.
 - Die vier Regionen bleiben in **Suche und Filter**. Nur zum FUELLEN sind sie zu grob.
+
+- **Die Gruppen leiten aus `CARD_MUSCLES` ab, NICHT aus `getMuscles()`.** Der erste Wurf lief
+  ueber alle 150 Muskeln, und „Hand" enthielt damit die drei Doppelnamen, deren Kartenschluessel
+  auf den FUSS aufloest — ein Ergo bekam Kleinzehen-Fakten in seinem Handkasten. Das ist die
+  harte Regel aus `isCardMuscle`, und sie gilt fuer JEDE neue Ableitung: **Wer von Karten auf
+  Muskeln schliesst, geht durch `CARD_MUSCLES`.** Zwei Pruefzeilen vergleichen die Gruppe nicht
+  mit dem Muskel, der ihre Bedingung erfuellt, sondern mit dem, den die KARTE rendert.
 
 **Was das NICHT heilt:** Die drei doppelten `nameLatin` (Hand/Fuss) bleiben. Die Gruppe „Hand"
 enthaelt weiter `M. abductor digiti minimi`, und der Name loest auf den FUSS auf. Es trifft nur

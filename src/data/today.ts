@@ -155,6 +155,17 @@ function byScoreThenName(a: Scored, b: Scored): number {
 /**
  * Schwächste Region unter den übergebenen Muskelnamen: niedrigste Beherrschung,
  * bei Gleichstand die mit den meisten betroffenen Karten. null, wenn keine Region trägt.
+ *
+ * **null auch, wenn alle beteiligten Regionen GLEICH stehen** (UX-Review 2026-07-26):
+ * Beim Erstkontakt gemessen stand auf `/heute` „19 davon Obere Extremität — **deine
+ * schwächste Region**", während der Schüler noch keine einzige Karte beantwortet hatte.
+ * Beherrschung wird aus dem Leitner-Fach abgeleitet, frische Karten liegen alle in Fach 1,
+ * also ist sie überall **0** — es gibt dann keine schwächste Region, nur die größte. Eine
+ * Diagnose ohne Datengrundlage ist eine erfundene Diagnose; sie kostet Vertrauen genau in
+ * dem Moment, in dem die App es aufbauen müsste.
+ *
+ * Die Priorisierung ist davon **unberührt** — sie rechnet mit `mastery` direkt (`W_REGION_WEAK`)
+ * und nicht mit diesem Ergebnis. Hier fällt nur der SATZ weg, solange er nichts weiß.
  */
 function weakestRegion(
   names: string[],
@@ -166,6 +177,12 @@ function weakestRegion(
     const region = regionOf(name);
     if (region) counts.set(region, (counts.get(region) ?? 0) + 1);
   }
+
+  /* Kein Unterschied = keine Aussage. Bei genau EINER beteiligten Region gilt dasselbe:
+     „die schwächste von einer" ist keine Erkenntnis. */
+  const werte = [...counts.keys()].map((region) => mastery[region]);
+  if (werte.length < 2 || werte.every((w) => w === werte[0])) return null;
+
   let best: RegionId | null = null;
   for (const [region, count] of counts) {
     if (best === null) {

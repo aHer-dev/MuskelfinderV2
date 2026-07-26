@@ -6,7 +6,7 @@
    in jedem der vier Zustände genau ein Primärbutton.
    ========================================================================= */
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getMuscleByLatinName } from '../data';
 import { regionLabel } from '../data/labels';
@@ -102,6 +102,23 @@ export function TodayPage() {
   const gaps = useMemo(() => lookupSuggestions({ lookups, cards }), [lookups, cards]);
 
   const today = new Date().toLocaleDateString('de-DE', DATE_FORMAT);
+
+  /* Nach der ersten Gelenkgruppe wird aus dem Startbildschirm der Tagesplan — die Seite baut
+     sich unter dem Finger komplett um. Auf dem Handy blieb die Scrollposition dabei stehen
+     (gemessen y=549 von 1936 px), sodass die neue Überschrift und der Los-Knopf ÜBER dem
+     Sichtfeld lagen: Der Schüler hatte gerade 17 Karten angelegt und sah davon nichts.
+
+     Nur für DIESEN Übergang, und nur einmal: Wer mitten auf `/heute` steht und dessen Zustand
+     sich von `review` zu `new` ändert, will nicht nach oben gerissen werden. `instant` statt
+     `smooth` — eine erzwungene Bildlauf-Animation ist genau das, was `prefers-reduced-motion`
+     verhindern soll. */
+  const vorigerZustand = useRef(plan.kind);
+  useEffect(() => {
+    if (vorigerZustand.current === 'needsOnboarding' && plan.kind !== 'needsOnboarding') {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+    vorigerZustand.current = plan.kind;
+  }, [plan.kind]);
 
   /* Erststart (7c): leerer Kasten UND noch kein Profil. Dann ist das Onboarding der
      Vorschlag — es fragt nur, WER hier lernt (Beruf, Prüfungstermin).

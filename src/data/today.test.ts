@@ -181,6 +181,54 @@ describe('getTodayPlan — Priorisierung', () => {
     expect(result.focusRegionCount).toBe(1);
   });
 
+  /* ── Keine Diagnose ohne Datengrundlage (UX-Review 2026-07-26) ──
+     Beim Erstkontakt gemessen: „19 davon Obere Extremität — deine schwächste Region", während
+     der Schüler noch keine einzige Karte beantwortet hatte. Beherrschung kommt aus dem
+     Leitner-Fach, frische Karten liegen alle in Fach 1 — also ist sie überall 0, und es gibt
+     keine schwächste Region. Eine erfundene Diagnose kostet Vertrauen genau dort, wo die App
+     es aufbauen müsste. */
+  it('nennt KEINE schwächste Region, solange alle Regionen gleich stehen', () => {
+    const result = plan({
+      cards: {
+        // Frischer Kasten: alles Fach 1, alles fällig, zwei Regionen betroffen.
+        'M. deltoideus': card({ fach: 1, dueInDays: 0 }),
+        'M. biceps brachii': card({ fach: 1, dueInDays: 0 }),
+        'M. gluteus maximus': card({ fach: 1, dueInDays: 0 }),
+      },
+    });
+
+    expect(result.dueTotal).toBe(3);
+    expect(result.focusRegion).toBeNull();
+    expect(result.focusRegionCount).toBe(0);
+  });
+
+  it('nennt KEINE schwächste Region, wenn nur EINE Region im Spiel ist', () => {
+    /* „Die schwächste von einer" ist keine Erkenntnis. Genau dieser Fall entsteht jetzt beim
+       Erststart, weil eine Gelenkgruppe meist in einer Region liegt. */
+    const result = plan({
+      cards: {
+        'M. deltoideus': card({ fach: 1, dueInDays: 0 }),
+        'M. biceps brachii': card({ fach: 4, dueInDays: 0 }),
+      },
+    });
+
+    expect(result.focusRegion).toBeNull();
+  });
+
+  it('nennt sie WEITERHIN, sobald es einen echten Unterschied gibt', () => {
+    /* Gegenprobe zur Zurückhaltung: Der Satz darf nicht generell verschwinden — er ist die
+       eigentliche Leistung des Tagesplans, sobald Daten da sind. */
+    const result = plan({
+      cards: {
+        'M. deltoideus': card({ fach: 6, dueInDays: -1 }),
+        'M. biceps brachii': card({ fach: 6, dueInDays: 30 }),
+        'M. gluteus maximus': card({ fach: 1, dueInDays: -1 }),
+      },
+    });
+
+    expect(result.focusRegion).toBe('lower');
+  });
+
   it('priorisiert mehrfach nachgeschlagene Muskeln höher', () => {
     const base = { fach: 3, dueInDays: -1 };
     const cards = {

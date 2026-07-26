@@ -45,6 +45,31 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   3. **Ein Klick sagte nicht, dass er etwas getan hat.** Der einzige Toast in diesem Moment war
      „+10 XP · Tagesbonus" (der gehört zum App-Start). Jetzt: „17 Karten angelegt — Ellenbogen".
 
+  **Nachgeschärft am 2026-07-26 (drei Punkte):**
+  - **Die Gruppen leiten jetzt aus `CARD_MUSCLES` ab, nicht aus `getMuscles()`.** Der erste Wurf
+    lief über alle 150 Muskeln — und „Hand" enthielt damit `M. abductor digiti minimi`,
+    `M. flexor digiti minimi brevis` und `M. opponens digiti minimi`, deren Kartenschlüssel auf
+    die **Fuß**-Muskeln auflösen. Ein Ergo, der „Hand" klickte, bekam drei Karten mit
+    Kleinzehen-Fakten und dem Etikett „Untere Extremität". Das verletzte die dokumentierte harte
+    Regel zu `isCardMuscle` („alles, was von Karten auf Muskeln schließt, geht hier durch") und
+    war dieselbe Wurzel, an der `seedDeck` (ADR 0009), die Gruppe Hypothenar und die
+    Kasten-Tabelle gestorben sind. Zwei Prüfzeilen dagegen: keine Gruppe darf einen Eintrag
+    tragen, dessen **Karte** einen anderen Körperteil rendert.
+  - **Keine erfundene Diagnose mehr am Tag null.** `/heute` behauptete „19 davon Obere Extremität
+    — **deine schwächste Region**", während der Schüler keine einzige Karte beantwortet hatte:
+    Beherrschung kommt aus dem Leitner-Fach, frische Karten liegen alle in Fach 1, also ist sie
+    überall 0. `weakestRegion` gibt jetzt `null` zurück, solange alle beteiligten Regionen gleich
+    stehen oder nur eine im Spiel ist — der Satz erscheint wieder, sobald es einen echten
+    Unterschied gibt (Gegenprobe als eigener Test). Die **Priorisierung ist unberührt**, sie
+    rechnet mit `mastery` direkt.
+  - **Die Seite springt nach oben, wenn sie sich umbaut.** Nach der ersten Gruppe wird aus dem
+    Startbildschirm der Tagesplan; auf dem Handy blieb die Scrollposition dabei stehen (gemessen
+    y=549 von 1936 px), sodass Überschrift und Los-Knopf **über** dem Sichtfeld lagen — man hatte
+    17 Karten angelegt und sah davon nichts. Nur für diesen einen Übergang, `instant` statt
+    `smooth` (`prefers-reduced-motion`).
+    **Die Prüfzeile dazu läuft auf 390 × 664** — auf 1440 × 900 war `scrollY` ohnehin 0 und die
+    Behauptung bedeutungslos grün. Gegengetestet: mit deaktiviertem Fix meldet sie `scrollY=499`.
+
   **Die Falle, die diese Datei fast gekostet hätte:** Das Gelenk-Etikett `Kopf` klingt nach
   Kopfmuskulatur, trägt aber `M. semispinalis`, `Mm. longissimi` und `Mm. splenii` —
   Nackenstrecker. Naiv zu „Mimik & Kopf" gezählt wären sie im Gesicht gelandet. Ebenso trägt

@@ -46,7 +46,7 @@
    es zweimal (Hand und Fuß), und das ist je EINE Karte.
    ========================================================================= */
 
-import { getMuscles } from './loader';
+import { CARD_MUSCLES } from './loader';
 import type { Profession } from './profession';
 import type { Muscle } from '../types';
 
@@ -192,7 +192,19 @@ let cache: JointGroup[] | null = null;
  */
 export function getJointGroups(): JointGroup[] {
   if (cache) return cache;
-  const muscles = getMuscles();
+  /* **`CARD_MUSCLES`, NICHT `getMuscles()`** — die harte Regel aus `isCardMuscle`: „Alles, was
+     von Karten auf Muskeln schliesst, geht hier durch."
+
+     Erster Versuch lief über alle 150 Muskeln und entdoppelte danach nach `nameLatin`. Gemessen
+     hiess das: Die Gruppe „Hand" enthielt `M. abductor digiti minimi`,
+     `M. flexor digiti minimi brevis` und `M. opponens digiti minimi` — aber der Kartenschlüssel
+     löst diese drei Namen auf die **FUSS**-Muskeln auf. Ein Ergo, der „Hand" klickte, bekam drei
+     Karten mit Kleinzehen-Fakten und dem Etikett „Untere Extremität". Genau derselbe Fehler, an
+     dem schon `seedDeck` (ADR 0009), die Gruppe Hypothenar und die Kasten-Tabelle gestorben sind.
+
+     Über `CARD_MUSCLES` gibt es je Schlüssel nur den Muskel, den die Karte WIRKLICH rendert —
+     die drei Namen liegen damit nur noch bei „Sprunggelenk & Fuss", wo ihr Inhalt hingehört. */
+  const muscles = CARD_MUSCLES;
   cache = JOINT_GROUP_DEFS.map((def) => ({
     ...def,
     /* Entdoppelt nach `nameLatin`: Zwei gleichnamige Muskeln sind EINE Karte (ADR 0002 §2).
