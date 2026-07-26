@@ -9,6 +9,8 @@ import { useNotesStore } from '../store/useNotesStore';
 import { useStreakStore } from '../store/useStreakStore';
 import { parseBackup } from './backup';
 import { exportBackup, importBackup } from './backup-service';
+import { CARD_KEY_MARK } from '../data/card-key';
+import { getMuscleByCardKey } from '../data/loader';
 
 const FIXTURE_DIR = path.join(process.cwd(), 'src/persistence/__fixtures__');
 
@@ -340,5 +342,77 @@ describe('Additive Sektion „notes" (8e)', () => {
     importBackup(JSON.stringify(huge));
 
     expect(useNotesStore.getState().getNote('M. deltoideus').length).toBe(2000);
+  });
+});
+
+/* ── ADR 0012 bricht ADR 0002 NICHT ──────────────────────────────────────────────────
+   Der eigentliche Grund, warum der HANDmuskel den Zusatz trägt und nicht der Fuß: Jede
+   Karte, die je unter „M. abductor digiti minimi" angelegt wurde — auch in V1, das noch
+   live ist —, meint den Fußmuskel. Bekäme der Fuß den Zusatz, müsste der Import bestehende
+   Schlüssel umschreiben; ein V1-Backup verlöre diese Karten oder brauchte eine
+   Migrationsregel. Diese Gruppe ist die Prüfzeile dafür, dass beides nicht nötig ist. */
+describe('Namensdubletten: der Kartenschlüssel bleibt rückwärtskompatibel (ADR 0012)', () => {
+  const NAME = 'M. abductor digiti minimi';
+  const HAND = `${NAME}${CARD_KEY_MARK}manus`;
+
+  function backupMit(cards: Record<string, unknown>, version = 1): string {
+    return JSON.stringify({
+      backupType: 'muskelfinder-backup',
+      version,
+      exportedAt: '2025-11-02T14:05:00.000Z',
+      flashcards: { version: 2, cards },
+      xp: { version: 2, totalXP: 0, lastDailyBonus: null },
+      quizSeries: {},
+    });
+  }
+
+  const karte = {
+    fach: 4,
+    nextDue: '2027-01-04T00:00:00.000Z',
+    totalCorrect: 7,
+    totalWrong: 2,
+    lastSeen: '2025-11-02T13:40:00.000Z',
+    difficult: false,
+  };
+
+  beforeEach(() => {
+    localStorage.clear();
+    useProgressStore.getState().clearProgress();
+    useQuizStore.getState().resetAllSeries();
+  });
+
+  it('ein V1-Backup behält seinen Schlüssel — und der zeigt weiter den FUSS', () => {
+    importBackup(backupMit({ [NAME]: karte }));
+
+    const drin = useProgressStore.getState().flashcards.cards;
+    expect(Object.keys(drin)).toEqual([NAME]);
+    expect(drin[NAME].fach).toBe(4);
+    expect(getMuscleByCardKey(NAME)?.subregion).toBe('Fuß & Sprunggelenk');
+
+    // Export schreibt denselben Schlüssel zurück — Round-Trip ohne Umbenennung.
+    expect(Object.keys(exportBackup().flashcards.cards)).toEqual([NAME]);
+  });
+
+  it('ein altes Backup erfindet KEINE Handkarte', () => {
+    /* Der Handmuskel ist ein Schlüssel, den alte Dateien nicht kennen. Ihn beim Import
+       dazuzulegen wäre ein automatisch angelegtes Deck (ADR 0009 verbietet das). */
+    importBackup(backupMit({ [NAME]: karte }));
+
+    expect(useProgressStore.getState().flashcards.cards[HAND]).toBeUndefined();
+  });
+
+  it('Hand und Fuß überleben Export → Import als ZWEI Karten', () => {
+    importBackup(backupMit({ [NAME]: karte, [HAND]: { ...karte, fach: 2 } }, 2));
+
+    const out = exportBackup();
+    expect(Object.keys(out.flashcards.cards).sort()).toEqual([NAME, HAND].sort());
+
+    useProgressStore.getState().clearProgress();
+    importBackup(JSON.stringify(out));
+
+    const drin = useProgressStore.getState().flashcards.cards;
+    expect(drin[NAME].fach).toBe(4);
+    expect(drin[HAND].fach).toBe(2);
+    expect(getMuscleByCardKey(HAND)?.subregion).toBe('Hand & Finger');
   });
 });

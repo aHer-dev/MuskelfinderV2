@@ -20,12 +20,13 @@
    ========================================================================= */
 
 import editorial from './editorial/palpation.json';
+import { cardKey } from './card-key';
 import type { Muscle, Palpation } from '../types';
 
 export class PalpationDataError extends Error {}
 
 export interface PalpationSource {
-  /** `nameLatin` → Palpationshinweise. */
+  /** Kartenschlüssel → Palpationshinweise. */
   muskeln: Record<string, Palpation>;
 }
 
@@ -81,7 +82,7 @@ export function palpationCount(source: PalpationSource = SOURCE): number {
 
 /** Der Loader ruft das, sobald die Muskeln validiert sind. */
 export function initPalpation(muscles: readonly Muscle[], source: PalpationSource = SOURCE): void {
-  assertKnownMuscles(source, new Set(muscles.map((m) => m.nameLatin)));
+  assertKnownMuscles(source, new Set(muscles.map((m) => cardKey(m))));
 }
 
 /**
@@ -89,6 +90,6 @@ export function initPalpation(muscles: readonly Muscle[], source: PalpationSourc
  * Fehlt der Eintrag, bleibt der Muskel **unverändert** — die Detailseite rendert wie vorher.
  */
 export function withPalpation(muscle: Muscle, source: PalpationSource = SOURCE): Muscle {
-  const palpation = source.muskeln[muscle.nameLatin];
+  const palpation = source.muskeln[cardKey(muscle)];
   return palpation ? { ...muscle, palpation } : muscle;
 }

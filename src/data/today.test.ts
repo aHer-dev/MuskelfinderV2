@@ -288,6 +288,24 @@ describe('getTodayPlan — gegen die echten Muskeldaten', () => {
     expect(result.newSuggestions).toHaveLength(NEW_SUGGESTION_COUNT);
     expect(new Set(result.newSuggestions).size).toBe(NEW_SUGGESTION_COUNT);
   });
+
+  it('schlägt EINEN Muskel nicht zweimal vor, nur weil er zwei Funktionszeilen hat', () => {
+    /* `M. nasalis` steht zweimal im Bestand (Pars transversa und Pars alaris) und ist EINE
+       Karte. Ohne Entdopplung nach Kartenschlüssel belegt er zwei der fünf Plätze mit
+       demselben Angebot — die Startliste wäre um 20 % kleiner, als sie aussieht.
+
+       Der Test daneben („einen Startvorschlag") fängt das NICHT: Bei leerem Kasten und ohne
+       Nachschlagezähler landet `M. nasalis` gar nicht unter den ersten fünf, also ist die
+       Dublettenprüfung dort vacuously grün. Erst das Hochgewichten holt ihn nach vorn. */
+    const result = getTodayPlan({
+      cards: {},
+      lookupCounts: { 'M. nasalis': 5 },
+      now: NOW,
+    });
+
+    expect(result.newSuggestions).toContain('M. nasalis');
+    expect(new Set(result.newSuggestions).size).toBe(result.newSuggestions.length);
+  });
 });
 
 describe('getTodayPlan — Prüfungsdruck', () => {

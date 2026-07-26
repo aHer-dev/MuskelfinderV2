@@ -1,5 +1,5 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { getMuscleByLatinName } from '../data';
+import { getMuscleByCardKey } from '../data';
 import { getGroupById } from '../data/groups';
 import { regionLabel } from '../data/labels';
 import { useProgressStore } from '../store/useProgressStore';
@@ -74,7 +74,7 @@ export function GroupPage() {
 
       <ul className="group-members">
         {group.muscles.map((name) => {
-          const muscle = getMuscleByLatinName(name);
+          const muscle = getMuscleByCardKey(name);
           const card = cards[name];
           return (
             <li key={name} className="group-member">
@@ -105,7 +105,7 @@ export function GroupPage() {
           </h2>
           <ul className="group-members group-members--related">
             {group.related.map((name) => {
-              const muscle = getMuscleByLatinName(name);
+              const muscle = getMuscleByCardKey(name);
               return (
                 <li key={name} className="group-member group-member--related">
                   {muscle ? (

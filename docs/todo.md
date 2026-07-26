@@ -20,36 +20,40 @@
 | **V1 abschalten oder Hinweis setzen** — `aher-dev.github.io/Muskelfinder/` ist noch live | Du sagtest: „läuft weiter, egal". Kein Blocker. |
 | **Nach jedem 3D-Deploy den Link einmal live klicken** | Kein Task, eine **Gewohnheit**. Der Deep-Link ist ein Vertrag mit einem fremden Repo: Ein Deploy dort kann ihn brechen, ohne dass hier eine Zeile Code fällt — und **kein Test von uns merkt es**. Genau so ist es am 2026-07-14 passiert (der „Vorschau-Modus" der 3D-App löschte die komplette Bedienoberfläche). |
 
-## ⚠️ Der Hand-Kleinfingerballen ist über Karten nicht lernbar (offen, braucht eine Entscheidung)
+## ✅ Der Hand-Kleinfingerballen ist lernbar (ERLEDIGT 2026-07-26 — ADR 0012)
 
-Am 2026-07-14 beim Mobil-Durchlauf gefunden und **zur Hälfte** behoben.
+Am 2026-07-14 gefunden, am 2026-07-26 behoben. Hier stand über zwölf Tage die Frage, ob es den
+Bruch von ADR 0002 wert sei. **Es brauchte keinen Bruch.**
 
-**Drei `nameLatin` gibt es zweimal, einmal Hand und einmal Fuß:**
-`M. abductor digiti minimi`, `M. flexor digiti minimi brevis`, `M. opponens digiti minimi`.
-(`M. nasalis` und `M. occipitofrontalis` sind ebenfalls doppelt, aber beide Hälften liegen im
-Kopf — dort ist es harmlos.)
+**Das Problem:** `M. abductor digiti minimi`, `M. flexor digiti minimi brevis` und
+`M. opponens digiti minimi` heißen in der Hand genauso wie im Fuß. Karten waren nach `nameLatin`
+geschlüsselt (ADR 0002 §2), der Namensindex löste auf den **Fuß** auf — also bekam, wer die Hand
+lernte, drei Karten mit Kleinzehen-Fakten, und der Handmuskel war über Karten gar nicht erreichbar.
 
-Karten sind nach `nameLatin` geschlüsselt (ADR 0002 §2), und der Namens-Index löst so ein Paar auf
-**genau einen** Muskel auf — auf den **Fuß**. Das heißt heute:
+**Die Lösung:** Der Kartenschlüssel wurde vom Anzeigenamen getrennt (`src/data/card-key.ts`).
+Der **Fuß behält** den historischen Schlüssel, die Hand bekommt `…#manus`. Damit ist die Änderung
+rein **additiv** — genau wie die Sektionen `lookups`, `profile`, `streak` und `notes` es im
+Backup-Format schon waren:
 
-- Wer „Obere Extremität" wählt, hat **drei Karten im Kasten, die als „Untere Extremität" rendern**
-  und Fuß-Fakten abfragen. Die Zahl am Knopf (53) stimmt, die Zeilen stimmen (53) — der **Inhalt**
-  dieser drei Karten nicht.
-- Der Handmuskel ist über Karten **gar nicht** lernbar. Nachschlagen geht (die Detailseite routet
-  über `id` und ist korrekt), Lernen nicht.
-- Es ist dieselbe Wurzel, an der schon die Gruppe **Hypothenar** gestorben ist (siehe
-  PROJECT_STATE). Damals wurde die Gruppe entfernt; der Kartenweg blieb.
-
-**Behoben ist nur die Entdopplung** (`isCardMuscle` / `CARD_MUSCLES`): keine Phantom-Zeilen mehr,
-keine widersprüchlichen Zahlen, „Entfernen" löscht nicht mehr zwei Karten auf einmal.
-
-**Das echte Gegenmittel bricht ADR 0002** und ist darum deine Entscheidung:
-
-| Weg | Preis |
+| | |
 |---|---|
-| `nameLatin` eindeutig machen (z. B. `M. abductor digiti minimi (Fuß)`) | Bricht den Backup-Schlüssel. V1-Backups (V1 ist noch live!) verlieren diese Karten, es braucht eine Migrationsregel. Danach sind Hand und Fuß zwei echte Karten. |
-| Karten zusätzlich nach `id` schlüsseln | Sauberstes Datenmodell, größter Umbau — ADR 0002 §2 fällt. |
-| So lassen | Drei von 150 Muskeln bleiben falsch beschriftet und der Handmuskel unlernbar. |
+| Alte Backups importieren | unverändert, derselbe Muskel wie vorher |
+| Export | schreibt denselben Schlüssel zurück, kein Round-Trip-Bruch |
+| Migrationsregel | **keine nötig** |
+| Bestandsnutzer | verlieren nichts |
+| Karten insgesamt | 145 → **148** |
+
+Die drei Wege aus der alten Tabelle sind damit erledigt: `nameLatin` eindeutig machen hätte den
+Backup-Schlüssel gebrochen, „nach `id` schlüsseln" wäre der größte Umbau gewesen, „so lassen"
+war der Preis, den niemand zahlen wollte. Der vierte Weg — Schlüssel ≠ Name — kostet keinen davon.
+
+Volle Begründung, Preis und Prüfzeilen: [ADR 0012](decisions/0012-kartenschluessel-statt-anzeigename.md).
+
+**Was das NICHT heilt** (Datenfrage, keine Schlüsselfrage): `M. nasalis` und
+`M. occipitofrontalis` stehen je zweimal im Bestand — derselbe Muskel in zwei Funktionszeilen
+(Pars transversa / Pars alaris). Sie sind zu Recht **eine** Karte, aber diese Karte zeigt nur
+**eine** der beiden Funktionen. Wenn dir das im Unterricht auffällt, ist es ein Fall für die
+Muskeldaten, nicht für den Code.
 
 ## Design / Produkt (offen, nicht dringend)
 

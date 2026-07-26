@@ -18,6 +18,7 @@
    längst in der Karte (ADR 0002).
    ========================================================================= */
 
+import { cardKey } from './card-key';
 import { matchesCardFilter, type CardFilter } from './card-filter';
 import type { QuizScope } from './quiz';
 import type { FlashcardCard } from '../persistence/types';
@@ -78,16 +79,17 @@ export function quizPool({ muscles, cards, regions = [], scope }: QuizPoolInput)
 
   const filter = cardFilterFor(scope);
   const matching = distractors.filter((m) => {
-    const card = cards[m.nameLatin];
+    const card = cards[cardKey(m)];
     return card !== undefined && matchesCardFilter(card, filter);
   });
-  /* EINE Karte, EINE Frage. Fuenf `nameLatin` gibt es zweimal (Hand/Fuss) — ohne die
-     Entdopplung zaehlte „Mein Karteikasten" 56, waehrend die Sitzung 53 Karten kannte,
-     und das Quiz fragte nach dem Handmuskel, dessen Karte den Fussmuskel zeigt.
-     Dieselbe Regel wie der Namens-Index in `loader.ts` (der letzte Eintrag gewinnt), damit
-     die Frage genau den Muskel trifft, den die Karte rendert.
+  /* EINE Karte, EINE Frage. `M. nasalis` und `M. occipitofrontalis` stehen zweimal im
+     Bestand (zwei Funktionszeilen desselben Muskels) und sind EINE Karte — ohne die
+     Entdopplung zaehlte „Mein Karteikasten" anders als die Sitzung, und das Quiz fragte
+     nach einem Muskel, dessen Karte den anderen zeigt. Dieselbe Regel wie `isCardMuscle`
+     in `loader.ts` (der letzte Eintrag gewinnt), damit die Frage genau den Muskel trifft,
+     den die Karte rendert.
      Nur die FRAGEN werden entdoppelt — die `distractors` bleiben der ganze Bestand (8b). */
-  const questions = [...new Map(matching.map((m) => [m.nameLatin, m])).values()];
+  const questions = [...new Map(matching.map((m) => [cardKey(m), m])).values()];
 
   return {
     questions,

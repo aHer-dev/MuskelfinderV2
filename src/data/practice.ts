@@ -18,6 +18,7 @@
    ========================================================================= */
 
 import { MASTERED_FACH } from '../persistence/leitner';
+import { cardKey } from './card-key';
 import { getMuscles } from './loader';
 import { regionMastery } from './stats';
 import { prioritizeDueCards } from './today';
@@ -37,7 +38,7 @@ export type PracticeBlocker =
   | 'nothingToFix';
 
 export interface PracticeSelection {
-  /** Die Karten der Sitzung (`nameLatin`), priorisiert. Leer ⇔ `blocker` gesetzt. */
+  /** Die Karten der Sitzung (Kartenschlüssel, ADR 0012), priorisiert. Leer ⇔ `blocker` gesetzt. */
   names: string[];
   /** Grund, warum der Knopf nicht klickbar ist — `null`, wenn er es ist. */
   blocker: PracticeBlocker | null;
@@ -67,7 +68,7 @@ export function regionPractice(input: PracticeInput, region: RegionId): Practice
   const { cards, muscles = getMuscles() } = input;
 
   const inRegion = new Set(
-    muscles.filter((m) => m.region === region).map((m) => m.nameLatin),
+    muscles.filter((m) => m.region === region).map((m) => cardKey(m)),
   );
   const deckInRegion = Object.keys(cards).filter((name) => inRegion.has(name));
   if (deckInRegion.length === 0) return NOTHING('noCards');
@@ -92,8 +93,8 @@ export interface RegionFocus {
  */
 export function weakestRegionPractice(input: PracticeInput): RegionFocus {
   const { cards, muscles = getMuscles() } = input;
-  const regionByName = new Map(muscles.map((m) => [m.nameLatin, m.region]));
-  const mastery = regionMastery(cards, (name) => regionByName.get(name));
+  const regionByKey = new Map(muscles.map((m) => [cardKey(m), m.region]));
+  const mastery = regionMastery(cards, (key) => regionByKey.get(key));
 
   const regions = [...new Set(muscles.map((m) => m.region))];
   let best: RegionFocus['region'] = null;
@@ -155,7 +156,7 @@ export function weakCardsPractice(input: PracticeInput): PracticeSelection {
  *
  * ⚠️ Der Aufrufer muss `addCards(selection.names)` rufen, bevor er die Sitzung startet.
  *
- * @param groupMuscles `nameLatin` der Gruppenmuskeln (ADR 0002 §2).
+ * @param groupMuscles Kartenschlüssel der Gruppenmuskeln (ADR 0002 §2, ADR 0012).
  */
 export function groupPractice(
   input: PracticeInput,

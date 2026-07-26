@@ -42,10 +42,13 @@
    ergeben zusammen **nicht** 28 Karten. Wer eine Zahl an einen Knopf schreibt, nimmt
    `neueKarten()` — was der Klick wirklich HINZUFÜGT.
 
-   Schlüssel ist überall `nameLatin` (ADR 0002 §2), nicht die Routing-`id`: Fünf Namen gibt
-   es zweimal (Hand und Fuß), und das ist je EINE Karte.
+   Schlüssel ist überall der **Kartenschlüssel** (`cardKey`, ADR 0012), nicht die
+   Routing-`id` und nicht der Anzeigename: `M. abductor digiti minimi` gibt es in der Hand
+   und im Fuß, und seit ADR 0012 sind das zwei Karten mit zwei Schlüsseln — die eine gehört
+   zu „Hand", die andere zu „Sprunggelenk & Fuß".
    ========================================================================= */
 
+import { cardKey } from './card-key';
 import { CARD_MUSCLES } from './loader';
 import type { Profession } from './profession';
 import type { Muscle } from '../types';
@@ -195,21 +198,21 @@ export function getJointGroups(): JointGroup[] {
   /* **`CARD_MUSCLES`, NICHT `getMuscles()`** — die harte Regel aus `isCardMuscle`: „Alles, was
      von Karten auf Muskeln schliesst, geht hier durch."
 
-     Erster Versuch lief über alle 150 Muskeln und entdoppelte danach nach `nameLatin`. Gemessen
-     hiess das: Die Gruppe „Hand" enthielt `M. abductor digiti minimi`,
-     `M. flexor digiti minimi brevis` und `M. opponens digiti minimi` — aber der Kartenschlüssel
-     löst diese drei Namen auf die **FUSS**-Muskeln auf. Ein Ergo, der „Hand" klickte, bekam drei
-     Karten mit Kleinzehen-Fakten und dem Etikett „Untere Extremität". Genau derselbe Fehler, an
-     dem schon `seedDeck` (ADR 0009), die Gruppe Hypothenar und die Kasten-Tabelle gestorben sind.
+     Erster Versuch lief über alle 150 Muskeln und entdoppelte nach `nameLatin`. Gemessen hiess
+     das: Die Gruppe „Hand" enthielt `M. abductor digiti minimi`, `M. flexor digiti minimi
+     brevis` und `M. opponens digiti minimi` — aber der Schlüssel löste diese drei Namen auf die
+     **FUSS**-Muskeln auf. Ein Ergo, der „Hand" klickte, bekam drei Karten mit Kleinzehen-Fakten
+     und dem Etikett „Untere Extremität".
 
-     Über `CARD_MUSCLES` gibt es je Schlüssel nur den Muskel, den die Karte WIRKLICH rendert —
-     die drei Namen liegen damit nur noch bei „Sprunggelenk & Fuss", wo ihr Inhalt hingehört. */
+     Seit ADR 0012 tragen die Handmuskeln einen eigenen Kartenschlüssel, liegen also wieder in
+     „Hand" — und zwar mit ihren eigenen Fakten. `CARD_MUSCLES` bleibt trotzdem die Quelle:
+     `M. nasalis` steht weiter zweimal im Bestand und ist weiter EINE Karte. */
   const muscles = CARD_MUSCLES;
   cache = JOINT_GROUP_DEFS.map((def) => ({
     ...def,
-    /* Entdoppelt nach `nameLatin`: Zwei gleichnamige Muskeln sind EINE Karte (ADR 0002 §2).
+    /* Entdoppelt nach Kartenschlüssel: Ein Muskel kann über Gelenk UND Subregion passen.
        Ohne das verspräche der Knopf mehr Karten, als er anlegt. */
-    muscles: [...new Set(muscles.filter((m) => gehoertDazu(m, def)).map((m) => m.nameLatin))].sort(
+    muscles: [...new Set(muscles.filter((m) => gehoertDazu(m, def)).map((m) => cardKey(m)))].sort(
       (a, b) => a.localeCompare(b, 'de'),
     ),
   }))

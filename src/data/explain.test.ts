@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { explainWrongAnswer } from './explain';
 import { confusionPairs, confusionText } from './confusions';
-import { getMuscleByLatinName, getMuscles } from './loader';
+import { getMuscleByCardKey, getMuscles } from './loader';
 import type { Muscle, QuizMode, QuizQuestion } from '../types';
 
-const SUPRA = getMuscleByLatinName('M. supraspinatus') as Muscle;
-const INFRA = getMuscleByLatinName('M. infraspinatus') as Muscle;
-const SOLEUS = getMuscleByLatinName('M. soleus') as Muscle;
+const SUPRA = getMuscleByCardKey('M. supraspinatus') as Muscle;
+const INFRA = getMuscleByCardKey('M. infraspinatus') as Muscle;
+const SOLEUS = getMuscleByCardKey('M. soleus') as Muscle;
 
 /** Frage bauen: Option 0 = richtig (der gefragte Muskel), Option 1 = gewählter Distraktor. */
 function question(
@@ -129,7 +129,7 @@ describe('explainWrongAnswer — Degradation statt Bruch', () => {
   });
 
   it('Plural-Muskeln bekommen ein Plural-Verb („Mm. lumbricales werden …")', () => {
-    const plural = getMuscleByLatinName('Mm. lumbricales I–IV') as Muscle;
+    const plural = getMuscleByCardKey('Mm. lumbricales I–IV') as Muscle;
     expect(plural, 'Fixture-Muskel fehlt').toBeDefined();
 
     const result = explain('innervation', plural, SOLEUS)!;
@@ -182,8 +182,8 @@ describe('Verwechslungspaare (Handarbeit über dem Template)', () => {
     expect(pairs.length).toBeGreaterThan(0);
 
     for (const [a, b] of pairs) {
-      expect(getMuscleByLatinName(a), `unbekannt: ${a}`).toBeDefined();
-      expect(getMuscleByLatinName(b), `unbekannt: ${b}`).toBeDefined();
+      expect(getMuscleByCardKey(a), `unbekannt: ${a}`).toBeDefined();
+      expect(getMuscleByCardKey(b), `unbekannt: ${b}`).toBeDefined();
       expect(confusionText(a, b)).not.toBeNull();
     }
   });

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { getMuscleByLatinName, getRegions } from '../data';
+import { getMuscleByCardKey, getRegions } from '../data';
 import { regionLabel } from '../data/labels';
 import { recallStage } from '../data/recall';
 import type { CardFilter } from '../data/card-filter';
@@ -321,7 +321,7 @@ function CardScreen({
   const touchStartX = useRef<number | null>(null);
 
   const current = session.current;
-  const muscle: Muscle | undefined = current ? getMuscleByLatinName(current) : undefined;
+  const muscle: Muscle | undefined = current ? getMuscleByCardKey(current) : undefined;
   const difficult = current ? (cards[current]?.difficult ?? false) : false;
   const activeBox = current ? cards[current]?.fach : undefined;
 

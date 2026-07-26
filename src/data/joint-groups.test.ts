@@ -6,7 +6,8 @@ import {
   neueKarten,
   orderedJointGroups,
 } from './joint-groups';
-import { CARD_MUSCLES, getMuscleByLatinName, getMuscles } from './loader';
+import { CARD_MUSCLES, getMuscleByCardKey, getMuscles } from './loader';
+import { cardKey } from './card-key';
 import { PROFESSIONS } from './profession';
 
 /* Gegen den ECHTEN Bestand, nicht gegen Fixtures (AGENTS.md): Eine Gruppendefinition ist eine
@@ -20,7 +21,10 @@ describe('Gelenkgruppen — Abdeckung', () => {
        das Fachgebiet der Logopädie. Fällt dieser Test, ist ein Muskel über den Gelenk-Weg
        nicht mehr lernbar, und niemand würde es an der Oberfläche sehen. */
     const drin = new Set(getJointGroups().flatMap((g) => g.muscles));
-    const ohneHeimat = CARD_MUSCLES.map((m) => m.nameLatin).filter((n) => !drin.has(n));
+    /* `cardKey`, NICHT `nameLatin`: Über den Anzeigenamen wäre dieser Test für die drei
+       Handmuskeln vacuously grün — ihr Name steht ja über den Fußeintrag längst in `drin`,
+       während ihre eigene Karte fehlen könnte, ohne dass es auffällt. */
+    const ohneHeimat = CARD_MUSCLES.map((m) => cardKey(m)).filter((k) => !drin.has(k));
     expect(ohneHeimat).toEqual([]);
   });
 
@@ -110,10 +114,11 @@ describe('Gelenkgruppen — Zuschnitt', () => {
 
   it('KEIN Eintrag zeigt Fakten eines anderen Körperteils', () => {
     /* Die harte Regel aus `isCardMuscle`: „Alles, was von Karten auf Muskeln schliesst, geht
-       hier durch." Der erste Wurf dieser Datei lief über alle 150 Muskeln — und die Gruppe
-       „Hand" enthielt dann `M. abductor digiti minimi`, `M. flexor digiti minimi brevis` und
-       `M. opponens digiti minimi`, deren Kartenschlüssel auf die FUSS-Muskeln auflösen. Ein
-       Ergo, der „Hand" klickte, bekam drei Karten mit Kleinzehen-Fakten.
+       hier durch." Der erste Wurf dieser Datei lief über alle 150 Muskeln und schlüsselte nach
+       ANZEIGENAME — und die Gruppe „Hand" enthielt dann `M. abductor digiti minimi`,
+       `M. flexor digiti minimi brevis` und `M. opponens digiti minimi`, deren Schlüssel auf die
+       FUSS-Muskeln auflösten. Ein Ergo, der „Hand" klickte, bekam drei Karten mit
+       Kleinzehen-Fakten.
 
        Dieser Test vergleicht die Gruppe nicht mit dem Muskel, der ihre Bedingung erfüllt,
        sondern mit dem, den die KARTE rendert. Er ist die Prüfzeile für dieselbe Wurzel, an
@@ -121,7 +126,7 @@ describe('Gelenkgruppen — Zuschnitt', () => {
     const falsch: string[] = [];
     for (const g of getJointGroups()) {
       for (const name of g.muscles) {
-        const gerendert = getMuscleByLatinName(name);
+        const gerendert = getMuscleByCardKey(name);
         if (gerendert === undefined) {
           falsch.push(`${g.label}: „${name}" hat keinen Muskel-Datensatz`);
           continue;
@@ -137,23 +142,38 @@ describe('Gelenkgruppen — Zuschnitt', () => {
     expect(falsch).toEqual([]);
   });
 
-  it('die drei Hand/Fuß-Doppelnamen liegen NUR beim Fuß — dort rendern sie', () => {
-    /* Entdoppelt, nicht geheilt (`docs/todo.md`): Der Kartenschlüssel löst auf den Fuß auf,
-       also gehört der Eintrag zur Fußgruppe. Der HANDmuskel bleibt über Karten unlernbar —
-       das braucht eine Entscheidung zu ADR 0002 und ist kein Fehler dieser Datei. */
+  it('die drei Hand/Fuß-Doppelnamen liegen in BEIDEN Gruppen — jeder mit seinem Schlüssel', () => {
+    /* Bis ADR 0012 hiess dieser Test „liegen NUR beim Fuß": Beide Namen lösten auf den
+       Fussmuskel auf, also war der Handeintrag eine Lüge und musste raus — der Handmuskel
+       war über Karten unlernbar. Jetzt trägt die Hand einen eigenen Kartenschlüssel und
+       gehört wieder in ihre Gruppe.
+
+       Geprüft wird nicht die Mitgliedschaft, sondern was der Schlüssel RENDERT. Ein Test
+       auf den blossen Namen wäre hier vacuously gruen: `not.toContain('M. abductor digiti
+       minimi')` stimmt auch dann noch, wenn „Hand" den Schlüssel `…#manus` gar nicht hat. */
     for (const name of [
       'M. abductor digiti minimi',
       'M. flexor digiti minimi brevis',
       'M. opponens digiti minimi',
     ]) {
-      expect(getJointGroup('hand')!.muscles, `${name} darf nicht in „Hand" stehen`).not.toContain(name);
-      expect(getJointGroup('sprunggelenk-fuss')!.muscles).toContain(name);
+      const hand = getJointGroup('hand')!.muscles.filter(
+        (key) => getMuscleByCardKey(key)?.nameLatin === name,
+      );
+      const fuss = getJointGroup('sprunggelenk-fuss')!.muscles.filter(
+        (key) => getMuscleByCardKey(key)?.nameLatin === name,
+      );
+
+      expect(hand, `„${name}" fehlt in „Hand"`).toHaveLength(1);
+      expect(fuss, `„${name}" fehlt in „Sprunggelenk & Fuß"`).toHaveLength(1);
+      expect(hand[0]).not.toBe(fuss[0]); // zwei Karten, nicht eine
+      expect(getMuscleByCardKey(hand[0])!.subregion).toBe('Hand & Finger');
+      expect(getMuscleByCardKey(fuss[0])!.subregion).toBe('Fuß & Sprunggelenk');
     }
   });
 
-  it('Mitglieder sind nach nameLatin entdoppelt (ADR 0002 §2)', () => {
-    /* Fünf Namen gibt es zweimal (Hand und Fuß) — das ist je EINE Karte. Ohne die
-       Entdopplung verspräche der Knopf mehr Karten, als `addCards` anlegt. */
+  it('Mitglieder sind nach Kartenschlüssel entdoppelt (ADR 0002 §2, ADR 0012)', () => {
+    /* Ein Muskel kann über sein Gelenk UND über seine Subregion in dieselbe Gruppe passen.
+       Ohne die Entdopplung verspräche der Knopf mehr Karten, als `addCards` anlegt. */
     for (const g of getJointGroups()) {
       expect(new Set(g.muscles).size, `„${g.label}" enthält Dubletten`).toBe(g.muscles.length);
     }

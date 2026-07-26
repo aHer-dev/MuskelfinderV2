@@ -394,6 +394,13 @@
   color: var(--text-faint);
 }
 
+/* Nur bei Namensdubletten (Hand/Fuss, ADR 0012) — sonst steht hier nichts. */
+.exam-outcome__where {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
 .exam-outcome__verdict {
   margin: 0;
   font-size: 0.88rem;

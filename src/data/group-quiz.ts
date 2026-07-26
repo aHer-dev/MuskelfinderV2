@@ -9,6 +9,7 @@
    trivial („welcher Kaumuskel gehört nicht zur Rotatorenmanschette?").
    ========================================================================= */
 
+import { cardKey } from './card-key';
 import { createRng, shuffle } from './quiz';
 import type { MuscleGroup } from './groups';
 import type { Muscle, QuizQuestion } from '../types';
@@ -38,14 +39,15 @@ export function generateGroupQuiz({
   count,
   rng = createRng(Date.now()),
 }: GroupQuizInput): QuizQuestion[] {
-  const byName = new Map(muscles.map((m) => [m.nameLatin, m]));
+  // Gruppen nennen ihre Mitglieder nach Kartenschluessel (ADR 0012), nicht nach Anzeigename.
+  const byKey = new Map(muscles.map((m) => [cardKey(m), m]));
   const usable = groups.filter((g) => g.muscles.length >= MIN_GROUP_SIZE);
 
   const questions: QuizQuestion[] = [];
 
   for (const group of shuffle(usable, rng).slice(0, count)) {
     const members = group.muscles
-      .map((name) => byName.get(name))
+      .map((key) => byKey.get(key))
       .filter((m): m is Muscle => m !== undefined);
     if (members.length < MIN_GROUP_SIZE) continue;
 
@@ -62,7 +64,7 @@ export function generateGroupQuiz({
     /* Ein „in Klammern"-Muskel (`related`) steht bewusst NICHT in `inGroup` und darf
        darum Distraktor sein — er ist sogar der beste: „Welcher gehoert NICHT zur
        Bauchwand?" → M. quadratus lumborum ist genau die Pruefungsfrage. */
-    const fremde = muscles.filter((m) => !inGroup.has(m.nameLatin) && regionen.has(m.region));
+    const fremde = muscles.filter((m) => !inGroup.has(cardKey(m)) && regionen.has(m.region));
     if (fremde.length === 0) continue;
 
     const distraktor = shuffle(fremde, rng)[0];

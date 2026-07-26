@@ -8,7 +8,7 @@
 
 import { useEffect, useMemo, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getMuscleByLatinName } from '../data';
+import { getMuscleByCardKey } from '../data';
 import { regionLabel } from '../data/labels';
 import { lookupSuggestions } from '../data/lookups';
 import type { TodayPlan } from '../data/today';
@@ -238,7 +238,7 @@ export function TodayPage() {
 
             <ul className="today__gap-list">
               {gaps.map((gap) => {
-                const muscle = getMuscleByLatinName(gap.name);
+                const muscle = getMuscleByCardKey(gap.name);
                 return (
                   <li key={gap.name} className="today__gap">
                     <Link to={muscle ? `/muskel/${muscle.id}` : '/suche'} className="today__gap-name">

@@ -1,19 +1,28 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { CARD_MUSCLES, getRegions } from '../data'
+import { CARD_MUSCLES, cardKey, getRegions, hasNameTwin } from '../data'
 import { regionLabel } from '../data/labels'
 import { isDue } from '../persistence/leitner'
 import { useProgressStore } from '../store/useProgressStore'
-import type { RegionId } from '../types'
+import type { Muscle, RegionId } from '../types'
 import { EmptyState } from '../components/ui/EmptyState'
 import { JointGroupPicker } from '../components/features/deck/JointGroupPicker'
 import './deck-manager.css'
 
 const REGION_ORDER = getRegions().map((r) => r.id) as RegionId[]
 /* Ein Muskel je Karten-Schluessel. Ueber `getMuscles()` (alle 150) zu laufen hiesse: fuer
-   die fuenf doppelten Namen zwei Zeilen fuer EINE Karte — und „Entfernen" nimmt dann beide
-   mit, weil es derselbe Schluessel ist. Siehe `isCardMuscle` in `src/data/loader.ts`. */
+   `M. nasalis` und `M. occipitofrontalis` zwei Zeilen fuer EINE Karte — und „Entfernen" nimmt
+   dann beide mit, weil es derselbe Schluessel ist. Siehe `isCardMuscle` in `src/data/loader.ts`. */
 const ALL_MUSCLES = CARD_MUSCLES
+
+/* Seit ADR 0012 sind Hand und Fuss zwei Karten mit DEMSELBEN Anzeigenamen. In der Tabelle
+   trennt sie die Spalte „Bereich"; der Entfernen-Knopf hat aber nur seinen eigenen Namen —
+   und zwei Knoepfe „M. abductor digiti minimi aus Karteikasten entfernen" untereinander sind
+   fuer eine Screenreader-Nutzerin nicht auseinanderzuhalten. Nur bei Dubletten, sonst bliebe
+   an 145 Knoepfen ein Zusatz stehen, der nichts klaert. */
+function nameImKasten(muscle: Muscle): string {
+  return hasNameTwin(muscle) ? `${muscle.nameLatin} (${muscle.subregion})` : muscle.nameLatin
+}
 
 /* Ab so vielen Karten fragt „Alle sichtbaren hinzufügen" nach. Darunter ist die Handlung
    klein genug, um sie einzeln zurückzunehmen. */
@@ -64,7 +73,7 @@ export function DeckManagerPage() {
 
   const inDeck = useMemo(
     () =>
-      ALL_MUSCLES.filter((m) => m.nameLatin in cards).sort((a, b) =>
+      ALL_MUSCLES.filter((m) => cardKey(m) in cards).sort((a, b) =>
         a.nameLatin.localeCompare(b.nameLatin, 'de'),
       ),
     [cards],
@@ -74,7 +83,7 @@ export function DeckManagerPage() {
     () =>
       ALL_MUSCLES.filter(
         (m) =>
-          !(m.nameLatin in cards) &&
+          !(cardKey(m) in cards) &&
           (tab === 'all' || m.region === tab) &&
           (q === '' ||
             m.nameLatin.toLowerCase().includes(q) ||
@@ -116,7 +125,7 @@ export function DeckManagerPage() {
     ) {
       return
     }
-    addCards(notInDeck.map((m) => m.nameLatin))
+    addCards(notInDeck.map((m) => cardKey(m)))
     setSelected(new Set())
   }
 
@@ -129,7 +138,7 @@ export function DeckManagerPage() {
           + `geht mit verloren. Die Muskeln selbst bleiben natürlich zum Nachschlagen da.`,
       )
     ) {
-      removeCards(inDeck.map((m) => m.nameLatin))
+      removeCards(inDeck.map((m) => cardKey(m)))
     }
   }
 
@@ -187,7 +196,7 @@ export function DeckManagerPage() {
               </thead>
               <tbody>
                 {inDeck.map((m) => {
-                  const card = cards[m.nameLatin]
+                  const card = cards[cardKey(m)]
                   const due = isDue(card, now)
                   return (
                     <tr key={m.id}>
@@ -209,8 +218,8 @@ export function DeckManagerPage() {
                         <button
                           type="button"
                           className="deck-remove"
-                          onClick={() => removeCard(m.nameLatin)}
-                          aria-label={`${m.nameLatin} aus Karteikasten entfernen`}
+                          onClick={() => removeCard(cardKey(m))}
+                          aria-label={`${nameImKasten(m)} aus Karteikasten entfernen`}
                         >
                           Entfernen
                         </button>
@@ -309,14 +318,14 @@ export function DeckManagerPage() {
         ) : (
           <ul className="deck-checklist">
             {notInDeck.map((m) => {
-              const checked = selected.has(m.nameLatin)
+              const checked = selected.has(cardKey(m))
               return (
                 <li key={m.id}>
                   <label className={`deck-check${checked ? ' deck-check--on' : ''}`}>
                     <input
                       type="checkbox"
                       checked={checked}
-                      onChange={() => toggleSelected(m.nameLatin)}
+                      onChange={() => toggleSelected(cardKey(m))}
                     />
                     <span className="deck-check__text">
                       <span className="deck-check__name">{m.nameLatin}</span>

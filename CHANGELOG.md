@@ -6,6 +6,71 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Fixed
+- **Der Hand-Kleinfingerballen ist lernbar** (ADR 0012, 2026-07-26) — der letzte offene Punkt
+  aus `docs/todo.md`, gefunden am 2026-07-14.
+
+  `M. abductor digiti minimi`, `M. flexor digiti minimi brevis` und `M. opponens digiti minimi`
+  heißen in der **Hand** genauso wie im **Fuß**. Karten waren nach `nameLatin` geschlüsselt
+  (ADR 0002 §2), und der Namensindex löste — allein wegen der Zeilenreihenfolge in
+  `muscles.json` — auf den **Fuß** auf. Gemessen hieß das: Wer die Gruppe „Hand" wählte, bekam
+  drei Karten mit **Kleinzehen-Fakten** unter dem Etikett „Untere Extremität", und der Handmuskel
+  war über Karten **überhaupt nicht lernbar**. Dieselbe Wurzel hatte schon `seedDeck` (ADR 0009),
+  die funktionelle Gruppe **Hypothenar** und die Kasten-Tabelle („53 Karten, 56 Zeilen") gekostet
+  — jedes Mal wurde die Oberfläche repariert und die Wurzel stehen gelassen.
+
+  **Behoben durch Trennung von Schlüssel und Anzeigename** (`src/data/card-key.ts`):
+  `cardKey(muscle)` ist für 147 Muskeln gleich `nameLatin`; die drei Handmuskeln tragen den
+  anatomischen Zusatz der Terminologia Anatomica (`M. abductor digiti minimi#manus`).
+  `nameLatin` bleibt reiner Anzeigetext. `CARD_MUSCLES`: **145 → 148**.
+
+  **ADR 0002 bleibt unangetastet.** Der **Fuß behält** den historischen Schlüssel — jede Karte,
+  die je unter diesem Namen angelegt wurde, meint ihn. Damit ist die Änderung rein **additiv**,
+  genau wie es `lookups`, `profile`, `streak` und `notes` im Backup-Format schon sind:
+
+  | | |
+  |---|---|
+  | Alte Backups importieren | unverändert, derselbe Muskel wie vorher |
+  | Export | schreibt denselben Schlüssel zurück |
+  | Migrationsregel | **keine nötig** |
+  | Bestandsnutzer | verlieren nichts |
+
+  **Nicht mit einer Regel, sondern mit einer ausgeschriebenen Liste.** Eine Regel („bei
+  Namensgleichheit die Region anhängen") hätte `M. nasalis` und `M. occipitofrontalis`
+  mitgerissen — die sind aber **ein** Muskel in zwei Funktionszeilen (Pars transversa / Pars
+  alaris) und bleiben zu Recht **eine** Karte. Das Unterscheidungsmerkmal ist die **Subregion**.
+  `assertCardKeys` prüft beim Laden, dass die Liste vollständig bleibt: Ein neues Hand/Fuß-Paar
+  **lässt die App beim Start scheitern**, statt einen der beiden still zu verschlucken.
+
+  **`#` und keine Klammer — gemessen, nicht vermutet.** `acceptedForms` liest einen
+  Klammerzusatz als *Synonym* (`M. fibularis longus (M. peroneus longus)`). Ein Schlüssel
+  `M. abductor digiti minimi (Hand)` hätte, sobald er in ein Anzeigefeld gerät, in Fach 7 die
+  Eingabe **„Hand"** als richtige Antwort gewertet:
+  `checkAnswer('Hand', ziel) → { verdict: 'correct' }`.
+
+  **Wo zwei Karten denselben Namen tragen, trennt die Liste sie:** Die Kasten-Tabelle über die
+  Spalte „Bereich", die Auswahlliste über die Subregion, der Entfernen-Knopf über sein
+  `aria-label` — zwei Knöpfe mit identischem zugänglichem Namen sind für eine
+  Screenreader-Nutzerin dieselbe Zeile. Für die übrigen 145 ändert sich nichts.
+
+  **Nebenbei behoben:** Redaktionelle Ebenen (`groups.json`, `curriculum.json`,
+  `palpation.json`) schlüsseln jetzt nach Kartenschlüssel — ein Palpationshinweis für den
+  Fußmuskel hätte sonst auch auf der Handseite gestanden. Die funktionelle Gruppe **Hypothenar**
+  wäre wieder baubar (fachliche Entscheidung des Projektinhabers). Und `getTodayPlan` schlug
+  `M. nasalis` **zweimal** unter fünf Startvorschlägen vor, weil er zwei Zeilen im Bestand hat.
+
+  **Prüfzeilen** (+42 Tests, 631 → 673): `card-key.test.ts` (Bijektion, Rückwärtskompatibilität,
+  Klammer-Falle, vier Gegenproben gegen `assertCardKeys`) · `backup-roundtrip.test.ts`
+  (V1-Backup behält seinen Schlüssel, erfindet keine Handkarte, beide überleben den Round-Trip) ·
+  `check-journey.mjs` **Station 2c** (im Browser: „Hand" legt die Handkarte an, die Zeile führt
+  zum Handmuskel, beide Entfernen-Knöpfe heißen verschieden). `check:daten` meldet jetzt **148**
+  Kartenmuskeln statt 145 und zeigt im Kollisionsbericht die **Subregion** — sie ist das, was
+  „ein Muskel, zwei Zeilen" von „zwei Muskeln, ein Name" unterscheidet.
+  **Gegengetestet:** Mit geleerter `OWN_CARD` startet die App nicht mehr.
+
+- Umbenannt: `getMuscleByLatinName` → **`getMuscleByCardKey`**. Der alte Name lud dazu ein, einen
+  Anzeigenamen hineinzureichen — und genau das war der Fehler.
+
 ### Added
 - **Der Karteikasten wird nach GELENK gefüllt, nicht mehr nach Region** (Ansage des
   Projektinhabers, 2026-07-26). Elf Gruppen — Mimik & Kopf · Zungenbein & Kehlkopf ·

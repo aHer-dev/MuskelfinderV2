@@ -5,11 +5,12 @@ import {
   CARD_MUSCLES,
   getMovements,
   getMuscleById,
-  getMuscleByLatinName,
+  getMuscleByCardKey,
   getMuscles,
   getRegions,
   isCardMuscle,
 } from './loader'
+import { cardKey } from './card-key'
 
 const publicRoot = path.join(process.cwd(), 'public')
 
@@ -67,8 +68,11 @@ describe('muscle data loader', () => {
   })
 })
 
-/* Ein Karten-Schluessel ist ein `nameLatin`, und fuenf davon gibt es ZWEIMAL. Wer beim Lesen
-   ueber die 150 Muskeln laeuft, findet fuer EINE Karte ZWEI Muskeln — genau daran zeigte der
+/* Seit ADR 0012 ist der Karten-Schluessel NICHT der Anzeigename. Fuenf `nameLatin` gibt es
+   weiterhin zweimal, aber sie zerfallen in zwei Faelle: Hand/Fuss sind zwei Muskeln (zwei
+   Karten, zwei Schluessel), `M. nasalis` und `M. occipitofrontalis` sind je EIN Muskel in
+   zwei Funktionszeilen (eine Karte, ein Schluessel). Wer beim Lesen ueber alle 150 laeuft,
+   findet fuer die zweite Sorte ZWEI Muskeln zu EINER Karte — genau daran zeigte der
    Karteikasten 56 Zeilen fuer 53 Karten, und „Entfernen" loeschte beide auf einmal. */
 describe('isCardMuscle — ein Muskel je Karten-Schluessel', () => {
   it('haelt fest, dass fuenf Namen doppelt vergeben sind', () => {
@@ -84,20 +88,22 @@ describe('isCardMuscle — ein Muskel je Karten-Schluessel', () => {
     ])
   })
 
-  it('waehlt genau EINEN Muskel je nameLatin', () => {
-    const namen = CARD_MUSCLES.map((m) => m.nameLatin)
+  it('entdoppelt NUR die Funktionszeilen-Paare — Hand und Fuss bleiben zwei Karten', () => {
+    /* 150 Muskeln minus die zwei Kopf-Paare = 148 Karten. Stuende hier 145, waeren die drei
+       Handmuskeln wieder verschluckt — der Zustand vor ADR 0012. */
+    expect(CARD_MUSCLES).toHaveLength(getMuscles().length - 2)
 
-    expect(new Set(namen).size).toBe(namen.length)
-    expect(CARD_MUSCLES).toHaveLength(new Set(getMuscles().map((m) => m.nameLatin)).size)
+    const schluessel = CARD_MUSCLES.map((m) => cardKey(m))
+    expect(new Set(schluessel).size).toBe(schluessel.length)
   })
 
   it('waehlt DEN Muskel, den die Karte auch rendert', () => {
     // Sonst zeigte die Kasten-Zeile einen anderen Muskel als die Lernkarte darunter.
     for (const muscle of CARD_MUSCLES) {
-      expect(getMuscleByLatinName(muscle.nameLatin)).toBe(muscle)
+      expect(getMuscleByCardKey(cardKey(muscle))).toBe(muscle)
     }
     for (const muscle of getMuscles()) {
-      expect(isCardMuscle(muscle)).toBe(getMuscleByLatinName(muscle.nameLatin) === muscle)
+      expect(isCardMuscle(muscle)).toBe(getMuscleByCardKey(cardKey(muscle)) === muscle)
     }
   })
 })

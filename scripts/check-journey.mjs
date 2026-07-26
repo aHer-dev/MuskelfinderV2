@@ -134,6 +134,58 @@ await withApp(async ({ page, goto, errors, BASE }) => {
   pruefe(angelegt + versprochen2 === angelegt2,
     `„Schultergelenk" nach „Ellenbogen": ${versprochen2} versprochen == ${angelegt2 - angelegt} neu angelegt (Ueberlappung abgezogen)`);
 
+  /* ---- STATION 2c: Der Handmuskel ist wirklich lernbar (ADR 0012) ----
+     Bis zum 2026-07-26 hiess „M. abductor digiti minimi" in Hand UND Fuss gleich, und der
+     Kartenschluessel war der Name — er traf den FUSS. Wer die Hand lernte, bekam drei Karten
+     mit Kleinzehen-Fakten unter dem Etikett „Untere Extremitaet", und der Handmuskel war
+     ueber Karten gar nicht erreichbar. Dieselbe Wurzel hatte schon `seedDeck`, die Gruppe
+     Hypothenar und die Kasten-Tabelle gekostet.
+
+     Die Unit-Tests pruefen den Schluessel. DIESE Station prueft, was die Schuelerin SIEHT:
+     zwei Zeilen mit demselben Namen, zwei verschiedene Bereiche, und der Link der oberen
+     fuehrt wirklich zum Handmuskel. */
+  L('\n2c. Der Handmuskel ist lernbar — nicht nur der gleichnamige Fussmuskel');
+  const hand = page.locator('.jgp__group').filter({ hasText: /^Hand/ }).first();
+  await hand.click();
+  await page.waitForTimeout(500);
+
+  /* DER Beweis: Ein Klick auf „Hand" legt den HAND-Schluessel an. Vorher legte er den
+     blossen Namen an — und der zeigte den Fussmuskel. */
+  const nachHand = await page.evaluate(() => {
+    const s = JSON.parse(localStorage.getItem('mf.progress'));
+    return Object.keys(s.state.flashcards.cards).filter((k) => k.startsWith('M. abductor digiti minimi'));
+  });
+  pruefe(nachHand.length === 1 && nachHand[0].endsWith('#manus'),
+    `„Hand" legt die HANDkarte an, nicht die Fusskarte (${nachHand.join(' + ') || 'keine'})`);
+
+  const handZeile = page.locator('table tbody tr').filter({ hasText: 'M. abductor digiti minimi' }).first();
+  pruefe((await handZeile.locator('td:nth-child(2)').innerText()).trim() === 'Obere Extremität',
+    'Die Karte steht im Kasten als „Obere Extremität" — nicht als Kleinzehe');
+  const ziel = await handZeile.locator('a').getAttribute('href');
+  pruefe(/abductor-digiti-minimi-upper/.test(ziel ?? ''),
+    `Die Zeile fuehrt zum HANDmuskel (${ziel})`);
+
+  /* Und jetzt die Gegenprobe im Browser: Der Fussmuskel ist eine EIGENE Karte und
+     verdraengt die Handkarte nicht. Vor ADR 0012 war es derselbe Schluessel — ein Klick auf
+     die zweite Gruppe haette gar nichts angelegt. */
+  const fuss = page.locator('.jgp__group').filter({ hasText: /^Sprunggelenk/ }).first();
+  await fuss.scrollIntoViewIfNeeded();
+  await fuss.click();
+  await page.waitForTimeout(500);
+
+  const zwillingsZeilen = page.locator('table tbody tr').filter({ hasText: 'M. abductor digiti minimi' });
+  const bereiche = (await zwillingsZeilen.locator('td:nth-child(2)').allInnerTexts()).map((t) => t.trim());
+  pruefe(bereiche.includes('Obere Extremität') && bereiche.includes('Untere Extremität'),
+    `Beide Karten stehen im Kasten und sind unterscheidbar (${bereiche.join(' · ')})`);
+
+  /* Zwei Zeilen mit demselben sichtbaren Namen brauchen zwei verschiedene Knopfnamen —
+     sonst sind sie fuer eine Screenreader-Nutzerin dieselbe Zeile. */
+  const knopfNamen = await zwillingsZeilen.locator('button').evaluateAll(
+    (bs) => bs.map((b) => b.getAttribute('aria-label')),
+  );
+  pruefe(knopfNamen.length === 2 && new Set(knopfNamen).size === 2,
+    `Die Entfernen-Knoepfe heissen verschieden (${knopfNamen.join(' | ')})`);
+
   await page.setViewportSize({ width: 1440, height: 900 });
 
   /* ---- STATION 3: /heute schlaegt jetzt eine Sitzung vor ---- */

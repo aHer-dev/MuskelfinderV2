@@ -16,12 +16,13 @@
    ========================================================================= */
 
 import editorial from './editorial/groups.json';
+import { cardKey } from './card-key';
 import type { Muscle } from '../types';
 
 export interface MuscleGroup {
   id: string;
   label: string;
-  /** Muskeln der Gruppe (`nameLatin`, ADR 0002 §2) — nicht die Routing-`id`. */
+  /** Muskeln der Gruppe (Kartenschlüssel, ADR 0012) — nicht die Routing-`id`. */
   muscles: string[];
   /**
    * Muskeln, die **mitgelernt werden, aber nicht dazugehören** — „in Klammern".
@@ -48,8 +49,8 @@ export class GroupDataError extends Error {}
  * Gruppe wäre unvollständig, und niemand merkte es. Eine unvollständige
  * Rotatorenmanschette ist schlimmer als gar keine.
  *
- * @param known Alle existierenden `nameLatin`. Fehlt sie, wird nicht gegen den
- *   Bestand geprüft (nur für isolierte Tests).
+ * @param known Alle existierenden **Kartenschlüssel** (`cardKey`, ADR 0012). Fehlt sie,
+ *   wird nicht gegen den Bestand geprüft (nur für isolierte Tests).
  */
 export function readGroups(raw: unknown, known?: ReadonlySet<string>): MuscleGroup[] {
   const data = raw as { gruppen?: unknown };
@@ -66,7 +67,7 @@ export function readGroups(raw: unknown, known?: ReadonlySet<string>): MuscleGro
     if (seenIds.has(g.id)) throw new GroupDataError(`Doppelte Gruppen-id: „${g.id}"`);
     seenIds.add(g.id);
 
-    // Namensdubletten (Hand/Fuß) sind laut ADR 0002 §2 DIESELBE Karte — einmal reicht.
+    // Derselbe Schlüssel zweimal genannt bleibt EINE Karte — einmal reicht.
     const muscles = [...new Set(g.muscles.filter((m): m is string => typeof m === 'string'))];
     const related = [
       ...new Set((g.related ?? []).filter((m): m is string => typeof m === 'string')),
@@ -93,7 +94,7 @@ export function readGroups(raw: unknown, known?: ReadonlySet<string>): MuscleGro
   return groups;
 }
 
-/** Index: `nameLatin` → Gruppen, in denen er steckt. */
+/** Index: Kartenschlüssel → Gruppen, in denen er steckt. */
 export function indexByMuscle(groups: readonly MuscleGroup[]): Map<string, MuscleGroup[]> {
   const index = new Map<string, MuscleGroup[]>();
   for (const group of groups) {
@@ -113,7 +114,7 @@ let BY_MUSCLE: Map<string, MuscleGroup[]> = new Map();
 
 /** Ruft der Loader auf, sobald die Muskeln validiert sind. */
 export function initGroups(muscles: readonly Muscle[]): void {
-  GROUPS = readGroups(editorial, new Set(muscles.map((m) => m.nameLatin)));
+  GROUPS = readGroups(editorial, new Set(muscles.map((m) => cardKey(m))));
   BY_MUSCLE = indexByMuscle(GROUPS);
 }
 
@@ -126,6 +127,6 @@ export function getGroupById(id: string): MuscleGroup | undefined {
 }
 
 /** Die Gruppen eines Muskels — leer, wenn er zu keiner gehört (das ist kein Fehler). */
-export function groupsOf(nameLatin: string): readonly MuscleGroup[] {
-  return BY_MUSCLE.get(nameLatin) ?? [];
+export function groupsOf(key: string): readonly MuscleGroup[] {
+  return BY_MUSCLE.get(key) ?? [];
 }
