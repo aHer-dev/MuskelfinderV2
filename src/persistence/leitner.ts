@@ -55,6 +55,26 @@ export function newCard(now: Date = new Date()): FlashcardCard {
   };
 }
 
+/**
+ * Karte auf Anfang stellen, ohne sie aus dem Kasten zu nehmen (UX-Review 2026-07-26).
+ *
+ * **Warum es diese Transition gibt:** „Fortschritt zurücksetzen" auf `/statistik` sagt
+ * wörtlich „Der Karteikasten bleibt, der Lernstand ist weg" — löschte aber die ganze
+ * `cards`-Abbildung und damit die Auswahl selbst (gemessen: 24 Karten → 0), direkt
+ * nachdem derselbe Satz erklärt hatte, dass es nicht rückgängig zu machen ist. Wer die
+ * Fächer neu anfangen will, verlor seine mühsam gewählten Muskeln mit.
+ *
+ * **`difficult` überlebt.** Das Schwierig-Flag ist die Markierung der Nutzerin, nicht ein
+ * Messwert der App — es gehört zur Auswahl („der Kasten bleibt"), nicht zum Lernstand.
+ * Alles, was die App selbst gemessen hat (Fach, Fälligkeit, Zähler, `lastSeen`), fällt.
+ *
+ * **ADR 0002 bleibt unberührt:** kein Feld kommt hinzu, keins fällt weg, `fach` bleibt
+ * 1–7, `nextDue` ein ISO-Datum. Nur die Werte gehen auf den Anfang zurück.
+ */
+export function resetCardProgress(card: FlashcardCard, now: Date = new Date()): FlashcardCard {
+  return { ...newCard(now), difficult: card.difficult };
+}
+
 /** Fälligkeitsdatum für ein Fach: heute + Intervall, auf Tagesbeginn normalisiert. */
 export function dueDate(fach: number, now: Date = new Date()): string {
   const clamped = Math.min(MAX_FACH, Math.max(MIN_FACH, Math.floor(fach)));

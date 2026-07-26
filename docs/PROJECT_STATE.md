@@ -5,7 +5,7 @@
 > docs/migration-plan.md (abgeschlossen), docs/architecture.md und den ADRs.
 
 ## Stand
-- Datum: 2026-07-14
+- Datum: 2026-07-26
 - Branch: `main` · **Remote: github.com/aHer-dev/MuskelfinderV2** · Live: `aher-dev.github.io/MuskelfinderV2/`
 - Status: **Migration abgeschlossen (Etappen 0–6, `v1.0`). ETAPPE 7 KOMPLETT (7a–7f). ETAPPE 8
   KOMPLETT (8a–8f). ETAPPE 9 KOMPLETT (9a–9d). ETAPPE 10 KOMPLETT (10a–10f). ETAPPE 11 (Zeitdruck) — code-seitig. Offen ist
@@ -17,8 +17,14 @@
   niemandem mehr ungefragt Karten in den Kasten.**
   **ALLE VIER BRUECKEN STEHEN:** B1 (7d), B2 (7e), B3 (**9c**), B4 (8c).
   Statustafel: `docs/produkt-plan.md`. Offene Punkte: `docs/todo.md`.
-- Gate gruen: `npm run lint && npm run test && npm run build` — **587 Tests**.
-- A11y: axe 0 Verstoesse ueber **8 Routen x Light+Dark x Desktop+Handy — inkl. HOVER-Zustand** (Playwright+Chromium+axe-core)
+- Gate gruen: **`npm run verify`** — **615 Tests**.
+- A11y: axe 0 Verstoesse ueber **14 Routen x Light+Dark x Ruhe/HOVER/Fokus — und seit 2026-07-26
+  ZUSAETZLICH auf 320 + 390 px** (Playwright+Chromium+axe-core).
+  ⚠️ **Bis zum 2026-07-26 stand hier „Desktop+Handy", und das war FALSCH:** Weder
+  `check:oberflaeche` noch `check:wege` haben je `setViewportSize` gerufen — beide liefen
+  ausschliesslich auf der Harness-Vorgabe 1440x900. Die Handy-Schicht war ungeprueft, und genau
+  darin sassen zwei Layout-Fehler (siehe unten). **Wer eine Abdeckung in diese Datei schreibt,
+  greppt vorher nach dem Aufruf, der sie herstellt.**
   inkl. `/pruefung` in allen drei Zustaenden, der Abzeichen auf `/statistik`, der Palpations-Sektion
   (mit + ohne Eintrag), `/anleitung` und dem leeren `/heute`. 0 externe Requests.
   **Der Pruef-Lauf legt jetzt erst Karten an, bevor er `/karteikasten` misst.** Ein frischer Browser
@@ -62,6 +68,53 @@ Stoff fuer die falsche Pruefung. Geschluesselt nach Beruf (Kurs 1 der Logopaedie
 `rgba(255,255,255,0.05)`) landet ungemischt im Popup und verschwimmt mit dem Hintergrund. Es gibt
 dafuer das Token **`--field-bg`** — in beiden Themes **deckend**. Nie wieder eine rgba-Flaeche auf ein
 Formularfeld legen.
+
+## ⚠️ UX-REVIEW 2026-07-26 — was daraus HART gilt
+Ein Durchgang am laufenden Build (Kaltstart, 320 + 390 px, nur Tastatur, Abbruch-Wege). Acht Fehler,
+alle als Prüfzeile gegengetestet. Vier Regeln, die daraus für JEDEN Folge-Task gelten:
+
+1. **Ein Text auf dem Schirm ist ein VERSPRECHEN, und Prosa wird nicht mitgetestet.**
+   `/statistik` sagte „Der Karteikasten bleibt, der Lernstand ist weg" — `resetProgress()` setzte
+   `cards: {}` und loeschte ihn (gemessen 24 → 0), unumkehrbar, direkt nachdem derselbe Satz das
+   angekuendigt hatte. **`resetCardProgress` in `src/persistence/leitner.ts` ist die EINZIGE
+   Ruecksetz-Regel**: Fach, Faelligkeit, Zaehler, `lastSeen` auf Anfang — **Karte bleibt**,
+   `difficult` bleibt (das ist die Markierung der Nutzerin, kein Messwert). Der echte
+   Vollausraeumer heisst **`clearProgress()`** und ist nur fuer Tests/Import da. **Wer
+   `resetProgress` wieder auf `createEmptyFlashcardsSection()` dreht, baut den Fehler neu ein.**
+2. **Eine Entscheidung von damals kann durch eine Aenderung von heute falsch werden.**
+   `ExamPage` warf die Pruefung im Unmount weg — begruendet und kommentiert. Diese Begruendung ist
+   **aelter als Etappe 7d**, seit der das Suchfeld in der Kopfzeile JEDER Route sitzt. Gemessen:
+   „biceps" ins Suchfeld, Enter, zurueck → 20 Antworten weg, ohne Warnung. **Wer etwas auf JEDE
+   Route legt, geht die laufenden Abläufe durch, die es jetzt unterbricht.** Die Pruefung ueberlebt
+   die Navigation, den Browser-Neustart bewusst nicht (wie die Lernsitzung), und wird ausdruecklich
+   verworfen.
+3. **Eine Handlung, die 121 Karten anlegt, braucht eine Zahl, eine Rueckfrage und einen Rueckweg.**
+   ADR 0009 verhindert, dass die APP ungefragt Karten anlegt — es verhinderte nicht, dass der
+   Schueler es sich selbst tut. `removeCards` ist der Rueckweg; **ein Massen-Knopf ohne Gegenstueck
+   ist eine Einbahnstrasse.**
+4. **`1fr` ist `minmax(auto, 1fr)`.** Eine Grid-Spalte faellt damit NIE unter die min-content-Breite
+   ihres Inhalts, und ein einziges `minmax(280px, 1fr)` darin schiebt die ganze Seite waagerecht auf
+   (`/statistik`, 26 px bei 320 px). **Raster, die schrumpfen sollen, bekommen `minmax(0, 1fr)`,
+   und Kachel-Raster `minmax(min(Xpx, 100%), 1fr)`.**
+
+**Zwei Funde, die nichts mit dem Code zu tun haben, sondern mit dem MESSEN:**
+- **`check:oberflaeche` hat jahrelang die 404-Seite vermessen und sie „detail" genannt.** In der
+  Routenliste stand `/muskel/m-biceps-brachii` — die Kennungen haben **kein `m-`** (`biceps-brachii`).
+  Die inhaltsreichste Seite der App war damit **nie im Audit**. Die 404-Seite ist barrierefrei, laeuft
+  nicht ueber und haelt den Satzspiegel: **sie besteht jede Messung glaenzend.** Darum prueft
+  **Station 0** jetzt zuerst, ob eine Route ueberhaupt zeigt, was sie behauptet. **Jede neue Route in
+  einer Pruefliste braucht eine Behauptung ueber ihren INHALT, nicht nur ihren Pfad.**
+- **Die behauptete Handy-Abdeckung existierte nicht** (siehe „Stand" oben). Neu je Route und Breite:
+  Ueberlauf, axe, Daumenmasse, **Scroll-Fallen** (eigene Scrollflaeche > 50 % der Viewport-Hoehe —
+  die Auswahlliste im Karteikasten war 460 px auf einem 568-px-Schirm, jeder Wisch darin scrollte
+  die Liste statt die Seite). **320 px ist Absicht:** Bei 390 px zeigt sich die Grid-Falle nicht.
+
+**Und eine Nebenwirkung, die kein DOM-Test fangen kann:** Uhr und Klick konnten dieselbe Quizfrage
+doppelt werten — der Intervall-Callback laeuft AUSSERHALB des React-Ereignisflusses, ein Klick im
+selben Frame sieht in `answer()` noch das alte `phase` aus seinem Closure. Ein Ref-Riegel wertet
+jeden Index genau einmal. **Der Test dafuer ist ein HOOK-Test** (zwei Aufrufe in einem `act`-Block):
+Im DOM ist die Option danach `disabled`, dort waere er auch ohne den Fix gruen — **eine Pruefung, die
+ohne den Fehler gruen ist, prueft nichts.**
 
 ## Verlauf (Migration, abgeschlossen)
 - Etappe 0–4 abgeschlossen. **Etappe 5 (Haertung)** — Teil 1+2 umgesetzt:
@@ -426,6 +479,7 @@ erledigt — beide Punkte, die hier frueher als „nur vom Projektinhaber loesba
 
 **Es gibt keinen offenen Code-Task mehr.** Offen ist nur noch, was den FACHMANN braucht, plus EINE
 Entscheidung, die an ADR 0002 ruehrt — vollstaendige Liste: `docs/todo.md`.
+(Der UX-Review vom 2026-07-26 hat acht Fehler gefunden und behoben; die Regeln daraus stehen oben.)
 - Palpationstexte aus dem Kollegen-Skript (`docs/palpation-erfassen.md`).
 - Kursabschnitte (`docs/curriculum-erfassen.md`) — solange leer, steht der Platzhalter HINTEN.
 - **Die drei doppelten `nameLatin`** (Hand/Fuss): Karten dazu tragen das falsche Etikett, der

@@ -20,6 +20,15 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className={`shell${isDesktop ? ' shell--desktop' : ' shell--mobile'}`}>
+      {/* Sprungmarke (UX-Review 2026-07-26): Gemessen lagen auf `/suche` **sieben**
+          Tab-Stopps zwischen dem Seitenanfang und dem Inhalt — Icon-Rail und
+          Kopfzeilen-Suche stehen auf JEDER Route, also zahlt eine Tastaturnutzerin sie
+          jedes Mal neu. axe schweigt dazu (die Landmarks erfüllen 2.4.1 formal), und genau
+          darum fällt so etwas nur beim Durchtabben auf. Der Link ist der erste Tab-Stopp
+          und nur dann sichtbar (siehe `.skip-link` in AppShell.css). */}
+      <a className="skip-link" href="#inhalt">
+        Zum Inhalt springen
+      </a>
       {isDesktop ? <IconRail /> : null}
       <div className="content">
         {/* Etappe 12b: Die Kopfzeile traegt die Marke — und weil die Shell jede Route
@@ -31,7 +40,12 @@ export function AppShell({ children }: { children: ReactNode }) {
           {/* Etappe 7d: Nachschlagen ist von jeder Route aus einen Griff entfernt. */}
           <HeaderSearch />
         </header>
-        <main className="content__main">{children}</main>
+        {/* `tabIndex={-1}`: Ohne ihn springt der Browser zwar hin, setzt den FOKUS aber
+            nicht — die nächste Tab-Taste landete wieder oben in der Rail, und der Sprung
+            wäre wirkungslos gewesen. */}
+        <main className="content__main" id="inhalt" tabIndex={-1}>
+          {children}
+        </main>
         <SiteFooter />
       </div>
       {!isDesktop ? <TabBar /> : null}

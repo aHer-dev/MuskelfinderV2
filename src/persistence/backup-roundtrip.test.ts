@@ -25,7 +25,7 @@ function expectedSections(raw: string) {
 describe('Backup Round-Trip (Kompatibilitäts-Selbsttest, ADR 0002)', () => {
   beforeEach(() => {
     localStorage.clear();
-    useProgressStore.getState().resetProgress();
+    useProgressStore.getState().clearProgress();
     useQuizStore.getState().resetAllSeries();
   });
 
@@ -90,7 +90,7 @@ describe('Backup Round-Trip (Kompatibilitäts-Selbsttest, ADR 0002)', () => {
     expect(first.quizSeries['mode::x'].history).toHaveLength(5);
 
     // Re-Import des Exports → erneuter Export ist identisch (idempotent).
-    useProgressStore.getState().resetProgress();
+    useProgressStore.getState().clearProgress();
     useQuizStore.getState().resetAllSeries();
     importBackup(JSON.stringify(first));
     const second = exportBackup('2026-07-08T00:00:00.000Z');
@@ -101,7 +101,7 @@ describe('Backup Round-Trip (Kompatibilitäts-Selbsttest, ADR 0002)', () => {
 describe('Additive Sektion „lookups" (7d) — ADR 0002 bleibt unangetastet', () => {
   beforeEach(() => {
     localStorage.clear();
-    useProgressStore.getState().resetProgress();
+    useProgressStore.getState().clearProgress();
     useQuizStore.getState().resetAllSeries();
     useLookupStore.getState().resetLookups();
   });
@@ -160,7 +160,7 @@ describe('Additive Sektion „lookups" (7d) — ADR 0002 bleibt unangetastet', (
 describe('Additive Sektion „profile" (Entscheidung 2026-07-12)', () => {
   beforeEach(() => {
     localStorage.clear();
-    useProgressStore.getState().resetProgress();
+    useProgressStore.getState().clearProgress();
     useQuizStore.getState().resetAllSeries();
     useLookupStore.getState().resetLookups();
     useProfileStore.getState().resetProfile();
@@ -212,7 +212,7 @@ describe('Additive Sektion „profile" (Entscheidung 2026-07-12)', () => {
 describe('Additive Sektion „streak" (7f)', () => {
   beforeEach(() => {
     localStorage.clear();
-    useProgressStore.getState().resetProgress();
+    useProgressStore.getState().clearProgress();
     useQuizStore.getState().resetAllSeries();
     useLookupStore.getState().resetLookups();
     useProfileStore.getState().resetProfile();
@@ -287,7 +287,7 @@ describe('Additive Sektion „streak" (7f)', () => {
 describe('Additive Sektion „notes" (8e)', () => {
   beforeEach(() => {
     localStorage.clear();
-    useProgressStore.getState().resetProgress();
+    useProgressStore.getState().clearProgress();
     useQuizStore.getState().resetAllSeries();
     useLookupStore.getState().resetLookups();
     useProfileStore.getState().resetProfile();

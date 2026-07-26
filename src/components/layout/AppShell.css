@@ -9,6 +9,43 @@
   background-attachment: fixed;
 }
 
+/* ---- Sprungmarke (UX-Review 2026-07-26) -------------------------------------
+   Nicht `display: none` und nicht `visually-hidden` mit Dauerversteck: Der Link muss
+   fokussierbar BLEIBEN und beim Fokus sichtbar WERDEN — sonst tabbt jemand auf ein
+   unsichtbares Ziel. Er liegt über allem (die Rail ist `position: fixed`). */
+.skip-link {
+  position: fixed;
+  top: var(--spacing-sm);
+  left: var(--spacing-sm);
+  z-index: 100;
+  padding: 10px var(--spacing-md);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-field);
+  background: var(--surface);
+  box-shadow: var(--card-shadow);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(calc(-100% - var(--spacing-lg)));
+  transition: transform 120ms ease-out;
+}
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Das Sprungziel selbst braucht keinen Fokusring — es ist ein Bereich, kein Bedienelement,
+   und `tabIndex={-1}` haelt es aus dem Tab-Fluss. */
+.content__main:focus {
+  outline: none;
+}
+
 .content {
   min-width: 0;
   max-width: 1160px;
@@ -298,7 +335,13 @@
   flex: none;
   gap: var(--spacing-sm);
   padding: var(--spacing-xs);
-  margin: calc(var(--spacing-xs) * -1); /* Die Polsterung ist Klickfläche, kein Versatz. */
+  /* Die Polsterung ist Klickfläche, kein Versatz.
+     (Nachgemessen im UX-Review 2026-07-26: Dieser negative Rand laesst die Marke 4 px ueber
+     die `.topbar` hinausragen. Das ist gewollt und harmlos — die Leiste kappt nichts, die
+     SEITE laeuft nicht ueber, und der Fokusring liegt frei. Nicht „reparieren": Ohne den
+     Ausgleich sitzt die Wortmarke 4 px vom Seitenrand eingerueckt, und dann stimmt die
+     optische Kante zum Inhalt darunter nicht mehr.) */
+  margin: calc(var(--spacing-xs) * -1);
   border-radius: var(--radius-md);
   text-decoration: none;
   transition: var(--transition-smooth);

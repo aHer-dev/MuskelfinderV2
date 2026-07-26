@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CARD_MUSCLES, getRegions } from '../data'
 import { regionLabel } from '../data/labels'
@@ -13,6 +13,10 @@ const REGION_ORDER = getRegions().map((r) => r.id) as RegionId[]
    die fuenf doppelten Namen zwei Zeilen fuer EINE Karte — und „Entfernen" nimmt dann beide
    mit, weil es derselbe Schluessel ist. Siehe `isCardMuscle` in `src/data/loader.ts`. */
 const ALL_MUSCLES = CARD_MUSCLES
+
+/* Ab so vielen Karten fragt „Alle sichtbaren hinzufügen" nach. Darunter ist die Handlung
+   klein genug, um sie einzeln zurückzunehmen. */
+const BULK_CONFIRM_AT = 20
 
 type RegionTab = RegionId | 'all'
 
@@ -35,12 +39,26 @@ export function DeckManagerPage() {
   const cards = useProgressStore((s) => s.flashcards.cards)
   const addCards = useProgressStore((s) => s.addCards)
   const removeCard = useProgressStore((s) => s.removeCard)
+  const removeCards = useProgressStore((s) => s.removeCards)
 
   const [tab, setTab] = useState<RegionTab>('all')
   const [query, setQuery] = useState('')
   const [selected, setSelected] = useState<Set<string>>(new Set())
 
-  const now = useMemo(() => new Date(), [])
+  /* Hier stand `useMemo(() => new Date(), [])` — beim Mount eingefroren (UX-Review
+     2026-07-26). Wer die Seite über Nacht offen liess, sah morgens weiter „morgen" statt
+     „fällig". Die Uhrzeit wird jetzt nachgezogen, wenn der Tab zurückkommt — kein Polling,
+     denn genau das IST der Fall („ich schaue morgen wieder rein"). */
+  const [now, setNow] = useState(() => new Date())
+  useEffect(() => {
+    const wake = () => setNow(new Date())
+    document.addEventListener('visibilitychange', wake)
+    window.addEventListener('focus', wake)
+    return () => {
+      document.removeEventListener('visibilitychange', wake)
+      window.removeEventListener('focus', wake)
+    }
+  }, [])
   const q = query.trim().toLowerCase()
 
   const inDeck = useMemo(
@@ -81,10 +99,37 @@ export function DeckManagerPage() {
     setSelected(new Set())
   }
 
+  /* „Alle sichtbaren hinzufügen" trug bis zum UX-Review 2026-07-26 keine Zahl und keine
+     Rückfrage — gemessen legte ein Klick 121 Karten an, und der einzige Rückweg waren 145
+     einzelne „Entfernen"-Klicks. ADR 0009 verhindert, dass die APP ungefragt Karten
+     anlegt; hier hat es sich der Schüler versehentlich selbst getan. Die Zahl steht jetzt
+     am Knopf, und ab `BULK_CONFIRM_AT` fragt er nach. */
   function addVisible() {
     if (notInDeck.length === 0) return
+    if (
+      notInDeck.length >= BULK_CONFIRM_AT &&
+      !confirm(
+        `${notInDeck.length} Karten in den Karteikasten legen? Das ist eine ganze Weile Lernstoff — `
+          + `du kannst sie unter „Im Karteikasten" wieder herausnehmen.`,
+      )
+    ) {
+      return
+    }
     addCards(notInDeck.map((m) => m.nameLatin))
     setSelected(new Set())
+  }
+
+  /** Der Rückweg. Ohne ihn ist das Massen-Hinzufügen eine Einbahnstraße. */
+  function removeAllInDeck() {
+    if (inDeck.length === 0) return
+    if (
+      confirm(
+        `Alle ${inDeck.length} Karten aus dem Karteikasten nehmen? Der Lernstand dieser Karten `
+          + `geht mit verloren. Die Muskeln selbst bleiben natürlich zum Nachschlagen da.`,
+      )
+    ) {
+      removeCards(inDeck.map((m) => m.nameLatin))
+    }
   }
 
   return (
@@ -104,6 +149,11 @@ export function DeckManagerPage() {
             Im Karteikasten
           </h2>
           <span className="deck-count">{inDeck.length}</span>
+          {inDeck.length > 0 && (
+            <button type="button" className="deck-remove deck-remove--all" onClick={removeAllInDeck}>
+              Alle {inDeck.length} entfernen
+            </button>
+          )}
         </div>
 
         {inDeck.length === 0 ? (
@@ -197,7 +247,7 @@ export function DeckManagerPage() {
             onClick={addVisible}
             disabled={notInDeck.length === 0}
           >
-            Alle sichtbaren hinzufügen
+            Alle {notInDeck.length} sichtbaren hinzufügen
           </button>
         </div>
 

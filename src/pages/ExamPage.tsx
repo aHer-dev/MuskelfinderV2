@@ -79,8 +79,20 @@ export function ExamPage() {
     return () => window.clearInterval(id);
   }, [phase, endsAt, finish]);
 
-  // Eine Prüfung ist eine Momentaufnahme — beim Verlassen der Seite ist sie vorbei.
-  useEffect(() => () => reset(), [reset]);
+  /* Hier stand bis zum UX-Review 2026-07-26 ein `useEffect(() => () => reset(), [reset])`:
+     „eine Prüfung ist eine Momentaufnahme, beim Verlassen der Seite ist sie vorbei".
+     Diese Entscheidung ist ÄLTER als Etappe 7d — seit 7d sitzt das Suchfeld in der
+     Kopfzeile JEDER Route. Gemessen: Prüfung läuft, „biceps" ins Suchfeld, Enter, zurück
+     → Startknopf, 20 Antworten weg, keine Warnung, kein Wiederherstellen.
+
+     Die Lernsitzung wurde in 7d aus genau diesem Grund in einen Store verschoben. Die
+     Prüfung liegt längst in einem (`useExamStore`); nur dieses Aufräumen hat sie getötet.
+     Sie übersteht jetzt die Navigation und wird ausdrücklich verworfen — nicht im
+     Vorbeigehen. Den Browser-Neustart übersteht sie bewusst weiterhin nicht (der Store
+     ist nicht persistiert), genau wie die Lernsitzung. */
+  const verwerfen = useCallback(() => {
+    if (confirm('Laufende Prüfung verwerfen? Die Antworten werden nicht ausgewertet.')) reset();
+  }, [reset]);
 
   const begin = useCallback(() => {
     const set = buildExam({ muscles: MUSCLES, deck: Object.keys(cards), count: EXAM_SIZE });
@@ -118,7 +130,12 @@ export function ExamPage() {
           <p className="page__eyebrow">Prüfungsmodus</p>
           <h1 className="page__title">Prüfung</h1>
         </header>
-        <ExamDebrief report={report} onLearnMistakes={learnMistakes} onRestart={begin} />
+        <ExamDebrief
+          report={report}
+          onLearnMistakes={learnMistakes}
+          onRestart={begin}
+          onClose={reset}
+        />
       </section>
     );
   }
@@ -207,12 +224,17 @@ export function ExamPage() {
         </div>
 
         <p className="exam__hint">
-          Kein Ergebnis vor dem Ende — du kannst springen und Antworten ändern. Abbrechen
-          verliert nichts: ausgewertet wird, was du beantwortet hast.
+          Kein Ergebnis vor dem Ende — du kannst springen und Antworten ändern. Die Prüfung
+          läuft weiter, wenn du zwischendurch etwas nachschlägst; die Uhr auch.
         </p>
-        <button type="button" className="btn btn--ghost exam__abort" onClick={finish}>
-          Vorzeitig abgeben
-        </button>
+        <div className="exam__abort">
+          <button type="button" className="btn btn--ghost" onClick={finish}>
+            Vorzeitig abgeben
+          </button>
+          <button type="button" className="btn btn--ghost" onClick={verwerfen}>
+            Prüfung verwerfen
+          </button>
+        </div>
       </section>
     );
   }

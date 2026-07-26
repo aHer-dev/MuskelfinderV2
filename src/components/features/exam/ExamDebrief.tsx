@@ -7,6 +7,8 @@ interface ExamDebriefProps {
   /** Der EINE Primärbutton: Fehler → Karteikasten → Sitzung. Das ist Brücke B3. */
   onLearnMistakes: () => void;
   onRestart: () => void;
+  /** Auswertung schließen und zum Einstieg zurück (sie übersteht jetzt die Navigation). */
+  onClose: () => void;
 }
 
 function share(tally: ExamTally): string {
@@ -60,7 +62,7 @@ function OutcomeRow({ outcome }: { outcome: ExamOutcome }) {
  * Abrufform, Verwechslung) und **genau ein** nächster Schritt. Die Sprache bleibt
  * schuldfrei — „hier lohnt sich Zeit", nicht „durchgefallen".
  */
-export function ExamDebrief({ report, onLearnMistakes, onRestart }: ExamDebriefProps) {
+export function ExamDebrief({ report, onLearnMistakes, onRestart, onClose }: ExamDebriefProps) {
   const { total, answered, correct, missedNames, byRegion, byForm, confusions, outcomes } = report;
   const missedCount = missedNames.length;
 
@@ -147,9 +149,17 @@ export function ExamDebrief({ report, onLearnMistakes, onRestart }: ExamDebriefP
         </ul>
       </section>
 
-      <button type="button" className="btn btn--ghost" onClick={onRestart}>
-        Neue Prüfung
-      </button>
+      {/* Die Auswertung überlebt seit dem UX-Review 2026-07-26 einen Seitenwechsel — man
+          kann also etwas nachschlagen und zurückkommen. Dann braucht sie auch einen
+          ausdrücklichen Schluss, sonst gäbe es keinen Weg mehr zum Einstieg zurück. */}
+      <div className="exam-debrief__actions">
+        <button type="button" className="btn btn--ghost" onClick={onRestart}>
+          Neue Prüfung
+        </button>
+        <button type="button" className="btn btn--ghost" onClick={onClose}>
+          Auswertung schließen
+        </button>
+      </div>
     </div>
   );
 }

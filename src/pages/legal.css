@@ -72,6 +72,22 @@
 }
 .legal-card a:hover { text-decoration: underline; }
 
+/* Daumenmass fuer die Quellen-Links (UX-Review 2026-07-26). Gemessen waren sie 19 px hoch
+   — unter der WCAG-2.5.8-Mindestgroesse (24 px) und weit unter der Projektregel von 44 px.
+
+   `li > a:only-child` ist die entscheidende Einschraenkung: Diese Links stehen ALLEIN in
+   ihrem Listenpunkt und sind damit echte Bedienelemente. Links MITTEN IM SATZ bleiben
+   ausgenommen — sie auf 44 px zu zwingen wuerde den Fliesstext auseinanderreissen, und
+   WCAG 2.5.8 nimmt sie ausdruecklich aus. Genau diese Unterscheidung macht auch die
+   Pruefung in check-surface.mjs. */
+@media (max-width: 1023.98px) {
+  .legal-list li > a:only-child {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-min);
+  }
+}
+
 .legal-list {
   margin: 0;
   padding-left: 1.25em;

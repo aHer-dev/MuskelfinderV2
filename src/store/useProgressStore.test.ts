@@ -1,9 +1,12 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { useProgressStore } from './useProgressStore';
 
+/* `clearProgress`, NICHT `resetProgress`: das Zurücksetzen behält die Karten seit dem
+   UX-Review 2026-07-26 absichtlich im Kasten — als Test-Aufräumer würde es die Auswahl
+   von einem Test in den nächsten tragen. */
 function reset() {
   localStorage.clear();
-  useProgressStore.getState().resetProgress();
+  useProgressStore.getState().clearProgress();
 }
 
 describe('useProgressStore — Deck-Verwaltung', () => {
@@ -115,5 +118,78 @@ describe('useProgressStore — Selektoren & Persistenz', () => {
     const raw = localStorage.getItem('mf.progress');
     expect(raw).toBeTruthy();
     expect(JSON.parse(raw as string).state.flashcards.cards['M. deltoideus']).toBeTruthy();
+  });
+});
+
+/* ── „Der Karteikasten bleibt" (UX-Review 2026-07-26) ─────────────────────────
+   Der Text auf `/statistik` versprach es, der Code löschte die Karten mit (gemessen
+   24 → 0). Diese Gruppe ist die Prüfzeile dazu: Sie fällt, sobald `resetProgress`
+   wieder die Kartenabbildung leert. */
+describe('useProgressStore — resetProgress behält den Karteikasten', () => {
+  beforeEach(reset);
+
+  it('löscht Fächer, Fälligkeiten, Zähler und XP — aber KEINE Karte', () => {
+    const s = useProgressStore.getState();
+    s.addCards(['M. deltoideus', 'M. biceps brachii', 'M. soleus']);
+    s.reviewCard('M. deltoideus', 'correct');
+    s.reviewCard('M. deltoideus', 'correct');
+    s.reviewCard('M. biceps brachii', 'wrong');
+    expect(useProgressStore.getState().getCardState('M. deltoideus')?.fach).toBe(3);
+    expect(useProgressStore.getState().xp.totalXP).toBeGreaterThan(0);
+
+    useProgressStore.getState().resetProgress();
+    const after = useProgressStore.getState();
+
+    // Die Auswahl selbst ist unangetastet — das ist das Versprechen.
+    expect(after.getAddedCardNames().sort()).toEqual(
+      ['M. biceps brachii', 'M. deltoideus', 'M. soleus'].sort(),
+    );
+    // Der Lernstand ist weg.
+    expect(after.xp.totalXP).toBe(0);
+    for (const name of after.getAddedCardNames()) {
+      const card = after.getCardState(name);
+      expect(card?.fach).toBe(1);
+      expect(card?.totalCorrect).toBe(0);
+      expect(card?.totalWrong).toBe(0);
+      expect(card?.lastSeen).toBeNull();
+    }
+    // Alles wieder fällig: Nach dem Zurücksetzen kann man sofort weiterlernen.
+    expect(after.getDueCards().length).toBe(3);
+  });
+
+  it('behält die Schwierig-Markierung — sie gehört zur Auswahl, nicht zum Lernstand', () => {
+    const s = useProgressStore.getState();
+    s.addCards(['M. deltoideus', 'M. soleus']);
+    s.toggleDifficult('M. deltoideus');
+
+    useProgressStore.getState().resetProgress();
+
+    expect(useProgressStore.getState().getCardState('M. deltoideus')?.difficult).toBe(true);
+    expect(useProgressStore.getState().getCardState('M. soleus')?.difficult).toBe(false);
+  });
+
+  it('ADR 0002: das Kartenformat übersteht das Zurücksetzen feldgleich', () => {
+    const s = useProgressStore.getState();
+    s.addCard('M. deltoideus');
+    const vorher = Object.keys(s.getCardState('M. deltoideus') as object).sort();
+    useProgressStore.getState().resetProgress();
+    const nachher = Object.keys(
+      useProgressStore.getState().getCardState('M. deltoideus') as object,
+    ).sort();
+    expect(nachher).toEqual(vorher);
+  });
+
+  it('clearProgress räumt dagegen alles weg — auch die Auswahl', () => {
+    const s = useProgressStore.getState();
+    s.addCards(['M. deltoideus', 'M. soleus']);
+    useProgressStore.getState().clearProgress();
+    expect(useProgressStore.getState().getAddedCardNames()).toEqual([]);
+  });
+
+  it('removeCards nimmt mehrere Karten in einem Schritt heraus', () => {
+    const s = useProgressStore.getState();
+    s.addCards(['A', 'B', 'C', 'D']);
+    useProgressStore.getState().removeCards(['B', 'D', 'gibtsnicht']);
+    expect(useProgressStore.getState().getAddedCardNames().sort()).toEqual(['A', 'C']);
   });
 });

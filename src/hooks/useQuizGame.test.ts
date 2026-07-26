@@ -8,7 +8,7 @@ import { useQuizStore } from '../store/useQuizStore';
 describe('useQuizGame', () => {
   beforeEach(() => {
     localStorage.clear();
-    useProgressStore.getState().resetProgress();
+    useProgressStore.getState().clearProgress();
     useQuizStore.getState().resetAllSeries();
   });
 
@@ -51,5 +51,49 @@ describe('useQuizGame', () => {
     act(() => result.current.answer(wrong.id));
     expect(result.current.streak).toBe(0);
     expect(result.current.correctCount).toBe(1);
+  });
+});
+
+/* ── Uhr und Klick werten NIE beide dieselbe Frage (UX-Review 2026-07-26) ──
+   `phase` allein reichte nicht: Der Intervall-Callback der Uhr läuft AUSSERHALB des
+   React-Ereignisflusses. Setzt er `phase='revealed'`, sieht ein Klick, der im selben Frame
+   eintrifft, in `answer()` noch das alte `phase` aus seinem Render-Closure.
+
+   Genau diese Gleichzeitigkeit ist hier nachgebaut: **zwei Aufrufe in EINEM `act`-Block**
+   teilen dasselbe Closure, so wie Uhr und Klick im selben Frame. Ohne den Ref-Riegel
+   sammelt `results` einen Eintrag zu viel und `correctCount` zählt doppelt. */
+describe('useQuizGame — eine Frage wird genau einmal gewertet', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    useProgressStore.getState().clearProgress();
+    useQuizStore.getState().resetAllSeries();
+  });
+
+  it('zwei Antworten im selben Frame ergeben EIN Ergebnis, nicht zwei', () => {
+    const { result } = renderHook(() => useQuizGame('innervation', 3));
+    const richtig = result.current.question!.correctId;
+
+    act(() => {
+      result.current.answer(richtig);
+      result.current.answer(richtig); // dasselbe Closure — `phase` ist hier noch 'answering'
+    });
+
+    expect(result.current.results).toHaveLength(1);
+    expect(result.current.correctCount).toBe(1);
+    expect(result.current.score).toBe(10);
+  });
+
+  it('die Ergebnisliste ist am Ende nie länger als die Runde', () => {
+    const { result } = renderHook(() => useQuizGame('innervation', 3));
+    for (let i = 0; i < 3; i++) {
+      act(() => {
+        const id = result.current.question!.correctId;
+        result.current.answer(id);
+        result.current.answer(id);
+      });
+      act(() => result.current.next());
+    }
+    expect(result.current.result).toMatchObject({ total: 3, correct: 3 });
+    expect(result.current.results).toHaveLength(3);
   });
 });

@@ -15,7 +15,7 @@ const toasts = () => useToastStore.getState().toasts.map((t) => t.message).join(
 describe('Tagesbonus — nur wer Karten hat, bekommt ihn (Etappe 12)', () => {
   beforeEach(() => {
     localStorage.clear();
-    useProgressStore.getState().resetProgress();
+    useProgressStore.getState().clearProgress();
     useToastStore.setState({ toasts: [] });
   });
 

@@ -33,6 +33,7 @@ export function StatsPage() {
   const addCards = useProgressStore((s) => s.addCards);
   const resetProgress = useProgressStore((s) => s.resetProgress);
   const lookups = useLookupStore((s) => s.lookups.entries);
+  const deckTotal = Object.keys(cards).length;
 
   /* Die Auswahl hinter den Knöpfen. Sie kommt aus `data/practice.ts` und trifft
      dieselbe Priorisierung wie der Tagesplan — hier wird nichts gefiltert. */
@@ -312,22 +313,34 @@ export function StatsPage() {
         {/* Stand bis Etappe 10e auf dem LERNBILDSCHIRM — ein roter Loeschknopf direkt unter
             der Faecher-Uebersicht, den man im Vorbeigehen trifft. Er gehoert dorthin, wo die
             anderen Datenaktionen liegen: neben das Backup, hinter eine Rueckfrage. */}
+        {/* Der Satz hier ist ein VERSPRECHEN, und bis zum UX-Review 2026-07-26 hat der Code
+            es gebrochen: „Der Karteikasten bleibt" stand da, während `resetProgress` die
+            ganze Kartenabbildung löschte (gemessen 24 → 0) — einen Halbsatz nachdem
+            dieselbe Zeile erklärt hatte, dass es unumkehrbar ist. Jetzt hält es.
+            Die Zahl steht am Knopf: Wer zurücksetzt, soll sehen, wie viel er anfasst. */}
         <section className="stats__panel">
           <h2>Fortschritt zurücksetzen</h2>
           <p className="stats__quiz-line">
-            Löscht alle Fächer und XP auf diesem Gerät. Der Karteikasten bleibt, der Lernstand ist
-            weg — und das lässt sich nicht rückgängig machen. Vorher ein Backup herunterladen.
+            Setzt alle Fächer, Fälligkeiten und XP auf diesem Gerät zurück. Deine{' '}
+            {deckTotal} {deckTotal === 1 ? 'Karte' : 'Karten'} bleiben im Kasten — nur der
+            Lernstand ist weg, und das lässt sich nicht rückgängig machen. Vorher ein Backup
+            herunterladen.
           </p>
           <button
             type="button"
             className="btn btn--danger"
             onClick={() => {
-              if (confirm('Gesamten Lernfortschritt (Fächer + XP) wirklich zurücksetzen?')) {
+              if (
+                confirm(
+                  `Lernstand zurücksetzen? Fächer, Fälligkeiten und XP fallen auf den Anfang. `
+                    + `Deine ${deckTotal} ${deckTotal === 1 ? 'Karte' : 'Karten'} bleiben im Kasten.`,
+                )
+              ) {
                 resetProgress();
               }
             }}
           >
-            Zurücksetzen
+            Lernstand zurücksetzen
           </button>
         </section>
       </div>

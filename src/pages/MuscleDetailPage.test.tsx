@@ -19,7 +19,7 @@ describe('MuscleDetailPage', () => {
   beforeEach(() => {
     localStorage.clear();
     useCollectionStore.getState().clear();
-    useProgressStore.getState().resetProgress();
+    useProgressStore.getState().clearProgress();
   });
 
   it('lädt den Muskel per :id und zeigt Name + Attribution', () => {

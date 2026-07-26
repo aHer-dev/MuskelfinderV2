@@ -11,7 +11,7 @@
 /* ---- Kennzahl-Kacheln ------------------------------------------------- */
 .stat-tiles {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr));
   gap: var(--spacing-md);
 }
 
@@ -77,9 +77,13 @@
 }
 
 /* ---- Bento-Raster ----------------------------------------------------- */
+/* `1fr` ist `minmax(auto, 1fr)` — die Spalte kann damit nicht unter die min-content-Breite
+   ihres Inhalts, und ein einziges zu breites Kind (hier das Abzeichen-Raster) schiebt die
+   ganze Seite waagerecht auf. `minmax(0, 1fr)` ist die Fassung, die schrumpfen DARF.
+   Gemessen 2026-07-26: Seiten-scrollWidth 346 → 321 bei 320 px Viewport. */
 .stats__bento {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--spacing-md);
   align-items: start;
 }
@@ -90,7 +94,7 @@
 
 @media (max-width: 720px) {
   .stats__bento {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -415,7 +419,11 @@
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  /* `minmax(280px, …)` ohne `min()` kann NICHT unter 280 px schrumpfen. Auf 320 px
+     erzwang das eine min-content-Breite von 330 px fuer das ganze Panel und schob die
+     Seite 26 px waagerecht ueber den Rand (UX-Review 2026-07-26). `min(280px, 100%)`
+     laesst die Kacheln in der schmalen Spalte einspaltig werden. */
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
   gap: var(--spacing-md);
 }
 

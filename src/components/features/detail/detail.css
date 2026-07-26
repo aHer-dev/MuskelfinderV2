@@ -212,6 +212,16 @@
   outline-offset: 2px;
 }
 
+/* Daumenmass (UX-Review 2026-07-26): 40 × 40 px sind knapp unter der Projektregel. Die
+   Pfeile liegen ueber dem Bild, also waechst nur die Trefferflaeche — das Bild verliert
+   keinen Platz. */
+@media (max-width: 1023.98px) {
+  .image-viewer__nav {
+    width: var(--touch-min);
+    height: var(--touch-min);
+  }
+}
+
 .image-viewer__nav--prev {
   left: var(--spacing-sm);
 }
