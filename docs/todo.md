@@ -60,7 +60,7 @@ Muskeldaten, nicht für den Code.
 | Was | Notiz |
 |---|---|
 | **3D-Renderings für die 47 bildlosen Muskeln** (8f Stufe 2a) | Zurückgestellt (2026-07-13). Lizenz **ist geklärt** ([Protokoll](3d-app-lizenzpruefung.md)), offen ist die **Qualität**: Nur 21 der 47 sind in der 3D-App überhaupt adressierbar, und der Deep-Link allein liefert kein brauchbares Bild (der Muskel liegt im Kontrollrendering hinter dem Unterkiefer). Ein Bild, auf dem der Muskel nicht zu erkennen ist, ist schlechter als kein Bild. |
-| **Der Erststart ist immer noch textlastig** | Behoben ist die *Reihenfolge* („Nach Bereich" steht jetzt vor dem leeren Kursabschnitt-Platzhalter). Der erste Karten-Knopf liegt damit bei **y = 611** von 664 px — er ist sichtbar, aber gerade so. Darüber stehen weiterhin Marke, Suchfeld, Überschrift und fünf Zeilen Fließtext. Den Text zu kürzen ist eine **Textentscheidung des Inhabers**, kein Agenten-Job. |
+| **Der Erststart ist immer noch textlastig** | Behoben ist die *Reihenfolge* („Nach Gelenk" steht vor dem leeren Kursabschnitt-Platzhalter). **Am 2026-07-26 nach den Gelenkgruppen neu gemessen** (390×664): Der erste Gruppen-Knopf liegt bei **y = 608** von 664 px, die Seite ist 2381 px hoch. Er ist ohne Scrollen sichtbar, aber gerade so. Darüber stehen weiterhin Marke, Suchfeld, Überschrift und fünf Zeilen Fließtext. Den Text zu kürzen ist eine **Textentscheidung des Inhabers**, kein Agenten-Job. |
 
 ## Entschieden und abgelehnt (nicht wieder vorschlagen)
 
