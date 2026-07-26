@@ -64,11 +64,25 @@ M. trapezius - Pars descendens      ❌ Build bricht ab (-)
 Am sichersten kopierst du den Namen direkt aus der App (Detailseite oder Suche) oder aus
 `src/data/generated/muscles.json`.
 
-**Fünf Namen gibt es doppelt** (einmal Hand, einmal Fuß) — `M. flexor digiti minimi brevis`,
-`M. abductor digiti minimi`, `M. opponens digiti minimi`, dazu `M. nasalis` und
-`M. occipitofrontalis`. Für die App sind das je **eine** Karte. Wenn du den Handmuskel meinst,
-bekommst du beide; das lässt sich mit `nameLatin`-Schlüsseln nicht trennen (siehe
-`docs/PROJECT_STATE.md`, Abschnitt Hypothenar).
+### Die drei Namen, die es zweimal gibt (Hand **und** Fuß)
+
+`M. abductor digiti minimi`, `M. flexor digiti minimi brevis` und `M. opponens digiti minimi`
+heißen in der Hand genauso wie im Fuß. Das sind **zwei verschiedene Muskeln**, und seit
+[ADR 0012](decisions/0012-kartenschluessel-statt-anzeigename.md) sind es auch zwei Karten. Damit
+der Kurs weiß, welchen du meinst, trägt der HANDmuskel einen Zusatz:
+
+```
+M. abductor digiti minimi           → der FUSSmuskel (Kleinzehe)
+M. abductor digiti minimi#manus     → der HANDmuskel (Kleinfingerballen)
+```
+
+Das `#manus` gehört **in die Datei**, nicht auf den Bildschirm — der Schüler sieht weiter nur
+`M. abductor digiti minimi` plus die Angabe „Hand & Finger" bzw. „Fuß & Sprunggelenk".
+Bis zum 2026-07-26 stand hier, das lasse sich nicht trennen. Das gilt nicht mehr.
+
+**Zwei weitere Namen sind doppelt, aber harmlos:** `M. nasalis` und `M. occipitofrontalis` stehen
+je zweimal im Bestand — dasselbe Gesichtsmuskel-Paar in zwei Funktionszeilen (Pars transversa /
+Pars alaris). Das ist **eine** Karte, und du schreibst den Namen einfach normal.
 
 ## Was danach passiert
 

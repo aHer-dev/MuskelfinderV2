@@ -71,6 +71,22 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 - Umbenannt: `getMuscleByLatinName` → **`getMuscleByCardKey`**. Der alte Name lud dazu ein, einen
   Anzeigenamen hineinzureichen — und genau das war der Fehler.
 
+- **Ein flatterhafter Test** in `TodayPage.test.tsx` (unabhängig vom Obigen gefunden, während der
+  Arbeit daran). „Als Karten lernen" prüfte die Reihenfolge zweier nachgeschlagener Muskeln, und
+  die kommt aus `lookupSuggestions`: bei gleicher Zahl nach `lastLookup` **absteigend**.
+  `record()` stempelt auf die Millisekunde — landeten beide Aufrufe in derselben, entschied der
+  Name (Reihenfolge stimmte); rutschte der zweite unter Last eine Millisekunde weiter, fiel der
+  Test. Er lief isoliert immer grün und im vollen Lauf gelegentlich rot. Die Zeitstempel sind
+  jetzt ausgeschrieben, und „zuletzt zuerst" ist die **Behauptung** statt eines Zufalls —
+  gegengetestet: Sortierung umgedreht → Test fällt.
+
+- **Zwei Anleitungen für den Fachinhalt** trugen nach dem Schlüsselwechsel falsche Angaben und
+  sind nachgezogen: `docs/curriculum-erfassen.md` behauptete, Hand und Fuß ließen sich „mit
+  `nameLatin`-Schlüsseln nicht trennen" (gilt nicht mehr), und beide Dateien sagen jetzt, dass der
+  Handmuskel als `…#manus` einzutragen ist. Ohne das wäre der erste Palpationshinweis für den
+  Kleinfingerballen auf der Fußseite gelandet — oder der Build wäre mit einem Namen gescheitert,
+  den der Projektinhaber für richtig halten musste.
+
 ### Added
 - **Der Karteikasten wird nach GELENK gefüllt, nicht mehr nach Region** (Ansage des
   Projektinhabers, 2026-07-26). Elf Gruppen — Mimik & Kopf · Zungenbein & Kehlkopf ·

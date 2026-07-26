@@ -5,7 +5,7 @@ import { TodayPage } from './TodayPage'
 import { useProfileStore } from '../store/useProfileStore'
 import { useProgressStore } from '../store/useProgressStore'
 import { useLookupStore } from '../store/useLookupStore'
-import { getMuscles } from '../data'
+import { cardKey, getMuscles } from '../data'
 import { dueDate } from '../persistence/leitner'
 
 const navigate = vi.fn()
@@ -85,7 +85,7 @@ describe('TodayPage — jeder Zustand hat genau einen Primärbutton', () => {
   })
 
   it('Normalfall: nennt die fällige Zahl und startet die Sitzung mit genau diesen Karten', () => {
-    const names = MUSCLES.slice(0, 3).map((m) => m.nameLatin)
+    const names = MUSCLES.slice(0, 3).map((m) => cardKey(m))
     seed(names, { inDays: -1 })
 
     renderPage()
@@ -103,7 +103,7 @@ describe('TodayPage — jeder Zustand hat genau einen Primärbutton', () => {
   })
 
   it('Überfällig-Stau: deckelt auf die Tagesdosis, nennt aber die volle Zahl', () => {
-    const names = MUSCLES.slice(0, 60).map((m) => m.nameLatin)
+    const names = MUSCLES.slice(0, 60).map((m) => cardKey(m))
     seed(names, { inDays: -3 })
 
     renderPage()
@@ -117,7 +117,7 @@ describe('TodayPage — jeder Zustand hat genau einen Primärbutton', () => {
   })
 
   it('Nichts fällig: schlägt neue Muskeln vor, legt sie an und lernt sie sofort', () => {
-    seed([MUSCLES[0].nameLatin], { fach: 4, inDays: 30 })
+    seed([cardKey(MUSCLES[0])], { fach: 4, inDays: 30 })
 
     renderPage()
 
@@ -159,11 +159,20 @@ describe('Brücke B1 — nachgeschlagene Lücken führen in die Sitzung', () => 
   })
 
   it('legt die Karten an UND startet die Sitzung mit genau diesen Namen', () => {
-    const nachgeschlagen = [MUSCLES[0].nameLatin, MUSCLES[1].nameLatin]
-    for (const name of nachgeschlagen) {
-      useLookupStore.getState().record(name)
-      useLookupStore.getState().record(name)
-    }
+    /* Die Zeitstempel sind AUSGESCHRIEBEN, nicht `new Date()`. Mit der Uhr war dieser Test
+       flatterhaft: `lookupSuggestions` sortiert bei gleicher Zahl nach `lastLookup`
+       **absteigend**, und `record()` stempelt auf die Millisekunde. Landeten beide Aufrufe in
+       derselben Millisekunde, entschied der Name (p < s, Reihenfolge stimmte); rutschte der
+       zweite eine Millisekunde weiter — unter Last im vollen Lauf —, stand er VORNE und der
+       Test fiel. Ein Test, der von der Maschinenauslastung abhängt, sagt nichts über den Code.
+       Zuletzt zuerst ist jetzt die Behauptung, nicht der Zufall. */
+    const zuerst = cardKey(MUSCLES[0])
+    const zuletzt = cardKey(MUSCLES[1])
+    const nachgeschlagen = [zuletzt, zuerst] // jüngster Aufruf steht oben
+    useLookupStore.getState().record(zuerst, new Date('2026-07-20T10:00:00.000Z'))
+    useLookupStore.getState().record(zuerst, new Date('2026-07-20T10:00:01.000Z'))
+    useLookupStore.getState().record(zuletzt, new Date('2026-07-21T10:00:00.000Z'))
+    useLookupStore.getState().record(zuletzt, new Date('2026-07-21T10:00:01.000Z'))
 
     renderPage()
     fireEvent.click(screen.getByRole('button', { name: /als Karten? lernen/i }))

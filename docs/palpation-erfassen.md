@@ -21,6 +21,19 @@ Schlüssel ist der **lateinische Name, exakt wie in der App** (`nameLatin`) — 
 Alle vier Felder sind **optional**. Was du nicht sicher weißt, lässt du weg: Eine fehlende Zeile ist
 besser als eine ungefähre.
 
+**Eine Ausnahme, drei Muskeln:** `M. abductor digiti minimi`, `M. flexor digiti minimi brevis` und
+`M. opponens digiti minimi` gibt es in der Hand **und** im Fuß. Der Handmuskel trägt darum den
+Zusatz `#manus` ([ADR 0012](decisions/0012-kartenschluessel-statt-anzeigename.md)):
+
+```
+"M. abductor digiti minimi":        … → der FUSSmuskel (Kleinzehe)
+"M. abductor digiti minimi#manus":  … → der HANDmuskel (Kleinfingerballen)
+```
+
+Das ist genau die Trennung, die du hier brauchst: Ein Palpationshinweis „Kleinfingerballen,
+ulnare Handkante" darf nicht auf der Fußseite stehen. Der Zusatz erscheint **nirgends** auf dem
+Bildschirm — er ist nur der Schlüssel in dieser Datei.
+
 ```json
 {
   "muskeln": {
