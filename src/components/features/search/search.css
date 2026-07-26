@@ -96,6 +96,16 @@
   background: var(--surface-hover);
 }
 
+/* Daumenmass (UX-Review 2026-07-26): gemessen 26 × 26 px. Das Kreuz sitzt im Suchfeld, das
+   auf dem Handy auf JEDER Route steht — ein zu kleines Ziel dort trifft man den ganzen Tag
+   daneben. Die Flaeche waechst, das Symbol bleibt gleich gross. */
+@media (max-width: 1023.98px) {
+  .search-field__clear {
+    min-width: var(--touch-min);
+    min-height: var(--touch-min);
+  }
+}
+
 /* ---- Layout: Filter + Ergebnisse ------------------------------------- */
 .search-page__body {
   display: grid;

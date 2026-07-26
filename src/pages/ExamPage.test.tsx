@@ -189,3 +189,60 @@ describe('Das Debrief — Brücke B3', () => {
     expect(screen.getByRole('heading', { name: 'Nach Abrufform' })).toBeInTheDocument();
   });
 });
+
+/* ── Eine Prüfung stirbt nicht an einem Klick daneben (UX-Review 2026-07-26) ──
+   Bis dahin räumte ein `useEffect`-Cleanup die Prüfung beim Unmount weg. Seit 7d sitzt
+   das Suchfeld in der Kopfzeile JEDER Route — gemessen: „biceps" ins Suchfeld, Enter,
+   zurück, und 20 Antworten waren weg, ohne Warnung. Diese Gruppe ist die Prüfzeile:
+   Sie fällt, sobald das Aufräumen im Unmount zurückkommt. */
+describe('Die laufende Prüfung übersteht die Navigation', () => {
+  it('ein Seitenwechsel (Unmount) beendet die Prüfung NICHT', () => {
+    seedDeck(20);
+    const view = renderPage();
+    startExam();
+
+    const item = useExamStore.getState().items[0];
+    act(() => {
+      useExamStore.getState().answer(item.id, item.kind === 'recall' ? 'etwas' : 'irgendwas');
+    });
+    expect(useExamStore.getState().phase).toBe('running');
+
+    // Wer in der Kopfzeile etwas nachschlägt, verlässt die Route: die Seite wird unmountet.
+    view.unmount();
+
+    expect(useExamStore.getState().phase).toBe('running');
+    expect(Object.keys(useExamStore.getState().answers)).toHaveLength(1);
+
+    // Und beim Zurückkommen läuft sie weiter, statt den Startknopf zu zeigen.
+    renderPage();
+    expect(screen.queryByRole('button', { name: /Prüfung starten/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Prüfung verwerfen/i })).toBeInTheDocument();
+  });
+
+  it('„Prüfung verwerfen" wirft sie weg — aber nur nach Rückfrage', () => {
+    seedDeck(20);
+    renderPage();
+    startExam();
+
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
+    fireEvent.click(screen.getByRole('button', { name: /Prüfung verwerfen/i }));
+    expect(confirmSpy).toHaveBeenCalled();
+    expect(useExamStore.getState().phase).toBe('running'); // abgelehnt = nichts passiert
+
+    confirmSpy.mockReturnValue(true);
+    fireEvent.click(screen.getByRole('button', { name: /Prüfung verwerfen/i }));
+    expect(useExamStore.getState().phase).toBe('idle');
+    confirmSpy.mockRestore();
+  });
+
+  it('das Debrief hat einen ausdrücklichen Schluss zurück zum Einstieg', () => {
+    seedDeck(20);
+    renderPage();
+    startExam();
+    act(() => useExamStore.getState().finish());
+
+    fireEvent.click(screen.getByRole('button', { name: /Auswertung schließen/i }));
+    expect(useExamStore.getState().phase).toBe('idle');
+    expect(screen.getByRole('button', { name: /Prüfung starten/i })).toBeInTheDocument();
+  });
+});

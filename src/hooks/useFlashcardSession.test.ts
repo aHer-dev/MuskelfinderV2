@@ -28,7 +28,7 @@ describe('advanceQueue (rein)', () => {
 describe('useFlashcardSession (gegen useProgressStore)', () => {
   beforeEach(() => {
     localStorage.clear();
-    useProgressStore.getState().resetProgress();
+    useProgressStore.getState().clearProgress();
     useSessionStore.getState().exit();
   });
 
@@ -123,7 +123,7 @@ describe('readSessionHandoff (Übergabe von /heute, 7b)', () => {
 describe('buildQueue mit vorgegebener Auswahl (7b)', () => {
   beforeEach(() => {
     localStorage.clear();
-    useProgressStore.getState().resetProgress();
+    useProgressStore.getState().clearProgress();
     useSessionStore.getState().exit();
   });
 
@@ -141,7 +141,7 @@ describe('buildQueue mit vorgegebener Auswahl (7b)', () => {
 describe('Sitzung überlebt die Navigation (7d)', () => {
   beforeEach(() => {
     localStorage.clear();
-    useProgressStore.getState().resetProgress();
+    useProgressStore.getState().clearProgress();
     useSessionStore.getState().exit();
   });
 

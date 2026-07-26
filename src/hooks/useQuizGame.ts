@@ -8,7 +8,7 @@
    gemeinsamen Fortschritts-Store (Gamification).
    ========================================================================= */
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { MUSCLES } from '../data';
 import {
   generateQuizFrom,
@@ -97,6 +97,16 @@ export function useQuizGame(
 
   const question = questions[index] ?? null;
 
+  /* Riegel gegen das Rennen zwischen Uhr und Klick (UX-Review 2026-07-26).
+     `phase` allein genügt nicht: Der Intervall-Callback läuft AUSSERHALB des
+     React-Ereignisflusses. Setzt er `phase='revealed'`, sieht ein Klick, der im selben
+     Frame eintrifft, in `answer()` noch das alte `phase` aus seinem Render-Closure — und
+     schiebt ein ZWEITES Ergebnis in `results` (11 Einträge bei 10 Fragen) und zählt
+     womöglich eine abgelaufene Frage als richtig. Der Ref wird synchron gesetzt, also
+     sieht ihn auch der Klick im selben Frame. Ein Index wird genau EINMAL gewertet. */
+  const gewertet = useRef<number | null>(null);
+
+
   /* ── Zeitdruck (Etappe 11) ────────────────────────────────────────────────
      Die Uhr laeuft gegen einen ZEITSTEMPEL, nicht gegen einen heruntergezaehlten
      Zaehler: Ein Intervall in einem Hintergrund-Tab wird vom Browser gedrosselt, ein
@@ -130,6 +140,11 @@ export function useQuizGame(
          Ergebnisliste schieben. */
       clearInterval(id);
 
+      /* Derselbe Riegel wie im Klickpfad — sonst hätte die Uhr gewertet und ein Klick im
+         selben Frame könnte NOCH einmal werten. */
+      if (gewertet.current === index) return;
+      gewertet.current = index;
+
       /* Zeit abgelaufen = falsch. Aber ohne gewaehlte Option: `selectedId` bleibt null,
          darum markiert die Karte nur die richtige Antwort und behauptet nicht, die Nutzerin
          haette etwas Falsches angeklickt. Kein XP, Serie gerissen — wie bei einer echten
@@ -142,10 +157,14 @@ export function useQuizGame(
     }, 250);
 
     return () => clearInterval(id);
-  }, [deadline]);
+    /* `index` gehört dazu, seit der Riegel ihn liest: Ohne ihn wertete der Callback gegen
+       den Index aus dem Render, in dem die deadline gesetzt wurde. */
+  }, [deadline, index]);
 
   function answer(optionId: string) {
     if (phase !== 'answering' || !question) return;
+    if (gewertet.current === index) return;
+    gewertet.current = index;
     setSelectedId(optionId);
     setPhase('revealed');
 

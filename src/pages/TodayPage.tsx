@@ -129,11 +129,21 @@ export function TodayPage() {
     startSession(plan.newSuggestions);
   };
 
-  /** Die nachgeschlagenen Lücken in den Kasten holen — ohne die Verwaltungsseite zu öffnen. */
+  /**
+   * Die nachgeschlagenen Lücken in den Kasten holen — ohne die Verwaltungsseite zu öffnen.
+   *
+   * Der Knopf heißt „…als Karten **lernen**", tat aber bis zum UX-Review 2026-07-26 nur
+   * zwei stille Dinge: Karten anlegen und den Zähler löschen. Danach verschwand der ganze
+   * Abschnitt, und niemand sagte, was passiert war — während die beiden
+   * Geschwister-Handlungen (`learnSuggestions`, `practiceBadge`) beide in eine Sitzung
+   * führen. Jetzt hält er sein Wort: frische Karten sind sofort fällig, die Sitzung startet
+   * also direkt mit genau diesen Namen.
+   */
   const learnGaps = () => {
     const names = gaps.map((g) => g.name);
     addCards(names);
     forgetLookups(names);
+    startSession(names);
   };
 
   /* Dieselbe Handlung wie in der Statistik (9b): Ein Gruppenmuskel ohne Karte hat kein Fach —

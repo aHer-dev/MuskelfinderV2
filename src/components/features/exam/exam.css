@@ -162,7 +162,12 @@
   color: var(--text-tertiary);
 }
 
+/* Zwei Ausgänge, und sie bedeuten Verschiedenes: „Vorzeitig abgeben" wertet aus,
+   „Prüfung verwerfen" wirft weg. Nebeneinander, damit die Wahl sichtbar ist. */
 .exam__abort {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
   align-self: flex-start;
 }
 
@@ -229,6 +234,13 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
+}
+
+/* Beides Nebenwege — der Primärbutton des Debriefs bleibt „aus den Fehlern lernen". */
+.exam-debrief__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
 }
 
 .exam-debrief__score {

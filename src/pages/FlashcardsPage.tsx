@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { getMuscleByLatinName, getRegions } from '../data';
 import { regionLabel } from '../data/labels';
@@ -335,17 +335,35 @@ function CardScreen({
     setShowImage(false);
   }, [current]);
 
-  const rate = (rating: CardRating) => {
-    session.rate(rating);
-    setRevealed(false);
-  };
+  /* `useCallback` mit der herausgezogenen Store-Aktion. `useFlashcardSession` baut bei
+     JEDEM Render ein neues `session`-Objekt — es als Abhängigkeit zu führen hiesse, jeden
+     Render neu zu registrieren. `rate` aus dem Store ist dagegen stabil, und damit bekommt
+     die Tastatur-Registrierung unten eine ehrliche Abhängigkeitsliste. */
+  const bewerteImStore = session.rate;
+  const rate = useCallback(
+    (rating: CardRating) => {
+      bewerteImStore(rating);
+      setRevealed(false);
+    },
+    [bewerteImStore],
+  );
 
   // Tastatursteuerung (V1): Space=Aufdecken, 1/2/3=Falsch/Unsicher/Richtig, F=Schwierig.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       /* Auf der Freitext-Stufe ist die Tastatur die Eingabe: „F" schreibt ein F,
-         es markiert nicht die Karte, und Leertaste deckt nichts auf. */
-      if (e.target instanceof HTMLInputElement) return;
+         es markiert nicht die Karte, und Leertaste deckt nichts auf.
+         `textarea` und `select` gehören mit dazu — sonst bewertet ein Tastendruck die
+         Karte, während jemand in einem Feld schreibt oder eine Liste aufklappt. */
+      const ziel = e.target;
+      if (
+        ziel instanceof HTMLInputElement ||
+        ziel instanceof HTMLTextAreaElement ||
+        ziel instanceof HTMLSelectElement ||
+        (ziel instanceof HTMLElement && ziel.isContentEditable)
+      ) {
+        return;
+      }
 
       if (e.key === 'f' || e.key === 'F') {
         if (current) toggleDifficult(current);
@@ -367,7 +385,13 @@ function CardScreen({
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  });
+    /* Ohne Abhängigkeitsliste lief dieser Effekt bei JEDEM Render und hängte den Zuhörer
+       ab und neu an — mitten in einer Sitzung ist das der heisseste Pfad der App
+       (UX-Review 2026-07-26). Der Handler liest `revealed`, `produce` und `current`, also
+       stehen genau die hier. **`session` selbst NICHT:** `useFlashcardSession` baut bei
+       jedem Render ein neues Objekt, das wäre derselbe Effekt-pro-Render nur umständlicher.
+       `rate` ist über `useCallback` an die Store-Aktion gebunden und damit stabil. */
+  }, [revealed, produce, current, rate, toggleDifficult]);
 
   // Swipe (mobil): nach Aufdecken → rechts = Richtig, links = Falsch.
   const onTouchStart = (e: React.TouchEvent) => {
@@ -395,15 +419,30 @@ function CardScreen({
         >
           ←
         </button>
+        {/* „Unsicher" hängt die Karte hinten an und zählt bewusst NICHT als erledigt
+            (`advanceQueue` + `applyUnsure`: Fach und Fälligkeit bleiben, die Karte kommt
+            wieder). Gemessen im UX-Review 2026-07-26: 12× „Unsicher" auf fünf Karten, und
+            die Anzeige stand die ganze Zeit auf „0/5" — zwölf Bewertungen, null sichtbarer
+            Fortschritt, kein Hinweis, dass die Karten zurückgestellt wurden. Die
+            Zurückstellungen stehen jetzt daneben. Sie erledigt zu ZÄHLEN wäre falsch: die
+            Karte ist nicht durch. */}
         <div className="flashcards__progress" aria-label="Fortschritt">
           <div className="flashcards__progress-track">
             <div
               className="flashcards__progress-fill"
-              style={{ width: `${(session.reviewed / session.total) * 100}%` }}
+              style={{
+                width: session.total > 0 ? `${(session.reviewed / session.total) * 100}%` : '0%',
+              }}
             />
           </div>
           <span className="flashcards__progress-label">
             {session.reviewed}/{session.total}
+            {session.unsure > 0 && (
+              <span className="flashcards__progress-unsure">
+                {' '}
+                · {session.unsure}× zurückgestellt
+              </span>
+            )}
           </span>
         </div>
         <button
@@ -464,6 +503,11 @@ function CardScreen({
                   <p className="fc-controls-hint">
                     <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd> bewerten · <kbd>F</kbd> schwierig ·
                     mobil: wischen
+                    <br />
+                    {/* Sonst sieht es aus wie ein Fehler: Der Zähler bewegt sich nicht,
+                        weil die Karte noch nicht durch ist. */}
+                    „Unsicher" legt die Karte zurück in diese Runde — sie zählt erst als
+                    erledigt, wenn du sie richtig oder falsch bewertest.
                   </p>
                 </>
               ) : (
@@ -523,6 +567,12 @@ function SummaryScreen({
             <span className="fc-summary__num fc-summary__num--bad">{session.wrong}</span>
             <span className="fc-summary__label">falsch</span>
           </div>
+          {session.unsure > 0 && (
+            <div className="fc-summary__stat">
+              <span className="fc-summary__num">{session.unsure}</span>
+              <span className="fc-summary__label">zurückgestellt</span>
+            </div>
+          )}
           <div className="fc-summary__stat">
             <span className="fc-summary__num fc-summary__num--xp">+{session.xpEarned}</span>
             <span className="fc-summary__label">XP</span>

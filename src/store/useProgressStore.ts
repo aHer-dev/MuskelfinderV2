@@ -20,6 +20,7 @@ import {
   isDue,
   MASTERED_FACH,
   newCard,
+  resetCardProgress,
 } from '../persistence/leitner';
 import {
   createEmptyFlashcardsSection,
@@ -67,6 +68,8 @@ interface ProgressState {
   addCard: (name: string) => void;
   addCards: (names: string[]) => void;
   removeCard: (name: string) => void;
+  /** Mehrere Karten in einem Schritt aus dem Kasten nehmen (Rückweg zum Massen-Hinzufügen). */
+  removeCards: (names: string[]) => void;
   isInDeck: (name: string) => boolean;
   getAddedCardNames: () => string[];
   getCardState: (name: string) => FlashcardCard | null;
@@ -95,7 +98,14 @@ interface ProgressState {
 
   /* Persistenz-Bridge (Backup-Import / Reset). */
   replaceProgress: (sections: { flashcards: FlashcardsSection; xp: XpSection }) => void;
+  /**
+   * Lernstand zurücksetzen — **der Karteikasten bleibt** (genau das, was der Text auf
+   * `/statistik` verspricht). Fächer, Fälligkeiten, Zähler und XP fallen auf den Anfang;
+   * die Auswahl der Muskeln und ihre Schwierig-Markierungen bleiben stehen.
+   */
   resetProgress: () => void;
+  /** Alles weg, auch die Auswahl — für Tests und den Import-Pfad. */
+  clearProgress: () => void;
 }
 
 function deckNames(cards: Record<string, FlashcardCard>, names?: string[]): string[] {
@@ -147,6 +157,23 @@ export const useProgressStore = create<ProgressState>()(
           const cards = { ...s.flashcards.cards };
           delete cards[name];
           return { flashcards: { ...s.flashcards, cards } };
+        });
+      },
+
+      /* Der Rückweg zu `addCards`. Ohne ihn führte „Alle sichtbaren hinzufügen" (121
+         Karten auf einen Klick) in eine Einbahnstraße: 145 einzelne „Entfernen"-Klicks
+         waren der einzige Ausgang. Ein Aufruf, ein `set` — nicht 145. */
+      removeCards: (names) => {
+        set((s) => {
+          const cards = { ...s.flashcards.cards };
+          let changed = false;
+          for (const name of names) {
+            if (name in cards) {
+              delete cards[name];
+              changed = true;
+            }
+          }
+          return changed ? { flashcards: { ...s.flashcards, cards } } : {};
         });
       },
 
@@ -255,7 +282,20 @@ export const useProgressStore = create<ProgressState>()(
 
       replaceProgress: ({ flashcards, xp }) => set({ flashcards, xp }),
 
+      /* „Der Karteikasten bleibt, der Lernstand ist weg" — bis zum UX-Review 2026-07-26
+         stand hier `createEmptyFlashcardsSection()`, was den Kasten MITLÖSCHTE (gemessen:
+         24 → 0 Karten). Die eine Regel dafür ist `resetCardProgress` in leitner.ts. */
       resetProgress: () =>
+        set((s) => {
+          const now = new Date();
+          const cards: Record<string, FlashcardCard> = {};
+          for (const [name, card] of Object.entries(s.flashcards.cards)) {
+            cards[name] = resetCardProgress(card, now);
+          }
+          return { flashcards: { ...s.flashcards, cards }, xp: createEmptyXpSection() };
+        }),
+
+      clearProgress: () =>
         set({ flashcards: createEmptyFlashcardsSection(), xp: createEmptyXpSection() }),
     }),
     {

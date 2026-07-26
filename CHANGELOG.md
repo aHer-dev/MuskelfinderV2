@@ -6,6 +6,105 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### UX-Review 2026-07-26 — am laufenden Build nachgemessen
+
+Ein Durchgang als Entwickler UND als Schülerin: voller Testlauf, dann die App selbst bedient
+(Kaltstart, 320 + 390 px, nur Tastatur, Abbruch-Wege). Jeder Fund ist eine Prüfzeile geworden,
+jede Prüfzeile ist gegengetestet (Fix zurückdrehen → Prüfung fällt → wiederherstellen).
+
+#### Fixed — Datenverlust
+
+- **„Fortschritt zurücksetzen" löschte den Karteikasten, obwohl der Text daneben das Gegenteil
+  versprach.** Auf `/statistik` stand wörtlich „Der Karteikasten bleibt, der Lernstand ist weg",
+  die Rückfrage nannte nur „Fächer + XP" — und `resetProgress()` setzte `cards: {}`. **Gemessen:
+  24 Karten → 0**, unumkehrbar, einen Halbsatz nachdem dieselbe Zeile das auch noch angekündigt
+  hatte. Wer die Fächer neu anfangen wollte, verlor seine mühsam gewählte Auswahl mit.
+  Jetzt hält der Satz: `resetCardProgress` (`persistence/leitner.ts`) ist die eine Regel dafür —
+  Fach, Fälligkeit, Zähler und `lastSeen` fallen auf den Anfang, **die Karte bleibt**. Die
+  Schwierig-Markierung überlebt (sie gehört der Nutzerin, nicht der Messung). ADR 0002 unberührt:
+  kein Feld kommt, keins geht. Für den echten Vollausräumer gibt es jetzt `clearProgress()`.
+  Knopf und Rückfrage tragen zusätzlich die Kartenzahl.
+- **Eine laufende Prüfung starb an jedem Klick daneben.** `ExamPage` räumte sie im Unmount weg —
+  eine Entscheidung, die **älter ist als Etappe 7d**, seit der das Suchfeld in der Kopfzeile
+  **jeder** Route sitzt. Gemessen: Prüfung läuft, „biceps" ins Suchfeld, Enter, zurück → Startknopf,
+  20 Antworten weg, keine Warnung. Die Lernsitzung wurde in 7d aus genau diesem Grund in einen Store
+  verschoben; die Prüfung lag längst in einem. Sie übersteht jetzt die Navigation (den Browser-Neustart
+  bewusst weiterhin nicht) und wird über **„Prüfung verwerfen"** ausdrücklich beendet; das Debrief hat
+  ein **„Auswertung schließen"**.
+
+#### Fixed — Wege ohne Rückweg
+
+- **„Alle sichtbaren hinzufügen" legte 121 Karten auf einen Klick an** (gemessen 24 → 145): keine
+  Zahl am Knopf, keine Rückfrage, und der einzige Rückweg waren **145 einzelne „Entfernen"-Klicks**.
+  ADR 0009 verhindert, dass die *App* ungefragt Karten anlegt — hier tat es sich der Schüler selbst.
+  Jetzt steht die Zahl am Knopf, ab 20 Karten fragt er nach, und **„Alle N entfernen"** ist der
+  Rückweg (mit Rückfrage, in einem Schritt: neues `removeCards`).
+- **„Unsicher" bewegte den Zähler nie.** Gemessen: 5 Karten, 12× „Unsicher" — die Anzeige stand die
+  ganze Zeit auf **„0/5"**. Zwölf Bewertungen, null sichtbarer Fortschritt und kein Wort dazu, dass
+  die Karte nur zurückgestellt wurde (`applyUnsure` rührt Fach und Fälligkeit bewusst nicht an).
+  Die Zurückstellungen stehen jetzt neben dem Zähler und in der Zusammenfassung, und die Karte sagt,
+  was „Unsicher" bewirkt. **Mitzuzählen wäre falsch** — die Karte ist nicht durch.
+- **„Alle N als Karten lernen" auf `/heute` lernte nichts** (`learnGaps`): es legte Karten an, löschte
+  den Zähler, und der Abschnitt verschwand stillschweigend — während beide Geschwister-Handlungen in
+  eine Sitzung führen. Jetzt startet die Sitzung mit genau diesen Karten.
+
+#### Fixed — kleine Schirme
+
+- **`/statistik` lief bei ≤ 346 px waagerecht über** (26 px bei 320 px). Zwei Hälften, beide nötig:
+  `.badges` konnte wegen `minmax(280px, 1fr)` **nicht** unter 280 px, und `.stats__bento` stand auf
+  `1fr` — was `minmax(auto, 1fr)` bedeutet und damit nie unter die min-content-Breite seines Inhalts
+  fällt. Jetzt `minmax(0, 1fr)` am Raster und `minmax(min(280px, 100%), 1fr)` an den Kacheln
+  (scrollWidth 346 → 321). Dieselbe Falle vorsorglich in `today.css`, `deck-manager.css` und den
+  Kennzahl-Kacheln geschlossen.
+- **Scroll-Falle im Karteikasten:** `.deck-checklist` hatte `max-height: 460px` mit eigener
+  Scrollfläche — auf 320 px sind das **81 % der Viewport-Höhe** mit 7237 px Inhalt darin. Jeder Wisch,
+  der in der Liste begann, scrollte die Liste statt die Seite. Unter 1024 px ist der Deckel weg.
+- **Daumenmaße:** Lösch-Kreuz der Suche 26 px, Bild-Pfeile 40 px, die Quellen-/Datenschutz-Links
+  19 px (unter WCAG 2.5.8) — alle auf `--touch-min`. **Links mitten im Satz bleiben ausgenommen**
+  (`li > a:only-child` trifft nur die alleinstehenden), sonst reißt der Fließtext auseinander.
+- **Sprungmarke „Zum Inhalt springen".** Gemessen lagen auf `/suche` **sieben Tab-Stopps** zwischen
+  Seitenanfang und Inhalt, auf jeder Route neu (Rail + Kopfzeilen-Suche). axe schweigt dazu, weil die
+  Landmarks 2.4.1 formal erfüllen. Der Link ist der erste Tab-Stopp, wird nur bei Fokus sichtbar, und
+  `<main tabIndex={-1}>` nimmt den Fokus auch wirklich an.
+
+#### Fixed — Nebenwirkungen im Code
+
+- **Uhr und Klick konnten dieselbe Quizfrage doppelt werten.** Der Intervall-Callback läuft außerhalb
+  des React-Ereignisflusses: Setzt er `phase='revealed'`, sieht ein Klick im selben Frame in
+  `answer()` noch das alte `phase` aus seinem Closure — `results` bekäme 11 Einträge bei 10 Fragen,
+  und eine abgelaufene Frage könnte als richtig zählen. Ein Ref-Riegel wertet jeden Index genau
+  einmal. (Der Test dafür steht als Hook-Test — im DOM ist die Option nach dem Ablauf `disabled`,
+  dort wäre er auch ohne Fix grün.)
+- **Tastatur im Quiz** wie in der Lernsitzung: `1`–`4` antwortet, `Enter` geht weiter; Eingabefelder
+  und ein offenes `ExplainSheet` behalten ihre Tasten. Die Kürzel stehen sichtbar unter der Frage.
+- Der Tastatur-Effekt der Lernsitzung lief **bei jedem Render** neu (keine Dependency-Liste) und
+  ignorierte nur `<input>` — jetzt mit ehrlicher Liste (`rate` über `useCallback` stabil) und inkl.
+  `<textarea>`, `<select>` und `contentEditable`.
+- Die Fällig-Etiketten im Karteikasten (`fällig` / `morgen` / `in N T`) waren beim Mount **eingefroren**
+  und veralteten über Nacht. Sie ziehen jetzt nach, wenn der Tab zurückkommt — kein Polling.
+
+#### Added — die Prüfungen dazu
+
+- **`check:oberflaeche` prüft jetzt das Handy (320 + 390 px).** Vorher rief **weder** dieses Skript
+  **noch** `check:wege` je `setViewportSize` — beide liefen ausschließlich auf 1440 × 900, während
+  `PROJECT_STATE.md` „Desktop+Handy" behauptete. Die ganze Handy-Schicht war ungeprüft, und genau
+  darin saßen die Layout-Fehler oben. Neu je Route und Breite: Seitenüberlauf, axe, Daumenmaße
+  (< 24 px hart, < 44 px gemeldet, mit den dokumentierten Ausnahmen) und **Scroll-Fallen**
+  (eigene Scrollfläche über 50 % der Viewport-Höhe). **320 px ist Absicht:** Grid-Fallen wie
+  `minmax(280px, 1fr)` zeigen sich bei 390 px nicht.
+- **`check:oberflaeche` Station 0: zeigt jede Route, was sie behauptet?** Dabei kam heraus, dass
+  `['/muskel/m-biceps-brachii', 'detail']` in der Routenliste stand — die Kennungen haben **kein
+  `m-`**. Die Prüfung hat also jahrelang die **404-Seite** vermessen und sie „detail" genannt: Die
+  inhaltsreichste Seite der App (Bilder, Palpation, Notizen, 3D-Link, Attribution) war **nie im
+  Audit**. Die 404-Seite besteht jede Messung glänzend — sie ist barrierefrei, läuft nicht über und
+  hält den Satzspiegel. Genau darum fällt so etwas nur mit dieser Station auf.
+- **`check:wege` Station 7 + 8** — die beiden Datenverlust-Fehler als Weg, nicht als Behauptung:
+  Prüfung läuft → in der Kopfzeile nachschlagen → zurück → Antworten müssen stehen; und
+  Lernstand zurücksetzen → Kasten muss unverändert sein (53 → 53), Fächer auf 1, XP auf 0.
+- Der Hover-Zielselektor `['/anleitung', 'a']` heißt jetzt `'main a'` — der erste Link im Dokument
+  ist die Sprungmarke, und die liegt bis zum Fokus außerhalb des Bildes.
+
+
 ### Added
 - **Prüf-Gate `npm run verify`** — bündelt lint · test · `check:daten` · build · `check:oberflaeche`
   · `check:wege` und läuft bei jedem Push (`.github/workflows/verify.yml`). Grund: 592 grüne

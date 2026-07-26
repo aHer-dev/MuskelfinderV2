@@ -37,7 +37,7 @@ function renderToday() {
 describe('Brücke B1 — Nachschlagen füllt den Karteikasten', () => {
   beforeEach(() => {
     localStorage.clear()
-    useProgressStore.getState().resetProgress()
+    useProgressStore.getState().clearProgress()
     useLookupStore.getState().resetLookups()
     useProfileStore.getState().setProfile('physio', null)
   })

@@ -41,7 +41,7 @@ function fastFertig() {
 describe('StandRail — „Dein Stand" auf /heute (Etappe 12)', () => {
   beforeEach(() => {
     localStorage.clear();
-    useProgressStore.getState().resetProgress();
+    useProgressStore.getState().clearProgress();
     useProfileStore.getState().setProfile('physio', null);
     useStreakStore.getState().resetStreak();
     navigate.mockClear();

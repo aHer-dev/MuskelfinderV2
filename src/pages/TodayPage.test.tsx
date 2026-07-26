@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { TodayPage } from './TodayPage'
 import { useProfileStore } from '../store/useProfileStore'
 import { useProgressStore } from '../store/useProgressStore'
+import { useLookupStore } from '../store/useLookupStore'
 import { getMuscles } from '../data'
 import { dueDate } from '../persistence/leitner'
 
@@ -46,7 +47,7 @@ function primaryAction(): HTMLElement {
 describe('TodayPage — jeder Zustand hat genau einen Primärbutton', () => {
   beforeEach(() => {
     localStorage.clear()
-    useProgressStore.getState().resetProgress()
+    useProgressStore.getState().clearProgress()
     // Das Profil ist gesetzt: der Erststart (Onboarding, 7c) ist hier durch —
     // getestet wird der Heute-Screen selbst.
     useProfileStore.getState().setProfile('physio', null)
@@ -140,5 +141,40 @@ describe('TodayPage — jeder Zustand hat genau einen Primärbutton', () => {
       'href',
       '/karteikasten',
     )
+  })
+})
+
+/* ── „Als Karten lernen" hält jetzt sein Wort (UX-Review 2026-07-26) ──
+   Der Knopf hiess schon immer „…als Karten LERNEN", tat aber nur zwei stille Dinge: Karten
+   anlegen, Zähler löschen. Danach verschwand der ganze Abschnitt, und niemand sagte, was
+   passiert war — während die beiden Geschwister-Handlungen („neue Muskeln lernen",
+   „Abzeichen üben") beide in eine Sitzung führen. */
+describe('Brücke B1 — nachgeschlagene Lücken führen in die Sitzung', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    useProgressStore.getState().clearProgress()
+    useLookupStore.setState((s) => ({ lookups: { ...s.lookups, entries: {} } }))
+    useProfileStore.getState().setProfile('physio', null)
+    navigate.mockClear()
+  })
+
+  it('legt die Karten an UND startet die Sitzung mit genau diesen Namen', () => {
+    const nachgeschlagen = [MUSCLES[0].nameLatin, MUSCLES[1].nameLatin]
+    for (const name of nachgeschlagen) {
+      useLookupStore.getState().record(name)
+      useLookupStore.getState().record(name)
+    }
+
+    renderPage()
+    fireEvent.click(screen.getByRole('button', { name: /als Karten? lernen/i }))
+
+    // 1. Im Kasten.
+    for (const name of nachgeschlagen) {
+      expect(useProgressStore.getState().isInDeck(name)).toBe(true)
+    }
+    // 2. Und der Knopf tut, was er sagt: die Sitzung läuft mit genau diesen Karten.
+    expect(navigate).toHaveBeenCalledWith('/lernkarten', {
+      state: { start: { names: nachgeschlagen, limit: 0, scope: 'all' } },
+    })
   })
 })

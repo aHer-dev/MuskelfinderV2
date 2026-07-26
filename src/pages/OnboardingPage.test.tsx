@@ -25,7 +25,7 @@ function deckNames(): string[] {
 describe('Onboarding — zwei Fragen, dann WÄHLT DER SCHÜLER (ADR 0009)', () => {
   beforeEach(() => {
     localStorage.clear()
-    useProgressStore.getState().resetProgress()
+    useProgressStore.getState().clearProgress()
     useProfileStore.getState().resetProfile()
     navigate.mockClear()
   })

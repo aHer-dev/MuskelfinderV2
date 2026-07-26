@@ -111,6 +111,12 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Die Zurückstellungen sind eine Nebenauskunft — sie sollen erklären, warum der Zähler
+   steht, und ihn nicht überstimmen. Auf dem Handy bricht die Zeile darum um. */
+.flashcards__progress-unsure {
+  white-space: nowrap;
+}
+
 /* ---- Karte (3D-Flip) --------------------------------------------------- */
 /* Der Button ist nur der Perspektiv-Rahmen; die sichtbare Karte sind die
    beiden Seiten, die im Grid gestapelt liegen (Zellenhöhe = höhere Seite). */

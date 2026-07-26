@@ -51,6 +51,14 @@
   align-items: center;
   gap: var(--spacing-sm);
   margin-bottom: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+/* Der Rückweg zum Massen-Hinzufügen (UX-Review 2026-07-26). Er steht rechts aussen, nicht
+   neben der Zahl: „Alle entfernen" soll man finden, wenn man ihn sucht — und nicht
+   treffen, wenn man die Zahl lesen wollte. Die Rückfrage hängt am Klick, nicht hier. */
+.deck-remove--all {
+  margin-left: auto;
 }
 
 .deck-section__title {
@@ -236,10 +244,23 @@
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
   gap: var(--spacing-xs);
   max-height: 460px;
   overflow-y: auto;
+}
+
+/* Auf dem Handy war dieser Deckel eine Scroll-Falle: gemessen 460 px eigene Scrollfläche
+   mit 7237 px Inhalt darin — auf einem 320-px-Schirm **81 % der Viewport-Höhe**. Jeder
+   Wisch, der in der Liste begann, scrollte die Liste statt die Seite, und man kam nur
+   über einen schmalen Streifen daneben weiter (UX-Review 2026-07-26). Auf dem Desktop
+   bleibt der Deckel sinnvoll: dort ist die Liste dreispaltig, und der Mauszeiger hat ein
+   Rad, das keine Rolle verwechselt. */
+@media (max-width: 1023.98px) {
+  .deck-checklist {
+    max-height: none;
+    overflow-y: visible;
+  }
 }
 
 .deck-check {

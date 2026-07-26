@@ -90,6 +90,45 @@ function QuizGame({
 }) {
   const game = useQuizGame(mode, 10, regions, scope, timeLimit);
 
+  /* Tastatur wie in der Lernsitzung (UX-Review 2026-07-26). Dort gibt es seit 8a
+     `Space`/`1`/`2`/`3`; im Quiz musste man bis dahin für JEDE Frage zur Maus greifen oder
+     sich zum „Weiter"-Knopf durchtabben — unter der 15-Sekunden-Uhr ist das der Unterschied
+     zwischen Denken und Hetzen. `1`–`4` wählt, Enter geht weiter.
+
+     Zwei Riegel: Eingabefelder behalten ihre Tasten (dieselbe Regel wie in 8a), und ein
+     offenes Sheet (`ExplainSheet` liegt ÜBER der Frage) schluckt sie — sonst blättert Enter
+     die Frage weg, während man die Erklärung liest. */
+  const { phase, question, answer: antworte, next: weiter } = game;
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const ziel = e.target;
+      if (
+        ziel instanceof HTMLInputElement ||
+        ziel instanceof HTMLTextAreaElement ||
+        ziel instanceof HTMLSelectElement ||
+        (ziel instanceof HTMLElement && ziel.isContentEditable)
+      ) {
+        return;
+      }
+      if (document.querySelector('.sheet [role="dialog"], .sheet__panel')) return;
+
+      if (phase === 'answering' && question) {
+        const nummer = Number(e.key);
+        if (Number.isInteger(nummer) && nummer >= 1 && nummer <= question.options.length) {
+          e.preventDefault();
+          antworte(question.options[nummer - 1].id);
+        }
+        return;
+      }
+      if (phase === 'revealed' && e.key === 'Enter') {
+        e.preventDefault();
+        weiter();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [phase, question, antworte, weiter]);
+
   if (game.total === 0) {
     return (
       <div className="quiz-empty">
@@ -149,6 +188,19 @@ function QuizGame({
           {game.index < game.total - 1 ? 'Weiter' : 'Auswerten'}
         </button>
       </div>
+
+      {/* Kürzel nur nennen, wenn sie gerade etwas tun — dieselbe Regel wie auf der Lernkarte. */}
+      <p className="quiz-game__keys">
+        {game.phase === 'answering' ? (
+          <>
+            <kbd>1</kbd>–<kbd>{game.question?.options.length ?? 4}</kbd> antworten
+          </>
+        ) : (
+          <>
+            <kbd>Enter</kbd> {game.index < game.total - 1 ? 'weiter' : 'auswerten'}
+          </>
+        )}
+      </p>
     </div>
   );
 }
