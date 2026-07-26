@@ -23,6 +23,7 @@
    ========================================================================= */
 
 import editorial from './editorial/curriculum.json';
+import { cardKey } from './card-key';
 import { PROFESSIONS, type Profession } from './profession';
 import type { Muscle } from '../types';
 
@@ -33,7 +34,7 @@ export interface CurriculumSection {
   id: string;
   /** Was der Schüler liest: „Kurs 2 — Schultergürtel". */
   label: string;
-  /** `nameLatin` der Muskeln in diesem Abschnitt. */
+  /** Kartenschlüssel der Muskeln in diesem Abschnitt (ADR 0012). */
   muscles: string[];
 }
 
@@ -54,9 +55,9 @@ function readSection(raw: unknown): CurriculumSection | null {
   const label = typeof entry.label === 'string' ? entry.label.trim() : '';
   if (id === '' || label === '') return null;
 
-  /* Karten sind nach `nameLatin` geschlüsselt (ADR 0002 §2) — und fünf Namen gibt es
-     zweimal (Hand und Fuß). Zwei Muskeln mit demselben Namen sind EINE Karte; ohne die
-     Dublettensperre wäre ein Abschnitt still kleiner, als seine Zahl verspricht. */
+  /* Karten sind nach Kartenschlüssel geschlüsselt (ADR 0002 §2, ADR 0012). Derselbe
+     Schlüssel zweimal genannt ist EINE Karte; ohne die Dublettensperre wäre ein Abschnitt
+     still kleiner, als seine Zahl verspricht. */
   const seen = new Set<string>();
   const muscles: string[] = [];
   for (const value of Array.isArray(entry.muscles) ? entry.muscles : []) {
@@ -122,7 +123,7 @@ const SOURCE = readCurriculumSource(editorial);
 
 /** Der Loader ruft das, sobald die Muskeln validiert sind. */
 export function initCurriculum(muscles: readonly Muscle[], source: CurriculumSource = SOURCE): void {
-  assertKnownMuscles(source, new Set(muscles.map((m) => m.nameLatin)));
+  assertKnownMuscles(source, new Set(muscles.map((m) => cardKey(m))));
 }
 
 /** Die Abschnitte eines Berufs — leer, solange der Projektinhaber keine eingetragen hat. */

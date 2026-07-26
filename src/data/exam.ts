@@ -16,6 +16,7 @@
    ========================================================================= */
 
 import { checkAnswer, type AnswerCheck, type AnswerTarget } from './answer-check';
+import { cardKey } from './card-key';
 import { explainWrongAnswer, type Explanation } from './explain';
 import { getMuscleById } from './loader';
 import { createRng, eligibleFor, questionForMuscle, shuffle } from './quiz';
@@ -106,7 +107,7 @@ export interface ExamSet {
 export interface BuildExamInput {
   /** Der ganze Bestand — daraus kommen die **Distraktoren**. */
   muscles: readonly Muscle[];
-  /** `nameLatin` der Karten im Kasten — daraus kommen die **Fragen**. */
+  /** Kartenschlüssel der Karten im Kasten — daraus kommen die **Fragen**. */
   deck: readonly string[];
   count?: number;
   rng?: () => number;
@@ -125,10 +126,10 @@ export function buildExam({
   count = EXAM_SIZE,
   rng = createRng(Date.now()),
 }: BuildExamInput): ExamSet {
-  const byName = new Map(muscles.map((m) => [m.nameLatin, m]));
-  // ADR 0002 §2: Karten sind nach `nameLatin` geschlüsselt, Dubletten sind DIESELBE Karte.
+  const byKey = new Map(muscles.map((m) => [cardKey(m), m]));
+  // ADR 0012: Der Kasten ist nach Kartenschlüssel geschlüsselt, nicht nach Anzeigename.
   const candidates = [...new Set(deck)]
-    .map((name) => byName.get(name))
+    .map((key) => byKey.get(key))
     .filter((m): m is Muscle => m !== undefined);
 
   if (candidates.length === 0) return { items: [], blocker: 'emptyDeck' };
@@ -196,7 +197,7 @@ export interface ExamReport {
   correct: number;
   outcomes: ExamOutcome[];
   missed: ExamOutcome[];
-  /** `nameLatin` der verpassten Muskeln, dedupliziert. **Genau das seedet das Debrief.** */
+  /** Kartenschlüssel der verpassten Muskeln, dedupliziert. **Genau das seedet das Debrief.** */
   missedNames: string[];
   /** Schwächste zuerst — dort lohnt sich die Zeit. */
   byRegion: Array<{ region: RegionId; tally: ExamTally }>;
@@ -289,7 +290,7 @@ export function gradeExam({
     correct: outcomes.filter((o) => o.correct).length,
     outcomes,
     missed,
-    missedNames: [...new Set(missed.map((o) => o.muscle.nameLatin))],
+    missedNames: [...new Set(missed.map((o) => cardKey(o.muscle)))],
     byRegion: [...regions.entries()]
       .map(([region, tally]) => ({ region: region as RegionId, tally }))
       .sort((a, b) => ratio(a.tally) - ratio(b.tally)),

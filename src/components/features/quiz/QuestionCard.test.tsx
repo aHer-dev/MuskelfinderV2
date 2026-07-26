@@ -1,11 +1,11 @@
 import { describe, expect, it, vi } from 'vitest'
 import { render, screen, fireEvent, within } from '@testing-library/react'
 import { QuestionCard } from './QuestionCard'
-import { getMuscleByLatinName } from '../../../data'
+import { getMuscleByCardKey } from '../../../data'
 import type { Muscle, QuizQuestion } from '../../../types'
 
-const SUPRA = getMuscleByLatinName('M. supraspinatus') as Muscle
-const SOLEUS = getMuscleByLatinName('M. soleus') as Muscle
+const SUPRA = getMuscleByCardKey('M. supraspinatus') as Muscle
+const SOLEUS = getMuscleByCardKey('M. soleus') as Muscle
 
 const QUESTION: QuizQuestion = {
   id: 'q0',

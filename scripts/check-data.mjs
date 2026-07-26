@@ -36,12 +36,27 @@ const gruppen = groupsFile.gruppen ?? groupsFile;
 const fehler = []; // harte Integritaetsfehler -> Exit 1
 const fail = (msg) => fehler.push(msg);
 
-const namenIndex = new Map(); // nameLatin -> Muskel[]  (letzter gewinnt in der Laufzeit)
+const namenIndex = new Map(); // nameLatin -> Muskel[]
 for (const m of muscles) {
   if (!namenIndex.has(m.nameLatin)) namenIndex.set(m.nameLatin, []);
   namenIndex.get(m.nameLatin).push(m);
 }
-const kartenMuskeln = muscles.length - [...namenIndex.values()].filter((v) => v.length > 1).length;
+
+/* Zwei Sorten von Namensdubletten, und sie haben gegensaetzliche Folgen (ADR 0012):
+
+   - GLEICHE Subregion  → EIN Muskel in zwei Funktionszeilen (`M. nasalis`, Pars transversa
+     und Pars alaris). Das ist EINE Karte; die zweite Zeile faellt weg.
+   - ANDERE Subregion   → ZWEI Muskeln mit einem Namen (Hand und Fuss). Das sind ZWEI
+     Karten, und die Hand traegt dafuer einen eigenen Kartenschluessel.
+
+   Bis zum 2026-07-26 zaehlte diese Zeile beide Sorten gleich und meldete 145 statt 148 —
+   also genau die drei Handmuskeln als „nicht vorhanden", die damals wirklich unlernbar
+   waren. Die Regel steht in `src/data/card-key.ts`; hier steht sie nur als ZAEHLUNG, denn
+   der Loader wirft ohnehin beim Start, wenn beides auseinanderlaeuft (`assertCardKeys`). */
+const funktionszeilenDubletten = [...namenIndex.values()]
+  .filter((v) => v.length > 1)
+  .reduce((summe, v) => summe + (v.length - new Set(v.map((m) => m.subregion)).size), 0);
+const kartenMuskeln = muscles.length - funktionszeilenDubletten;
 
 /* ═══════════════════════════════════════════════════════════════════════
    TEIL 1 — INTEGRITAET (harte Fehler)
@@ -91,21 +106,24 @@ for (const g of gruppen) {
    TEIL 2 — BERICHT (fuer den Fachmann; kein Fehler)
    ═══════════════════════════════════════════════════════════════════════ */
 
-/** Muskeln, die sich einen Feldwert teilen. */
-function kollisionen(feld, label) {
+/** Muskeln, die sich einen Feldwert teilen. `zeige` bestimmt, wie ein Treffer dasteht. */
+function kollisionen(feld, zeige = (m) => m.nameLatin) {
   const map = new Map();
   for (const m of muscles) {
     const v = typeof feld === 'function' ? feld(m) : m[feld];
     if (!v || (typeof v === 'string' && !v.trim())) continue;
     if (!map.has(v)) map.set(v, []);
-    map.get(v).push(m.nameLatin);
+    map.get(v).push(zeige(m));
   }
   return [...map.entries()].filter(([, ms]) => ms.length > 1)
     .map(([wert, ms]) => ({ wert, ms }));
 }
 
 const bericht = {
-  'Gleicher Name (Hand/Fuss, Kopf)': kollisionen('nameLatin'),
+  /* Beim Namen ist der Name als Treffer nutzlos — er steht schon in der Ueberschrift. Was der
+     Fachmann sehen muss, ist die SUBREGION: Sie entscheidet, ob es ein Muskel in zwei
+     Funktionszeilen ist (eine Karte) oder zwei Muskeln mit einem Namen (zwei Karten). */
+  'Gleicher Name (Hand/Fuss, Kopf)': kollisionen('nameLatin', (m) => `${m.subregion} [${m.region}]`),
   'Gleiche Funktion': kollisionen('functionDescription'),
   'Gleicher Ursprung': kollisionen('origin'),
   'Gleicher Ansatz': kollisionen('insertion'),

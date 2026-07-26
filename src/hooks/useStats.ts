@@ -4,7 +4,7 @@
    ========================================================================= */
 
 import { useMemo } from 'react';
-import { getMuscleByLatinName } from '../data';
+import { getMuscleByCardKey } from '../data';
 import { computeStats, type StatsView } from '../data/stats';
 import { useProgressStore } from '../store/useProgressStore';
 import { useQuizStore } from '../store/useQuizStore';
@@ -20,7 +20,7 @@ export function useStats(): StatsView {
         cards,
         totalXP,
         quizSeries,
-        regionOf: (name) => getMuscleByLatinName(name)?.region,
+        regionOf: (key) => getMuscleByCardKey(key)?.region,
       }),
     [cards, totalXP, quizSeries],
   );

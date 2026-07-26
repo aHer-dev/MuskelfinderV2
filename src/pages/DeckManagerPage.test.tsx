@@ -3,6 +3,8 @@ import { render, screen, fireEvent, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { DeckManagerPage } from './DeckManagerPage'
 import { useProgressStore } from '../store/useProgressStore'
+import { CARD_MUSCLES } from '../data'
+import { CARD_KEY_MARK } from '../data/card-key'
 
 function renderPage() {
   return render(
@@ -67,11 +69,11 @@ describe('DeckManagerPage', () => {
 })
 
 /* Gemessen am Build (2026-07-13): Wer „Obere Extremitaet" waehlte, bekam 53 Karten — und sah
-   56 Zeilen. Drei `nameLatin` gibt es zweimal (Hand/Fuss), und die Tabelle lief ueber die
-   150 Muskeln statt ueber die Karten. Wer die Fuss-Zeile entfernte, loeschte die Handkarte
-   gleich mit: Es ist derselbe Schluessel. */
-describe('doppelte Muskelnamen ergeben EINE Zeile', () => {
-  const ZWILLING = 'M. abductor digiti minimi' // Hand UND Fuss
+   56 Zeilen. Die Tabelle lief ueber die 150 Muskeln statt ueber die Karten, und `M. nasalis`
+   steht dort zweimal (Pars transversa und Pars alaris). Wer eine der beiden Zeilen entfernte,
+   loeschte die andere gleich mit: Es ist derselbe Schluessel. */
+describe('zwei Funktionszeilen ergeben EINE Zeile', () => {
+  const EIN_MUSKEL = 'M. nasalis' // zweimal im Bestand, EIN Muskel
 
   beforeEach(() => {
     localStorage.clear()
@@ -79,31 +81,109 @@ describe('doppelte Muskelnamen ergeben EINE Zeile', () => {
   })
 
   it('zeigt eine Karte als genau eine Zeile — nicht als zwei', () => {
-    useProgressStore.getState().addCards([ZWILLING])
+    useProgressStore.getState().addCards([EIN_MUSKEL])
     renderPage()
 
     const zeilen = within(screen.getByRole('table'))
       .getAllByRole('row')
-      .filter((row) => within(row).queryByText(ZWILLING))
+      .filter((row) => within(row).queryByText(EIN_MUSKEL))
 
     expect(Object.keys(useProgressStore.getState().flashcards.cards)).toHaveLength(1)
     expect(zeilen).toHaveLength(1)
   })
 
   it('entfernt die Karte, ohne eine zweite Zeile stehen zu lassen', () => {
-    useProgressStore.getState().addCards([ZWILLING])
+    useProgressStore.getState().addCards([EIN_MUSKEL])
     renderPage()
 
-    fireEvent.click(screen.getByRole('button', { name: new RegExp(`${ZWILLING} aus Karteikasten`) }))
+    fireEvent.click(
+      screen.getByRole('button', { name: new RegExp(`${EIN_MUSKEL} aus Karteikasten`) }),
+    )
 
     expect(useProgressStore.getState().flashcards.cards).toEqual({})
     expect(screen.getByRole('heading', { name: /Noch keine Karten/i })).toBeInTheDocument()
   })
 
-  it('bietet den Zwilling in der Auswahlliste nur einmal an', () => {
+  it('bietet ihn in der Auswahlliste nur einmal an', () => {
     renderPage()
-    // Vor der Entdopplung standen Hand UND Fuss hier — beide legten dieselbe Karte an.
-    expect(screen.getAllByText(ZWILLING)).toHaveLength(1)
+    // Beide Zeilen legten dieselbe Karte an — die zweite war ein Klick ins Leere.
+    expect(screen.getAllByText(EIN_MUSKEL)).toHaveLength(1)
+  })
+})
+
+/* ── Hand und Fuss sind ZWEI Karten mit demselben Namen (ADR 0012) ──────────────
+   Die Gegenrichtung der Gruppe darueber. Bis zum 2026-07-26 loesten beide Namen auf den
+   FUSS auf: Der Handmuskel war ueber Karten gar nicht lernbar, und wer ihn im Kasten
+   glaubte, lernte Kleinzehen-Fakten. Jetzt stehen beide da — und muessen unterscheidbar
+   sein, sonst ist der Kasten wieder genau so verwirrend wie vor der Entdopplung. */
+describe('gleicher Name, zwei Karten — und trotzdem unterscheidbar', () => {
+  const NAME = 'M. abductor digiti minimi'
+  const HAND = `${NAME}${CARD_KEY_MARK}manus`
+
+  beforeEach(() => {
+    localStorage.clear()
+    useProgressStore.getState().clearProgress()
+  })
+
+  it('legt zwei getrennte Karten an — eine Hand, eine Fuss', () => {
+    useProgressStore.getState().addCards([HAND, NAME])
+    renderPage()
+
+    const zeilen = within(screen.getByRole('table'))
+      .getAllByRole('row')
+      .filter((row) => within(row).queryByText(NAME))
+
+    expect(zeilen).toHaveLength(2)
+    expect(zeilen.map((r) => within(r).getByRole('cell', { name: /Extremität/ }).textContent))
+      .toEqual(expect.arrayContaining(['Obere Extremität', 'Untere Extremität']))
+  })
+
+  it('KEINE zwei Knoepfe mit demselben zugaenglichen Namen', () => {
+    /* Die Tabelle trennt die beiden ueber die Spalte „Bereich" — der Entfernen-Knopf hat
+       aber nur seinen eigenen Namen. Zwei Knoepfe „M. abductor digiti minimi aus
+       Karteikasten entfernen" untereinander sind fuer eine Screenreader-Nutzerin nicht
+       auseinanderzuhalten, und `getByRole` faende sie ebenfalls nicht (dieser Test faellt
+       dann mit „found multiple elements"). */
+    useProgressStore.getState().addCards([HAND, NAME])
+    renderPage()
+
+    const namen = screen
+      .getAllByRole('button', { name: /aus Karteikasten entfernen/ })
+      .map((b) => b.getAttribute('aria-label'))
+
+    expect(new Set(namen).size).toBe(namen.length)
+    expect(namen).toEqual(
+      expect.arrayContaining([
+        `${NAME} (Hand & Finger) aus Karteikasten entfernen`,
+        `${NAME} (Fuß & Sprunggelenk) aus Karteikasten entfernen`,
+      ]),
+    )
+  })
+
+  it('„Entfernen" nimmt genau eine der beiden mit', () => {
+    /* Vor der Entdopplung war es derselbe Schluessel: Ein Klick loeschte beide. */
+    useProgressStore.getState().addCards([HAND, NAME])
+    renderPage()
+
+    fireEvent.click(
+      screen.getByRole('button', { name: `${NAME} (Hand & Finger) aus Karteikasten entfernen` }),
+    )
+
+    expect(Object.keys(useProgressStore.getState().flashcards.cards)).toEqual([NAME])
+  })
+
+  it('bietet beide in der Auswahlliste an — mit ihrer Subregion daneben', () => {
+    renderPage()
+    const eintraege = screen.getAllByText(NAME)
+
+    expect(eintraege).toHaveLength(2)
+    const beschriftungen = eintraege.map((el) => el.closest('label')?.textContent)
+    expect(beschriftungen).toEqual(
+      expect.arrayContaining([
+        `${NAME}Hand & Finger`,
+        `${NAME}Fuß & Sprunggelenk`,
+      ]),
+    )
   })
 })
 
@@ -120,7 +200,7 @@ describe('Massen-Hinzufügen: Zahl, Rückfrage, Rückweg', () => {
   it('die Zahl steht am Knopf — man sieht, wie viel man auslöst', () => {
     renderPage()
     const btn = screen.getByRole('button', { name: /Alle \d+ sichtbaren hinzufügen/i })
-    const offen = 145 - Object.keys(useProgressStore.getState().flashcards.cards).length
+    const offen = CARD_MUSCLES.length - Object.keys(useProgressStore.getState().flashcards.cards).length
     expect(btn).toHaveAccessibleName(new RegExp(`Alle ${offen} sichtbaren hinzufügen`))
   })
 

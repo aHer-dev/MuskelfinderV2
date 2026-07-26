@@ -6,6 +6,174 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Fixed
+- **Der Hand-Kleinfingerballen ist lernbar** (ADR 0012, 2026-07-26) — der letzte offene Punkt
+  aus `docs/todo.md`, gefunden am 2026-07-14.
+
+  `M. abductor digiti minimi`, `M. flexor digiti minimi brevis` und `M. opponens digiti minimi`
+  heißen in der **Hand** genauso wie im **Fuß**. Karten waren nach `nameLatin` geschlüsselt
+  (ADR 0002 §2), und der Namensindex löste — allein wegen der Zeilenreihenfolge in
+  `muscles.json` — auf den **Fuß** auf. Gemessen hieß das: Wer die Gruppe „Hand" wählte, bekam
+  drei Karten mit **Kleinzehen-Fakten** unter dem Etikett „Untere Extremität", und der Handmuskel
+  war über Karten **überhaupt nicht lernbar**. Dieselbe Wurzel hatte schon `seedDeck` (ADR 0009),
+  die funktionelle Gruppe **Hypothenar** und die Kasten-Tabelle („53 Karten, 56 Zeilen") gekostet
+  — jedes Mal wurde die Oberfläche repariert und die Wurzel stehen gelassen.
+
+  **Behoben durch Trennung von Schlüssel und Anzeigename** (`src/data/card-key.ts`):
+  `cardKey(muscle)` ist für 147 Muskeln gleich `nameLatin`; die drei Handmuskeln tragen den
+  anatomischen Zusatz der Terminologia Anatomica (`M. abductor digiti minimi#manus`).
+  `nameLatin` bleibt reiner Anzeigetext. `CARD_MUSCLES`: **145 → 148**.
+
+  **ADR 0002 bleibt unangetastet.** Der **Fuß behält** den historischen Schlüssel — jede Karte,
+  die je unter diesem Namen angelegt wurde, meint ihn. Damit ist die Änderung rein **additiv**,
+  genau wie es `lookups`, `profile`, `streak` und `notes` im Backup-Format schon sind:
+
+  | | |
+  |---|---|
+  | Alte Backups importieren | unverändert, derselbe Muskel wie vorher |
+  | Export | schreibt denselben Schlüssel zurück |
+  | Migrationsregel | **keine nötig** |
+  | Bestandsnutzer | verlieren nichts |
+
+  **Nicht mit einer Regel, sondern mit einer ausgeschriebenen Liste.** Eine Regel („bei
+  Namensgleichheit die Region anhängen") hätte `M. nasalis` und `M. occipitofrontalis`
+  mitgerissen — die sind aber **ein** Muskel in zwei Funktionszeilen (Pars transversa / Pars
+  alaris) und bleiben zu Recht **eine** Karte. Das Unterscheidungsmerkmal ist die **Subregion**.
+  `assertCardKeys` prüft beim Laden, dass die Liste vollständig bleibt: Ein neues Hand/Fuß-Paar
+  **lässt die App beim Start scheitern**, statt einen der beiden still zu verschlucken.
+
+  **`#` und keine Klammer — gemessen, nicht vermutet.** `acceptedForms` liest einen
+  Klammerzusatz als *Synonym* (`M. fibularis longus (M. peroneus longus)`). Ein Schlüssel
+  `M. abductor digiti minimi (Hand)` hätte, sobald er in ein Anzeigefeld gerät, in Fach 7 die
+  Eingabe **„Hand"** als richtige Antwort gewertet:
+  `checkAnswer('Hand', ziel) → { verdict: 'correct' }`.
+
+  **Wo zwei Karten denselben Namen tragen, trennt die Liste sie:** Die Kasten-Tabelle über die
+  Spalte „Bereich", die Auswahlliste über die Subregion, der Entfernen-Knopf über sein
+  `aria-label` — zwei Knöpfe mit identischem zugänglichem Namen sind für eine
+  Screenreader-Nutzerin dieselbe Zeile. Für die übrigen 145 ändert sich nichts.
+
+  **Nebenbei behoben:** Redaktionelle Ebenen (`groups.json`, `curriculum.json`,
+  `palpation.json`) schlüsseln jetzt nach Kartenschlüssel — ein Palpationshinweis für den
+  Fußmuskel hätte sonst auch auf der Handseite gestanden. Die funktionelle Gruppe **Hypothenar**
+  wäre wieder baubar (fachliche Entscheidung des Projektinhabers). Und `getTodayPlan` schlug
+  `M. nasalis` **zweimal** unter fünf Startvorschlägen vor, weil er zwei Zeilen im Bestand hat.
+
+  **Prüfzeilen** (+42 Tests, 631 → 673): `card-key.test.ts` (Bijektion, Rückwärtskompatibilität,
+  Klammer-Falle, vier Gegenproben gegen `assertCardKeys`) · `backup-roundtrip.test.ts`
+  (V1-Backup behält seinen Schlüssel, erfindet keine Handkarte, beide überleben den Round-Trip) ·
+  `check-journey.mjs` **Station 2c** (im Browser: „Hand" legt die Handkarte an, die Zeile führt
+  zum Handmuskel, beide Entfernen-Knöpfe heißen verschieden). `check:daten` meldet jetzt **148**
+  Kartenmuskeln statt 145 und zeigt im Kollisionsbericht die **Subregion** — sie ist das, was
+  „ein Muskel, zwei Zeilen" von „zwei Muskeln, ein Name" unterscheidet.
+  **Gegengetestet:** Mit geleerter `OWN_CARD` startet die App nicht mehr.
+
+- Umbenannt: `getMuscleByLatinName` → **`getMuscleByCardKey`**. Der alte Name lud dazu ein, einen
+  Anzeigenamen hineinzureichen — und genau das war der Fehler.
+
+- **Ein flatterhafter Test** in `TodayPage.test.tsx` (unabhängig vom Obigen gefunden, während der
+  Arbeit daran). „Als Karten lernen" prüfte die Reihenfolge zweier nachgeschlagener Muskeln, und
+  die kommt aus `lookupSuggestions`: bei gleicher Zahl nach `lastLookup` **absteigend**.
+  `record()` stempelt auf die Millisekunde — landeten beide Aufrufe in derselben, entschied der
+  Name (Reihenfolge stimmte); rutschte der zweite unter Last eine Millisekunde weiter, fiel der
+  Test. Er lief isoliert immer grün und im vollen Lauf gelegentlich rot. Die Zeitstempel sind
+  jetzt ausgeschrieben, und „zuletzt zuerst" ist die **Behauptung** statt eines Zufalls —
+  gegengetestet: Sortierung umgedreht → Test fällt.
+
+- **Zwei Anleitungen für den Fachinhalt** trugen nach dem Schlüsselwechsel falsche Angaben und
+  sind nachgezogen: `docs/curriculum-erfassen.md` behauptete, Hand und Fuß ließen sich „mit
+  `nameLatin`-Schlüsseln nicht trennen" (gilt nicht mehr), und beide Dateien sagen jetzt, dass der
+  Handmuskel als `…#manus` einzutragen ist. Ohne das wäre der erste Palpationshinweis für den
+  Kleinfingerballen auf der Fußseite gelandet — oder der Build wäre mit einem Namen gescheitert,
+  den der Projektinhaber für richtig halten musste.
+
+### Added
+- **Der Karteikasten wird nach GELENK gefüllt, nicht mehr nach Region** (Ansage des
+  Projektinhabers, 2026-07-26). Elf Gruppen — Mimik & Kopf · Zungenbein & Kehlkopf ·
+  Wirbelsäule · Bauchwand & Beckenboden · Schultergürtel · Schultergelenk · Ellenbogen ·
+  Hand · Hüftgelenk · Kniegelenk · Sprunggelenk & Fuß — mit **8–26 Karten** je Gruppe.
+  **Der Beruf sortiert vor, versteckt aber nichts:** Ergo sieht Hand/Ellenbogen/Schulter oben,
+  Physio Hüfte/Knie/Sprunggelenk/Wirbelsäule, Logopädie Mimik + Zungenbein — unter „Alle
+  weiteren" bleiben alle elf sichtbar und klickbar.
+  **Nichts erfunden, abgeleitet:** `src/data/joint-groups.ts` bündelt nur Etiketten, die längst
+  in den Daten stehen (`joints`, `subregion`) — dasselbe Verfahren, das für die funktionellen
+  Gruppen unter **E2** freigegeben ist. Ein Test prüft, dass **jedes** genannte Etikett im
+  Bestand wirklich vorkommt (ein Tippfehler erzeugte sonst eine stillschweigend kleinere Gruppe).
+
+  **Was das nebenbei behebt** (am Build gemessen, vorher → nachher):
+  | | vorher (Region) | nachher (Gelenk) |
+  |---|---|---|
+  | Begrüßung nach der ersten Wahl | „Wir holen den **Stau** in Etappen auf" | „Heute dran" |
+  | fällige Karten | 53 (heute 20 davon) | 17 |
+  | erste Karte der ersten Sitzung | `M. abductor digiti minimi`, Etikett „Untere Extremität", Kleinzehe/Tuber calcanei — nach der Wahl „Obere Extremität" | `M. anconeus`, „Obere Extremität", Ellenbogenextension |
+
+  „Obere Extremität" legte **53 Karten** an, mehr als das Anderthalbfache der Tagesdosis — der
+  frische Kasten kippte damit sofort in den `backlog`-Zustand, und die App begrüßte einen
+  Schüler in Minute eins mit einem Rückstand, den er nicht haben konnte. Die vier Regionen
+  bleiben in **Suche und Filter**; zum Füllen sind sie zu grob.
+
+  **Drei Dinge, die beim Prüfen aufgefallen sind und mitbehoben wurden:**
+  1. **Die Gruppenwahl war nach dem ersten Klick weg.** Sie saß nur im `DeckStarter`, und der
+     rendert nur bei LEEREM Kasten — wer im nächsten Kursabschnitt „Ellenbogen" dazunehmen
+     wollte, musste sich die Muskeln einzeln aus 145 Kästchen zusammenklicken. Ein Schüler
+     füllt seinen Kasten über ein Semester. Der `JointGroupPicker` steht jetzt an **beiden**
+     Stellen: Erststart **und** dauerhaft auf `/karteikasten`.
+  2. **Die Zahl am Knopf hätte gelogen.** 26 Muskeln liegen in mehreren Gruppen
+     (`M. biceps brachii`: Ellenbogen + Schultergelenk). Am Knopf steht darum, was der Klick
+     **wirklich anlegt** (`neueKarten`), plus „+N da" für das, was schon liegt; eine vollständig
+     vorhandene Gruppe ist erledigt statt anklickbar. Gemessen: „Schultergelenk" verspricht nach
+     „Ellenbogen" **9** statt 11 — und legt 9 an.
+  3. **Ein Klick sagte nicht, dass er etwas getan hat.** Der einzige Toast in diesem Moment war
+     „+10 XP · Tagesbonus" (der gehört zum App-Start). Jetzt: „17 Karten angelegt — Ellenbogen".
+
+  **Nachgeschärft am 2026-07-26 (drei Punkte):**
+  - **Die Gruppen leiten jetzt aus `CARD_MUSCLES` ab, nicht aus `getMuscles()`.** Der erste Wurf
+    lief über alle 150 Muskeln — und „Hand" enthielt damit `M. abductor digiti minimi`,
+    `M. flexor digiti minimi brevis` und `M. opponens digiti minimi`, deren Kartenschlüssel auf
+    die **Fuß**-Muskeln auflösen. Ein Ergo, der „Hand" klickte, bekam drei Karten mit
+    Kleinzehen-Fakten und dem Etikett „Untere Extremität". Das verletzte die dokumentierte harte
+    Regel zu `isCardMuscle` („alles, was von Karten auf Muskeln schließt, geht hier durch") und
+    war dieselbe Wurzel, an der `seedDeck` (ADR 0009), die Gruppe Hypothenar und die
+    Kasten-Tabelle gestorben sind. Zwei Prüfzeilen dagegen: keine Gruppe darf einen Eintrag
+    tragen, dessen **Karte** einen anderen Körperteil rendert.
+  - **Keine erfundene Diagnose mehr am Tag null.** `/heute` behauptete „19 davon Obere Extremität
+    — **deine schwächste Region**", während der Schüler keine einzige Karte beantwortet hatte:
+    Beherrschung kommt aus dem Leitner-Fach, frische Karten liegen alle in Fach 1, also ist sie
+    überall 0. `weakestRegion` gibt jetzt `null` zurück, solange alle beteiligten Regionen gleich
+    stehen oder nur eine im Spiel ist — der Satz erscheint wieder, sobald es einen echten
+    Unterschied gibt (Gegenprobe als eigener Test). Die **Priorisierung ist unberührt**, sie
+    rechnet mit `mastery` direkt.
+  - **Die Seite springt nach oben, wenn sie sich umbaut.** Nach der ersten Gruppe wird aus dem
+    Startbildschirm der Tagesplan; auf dem Handy blieb die Scrollposition dabei stehen (gemessen
+    y=549 von 1936 px), sodass Überschrift und Los-Knopf **über** dem Sichtfeld lagen — man hatte
+    17 Karten angelegt und sah davon nichts. Nur für diesen einen Übergang, `instant` statt
+    `smooth` (`prefers-reduced-motion`).
+    **Die Prüfzeile dazu läuft auf 390 × 664** — auf 1440 × 900 war `scrollY` ohnehin 0 und die
+    Behauptung bedeutungslos grün. Gegengetestet: mit deaktiviertem Fix meldet sie `scrollY=499`.
+
+  **Die Falle, die diese Datei fast gekostet hätte:** Das Gelenk-Etikett `Kopf` klingt nach
+  Kopfmuskulatur, trägt aber `M. semispinalis`, `Mm. longissimi` und `Mm. splenii` —
+  Nackenstrecker. Naiv zu „Mimik & Kopf" gezählt wären sie im Gesicht gelandet. Ebenso trägt
+  `Becken` sowohl `M. psoas minor` als auch die vier Beckenbodenmuskeln. Beide Fälle haben eine
+  eigene Prüfzeile.
+
+### Changed
+- **Die App startet wieder hell — unabhängig davon, was das Gerät eingestellt hat** (Ansage des
+  Projektinhabers, 2026-07-26). Die Marke „Warm/Atlas" ist auf dem warmen Papier gestaltet, und das
+  soll ein neuer Nutzer zuerst sehen. Der Umschalter (Sonne/Mond in Rail und Tab-Leiste) bleibt der
+  Weg zu Dunkel; eine **ausdrückliche Wahl wird weiter persistiert und schlägt die Vorgabe**.
+  Verifiziert mit `colorScheme: 'dark'`: `data-theme=light` beim ersten Paint, Umschalten →
+  `dark` und übersteht den Reload.
+  **Drei Stellen müssen dieselbe Regel kennen** — `useThemeStore`, das No-Flash-Skript in
+  `index.html` (vor dem ersten Paint) und `theme-color`. Die zwei medienabhängigen
+  `theme-color`-Metas sind darum durch **eine** ersetzt, die `useTheme` am tatsächlichen Theme
+  nachzieht: Sonst umrahmte auf einem Nachtmodus-Handy eine dunkle Systemleiste eine helle Seite.
+  Vier Prüfzeilen wachen darüber (inkl. „`index.html` trägt dieselbe Vorgabe wie der Store").
+  *Nebenbefund:* Der bisherige Test „startet mit hellem Theme" war eine **Tautologie** — sein
+  `beforeEach` setzte `theme: 'light'` und prüfte dann, dass es `'light'` ist. Er wäre auch grün
+  geblieben, als der Store der Systemvorgabe folgte. Jetzt wird die Vorgabe am frisch importierten
+  Store gegen ein Gerät im Nachtmodus geprüft.
+
 ### UX-Review 2026-07-26 — am laufenden Build nachgemessen
 
 Ein Durchgang als Entwickler UND als Schülerin: voller Testlauf, dann die App selbst bedient

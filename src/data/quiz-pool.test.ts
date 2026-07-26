@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { quizPool, quizPoolSize } from './quiz-pool';
 import { createRng, generateQuizFrom, quizSeriesKey, type QuizScope } from './quiz';
-import { getMuscleByLatinName, getMuscles } from './loader';
+import { getMuscleByCardKey, getMuscles } from './loader';
+import { CARD_KEY_MARK } from './card-key';
 import { newCard } from '../persistence/leitner';
 import type { FlashcardCard } from '../persistence/types';
 
@@ -127,29 +128,47 @@ describe('ADR 0002: der bestehende Serien-Schlüssel bleibt BITGLEICH', () => {
 });
 
 /* Der Karteikasten zaehlte 56, die Sitzung 53 — fuer denselben Kasten. Grund: `questions`
-   lief ueber die 150 Muskeln, und fuenf `nameLatin` gibt es zweimal (Hand/Fuss). Eine Karte
-   ist EIN Schluessel, also auch EINE Frage. */
-describe('ein doppelter nameLatin ergibt EINE Frage, nicht zwei', () => {
-  const ZWILLING = 'M. abductor digiti minimi'; // Hand UND Fuss
+   lief ueber die 150 Muskeln und schluesselte nach ANZEIGENAME. Eine Karte ist EIN
+   Schluessel, also auch EINE Frage — und der Schluessel ist seit ADR 0012 `cardKey`. */
+describe('eine Karte ergibt eine Frage — auch bei doppelten Namen', () => {
+  /** Zweimal im Bestand, aber EIN Muskel in zwei Funktionszeilen: eine Karte, eine Frage. */
+  const EIN_MUSKEL = 'M. nasalis';
+  /** Zweimal im Bestand und ZWEI Muskeln: zwei Karten, zwei Fragen (ADR 0012). */
+  const HAND = `M. abductor digiti minimi${CARD_KEY_MARK}manus`;
+  const FUSS = 'M. abductor digiti minimi';
 
-  it('zaehlt den Zwilling einmal — nicht zweimal', () => {
-    const cards = { [ZWILLING]: card({ lastSeen: null }) };
+  it('zaehlt die zwei Funktionszeilen als EINE Frage', () => {
+    const cards = { [EIN_MUSKEL]: card({ lastSeen: null }) };
     const p = quizPool({ muscles: MUSCLES, cards, regions: [], scope: 'deck' });
 
-    expect(MUSCLES.filter((m) => m.nameLatin === ZWILLING)).toHaveLength(2); // die Falle
+    expect(MUSCLES.filter((m) => m.nameLatin === EIN_MUSKEL)).toHaveLength(2); // die Falle
     expect(p.questions).toHaveLength(1);
     expect(quizPoolSize({ muscles: MUSCLES, cards, regions: [], scope: 'deck' })).toBe(1);
   });
 
   it('fragt nach dem Muskel, den die Karte auch rendert', () => {
-    const cards = { [ZWILLING]: card({ lastSeen: null }) };
+    const cards = { [EIN_MUSKEL]: card({ lastSeen: null }) };
     const [frage] = quizPool({ muscles: MUSCLES, cards, regions: [], scope: 'deck' }).questions;
 
-    expect(frage).toBe(getMuscleByLatinName(ZWILLING));
+    expect(frage).toBe(getMuscleByCardKey(EIN_MUSKEL));
+  });
+
+  it('Hand und Fuss sind ZWEI Fragen — jede zu ihrem eigenen Muskel', () => {
+    /* Vor ADR 0012 loesten beide Schluessel auf den Fussmuskel auf: Wer die Handkarte im
+       Kasten hatte, wurde nach der Kleinzehe gefragt. Faellt dieser Test auf 1 zurueck, ist
+       der Handmuskel wieder verschluckt. */
+    const cards = { [HAND]: card({ lastSeen: null }), [FUSS]: card({ lastSeen: null }) };
+    const p = quizPool({ muscles: MUSCLES, cards, regions: [], scope: 'deck' });
+
+    expect(p.questions).toHaveLength(2);
+    expect(p.questions.map((m) => m.subregion).sort()).toEqual([
+      'Fuß & Sprunggelenk',
+      'Hand & Finger',
+    ]);
   });
 
   it('laesst die Distraktoren unangetastet — sie kommen aus dem ganzen Bestand (8b)', () => {
-    const cards = { [ZWILLING]: card({ lastSeen: null }) };
+    const cards = { [EIN_MUSKEL]: card({ lastSeen: null }) };
     const p = quizPool({ muscles: MUSCLES, cards, regions: [], scope: 'deck' });
 
     expect(p.distractors).toHaveLength(MUSCLES.length);

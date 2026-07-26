@@ -7,20 +7,19 @@
     <link rel="icon" type="image/png" sizes="192x192" href="/pwa-192.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#f1efe9" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0b0c0e" media="(prefers-color-scheme: dark)" />
+    <!-- EINE theme-color, nicht zwei nach `prefers-color-scheme`: Seit die App hell startet
+         (2026-07-26), haetten zwei medienabhaengige Werte auf einem Handy im Nachtmodus eine
+         DUNKLE Browserleiste um eine HELLE Seite gelegt. Das Skript unten haelt sie am
+         tatsaechlichen Theme; `useTheme` zieht sie beim Umschalten nach. -->
+    <meta name="theme-color" content="#f1efe9" />
     <meta name="description" content="Muskelfinder — Nachschlagewerk & Lern-Tool für die Skelettmuskulatur." />
     <title>Anatomie Fokus · Muskelfinder</title>
     <!-- Theme vor dem ersten Paint setzen (kein Flash). Liest den persistierten Zustand-Store;
-         ohne eigene Wahl gilt, was das Geraet eingestellt hat (dieselbe Regel wie in
-         `useThemeStore`) — sonst blendet die App ein Handy im Nachtmodus. -->
+         ohne eigene Wahl gilt **hell** — dieselbe Regel wie in `useThemeStore`. Diese Datei und
+         der Store muessen denselben Default kennen, sonst blitzt beim Laden die falsche Farbe. -->
     <script>
       (function () {
-        function system() {
-          return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-            ? 'dark'
-            : 'light';
-        }
+        var DEFAULT_THEME = 'light';
         var t;
         try {
           var raw = localStorage.getItem('mf.theme');
@@ -28,7 +27,10 @@
         } catch (e) {
           t = null;
         }
-        document.documentElement.setAttribute('data-theme', t === 'dark' || t === 'light' ? t : system());
+        t = t === 'dark' || t === 'light' ? t : DEFAULT_THEME;
+        document.documentElement.setAttribute('data-theme', t);
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', t === 'dark' ? '#0b0c0e' : '#f1efe9');
       })();
     </script>
   </head>

@@ -12,6 +12,7 @@
 
 import { isDue, MAX_FACH } from '../persistence/leitner';
 import { regionMastery } from './stats';
+import { cardKey } from './card-key';
 import { getMuscles } from './loader';
 import type { FlashcardCard } from '../persistence/types';
 import type { Muscle, RegionId } from '../types';
@@ -68,7 +69,7 @@ export interface TodayReason {
 
 export interface TodayPlan {
   kind: TodayKind;
-  /** Die heutige Auswahl (`nameLatin`), priorisiert und auf die Tagesdosis gedeckelt. */
+  /** Die heutige Auswahl (Kartenschlüssel), priorisiert und auf die Tagesdosis gedeckelt. */
   dueCards: string[];
   /** Alle fälligen Karten — größer als `dueCards.length`, wenn gedeckelt wurde. */
   dueTotal: number;
@@ -78,7 +79,7 @@ export interface TodayPlan {
   focusRegion: RegionId | null;
   /** Wie viele der heutigen Karten (bzw. Vorschläge) in `focusRegion` liegen — „8 davon Schulter". */
   focusRegionCount: number;
-  /** Muskeln (`nameLatin`), die noch nicht im Kasten sind — nach Pfad/Schwierigkeit. */
+  /** Muskeln (Kartenschlüssel), die noch nicht im Kasten sind — nach Pfad/Schwierigkeit. */
   newSuggestions: string[];
   /** Schätzung für die heutige Auswahl. 0, wenn nichts zu tun ist. */
   estimatedMinutes: number;
@@ -89,9 +90,9 @@ export interface TodayPlan {
 }
 
 export interface TodayInput {
-  /** Karteikasten, geschlüsselt nach `nameLatin` (ADR 0002 §2). */
+  /** Karteikasten, geschlüsselt nach Kartenschlüssel (ADR 0002 §2, ADR 0012). */
   cards: Record<string, FlashcardCard>;
-  /** Detailseiten-Aufrufe je `nameLatin`. Kommt aus `useLookupStore` (7d); fehlt hier ohne Folgen. */
+  /** Detailseiten-Aufrufe je Kartenschlüssel. Kommt aus `useLookupStore` (7d); fehlt hier ohne Folgen. */
   lookupCounts?: Record<string, number>;
   /** Prüfungstermin (ISO oder Date), falls im Onboarding gesetzt (7c). */
   examDate?: string | Date | null;
@@ -155,6 +156,17 @@ function byScoreThenName(a: Scored, b: Scored): number {
 /**
  * Schwächste Region unter den übergebenen Muskelnamen: niedrigste Beherrschung,
  * bei Gleichstand die mit den meisten betroffenen Karten. null, wenn keine Region trägt.
+ *
+ * **null auch, wenn alle beteiligten Regionen GLEICH stehen** (UX-Review 2026-07-26):
+ * Beim Erstkontakt gemessen stand auf `/heute` „19 davon Obere Extremität — **deine
+ * schwächste Region**", während der Schüler noch keine einzige Karte beantwortet hatte.
+ * Beherrschung wird aus dem Leitner-Fach abgeleitet, frische Karten liegen alle in Fach 1,
+ * also ist sie überall **0** — es gibt dann keine schwächste Region, nur die größte. Eine
+ * Diagnose ohne Datengrundlage ist eine erfundene Diagnose; sie kostet Vertrauen genau in
+ * dem Moment, in dem die App es aufbauen müsste.
+ *
+ * Die Priorisierung ist davon **unberührt** — sie rechnet mit `mastery` direkt (`W_REGION_WEAK`)
+ * und nicht mit diesem Ergebnis. Hier fällt nur der SATZ weg, solange er nichts weiß.
  */
 function weakestRegion(
   names: string[],
@@ -166,6 +178,12 @@ function weakestRegion(
     const region = regionOf(name);
     if (region) counts.set(region, (counts.get(region) ?? 0) + 1);
   }
+
+  /* Kein Unterschied = keine Aussage. Bei genau EINER beteiligten Region gilt dasselbe:
+     „die schwächste von einer" ist keine Erkenntnis. */
+  const werte = [...counts.keys()].map((region) => mastery[region]);
+  if (werte.length < 2 || werte.every((w) => w === werte[0])) return null;
+
   let best: RegionId | null = null;
   for (const [region, count] of counts) {
     if (best === null) {
@@ -198,8 +216,8 @@ export function prioritizeDueCards({
   muscles = getMuscles(),
   now = new Date(),
 }: DuePriorityInput): string[] {
-  const regionByName = new Map(muscles.map((m) => [m.nameLatin, m.region]));
-  const regionOf = (name: string): RegionId | undefined => regionByName.get(name);
+  const regionByKey = new Map(muscles.map((m) => [cardKey(m), m.region]));
+  const regionOf = (key: string): RegionId | undefined => regionByKey.get(key);
   const mastery = regionMastery(cards, regionOf);
 
   return Object.entries(cards)
@@ -230,8 +248,8 @@ export function getTodayPlan({
   muscles = getMuscles(),
   now = new Date(),
 }: TodayInput): TodayPlan {
-  const regionByName = new Map(muscles.map((m) => [m.nameLatin, m.region]));
-  const regionOf = (name: string): RegionId | undefined => regionByName.get(name);
+  const regionByKey = new Map(muscles.map((m) => [cardKey(m), m.region]));
+  const regionOf = (key: string): RegionId | undefined => regionByKey.get(key);
   const mastery = regionMastery(cards, regionOf);
 
   const deckSize = Object.keys(cards).length;
@@ -245,15 +263,20 @@ export function getTodayPlan({
   const dueCards = due.slice(0, dose);
 
   /* Neue Muskeln aus dem Pfad: schwache Region zuerst, dann was sie nachgeschlagen
-     hat, dann die leichten. */
+     hat, dann die leichten.
+
+     Ein Muskel je Kartenschluessel — dieselbe Regel wie `isCardMuscle`. `M. nasalis`
+     steht zweimal im Bestand (Pars transversa und Pars alaris) und ist EINE Karte; ohne
+     die Entdopplung stuende er zweimal in der Vorschlagsliste und belegte zwei der fuenf
+     Plaetze mit demselben Angebot. */
   const focusForNew = weakestRegion(Object.keys(cards), mastery, regionOf);
-  const newSuggestions = muscles
-    .filter((m) => !(m.nameLatin in cards))
+  const newSuggestions = [...new Map(muscles.map((m) => [cardKey(m), m])).values()]
+    .filter((m) => !(cardKey(m) in cards))
     .map((m) => ({
-      name: m.nameLatin,
+      name: cardKey(m),
       score:
         (focusForNew !== null && m.region === focusForNew ? W_REGION_WEAKNESS : 0) +
-        Math.min(lookupsOf(m.nameLatin), LOOKUP_CAP) * W_LOOKUP +
+        Math.min(lookupsOf(cardKey(m)), LOOKUP_CAP) * W_LOOKUP +
         (4 - m.difficulty) * W_LOW_FACH,
     }))
     .sort(byScoreThenName)

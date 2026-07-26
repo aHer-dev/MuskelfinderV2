@@ -50,21 +50,143 @@ await withApp(async ({ page, goto, errors, BASE }) => {
   const primaer = await page.locator('.today__start .btn--primary, .today__hero .btn--primary').count();
   pruefe(primaer === 0, 'Leerer Kasten hat keinen Primaerknopf (ADR 0009 — Waehlen IST die Aufgabe)');
 
-  /* ---- STATION 2: Bereich waehlen — versprochene Zahl == angelegte Zahl ---- */
+  /* ---- STATION 2: Gelenkgruppe waehlen — versprochene Zahl == angelegte Zahl ----
+     Seit 2026-07-26 fuellt man den Kasten nach GELENK, nicht nach Region: „Obere
+     Extremitaet" legte 53 Karten an und kippte den frischen Kasten sofort in den
+     `backlog`-Zustand („Wir holen den Stau in Etappen auf" — in Minute eins).
+
+     Der Beruf sortiert die Gruppen vor. Station 1 hat „Physiotherapie" gewaehlt, also steht
+     das Huftgelenk oben; die Pruefung greift trotzdem nach dem LABEL, nicht nach der
+     Position — sonst misst sie die Sortierung statt die Zahl. */
   L('\n2. Karteikasten fuellen — die Zahl am Knopf haelt Wort');
-  const bereichKnopf = page.locator('.deck-starter__regions .deck-starter__section').filter({ hasText: 'Obere Extremität' }).first();
-  const versprochen = parseInt(await bereichKnopf.locator('.deck-starter__count').innerText(), 10);
-  await bereichKnopf.click();
+  /* **HANDY-MASS fuer diese Station.** Auf 1440x900 passt der Startbildschirm fast ins Bild,
+     `scrollY` ist nach dem Klick ohnehin 0, und die Bildlauf-Behauptungen unten waeren
+     bedeutungslos gruen. Der Fehler war handyspezifisch: 1936 px Seite auf 664 px Schirm, der
+     Karten-Knopf bei y=611 — man klickt ihn nur gescrollt, und danach blieb die Seite stehen.
+     Nach der Station zurueck auf Desktop, damit Station 4 ihre Falz-Messung behaelt. */
+  await page.setViewportSize({ width: 390, height: 664 });
+  const gruppenKnopf = page.locator('.jgp__group').filter({ hasText: 'Ellenbogen' }).first();
+  pruefe(await gruppenKnopf.count() > 0, 'Die Gelenkgruppe „Ellenbogen" steht zur Wahl');
+  const versprochen = parseInt((await gruppenKnopf.locator('.jgp__count').innerText()).trim(), 10);
+  await gruppenKnopf.scrollIntoViewIfNeeded();
+  await gruppenKnopf.click();
   await page.waitForTimeout(500);
   const angelegt = await page.evaluate(() => {
     const s = JSON.parse(localStorage.getItem('mf.progress'));
     return Object.keys(s.state.flashcards.cards).length;
   });
-  pruefe(versprochen === angelegt, `„Obere Extremität": ${versprochen} versprochen == ${angelegt} angelegt`);
+  pruefe(versprochen === angelegt, `„Ellenbogen": ${versprochen} versprochen == ${angelegt} angelegt`);
+  pruefe(versprochen > 0 && versprochen < 30,
+    `Eine Gelenkgruppe ist eine verdauliche Portion (${versprochen} Karten, < 30 = kein Stau-Zustand)`);
+
+  /* Die vier Regionen duerfen zum FUELLEN nicht mehr auftauchen — sie sind der Grund fuer
+     den Stau-Fehler. In Suche und Filter bleiben sie. */
+  const regionKnopf = await page.locator('.jgp__group, .deck-starter__section').filter({ hasText: /^Obere Extremität/ }).count();
+  pruefe(regionKnopf === 0, 'Der 53-Karten-Knopf „Obere Extremität" ist aus dem Erststart verschwunden');
+
+  /* Der Bildschirm baut sich nach der ersten Gruppe komplett um: aus dem Startbildschirm wird
+     der Tagesplan. Auf dem Handy blieb die Scrollposition dabei stehen (gemessen y=549 von
+     1936 px) — die neue Ueberschrift und der Los-Knopf lagen UEBER dem Sichtfeld, und der
+     Schueler sah von seinen 17 neuen Karten nichts. */
+  const nachKlick = await page.evaluate(() => ({
+    scrollY: Math.round(window.scrollY),
+    h1Sichtbar: (() => {
+      const h = document.querySelector('main h1');
+      if (!h) return false;
+      const b = h.getBoundingClientRect();
+      return b.top >= 0 && b.bottom <= window.innerHeight;
+    })(),
+  }));
+  pruefe(nachKlick.scrollY === 0, `Nach dem Anlegen steht die Seite oben (scrollY=${nachKlick.scrollY})`);
+  pruefe(nachKlick.h1Sichtbar, 'Die neue Ueberschrift ist ohne Scrollen sichtbar');
+
+  /* Und die Begruessung darf keine erfundene Diagnose enthalten: Der Schueler hat noch keine
+     Karte beantwortet, also gibt es keine „schwaechste Region" (UX-Review 2026-07-26). */
+  const diagnose = await page.locator('.today__diagnosis').innerText().catch(() => '');
+  pruefe(!/schwächste Region/i.test(diagnose),
+    'Keine „schwaechste Region" ohne eine einzige beantwortete Karte');
+  pruefe(!/Stau/i.test(await page.locator('main h1').innerText()),
+    'Die Begruessung nennt keinen Stau, den es nicht gibt');
 
   await goto('/karteikasten');
   const zeilen = await page.locator('table tbody tr').count();
   pruefe(zeilen === angelegt, `Kasten-Tabelle zeigt ${zeilen} Zeilen == ${angelegt} Karten (keine Phantomzeilen)`);
+
+  /* ---- STATION 2b: Eine ueberlappende Gruppe verspricht nur die NEUEN Karten ----
+     26 Muskeln liegen in mehreren Gruppen (`M. biceps brachii`: Ellenbogen + Schultergelenk).
+     Wer die Mitgliederzahl an den Knopf schreibt, verspricht nach dem ersten Klick mehr, als
+     er anlegt.
+
+     Und die Station prueft gleich mit, dass die Gruppenwahl UEBERHAUPT noch da ist: Sie stand
+     zuerst nur im `DeckStarter`, und der rendert nur bei LEEREM Kasten — nach der ersten
+     Gruppe war sie weg. Sie lebt jetzt dauerhaft auf `/karteikasten`. */
+  await goto('/karteikasten');
+  pruefe(await page.locator('.jgp__group').count() > 0,
+    'Die Gelenkwahl ist auch mit gefuelltem Kasten noch erreichbar (nicht nur beim Erststart)');
+  const schulter = page.locator('.jgp__group').filter({ hasText: 'Schultergelenk' }).first();
+  const versprochen2 = parseInt((await schulter.locator('.jgp__count').innerText()).trim(), 10);
+  await schulter.click();
+  await page.waitForTimeout(500);
+  const angelegt2 = await page.evaluate(() => {
+    const s = JSON.parse(localStorage.getItem('mf.progress'));
+    return Object.keys(s.state.flashcards.cards).length;
+  });
+  pruefe(angelegt + versprochen2 === angelegt2,
+    `„Schultergelenk" nach „Ellenbogen": ${versprochen2} versprochen == ${angelegt2 - angelegt} neu angelegt (Ueberlappung abgezogen)`);
+
+  /* ---- STATION 2c: Der Handmuskel ist wirklich lernbar (ADR 0012) ----
+     Bis zum 2026-07-26 hiess „M. abductor digiti minimi" in Hand UND Fuss gleich, und der
+     Kartenschluessel war der Name — er traf den FUSS. Wer die Hand lernte, bekam drei Karten
+     mit Kleinzehen-Fakten unter dem Etikett „Untere Extremitaet", und der Handmuskel war
+     ueber Karten gar nicht erreichbar. Dieselbe Wurzel hatte schon `seedDeck`, die Gruppe
+     Hypothenar und die Kasten-Tabelle gekostet.
+
+     Die Unit-Tests pruefen den Schluessel. DIESE Station prueft, was die Schuelerin SIEHT:
+     zwei Zeilen mit demselben Namen, zwei verschiedene Bereiche, und der Link der oberen
+     fuehrt wirklich zum Handmuskel. */
+  L('\n2c. Der Handmuskel ist lernbar — nicht nur der gleichnamige Fussmuskel');
+  const hand = page.locator('.jgp__group').filter({ hasText: /^Hand/ }).first();
+  await hand.click();
+  await page.waitForTimeout(500);
+
+  /* DER Beweis: Ein Klick auf „Hand" legt den HAND-Schluessel an. Vorher legte er den
+     blossen Namen an — und der zeigte den Fussmuskel. */
+  const nachHand = await page.evaluate(() => {
+    const s = JSON.parse(localStorage.getItem('mf.progress'));
+    return Object.keys(s.state.flashcards.cards).filter((k) => k.startsWith('M. abductor digiti minimi'));
+  });
+  pruefe(nachHand.length === 1 && nachHand[0].endsWith('#manus'),
+    `„Hand" legt die HANDkarte an, nicht die Fusskarte (${nachHand.join(' + ') || 'keine'})`);
+
+  const handZeile = page.locator('table tbody tr').filter({ hasText: 'M. abductor digiti minimi' }).first();
+  pruefe((await handZeile.locator('td:nth-child(2)').innerText()).trim() === 'Obere Extremität',
+    'Die Karte steht im Kasten als „Obere Extremität" — nicht als Kleinzehe');
+  const ziel = await handZeile.locator('a').getAttribute('href');
+  pruefe(/abductor-digiti-minimi-upper/.test(ziel ?? ''),
+    `Die Zeile fuehrt zum HANDmuskel (${ziel})`);
+
+  /* Und jetzt die Gegenprobe im Browser: Der Fussmuskel ist eine EIGENE Karte und
+     verdraengt die Handkarte nicht. Vor ADR 0012 war es derselbe Schluessel — ein Klick auf
+     die zweite Gruppe haette gar nichts angelegt. */
+  const fuss = page.locator('.jgp__group').filter({ hasText: /^Sprunggelenk/ }).first();
+  await fuss.scrollIntoViewIfNeeded();
+  await fuss.click();
+  await page.waitForTimeout(500);
+
+  const zwillingsZeilen = page.locator('table tbody tr').filter({ hasText: 'M. abductor digiti minimi' });
+  const bereiche = (await zwillingsZeilen.locator('td:nth-child(2)').allInnerTexts()).map((t) => t.trim());
+  pruefe(bereiche.includes('Obere Extremität') && bereiche.includes('Untere Extremität'),
+    `Beide Karten stehen im Kasten und sind unterscheidbar (${bereiche.join(' · ')})`);
+
+  /* Zwei Zeilen mit demselben sichtbaren Namen brauchen zwei verschiedene Knopfnamen —
+     sonst sind sie fuer eine Screenreader-Nutzerin dieselbe Zeile. */
+  const knopfNamen = await zwillingsZeilen.locator('button').evaluateAll(
+    (bs) => bs.map((b) => b.getAttribute('aria-label')),
+  );
+  pruefe(knopfNamen.length === 2 && new Set(knopfNamen).size === 2,
+    `Die Entfernen-Knoepfe heissen verschieden (${knopfNamen.join(' | ')})`);
+
+  await page.setViewportSize({ width: 1440, height: 900 });
 
   /* ---- STATION 3: /heute schlaegt jetzt eine Sitzung vor ---- */
   L('\n3. /heute fuehrt jetzt in die Sitzung');

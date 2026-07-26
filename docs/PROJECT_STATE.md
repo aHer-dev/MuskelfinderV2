@@ -17,7 +17,7 @@
   niemandem mehr ungefragt Karten in den Kasten.**
   **ALLE VIER BRUECKEN STEHEN:** B1 (7d), B2 (7e), B3 (**9c**), B4 (8c).
   Statustafel: `docs/produkt-plan.md`. Offene Punkte: `docs/todo.md`.
-- Gate gruen: **`npm run verify`** — **615 Tests**.
+- Gate gruen: **`npm run verify`** — **673 Tests**.
 - A11y: axe 0 Verstoesse ueber **14 Routen x Light+Dark x Ruhe/HOVER/Fokus — und seit 2026-07-26
   ZUSAETZLICH auf 320 + 390 px** (Playwright+Chromium+axe-core).
   ⚠️ **Bis zum 2026-07-26 stand hier „Desktop+Handy", und das war FALSCH:** Weder
@@ -109,12 +109,73 @@ alle als Prüfzeile gegengetestet. Vier Regeln, die daraus für JEDEN Folge-Task
   die Auswahlliste im Karteikasten war 460 px auf einem 568-px-Schirm, jeder Wisch darin scrollte
   die Liste statt die Seite). **320 px ist Absicht:** Bei 390 px zeigt sich die Grid-Falle nicht.
 
+**Zwei Nachtraege vom selben Tag, beide aus dem Erstkontakt-Durchgang:**
+- **Keine Diagnose ohne Datengrundlage.** `/heute` nannte eine „schwaechste Region", bevor eine
+  einzige Karte beantwortet war (frische Karten = Fach 1 = Beherrschung 0 in JEDER Region).
+  `weakestRegion` schweigt jetzt, solange alle Regionen gleich stehen. **Wer einen bewertenden
+  Satz aus Daten baut, prueft erst, ob die Daten ihn tragen.**
+- **Eine Pruefzeile muss auf der Groesse laufen, auf der der Fehler lebt.** Die
+  Bildlauf-Behauptung („nach dem Anlegen steht die Seite oben") war auf 1440x900 bedeutungslos
+  gruen — dort ist `scrollY` ohnehin 0. Erst auf 390x664 faellt sie ohne den Fix (`scrollY=499`).
+  `check:wege` schaltet fuer diese Station darum ausdruecklich auf Handy-Mass.
+
 **Und eine Nebenwirkung, die kein DOM-Test fangen kann:** Uhr und Klick konnten dieselbe Quizfrage
 doppelt werten — der Intervall-Callback laeuft AUSSERHALB des React-Ereignisflusses, ein Klick im
 selben Frame sieht in `answer()` noch das alte `phase` aus seinem Closure. Ein Ref-Riegel wertet
 jeden Index genau einmal. **Der Test dafuer ist ein HOOK-Test** (zwei Aufrufe in einem `act`-Block):
 Im DOM ist die Option danach `disabled`, dort waere er auch ohne den Fix gruen — **eine Pruefung, die
 ohne den Fehler gruen ist, prueft nichts.**
+
+## ⚠️ DER KASTEN WIRD NACH GELENK GEFUELLT (2026-07-26) — `src/data/joint-groups.ts`
+**Wer die vier Regionen zum Fuellen zurueckholt, baut den „Stau"-Fehler neu ein.**
+
+Elf Gelenkgruppen mit **8–26 Karten**: Mimik & Kopf · Zungenbein & Kehlkopf · Wirbelsaeule ·
+Bauchwand & Beckenboden · Schulterguertel · Schultergelenk · Ellenbogen · Hand · Hueftgelenk ·
+Kniegelenk · Sprunggelenk & Fuss.
+
+- **Warum:** „Obere Extremitaet" legte **53 Karten** an — mehr als das Anderthalbfache der
+  Tagesdosis, also stufte `getTodayPlan` den FRISCHEN Kasten sofort als `backlog` ein. Gemessen
+  begruesste die App einen Schueler in Minute eins mit „Wir holen den Stau in Etappen auf" und
+  „Der Rest bleibt liegen und wartet". Mit „Ellenbogen" (17) steht dort „Heute dran".
+  **Ein Test haelt jede Gruppe unter 30 Karten** — das ist die Schwelle, nicht Geschmack.
+- **Abgeleitet, nicht erfunden:** Die Gruppen buendeln `joints` und `subregion` aus den
+  migrierten Daten. Das ist das E2-Verfahren („vorannotiert, vom Projektinhaber geprueft") und
+  ausdruecklich NICHT der Fall von `curriculum.json`/Palpation. Darum liegt die Datei auch nicht
+  in `editorial/`. **Ein Test prueft, dass jedes genannte Etikett im Bestand vorkommt** — ein
+  Tippfehler erzeugt sonst eine stillschweigend kleinere Gruppe.
+- **ZWEI Schluessel, und beide sind noetig:** `M. palmaris brevis` und `M. quadratus plantae`
+  haben ein LEERES `joints`-Feld (nur ueber die Subregion zu finden).
+- **Zwei Etiketten sind Fallen, beide mit eigener Pruefzeile:**
+  `Kopf` klingt nach Kopfmuskulatur, traegt aber `M. semispinalis`, `Mm. longissimi`,
+  `Mm. splenii` — **Nackenstrecker**. Es gehoert zur Wirbelsaeule, nicht ins Gesicht.
+  `Becken` traegt `M. psoas minor` UND die vier Beckenbodenmuskeln — darum kommt
+  „Bauchwand & Beckenboden" ueber die Subregion.
+- **26 Muskeln liegen in MEHREREN Gruppen** (`M. biceps brachii`: Ellenbogen + Schultergelenk).
+  Many-to-many, keine Partition — dieselbe Regel wie bei den funktionellen Gruppen (9a).
+  **Folge:** Die Mitgliederzahl ist NICHT die Zahl der neuen Karten. Wer eine Zahl an einen
+  Knopf schreibt, nimmt **`neueKarten()`**. Gemessen: „Schultergelenk" verspricht nach
+  „Ellenbogen" 9 statt 11 — und legt 9 an.
+- **Die Wahl steht an ZWEI Stellen, und das ist keine Doppelung:** Der `DeckStarter` rendert nur
+  bei leerem Kasten. Stand die Gruppenwahl nur dort, war sie nach der ersten Gruppe weg — wer im
+  naechsten Kursabschnitt nachlegen wollte, musste 148 Kaestchen durchgehen. Der
+  `JointGroupPicker` liegt darum auch dauerhaft auf `/karteikasten`.
+- **Der Beruf sortiert vor, versteckt aber nichts** (Entscheidung des Projektinhabers): Ein Ergo,
+  der die Huefte lernen will, soll sie nicht suchen muessen. Ein Test prueft, dass jeder Beruf
+  alle elf Gruppen erreicht.
+- Die vier Regionen bleiben in **Suche und Filter**. Nur zum FUELLEN sind sie zu grob.
+
+- **Die Gruppen leiten aus `CARD_MUSCLES` ab, NICHT aus `getMuscles()`.** Der erste Wurf lief
+  ueber alle 150 Muskeln, und „Hand" enthielt damit die drei Doppelnamen, deren Kartenschluessel
+  auf den FUSS aufloest — ein Ergo bekam Kleinzehen-Fakten in seinem Handkasten. Das ist die
+  harte Regel aus `isCardMuscle`, und sie gilt fuer JEDE neue Ableitung: **Wer von Karten auf
+  Muskeln schliesst, geht durch `CARD_MUSCLES`.** Zwei Pruefzeilen vergleichen die Gruppe nicht
+  mit dem Muskel, der ihre Bedingung erfuellt, sondern mit dem, den die KARTE rendert.
+
+**Nachtrag 2026-07-26 — inzwischen geheilt (ADR 0012):** Hier stand, die drei doppelten
+`nameLatin` (Hand/Fuss) blieben, „Hand" enthalte weiter einen Namen, der auf den FUSS aufloest.
+Das gilt nicht mehr. Der Kartenschluessel ist seit ADR 0012 nicht mehr der Anzeigename: Die Hand
+traegt `…#manus`, der Fuss den historischen Schluessel. „Hand" hat damit **26** Mitglieder statt
+23, und alle 26 rendern Hand-Fakten. `CARD_MUSCLES` = **148** statt 145.
 
 ## Verlauf (Migration, abgeschlossen)
 - Etappe 0–4 abgeschlossen. **Etappe 5 (Haertung)** — Teil 1+2 umgesetzt:
@@ -272,9 +333,9 @@ Gefahren gegen den **echten Build** (Playwright+Chromium+axe, 1440×900, Hell+Du
   leeren Kasten. Erst der Klick auf „Obere Extremitaet" legt Karten an — **53 versprochen, 53
   angelegt, 53 Zeilen in der Tabelle**. Die Entdopplung aus `isCardMuscle` traegt.
   **Es landen keine zufaelligen Karten im Kasten.**
-- **Bekannt und unveraendert:** Drei dieser 53 Zeilen tragen das Etikett „Untere Extremitaet"
-  (die Hand/Fuss-Doppelnamen). Das ist die dokumentierte, **nicht geheilte** Wurzel aus
-  `docs/todo.md` — kein neuer Fehler.
+- **Erledigt (2026-07-26, ADR 0012):** Hier stand, drei dieser Zeilen truegen das Etikett
+  „Untere Extremitaet" (die Hand/Fuss-Doppelnamen) — dokumentiert und **nicht geheilt**. Sie ist
+  jetzt geheilt: Hand und Fuss sind zwei Karten mit zwei Schluesseln.
 - **Der Hover ist die Fehlerquelle, die kein Ruhezustand-Audit findet.** axe meldete auf allen 14
   Routen in Ruhe **0 Verstoesse** — und trotzdem fiel der „Entfernen"-Knopf im Karteikasten beim
   Ueberfahren auf **4.44:1** durch (WCAG 1.4.3). **Das ist jetzt der dritte Hover-Fehler in Folge.**
@@ -329,7 +390,13 @@ Bilddatei**, eine gruen, eine rot), `insertion-origin` **6,3 %**, `image` 3,8 %,
 **Es ist eine Entschaerfung, KEINE Heilung.** „Was macht M. abductor digiti minimi?" bleibt fuer den
 Schueler mehrdeutig, und „Ursprung → Ansatz" nennt weiterhin keinen Muskelnamen — die Fragen sind nur
 wieder *beantwortbar*. Der echte Weg waere, den Muskel im Fragetext zu benennen: **Produktentscheidung,
-nicht Bugfix.** Wurzel: `docs/todo.md`.
+nicht Bugfix.**
+
+**ADR 0012 aendert daran nichts** — im Gegenteil, es macht die Mehrdeutigkeit sichtbarer: Seit dem
+2026-07-26 koennen Hand UND Fuss im selben Kasten liegen, also auch beide gefragt werden. Der
+KARTENschluessel trennt sie, der ANZEIGEname nicht. Die Zwillingssperre (`teilt`/`gueltigeAntworten`)
+zaehlt darum weiterhin beide Antworten als richtig, und das ist die einzige ehrliche Loesung, solange
+der Fragetext den Koerperteil nicht nennt.
 
 ## Satzspiegel: `--measure` (2026-07-14)
 Der Desktop-Durchlauf hat auf 1440 px **169 Zeichen pro Zeile** gemessen (`.stats__panel-sub`), im
@@ -477,14 +544,15 @@ befuellt werden, die Statistik zeigt Zahlen ohne Empfehlung.
 Stand (am ausgelieferten CSS nachgemessen, nicht gehofft). Der Pages-Schalter und der 3D-Deploy sind
 erledigt — beide Punkte, die hier frueher als „nur vom Projektinhaber loesbar" standen, sind zu.
 
-**Es gibt keinen offenen Code-Task mehr.** Offen ist nur noch, was den FACHMANN braucht, plus EINE
-Entscheidung, die an ADR 0002 ruehrt — vollstaendige Liste: `docs/todo.md`.
+**Es gibt keinen offenen Code-Task mehr.** Offen ist nur noch, was den FACHMANN braucht —
+vollstaendige Liste: `docs/todo.md`. (Die Entscheidung, die an ADR 0002 ruehrte, ist am 2026-07-26
+mit **ADR 0012** gefallen und umgesetzt.)
 (Der UX-Review vom 2026-07-26 hat acht Fehler gefunden und behoben; die Regeln daraus stehen oben.)
 - Palpationstexte aus dem Kollegen-Skript (`docs/palpation-erfassen.md`).
 - Kursabschnitte (`docs/curriculum-erfassen.md`) — solange leer, steht der Platzhalter HINTEN.
-- **Die drei doppelten `nameLatin`** (Hand/Fuss): Karten dazu tragen das falsche Etikett, der
-  Handmuskel ist ueber Karten nicht lernbar. Entdoppelt ist es, geheilt nicht. Optionen und ihr
-  Preis stehen in `docs/todo.md`.
+- ~~**Die drei doppelten `nameLatin`** (Hand/Fuss)~~ — **ERLEDIGT 2026-07-26 (ADR 0012).** Der
+  Kartenschluessel ist nicht mehr der Anzeigename; der Handmuskel ist lernbar, der Fuss behaelt
+  seinen historischen Schluessel, ADR 0002 bleibt unangetastet (rein additiv, keine Migration).
 - V1 (`aher-dev.github.io/Muskelfinder/`) ist noch live — Hinweis setzen oder abschalten (dir egal).
 
 **ETAPPE 9 IST VOLLSTAENDIG GEBRIEFT** (Rahmen + 9a-9d, siehe Statustafel).
@@ -549,26 +617,38 @@ der allerersten Sitzung war wieder **`M. abductor digiti minimi`**, diesmal mit 
   Sitzung „**53** Karten"), Phantom-Zeilen, und **„Entfernen" loeschte beide Zeilen auf einmal** —
   es ist derselbe Schluessel. Wer den Fussmuskel loswerden wollte, verlor die Handkarte mit.
 - **`isCardMuscle(muscle)` in `src/data/loader.ts` ist die einzige Regel:** wahr genau dann, wenn
-  `getMuscleByLatinName(m.nameLatin) === m`. Sie waehlt den Muskel, den die Lernkarte **rendert** —
+  `getMuscleByCardKey(cardKey(m)) === m`. Sie waehlt den Muskel, den die Lernkarte **rendert** —
   jede andere Wahl zeigte eine Zeile, die nicht zur Karte gehoert. `CARD_MUSCLES` ist die fertige
-  Liste (145 statt 150). **Alles, was von Karten auf Muskeln schliesst, geht hier durch.**
+  Liste (**148** statt 150; bis ADR 0012 waren es 145). **Alles, was von Karten auf Muskeln
+  schliesst, geht hier durch.**
 - `quizPool` entdoppelt nur die **`questions`**. Die **`distractors`** bleiben der ganze Bestand —
   das ist die Regel aus 8b und sie gilt weiter. `quizSeriesKey` bleibt bitgleich (ADR 0002).
 
-**Das ist eine Entdopplung, KEINE Heilung.** Der Hand-Kleinfingerballen bleibt ueber Karten
-unlernbar (sein Schluessel loest auf den Fuss auf), und drei Karten in einem „Obere
-Extremitaet"-Kasten tragen weiter das Etikett „Untere Extremitaet". Das ist **dieselbe Wurzel, an
-der das Hypothenar gestorben ist** (siehe unten) — nur diesmal im Kartenweg statt in der Gruppe.
-Das echte Gegenmittel braucht einen eindeutigen `nameLatin` und **bricht ADR 0002**: Entscheidung
-des Projektinhabers, Optionen in `docs/todo.md`.
+**Das war eine Entdopplung, KEINE Heilung — geheilt ist es seit dem 2026-07-26 (ADR 0012).**
+Hier stand: Der Hand-Kleinfingerballen bleibt ueber Karten unlernbar (sein Schluessel loest auf den
+Fuss auf), und drei Karten in einem „Obere Extremitaet"-Kasten tragen das Etikett „Untere
+Extremitaet". Es war **dieselbe Wurzel, an der das Hypothenar gestorben ist** (siehe unten).
+
+Das Gegenmittel brauchte **keinen** neuen `nameLatin` und bricht ADR 0002 **nicht**: Der
+Kartenschluessel wurde vom Anzeigenamen getrennt (`cardKey`), der **Fuss behaelt** den historischen
+Schluessel, die Hand bekommt `…#manus`. Damit ist die Aenderung rein **additiv** — alte Backups
+importieren unveraendert, kein Bestandsnutzer verliert etwas, es gibt keine Migrationsregel. Details,
+Preis und Pruefzeilen: `docs/decisions/0012-kartenschluessel-statt-anzeigename.md`.
 
 ## Handy-Regeln, die ab jetzt gelten (2026-07-14)
-- **Der Dark-Mode folgt dem Geraet.** `useThemeStore` startet auf der System-Praeferenz
-  (`matchMedia`), das No-Flash-Skript in `index.html` liest dieselbe Regel vor dem ersten Paint.
-  Wer einmal umschaltet, hat eine explizite Wahl — die wird persistiert und schlaegt das System.
+- **⚠️ UEBERHOLT AM 2026-07-26: Die App startet HELL, nicht nach Geraet.** Ansage des
+  Projektinhabers — die Marke ist auf dem warmen Papier gestaltet. Der Umschalter bleibt, und eine
+  ausdrueckliche Wahl wird persistiert und schlaegt die Vorgabe.
+  **DREI Stellen kennen dieselbe Regel, und sie muessen zusammenbleiben:** `useThemeStore`
+  (`DEFAULT_THEME`), das No-Flash-Skript in `index.html` (vor dem ersten Paint) und die
+  **eine** `theme-color` (die `useTheme` nachzieht). Zwei medienabhaengige `theme-color`-Metas
+  waeren jetzt falsch: Sie legten auf einem Nachtmodus-Handy eine dunkle Systemleiste um eine
+  helle Seite. Vier Tests wachen darueber.
   Der frueher hier stehende `@media (prefers-color-scheme: dark)`-Block in `theme.css` war
   **toter Code** (das Skript setzt `data-theme` immer, also traf `:not([data-theme])` nie zu) und
   obendrein eine zweite Kopie der Tokens aus `[data-theme="dark"]`. Nicht wieder anlegen.
+  *Der historische Fehler von damals war NICHT der helle Default, sondern dass daneben toter
+  Code stand, der aussah, als sei an den Nachtmodus gedacht.*
 - **Touch-Ziele: 44 px, aber nur unter 1024 px.** `--touch-min` gilt fuer echte Bedienelemente —
   auf dem Desktop zielt eine Maus, dort bleibt das Bild wie gestaltet. **`.chip` ist auch ein
   reines Etikett** (die Bewegungs-Tags auf den Suchtreffern): darum `button.chip`/`a.chip`, nie
@@ -792,8 +872,9 @@ Offen — nur noch durch dich:
 Werkzeuge lokal: Playwright+Chromium+axe-core (visuelle/A11y-Verifikation, Preview Port 4319).
 Task-Briefing: `docs/tasks/2026-07-09-etappe-5-haertung.md`.
 
-Anschluss-Hinweis: Stores schluesseln Karten nach `nameLatin`; die UI loest Routing-`id` ueber
-die Datenschicht (`getMuscleByLatinName`) auf (ADR 0002 §2 / ADR 0006 §3). Such-/Filter-Logik,
+Anschluss-Hinweis: Stores schluesseln Karten nach **Kartenschluessel** (`cardKey`, ADR 0012 —
+fuer 147 von 150 Muskeln identisch mit `nameLatin`); die UI loest ihn ueber die Datenschicht
+(`getMuscleByCardKey`) auf (ADR 0002 §2 / ADR 0006 §3). Such-/Filter-Logik,
 Quiz-Generierung und Statistik liegen getestet in `src/data/` — Etappe 4 aendert nur Darstellung.
 
 ## Agenten-Regel

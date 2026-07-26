@@ -17,7 +17,7 @@
    ========================================================================= */
 
 import { create } from 'zustand';
-import { getMuscles } from '../data';
+import { cardKey, getMuscles } from '../data';
 import { applyCardFilter, isCardFilter, type CardFilter } from '../data/card-filter';
 import { dailyDose, daysUntilExam } from '../data/today';
 import { isDue } from '../persistence/leitner';
@@ -85,8 +85,8 @@ export function buildQueue(
       ? Object.keys(cards)
       : getMuscles()
           .filter((m) => m.region === opts.scope)
-          .map((m) => m.nameLatin)
-          .filter((name) => name in cards);
+          .map((m) => cardKey(m))
+          .filter((key) => key in cards);
 
   return cut(inScope.filter(dueNow));
 }

@@ -1,3 +1,4 @@
+import { hasNameTwin } from '../../../data';
 import { EXAM_FORM_LABELS, type ExamOutcome, type ExamReport, type ExamTally } from '../../../data/exam';
 import { regionLabel } from '../../../data/labels';
 import { Icon } from '../../ui/Icon';
@@ -35,6 +36,10 @@ function OutcomeRow({ outcome }: { outcome: ExamOutcome }) {
       <div className="exam-outcome__body">
         <p className="exam-outcome__name">
           {muscle.nameLatin}
+          {/* Seit ADR 0012 sind Hand und Fuß zwei Karten mit demselben Namen. In einer
+              Liste stünden sie sonst zweimal identisch da — mit zwei verschiedenen
+              Urteilen daneben. Nur dann, nicht bei den übrigen 145. */}
+          {hasNameTwin(muscle) && <span className="exam-outcome__where">{muscle.subregion}</span>}
           <span className="exam-outcome__form">{EXAM_FORM_LABELS[item.form]}</span>
         </p>
 
