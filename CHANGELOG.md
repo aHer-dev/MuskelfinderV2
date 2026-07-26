@@ -6,6 +6,23 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Changed
+- **Die App startet wieder hell — unabhängig davon, was das Gerät eingestellt hat** (Ansage des
+  Projektinhabers, 2026-07-26). Die Marke „Warm/Atlas" ist auf dem warmen Papier gestaltet, und das
+  soll ein neuer Nutzer zuerst sehen. Der Umschalter (Sonne/Mond in Rail und Tab-Leiste) bleibt der
+  Weg zu Dunkel; eine **ausdrückliche Wahl wird weiter persistiert und schlägt die Vorgabe**.
+  Verifiziert mit `colorScheme: 'dark'`: `data-theme=light` beim ersten Paint, Umschalten →
+  `dark` und übersteht den Reload.
+  **Drei Stellen müssen dieselbe Regel kennen** — `useThemeStore`, das No-Flash-Skript in
+  `index.html` (vor dem ersten Paint) und `theme-color`. Die zwei medienabhängigen
+  `theme-color`-Metas sind darum durch **eine** ersetzt, die `useTheme` am tatsächlichen Theme
+  nachzieht: Sonst umrahmte auf einem Nachtmodus-Handy eine dunkle Systemleiste eine helle Seite.
+  Vier Prüfzeilen wachen darüber (inkl. „`index.html` trägt dieselbe Vorgabe wie der Store").
+  *Nebenbefund:* Der bisherige Test „startet mit hellem Theme" war eine **Tautologie** — sein
+  `beforeEach` setzte `theme: 'light'` und prüfte dann, dass es `'light'` ist. Er wäre auch grün
+  geblieben, als der Store der Systemvorgabe folgte. Jetzt wird die Vorgabe am frisch importierten
+  Store gegen ein Gerät im Nachtmodus geprüft.
+
 ### UX-Review 2026-07-26 — am laufenden Build nachgemessen
 
 Ein Durchgang als Entwickler UND als Schülerin: voller Testlauf, dann die App selbst bedient

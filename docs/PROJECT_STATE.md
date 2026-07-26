@@ -563,12 +563,19 @@ Das echte Gegenmittel braucht einen eindeutigen `nameLatin` und **bricht ADR 000
 des Projektinhabers, Optionen in `docs/todo.md`.
 
 ## Handy-Regeln, die ab jetzt gelten (2026-07-14)
-- **Der Dark-Mode folgt dem Geraet.** `useThemeStore` startet auf der System-Praeferenz
-  (`matchMedia`), das No-Flash-Skript in `index.html` liest dieselbe Regel vor dem ersten Paint.
-  Wer einmal umschaltet, hat eine explizite Wahl — die wird persistiert und schlaegt das System.
+- **⚠️ UEBERHOLT AM 2026-07-26: Die App startet HELL, nicht nach Geraet.** Ansage des
+  Projektinhabers — die Marke ist auf dem warmen Papier gestaltet. Der Umschalter bleibt, und eine
+  ausdrueckliche Wahl wird persistiert und schlaegt die Vorgabe.
+  **DREI Stellen kennen dieselbe Regel, und sie muessen zusammenbleiben:** `useThemeStore`
+  (`DEFAULT_THEME`), das No-Flash-Skript in `index.html` (vor dem ersten Paint) und die
+  **eine** `theme-color` (die `useTheme` nachzieht). Zwei medienabhaengige `theme-color`-Metas
+  waeren jetzt falsch: Sie legten auf einem Nachtmodus-Handy eine dunkle Systemleiste um eine
+  helle Seite. Vier Tests wachen darueber.
   Der frueher hier stehende `@media (prefers-color-scheme: dark)`-Block in `theme.css` war
   **toter Code** (das Skript setzt `data-theme` immer, also traf `:not([data-theme])` nie zu) und
   obendrein eine zweite Kopie der Tokens aus `[data-theme="dark"]`. Nicht wieder anlegen.
+  *Der historische Fehler von damals war NICHT der helle Default, sondern dass daneben toter
+  Code stand, der aussah, als sei an den Nachtmodus gedacht.*
 - **Touch-Ziele: 44 px, aber nur unter 1024 px.** `--touch-min` gilt fuer echte Bedienelemente —
   auf dem Desktop zielt eine Maus, dort bleibt das Bild wie gestaltet. **`.chip` ist auch ein
   reines Etikett** (die Bewegungs-Tags auf den Suchtreffern): darum `button.chip`/`a.chip`, nie
