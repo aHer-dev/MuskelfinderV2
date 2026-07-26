@@ -6,6 +6,7 @@ import { isDue } from '../persistence/leitner'
 import { useProgressStore } from '../store/useProgressStore'
 import type { RegionId } from '../types'
 import { EmptyState } from '../components/ui/EmptyState'
+import { JointGroupPicker } from '../components/features/deck/JointGroupPicker'
 import './deck-manager.css'
 
 const REGION_ORDER = getRegions().map((r) => r.id) as RegionId[]
@@ -222,6 +223,24 @@ export function DeckManagerPage() {
           </div>
         )}
       </section>
+
+      {/* ── Nach Gelenk nachlegen ───────────────────────────────────────
+          Beim Pruefen aufgefallen (2026-07-26): Die Gelenkwahl stand nur auf dem
+          Erststart-Bildschirm, und der rendert nur bei LEEREM Kasten. Nach der ersten
+          Gruppe war sie weg — wer im naechsten Kursabschnitt „Ellenbogen" dazunehmen
+          wollte, musste sich die Muskeln einzeln aus 145 Kaestchen zusammenklicken.
+          Ein Schueler fuellt seinen Kasten ueber ein Semester, nicht in einer Sitzung. */}
+      {/* `div`, NICHT `section`: Der Picker bringt seine eigene beschriftete `section` mit.
+          Zwei Landmarks mit derselben `aria-labelledby`-Id sind fuer einen Screenreader nicht
+          unterscheidbar — axe meldet `landmark-unique` (von meiner eigenen Handy-Pruefung
+          gefangen, 2026-07-26). Die Karte hier ist reine Optik. */}
+      <div className="deck-section">
+        <JointGroupPicker
+          headingId="deck-gelenke"
+          title="Ganze Gelenkgruppe dazulegen"
+          hint="Die schnelle Art, den Kasten zu erweitern — z. B. wenn im Kurs ein neues Gelenk dran ist. Die Zahl ist, was der Klick anlegt."
+        />
+      </div>
 
       {/* ── Noch nicht im Karteikasten ──────────────────────────────── */}
       <section className="deck-section" aria-labelledby="add-title">

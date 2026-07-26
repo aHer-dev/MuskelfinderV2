@@ -50,21 +50,58 @@ await withApp(async ({ page, goto, errors, BASE }) => {
   const primaer = await page.locator('.today__start .btn--primary, .today__hero .btn--primary').count();
   pruefe(primaer === 0, 'Leerer Kasten hat keinen Primaerknopf (ADR 0009 — Waehlen IST die Aufgabe)');
 
-  /* ---- STATION 2: Bereich waehlen — versprochene Zahl == angelegte Zahl ---- */
+  /* ---- STATION 2: Gelenkgruppe waehlen — versprochene Zahl == angelegte Zahl ----
+     Seit 2026-07-26 fuellt man den Kasten nach GELENK, nicht nach Region: „Obere
+     Extremitaet" legte 53 Karten an und kippte den frischen Kasten sofort in den
+     `backlog`-Zustand („Wir holen den Stau in Etappen auf" — in Minute eins).
+
+     Der Beruf sortiert die Gruppen vor. Station 1 hat „Physiotherapie" gewaehlt, also steht
+     das Huftgelenk oben; die Pruefung greift trotzdem nach dem LABEL, nicht nach der
+     Position — sonst misst sie die Sortierung statt die Zahl. */
   L('\n2. Karteikasten fuellen — die Zahl am Knopf haelt Wort');
-  const bereichKnopf = page.locator('.deck-starter__regions .deck-starter__section').filter({ hasText: 'Obere Extremität' }).first();
-  const versprochen = parseInt(await bereichKnopf.locator('.deck-starter__count').innerText(), 10);
-  await bereichKnopf.click();
+  const gruppenKnopf = page.locator('.jgp__group').filter({ hasText: 'Ellenbogen' }).first();
+  pruefe(await gruppenKnopf.count() > 0, 'Die Gelenkgruppe „Ellenbogen" steht zur Wahl');
+  const versprochen = parseInt((await gruppenKnopf.locator('.jgp__count').innerText()).trim(), 10);
+  await gruppenKnopf.click();
   await page.waitForTimeout(500);
   const angelegt = await page.evaluate(() => {
     const s = JSON.parse(localStorage.getItem('mf.progress'));
     return Object.keys(s.state.flashcards.cards).length;
   });
-  pruefe(versprochen === angelegt, `„Obere Extremität": ${versprochen} versprochen == ${angelegt} angelegt`);
+  pruefe(versprochen === angelegt, `„Ellenbogen": ${versprochen} versprochen == ${angelegt} angelegt`);
+  pruefe(versprochen > 0 && versprochen < 30,
+    `Eine Gelenkgruppe ist eine verdauliche Portion (${versprochen} Karten, < 30 = kein Stau-Zustand)`);
+
+  /* Die vier Regionen duerfen zum FUELLEN nicht mehr auftauchen — sie sind der Grund fuer
+     den Stau-Fehler. In Suche und Filter bleiben sie. */
+  const regionKnopf = await page.locator('.jgp__group, .deck-starter__section').filter({ hasText: /^Obere Extremität/ }).count();
+  pruefe(regionKnopf === 0, 'Der 53-Karten-Knopf „Obere Extremität" ist aus dem Erststart verschwunden');
 
   await goto('/karteikasten');
   const zeilen = await page.locator('table tbody tr').count();
   pruefe(zeilen === angelegt, `Kasten-Tabelle zeigt ${zeilen} Zeilen == ${angelegt} Karten (keine Phantomzeilen)`);
+
+  /* ---- STATION 2b: Eine ueberlappende Gruppe verspricht nur die NEUEN Karten ----
+     26 Muskeln liegen in mehreren Gruppen (`M. biceps brachii`: Ellenbogen + Schultergelenk).
+     Wer die Mitgliederzahl an den Knopf schreibt, verspricht nach dem ersten Klick mehr, als
+     er anlegt.
+
+     Und die Station prueft gleich mit, dass die Gruppenwahl UEBERHAUPT noch da ist: Sie stand
+     zuerst nur im `DeckStarter`, und der rendert nur bei LEEREM Kasten — nach der ersten
+     Gruppe war sie weg. Sie lebt jetzt dauerhaft auf `/karteikasten`. */
+  await goto('/karteikasten');
+  pruefe(await page.locator('.jgp__group').count() > 0,
+    'Die Gelenkwahl ist auch mit gefuelltem Kasten noch erreichbar (nicht nur beim Erststart)');
+  const schulter = page.locator('.jgp__group').filter({ hasText: 'Schultergelenk' }).first();
+  const versprochen2 = parseInt((await schulter.locator('.jgp__count').innerText()).trim(), 10);
+  await schulter.click();
+  await page.waitForTimeout(500);
+  const angelegt2 = await page.evaluate(() => {
+    const s = JSON.parse(localStorage.getItem('mf.progress'));
+    return Object.keys(s.state.flashcards.cards).length;
+  });
+  pruefe(angelegt + versprochen2 === angelegt2,
+    `„Schultergelenk" nach „Ellenbogen": ${versprochen2} versprochen == ${angelegt2 - angelegt} neu angelegt (Ueberlappung abgezogen)`);
 
   /* ---- STATION 3: /heute schlaegt jetzt eine Sitzung vor ---- */
   L('\n3. /heute fuehrt jetzt in die Sitzung');

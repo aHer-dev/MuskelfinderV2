@@ -116,6 +116,49 @@ jeden Index genau einmal. **Der Test dafuer ist ein HOOK-Test** (zwei Aufrufe in
 Im DOM ist die Option danach `disabled`, dort waere er auch ohne den Fix gruen — **eine Pruefung, die
 ohne den Fehler gruen ist, prueft nichts.**
 
+## ⚠️ DER KASTEN WIRD NACH GELENK GEFUELLT (2026-07-26) — `src/data/joint-groups.ts`
+**Wer die vier Regionen zum Fuellen zurueckholt, baut den „Stau"-Fehler neu ein.**
+
+Elf Gelenkgruppen mit **8–26 Karten**: Mimik & Kopf · Zungenbein & Kehlkopf · Wirbelsaeule ·
+Bauchwand & Beckenboden · Schulterguertel · Schultergelenk · Ellenbogen · Hand · Hueftgelenk ·
+Kniegelenk · Sprunggelenk & Fuss.
+
+- **Warum:** „Obere Extremitaet" legte **53 Karten** an — mehr als das Anderthalbfache der
+  Tagesdosis, also stufte `getTodayPlan` den FRISCHEN Kasten sofort als `backlog` ein. Gemessen
+  begruesste die App einen Schueler in Minute eins mit „Wir holen den Stau in Etappen auf" und
+  „Der Rest bleibt liegen und wartet". Mit „Ellenbogen" (17) steht dort „Heute dran".
+  **Ein Test haelt jede Gruppe unter 30 Karten** — das ist die Schwelle, nicht Geschmack.
+- **Abgeleitet, nicht erfunden:** Die Gruppen buendeln `joints` und `subregion` aus den
+  migrierten Daten. Das ist das E2-Verfahren („vorannotiert, vom Projektinhaber geprueft") und
+  ausdruecklich NICHT der Fall von `curriculum.json`/Palpation. Darum liegt die Datei auch nicht
+  in `editorial/`. **Ein Test prueft, dass jedes genannte Etikett im Bestand vorkommt** — ein
+  Tippfehler erzeugt sonst eine stillschweigend kleinere Gruppe.
+- **ZWEI Schluessel, und beide sind noetig:** `M. palmaris brevis` und `M. quadratus plantae`
+  haben ein LEERES `joints`-Feld (nur ueber die Subregion zu finden).
+- **Zwei Etiketten sind Fallen, beide mit eigener Pruefzeile:**
+  `Kopf` klingt nach Kopfmuskulatur, traegt aber `M. semispinalis`, `Mm. longissimi`,
+  `Mm. splenii` — **Nackenstrecker**. Es gehoert zur Wirbelsaeule, nicht ins Gesicht.
+  `Becken` traegt `M. psoas minor` UND die vier Beckenbodenmuskeln — darum kommt
+  „Bauchwand & Beckenboden" ueber die Subregion.
+- **26 Muskeln liegen in MEHREREN Gruppen** (`M. biceps brachii`: Ellenbogen + Schultergelenk).
+  Many-to-many, keine Partition — dieselbe Regel wie bei den funktionellen Gruppen (9a).
+  **Folge:** Die Mitgliederzahl ist NICHT die Zahl der neuen Karten. Wer eine Zahl an einen
+  Knopf schreibt, nimmt **`neueKarten()`**. Gemessen: „Schultergelenk" verspricht nach
+  „Ellenbogen" 9 statt 11 — und legt 9 an.
+- **Die Wahl steht an ZWEI Stellen, und das ist keine Doppelung:** Der `DeckStarter` rendert nur
+  bei leerem Kasten. Stand die Gruppenwahl nur dort, war sie nach der ersten Gruppe weg — wer im
+  naechsten Kursabschnitt nachlegen wollte, musste 145 Kaestchen durchgehen. Der
+  `JointGroupPicker` liegt darum auch dauerhaft auf `/karteikasten`.
+- **Der Beruf sortiert vor, versteckt aber nichts** (Entscheidung des Projektinhabers): Ein Ergo,
+  der die Huefte lernen will, soll sie nicht suchen muessen. Ein Test prueft, dass jeder Beruf
+  alle elf Gruppen erreicht.
+- Die vier Regionen bleiben in **Suche und Filter**. Nur zum FUELLEN sind sie zu grob.
+
+**Was das NICHT heilt:** Die drei doppelten `nameLatin` (Hand/Fuss) bleiben. Die Gruppe „Hand"
+enthaelt weiter `M. abductor digiti minimi`, und der Name loest auf den FUSS auf. Es trifft nur
+nicht mehr die erste Karte des haeufigsten Weges (gemessen: `M. anconeus` statt des Fussmuskels).
+Wurzel und Optionen: `docs/todo.md`.
+
 ## Verlauf (Migration, abgeschlossen)
 - Etappe 0–4 abgeschlossen. **Etappe 5 (Haertung)** — Teil 1+2 umgesetzt:
   (1) Quellen-/Lizenz-Seite (`/quellen`) + Datenschutz-Seite (`/datenschutz`) aus V1 uebernommen

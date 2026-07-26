@@ -9,7 +9,11 @@
    1. **Kursabschnitt** — der Weg, den er wirklich geht. Fehlt noch (der Projektinhaber
       trägt die Abschnitte ein, `docs/curriculum-erfassen.md`), darum bis dahin ein
       **bewusster Platzhalter** statt eines leeren Menüs.
-   2. **Bereich** — funktioniert heute, aus den vorhandenen Daten.
+   2. **Gelenk** — der Weg, der heute traegt (2026-07-26). Er ersetzt die vier Regionen:
+      „Obere Extremitaet" legte **53 Karten** an und kippte den Kasten damit sofort in den
+      `backlog`-Zustand — die App begruesste einen neuen Schueler mit „Wir holen den Stau in
+      Etappen auf". Eine Gelenkgruppe hat 8–26 Karten. Die Regionen bleiben in Suche und
+      Filter; zum FUELLEN sind sie zu grob.
    3. **Einzeln nachschlagen** — für alles, was er im Unterricht aufschnappt.
 
    Die Zahl an jedem Knopf ist die Zahl der Karten, die er bekommt: nach `nameLatin`
@@ -19,28 +23,18 @@
 
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { getMuscles, getRegions } from '../../../data';
 import { getSections } from '../../../data/curriculum';
+import { JointGroupPicker } from '../deck/JointGroupPicker';
 import { useProfileStore } from '../../../store/useProfileStore';
 import { useProgressStore } from '../../../store/useProgressStore';
 import { Icon } from '../../ui/Icon';
-import type { RegionId } from '../../../types';
 import './deck-starter.css';
-
-/** Muskelnamen einer Region — entdoppelt, weil zwei gleichnamige Muskeln EINE Karte sind. */
-function regionMuscleNames(region: RegionId): string[] {
-  return [...new Set(getMuscles().filter((m) => m.region === region).map((m) => m.nameLatin))];
-}
 
 export function DeckStarter() {
   const profession = useProfileStore((s) => s.profession);
   const addCards = useProgressStore((s) => s.addCards);
 
   const sections = useMemo(() => getSections(profession), [profession]);
-  const regions = useMemo(
-    () => getRegions().map((r) => ({ ...r, names: regionMuscleNames(r.id as RegionId) })),
-    [],
-  );
 
   /* Der Kursabschnitt ist der Weg, den ein Schüler wirklich geht — SOBALD es Abschnitte gibt.
      Solange `curriculum.json` leer ist, war er trotzdem die erste und größte Karte auf dem
@@ -86,31 +80,9 @@ export function DeckStarter() {
     </section>
   );
 
-  const wegBereich = (
-    <section className="deck-starter__way" aria-labelledby="way-bereich">
-        <h3 className="deck-starter__way-title" id="way-bereich">
-          <Icon name="icCards" size={18} />
-          Nach Bereich
-        </h3>
-        <p className="deck-starter__way-hint">
-          Ein ganzer Körperbereich auf einmal. Viel — aber der Tagesplan teilt es dir ein.
-        </p>
-        <ul className="deck-starter__regions">
-          {regions.map((region) => (
-            <li key={region.id}>
-              <button
-                type="button"
-                className="deck-starter__section"
-                onClick={() => addCards(region.names)}
-              >
-                <span className="deck-starter__section-label">{region.label}</span>
-                <span className="deck-starter__count">{region.names.length}</span>
-              </button>
-            </li>
-        ))}
-      </ul>
-    </section>
-  );
+  /* Kein zusaetzlicher `section`-Rahmen: Der Picker bringt seine eigene beschriftete
+     `section` mit, und zwei Landmarks mit derselben Beschriftung sind nicht unterscheidbar. */
+  const wegGelenk = <JointGroupPicker headingId="way-gelenk" />;
 
   const wegEinzeln = (
     <section className="deck-starter__way" aria-labelledby="way-einzeln">
@@ -137,11 +109,11 @@ export function DeckStarter() {
       {kursZuerst ? (
         <>
           {wegKurs}
-          {wegBereich}
+          {wegGelenk}
         </>
       ) : (
         <>
-          {wegBereich}
+          {wegGelenk}
           {wegKurs}
         </>
       )}

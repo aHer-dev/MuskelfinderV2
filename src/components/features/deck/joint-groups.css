@@ -1,0 +1,138 @@
+/* =========================================================================
+   Gelenkgruppen-Wahl (2026-07-26). Nur Tokens.
+   ========================================================================= */
+
+.jgp {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.jgp__title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.jgp__lead {
+  margin: 0;
+  max-width: var(--measure);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+/* Bandzeile über einer Gruppenliste („Typisch für dich" / „Alle weiteren"). */
+.jgp__band {
+  margin: var(--spacing-md) 0 var(--spacing-xs);
+  font-family: var(--font-ui);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.jgp__list {
+  display: grid;
+  /* `min()` gegen die Grid-Falle: `minmax(190px, …)` kann sonst nicht unter 190 px und
+     schöbe auf 320 px die ganze Seite waagerecht auf (UX-Review 2026-07-26). */
+  grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr));
+  gap: var(--spacing-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Ein echtes Bedienelement, kein Textlink: volle Fläche, sichtbarer Rand, Klickziel
+   deutlich über den 24 px aus WCAG 2.5.8 und über dem 44-px-Daumenmaß. */
+.jgp__group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  width: 100%;
+  min-height: 52px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--surface);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-field);
+  cursor: pointer;
+  text-align: left;
+  transition: var(--transition-smooth);
+}
+
+.jgp__group:hover:not(:disabled) {
+  background: var(--accent-tint);
+  border-color: var(--accent-border);
+}
+
+.jgp__group:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Eine Gruppe, die vollständig im Kasten liegt, ist kein toter Knopf, sondern eine
+   erledigte Aufgabe — sie bleibt lesbar, statt auf Grau zu verblassen. Der gestrichelte
+   Rand sagt „hier ist nichts mehr zu holen", ohne den Text unter AA zu drücken. */
+.jgp__group:disabled {
+  cursor: default;
+  border-style: dashed;
+  background: var(--surface-sunken);
+}
+
+.jgp__label {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.jgp__group:disabled .jgp__label {
+  color: var(--text-secondary);
+}
+
+/* Was in der Gruppe steckt — ein halber Satz, damit „Schultergelenk" gegen
+   „Schultergürtel" unterscheidbar bleibt, ohne dass man sie erst anklickt. */
+.jgp__hint {
+  font-size: 11.5px;
+  font-weight: 400;
+  color: var(--text-tertiary);
+}
+
+/* Die Zahl ist das Versprechen: so viele NEUE Karten bekommst du. Weil 26 Muskeln in
+   mehreren Gruppen liegen, ist es nicht die Mitgliederzahl (siehe `neueKarten`). */
+.jgp__count {
+  display: inline-flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.2;
+  min-width: 34px;
+  padding: 3px 8px;
+  background: var(--surface-sunken);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+}
+
+/* „+5 da" — was von dieser Gruppe schon im Kasten liegt. Leiser als die Zahl darüber:
+   eine Auskunft, keine Handlung. */
+.jgp__count-note {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-faint);
+  text-transform: none;
+  letter-spacing: 0;
+}

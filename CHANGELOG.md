@@ -6,6 +6,51 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+- **Der Karteikasten wird nach GELENK gefüllt, nicht mehr nach Region** (Ansage des
+  Projektinhabers, 2026-07-26). Elf Gruppen — Mimik & Kopf · Zungenbein & Kehlkopf ·
+  Wirbelsäule · Bauchwand & Beckenboden · Schultergürtel · Schultergelenk · Ellenbogen ·
+  Hand · Hüftgelenk · Kniegelenk · Sprunggelenk & Fuß — mit **8–26 Karten** je Gruppe.
+  **Der Beruf sortiert vor, versteckt aber nichts:** Ergo sieht Hand/Ellenbogen/Schulter oben,
+  Physio Hüfte/Knie/Sprunggelenk/Wirbelsäule, Logopädie Mimik + Zungenbein — unter „Alle
+  weiteren" bleiben alle elf sichtbar und klickbar.
+  **Nichts erfunden, abgeleitet:** `src/data/joint-groups.ts` bündelt nur Etiketten, die längst
+  in den Daten stehen (`joints`, `subregion`) — dasselbe Verfahren, das für die funktionellen
+  Gruppen unter **E2** freigegeben ist. Ein Test prüft, dass **jedes** genannte Etikett im
+  Bestand wirklich vorkommt (ein Tippfehler erzeugte sonst eine stillschweigend kleinere Gruppe).
+
+  **Was das nebenbei behebt** (am Build gemessen, vorher → nachher):
+  | | vorher (Region) | nachher (Gelenk) |
+  |---|---|---|
+  | Begrüßung nach der ersten Wahl | „Wir holen den **Stau** in Etappen auf" | „Heute dran" |
+  | fällige Karten | 53 (heute 20 davon) | 17 |
+  | erste Karte der ersten Sitzung | `M. abductor digiti minimi`, Etikett „Untere Extremität", Kleinzehe/Tuber calcanei — nach der Wahl „Obere Extremität" | `M. anconeus`, „Obere Extremität", Ellenbogenextension |
+
+  „Obere Extremität" legte **53 Karten** an, mehr als das Anderthalbfache der Tagesdosis — der
+  frische Kasten kippte damit sofort in den `backlog`-Zustand, und die App begrüßte einen
+  Schüler in Minute eins mit einem Rückstand, den er nicht haben konnte. Die vier Regionen
+  bleiben in **Suche und Filter**; zum Füllen sind sie zu grob.
+
+  **Drei Dinge, die beim Prüfen aufgefallen sind und mitbehoben wurden:**
+  1. **Die Gruppenwahl war nach dem ersten Klick weg.** Sie saß nur im `DeckStarter`, und der
+     rendert nur bei LEEREM Kasten — wer im nächsten Kursabschnitt „Ellenbogen" dazunehmen
+     wollte, musste sich die Muskeln einzeln aus 145 Kästchen zusammenklicken. Ein Schüler
+     füllt seinen Kasten über ein Semester. Der `JointGroupPicker` steht jetzt an **beiden**
+     Stellen: Erststart **und** dauerhaft auf `/karteikasten`.
+  2. **Die Zahl am Knopf hätte gelogen.** 26 Muskeln liegen in mehreren Gruppen
+     (`M. biceps brachii`: Ellenbogen + Schultergelenk). Am Knopf steht darum, was der Klick
+     **wirklich anlegt** (`neueKarten`), plus „+N da" für das, was schon liegt; eine vollständig
+     vorhandene Gruppe ist erledigt statt anklickbar. Gemessen: „Schultergelenk" verspricht nach
+     „Ellenbogen" **9** statt 11 — und legt 9 an.
+  3. **Ein Klick sagte nicht, dass er etwas getan hat.** Der einzige Toast in diesem Moment war
+     „+10 XP · Tagesbonus" (der gehört zum App-Start). Jetzt: „17 Karten angelegt — Ellenbogen".
+
+  **Die Falle, die diese Datei fast gekostet hätte:** Das Gelenk-Etikett `Kopf` klingt nach
+  Kopfmuskulatur, trägt aber `M. semispinalis`, `Mm. longissimi` und `Mm. splenii` —
+  Nackenstrecker. Naiv zu „Mimik & Kopf" gezählt wären sie im Gesicht gelandet. Ebenso trägt
+  `Becken` sowohl `M. psoas minor` als auch die vier Beckenbodenmuskeln. Beide Fälle haben eine
+  eigene Prüfzeile.
+
 ### Changed
 - **Die App startet wieder hell — unabhängig davon, was das Gerät eingestellt hat** (Ansage des
   Projektinhabers, 2026-07-26). Die Marke „Warm/Atlas" ist auf dem warmen Papier gestaltet, und das

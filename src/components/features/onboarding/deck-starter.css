@@ -60,7 +60,25 @@
   list-style: none;
 }
 .deck-starter__regions {
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  /* `min()` gegen die Grid-Falle: `minmax(180px, …)` kann sonst nicht unter 180 px und
+     schiebt auf 320 px die ganze Seite waagerecht auf (UX-Review 2026-07-26). */
+  grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr));
+}
+
+/* Bandzeile ueber einer Gruppenliste („Typisch fuer dich" / „Alle weiteren"). Sie erklaert
+   die Reihenfolge — ohne sie wirkt die Sortierung willkuerlich, und niemand merkt, dass
+   darunter noch mehr kommt. */
+.deck-starter__band {
+  margin: var(--spacing-md) 0 var(--spacing-xs);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.deck-starter__band:first-of-type {
+  margin-top: var(--spacing-sm);
 }
 
 /* Ein echtes Bedienelement, kein Textlink: volle Fläche, sichtbarer Rand,
@@ -96,10 +114,27 @@
 
 .deck-starter__section-label {
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  text-align: left;
 }
 
-/* Die Zahl ist das Versprechen: so viele Karten bekommst du. */
+/* Was in der Gruppe steckt — ein halber Satz, damit „Schultergelenk" gegen
+   „Schultverguertel" unterscheidbar bleibt, ohne dass man sie erst anklickt. */
+.deck-starter__section-hint {
+  font-size: 11.5px;
+  font-weight: 400;
+  color: var(--text-tertiary);
+}
+
+/* Die Zahl ist das Versprechen: so viele Karten bekommst du — und weil 26 Muskeln in
+   mehreren Gruppen liegen, ist es die Zahl der NEUEN Karten, nicht die Mitgliederzahl. */
 .deck-starter__count {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.2;
   flex: none;
   min-width: 30px;
   padding: 2px 8px;
@@ -116,4 +151,25 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--spacing-sm);
+}
+
+/* „+5 da" — was von dieser Gruppe schon im Kasten liegt. Leiser als die Zahl darueber:
+   Es ist eine Auskunft, keine Handlung. */
+.deck-starter__count-note {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-faint);
+  text-transform: none;
+}
+
+/* Eine Gruppe, die vollstaendig im Kasten liegt, ist kein toter Knopf, sondern eine
+   erledigte Aufgabe — sie bleibt lesbar, statt auf Grau zu verblassen. */
+.deck-starter__section:disabled {
+  cursor: default;
+  opacity: 1;
+  border-style: dashed;
+}
+.deck-starter__section:disabled .deck-starter__section-label {
+  color: var(--text-tertiary);
 }

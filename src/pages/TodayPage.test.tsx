@@ -72,7 +72,7 @@ describe('TodayPage — jeder Zustand hat genau einen Primärbutton', () => {
       '/anleitung',
     )
     expect(screen.getByRole('heading', { name: /Nach Kursabschnitt/i })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: /Nach Bereich/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /Nach Gelenk/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /Einzeln aussuchen/i })).toBeInTheDocument()
   })
 

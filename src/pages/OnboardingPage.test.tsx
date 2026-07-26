@@ -72,14 +72,17 @@ describe('Onboarding — zwei Fragen, dann WÄHLT DER SCHÜLER (ADR 0009)', () =
 
     expect(screen.getByRole('link', { name: /So lernst du hier/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /Nach Kursabschnitt/i })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: /Nach Bereich/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /Nach Gelenk/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /Einzeln aussuchen/i })).toBeInTheDocument()
   })
 
   /* Solange `curriculum.json` leer ist, ist „Nach Kursabschnitt" ein Platzhalter — und der
      stand als ERSTE und groesste Karte da. Die allererste Wahl einer Schuelerin fuehrte damit
-     ins Leere, waehrend der Weg, der traegt (Bereich), unter der Falz lag. Der Platzhalter
-     bleibt (ADR 0009), aber er steht hinten, bis es Abschnitte gibt. */
+     ins Leere, waehrend der Weg, der traegt, unter der Falz lag. Der Platzhalter bleibt
+     (ADR 0009), aber er steht hinten, bis es Abschnitte gibt.
+     Seit 2026-07-26 heisst dieser Weg „Nach Gelenk" (11 Gruppen mit 8–26 Karten) statt
+     „Nach Bereich" (4 Regionen mit bis zu 53 Karten — die kippten den frischen Kasten
+     sofort in den `backlog`-Zustand). */
   it('ohne Kursabschnitte steht der benutzbare Weg VOR dem Platzhalter', () => {
     renderIn(<TodayPage />)
     fireEvent.click(screen.getByRole('button', { name: /Physiotherapie/ }))
@@ -88,9 +91,9 @@ describe('Onboarding — zwei Fragen, dann WÄHLT DER SCHÜLER (ADR 0009)', () =
     const wege = screen
       .getAllByRole('heading', { level: 3 })
       .map((h) => h.textContent?.trim())
-      .filter((t) => t && /Kursabschnitt|Bereich|Einzeln/.test(t))
+      .filter((t) => t && /Kursabschnitt|Gelenk|Einzeln/.test(t))
 
-    expect(wege).toEqual(['Nach Bereich', 'Nach Kursabschnitt', 'Einzeln aussuchen'])
+    expect(wege).toEqual(['Nach Gelenk', 'Nach Kursabschnitt', 'Einzeln aussuchen'])
     // Der Platzhalter ist NICHT verschwunden — er erklaert weiter, was hier einmal steht.
     expect(screen.getByText(/Noch keine Kursabschnitte hinterlegt/i)).toBeInTheDocument()
   })

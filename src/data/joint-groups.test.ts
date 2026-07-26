@@ -1,0 +1,167 @@
+import { describe, expect, it } from 'vitest';
+import {
+  JOINT_GROUP_DEFS,
+  getJointGroup,
+  getJointGroups,
+  neueKarten,
+  orderedJointGroups,
+} from './joint-groups';
+import { CARD_MUSCLES, getMuscles } from './loader';
+import { PROFESSIONS } from './profession';
+
+/* Gegen den ECHTEN Bestand, nicht gegen Fixtures (AGENTS.md): Eine Gruppendefinition ist eine
+   Behauptung ÜBER die Daten — ein Fixture wäre per Konstruktion passend und verstecke genau
+   den Tippfehler, den diese Tests fangen sollen. */
+
+describe('Gelenkgruppen — Abdeckung', () => {
+  it('JEDE Karte liegt in mindestens einer Gruppe', () => {
+    /* Das ist die Invariante, die die Gruppenzahl bestimmt hat: Mit den ursprünglich
+       gewünschten 9 Gruppen fielen 19 Karten heraus — darunter Zungenbein und Kehlkopf, also
+       das Fachgebiet der Logopädie. Fällt dieser Test, ist ein Muskel über den Gelenk-Weg
+       nicht mehr lernbar, und niemand würde es an der Oberfläche sehen. */
+    const drin = new Set(getJointGroups().flatMap((g) => g.muscles));
+    const ohneHeimat = CARD_MUSCLES.map((m) => m.nameLatin).filter((n) => !drin.has(n));
+    expect(ohneHeimat).toEqual([]);
+  });
+
+  it('keine Gruppe ist leer', () => {
+    for (const g of getJointGroups()) {
+      expect(g.muscles.length, `Gruppe „${g.label}" ist leer`).toBeGreaterThan(0);
+    }
+  });
+
+  it('jedes genannte Gelenk-Etikett kommt im Bestand wirklich vor', () => {
+    /* Ein Tippfehler in einem Etikett („Art. cubitii") erzeugt keinen Fehler, sondern eine
+       stillschweigend KLEINERE Gruppe. Genau das fällt sonst niemandem auf. */
+    const echte = new Set(getMuscles().flatMap((m) => m.joints));
+    const tote = JOINT_GROUP_DEFS.flatMap((g) =>
+      g.joints.filter((j) => !echte.has(j)).map((j) => `${g.id}: ${j}`),
+    );
+    expect(tote).toEqual([]);
+  });
+
+  it('jede genannte Subregion kommt im Bestand wirklich vor', () => {
+    const echte = new Set(getMuscles().map((m) => m.subregion));
+    const tote = JOINT_GROUP_DEFS.flatMap((g) =>
+      g.subregions.filter((s) => !echte.has(s)).map((s) => `${g.id}: ${s}`),
+    );
+    expect(tote).toEqual([]);
+  });
+
+  it('die Kennungen sind eindeutig', () => {
+    const ids = JOINT_GROUP_DEFS.map((g) => g.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+});
+
+describe('Gelenkgruppen — Zuschnitt', () => {
+  it('jede Gruppe passt in eine überschaubare Zahl von Sitzungen', () => {
+    /* Der Grund für die Gelenkgruppen: „Obere Extremität" legte 53 Karten an — mehr als das
+       Anderhalbfache der Tagesdosis (20), also stufte `getTodayPlan` den frischen Kasten
+       sofort als `backlog` ein. Bleibt eine Gruppe unter 30, passiert das nicht mehr. */
+    for (const g of getJointGroups()) {
+      expect(g.muscles.length, `„${g.label}" ist mit ${g.muscles.length} Karten zu groß`).toBeLessThan(30);
+    }
+  });
+
+  it('ein Muskel darf in mehreren Gruppen liegen — M. biceps brachii ist der Beleg', () => {
+    /* Many-to-many, keine Partition (dieselbe Regel wie bei den funktionellen Gruppen, 9a).
+       Der Biceps überspannt Ellenbogen UND Schultergelenk; wer ihn nur einmal einsortiert,
+       macht eine der beiden Gruppen fachlich falsch. */
+    const drin = getJointGroups()
+      .filter((g) => g.muscles.includes('M. biceps brachii'))
+      .map((g) => g.id);
+    expect(drin).toContain('ellenbogen');
+    expect(drin).toContain('schultergelenk');
+  });
+
+  it('die tiefen Rückenmuskeln liegen an der Wirbelsäule, NICHT im Gesicht', () => {
+    /* Die Falle, die diese Datei fast gekostet hätte: Das Gelenk-Etikett `Kopf` klingt nach
+       Kopfmuskulatur, trägt aber `M. semispinalis`, `Mm. longissimi` und `Mm. splenii` —
+       Nackenstrecker. Wer `Kopf` naiv zu „Mimik & Kopf" nimmt, legt sie ins Gesicht. */
+    const wirbel = getJointGroup('wirbelsaeule')!;
+    const mimik = getJointGroup('mimik-kopf')!;
+    for (const name of ['M. semispinalis', 'Mm. longissimi', 'Mm. splenii']) {
+      expect(wirbel.muscles, `${name} gehört zur Wirbelsäule`).toContain(name);
+      expect(mimik.muscles, `${name} gehört NICHT ins Gesicht`).not.toContain(name);
+    }
+  });
+
+  it('M. psoas minor liegt an der Hüfte, nicht im Beckenboden', () => {
+    /* Das Etikett `Becken` trägt der Psoas minor UND die vier Beckenbodenmuskeln. Darum
+       kommt „Bauchwand & Beckenboden" über die Subregion, nicht über `Becken`. */
+    expect(getJointGroup('hueftgelenk')!.muscles).toContain('M. psoas minor');
+    expect(getJointGroup('bauchwand-beckenboden')!.muscles).not.toContain('M. psoas minor');
+  });
+
+  it('fängt auch die Muskeln ohne jedes Gelenk-Etikett', () => {
+    /* `M. palmaris brevis` und `M. quadratus plantae` haben ein LEERES `joints`-Feld. Ohne
+       den Subregion-Weg wären sie über Gelenkgruppen unerreichbar. */
+    expect(getJointGroup('hand')!.muscles).toContain('M. palmaris brevis');
+    expect(getJointGroup('sprunggelenk-fuss')!.muscles).toContain('M. quadratus plantae');
+  });
+
+  it('die Logopädie-Gruppe trägt Zungenbein UND Kehlkopf', () => {
+    const g = getJointGroup('zungenbein-kehlkopf')!;
+    expect(g.muscles).toContain('M. sternohyoideus');
+    expect(g.muscles).toContain('M. thyrohyoideus');
+    expect(g.muscles.length).toBeGreaterThanOrEqual(6);
+  });
+
+  it('Mitglieder sind nach nameLatin entdoppelt (ADR 0002 §2)', () => {
+    /* Fünf Namen gibt es zweimal (Hand und Fuß) — das ist je EINE Karte. Ohne die
+       Entdopplung verspräche der Knopf mehr Karten, als `addCards` anlegt. */
+    for (const g of getJointGroups()) {
+      expect(new Set(g.muscles).size, `„${g.label}" enthält Dubletten`).toBe(g.muscles.length);
+    }
+  });
+});
+
+describe('Gelenkgruppen — Vorsortierung nach Beruf', () => {
+  it('sortiert, versteckt aber NICHTS', () => {
+    /* Entscheidung 2026-07-26: Ein Ergo, der die Hüfte lernen will, soll sie nicht suchen
+       müssen. Fällt dieser Test, ist eine Gruppe für einen Beruf unerreichbar geworden. */
+    const alle = getJointGroups().length;
+    for (const p of PROFESSIONS) {
+      const { typisch, weitere } = orderedJointGroups(p);
+      expect(typisch.length + weitere.length, `${p} erreicht nicht alle Gruppen`).toBe(alle);
+      const ids = [...typisch, ...weitere].map((g) => g.id);
+      expect(new Set(ids).size, `${p}: Gruppe doppelt`).toBe(alle);
+    }
+  });
+
+  it('jeder Beruf bekommt sein eigenes Fach zuerst', () => {
+    expect(orderedJointGroups('ergo').typisch[0].id).toBe('hand');
+    expect(orderedJointGroups('physio').typisch[0].id).toBe('hueftgelenk');
+    expect(orderedJointGroups('logo').typisch.map((g) => g.id)).toContain('zungenbein-kehlkopf');
+  });
+
+  it('ohne Profil gibt es keine Vorsortierung, nur die anatomische Ordnung', () => {
+    const { typisch, weitere } = orderedJointGroups(null);
+    expect(typisch).toEqual([]);
+    expect(weitere.map((g) => g.id)).toEqual(JOINT_GROUP_DEFS.map((g) => g.id));
+  });
+});
+
+describe('neueKarten — die Zahl am Knopf ist ein Versprechen', () => {
+  it('zählt nur, was noch NICHT im Kasten liegt', () => {
+    /* Weil Muskeln in mehreren Gruppen liegen, ist die Mitgliederzahl nach dem ersten Klick
+       nicht mehr die Zahl der neuen Karten. „Ellenbogen 17" + „Schultergelenk 11" ergeben
+       nicht 28 Karten — und ein Knopf, der 11 verspricht und 6 anlegt, lügt. */
+    const ellenbogen = getJointGroup('ellenbogen')!;
+    const schulter = getJointGroup('schultergelenk')!;
+
+    expect(neueKarten(ellenbogen, {})).toBe(ellenbogen.muscles.length);
+
+    // Nach dem Ellenbogen liegen die Zweigelenker schon im Kasten.
+    const nachEllenbogen = Object.fromEntries(ellenbogen.muscles.map((n) => [n, {}]));
+    const neu = neueKarten(schulter, nachEllenbogen);
+    expect(neu).toBeLessThan(schulter.muscles.length);
+    expect(neu).toBe(schulter.muscles.filter((n) => !ellenbogen.muscles.includes(n)).length);
+  });
+
+  it('eine vollständig vorhandene Gruppe legt 0 neue Karten an', () => {
+    const g = getJointGroup('kniegelenk')!;
+    expect(neueKarten(g, Object.fromEntries(g.muscles.map((n) => [n, {}])))).toBe(0);
+  });
+});
