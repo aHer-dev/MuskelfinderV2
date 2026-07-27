@@ -7,6 +7,45 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Changed
+- **Die Fachfelder stehen überall gleich: Ursprung → Ansatz → Funktion →
+  Innervation → Segmente** (2026-07-27, `src/data/muscle-fields.ts`).
+
+  Dieselben fünf Felder standen an **drei** Stellen in **drei** Reihenfolgen:
+
+  | Anzeige | vorher |
+  |---|---|
+  | Detailseite | Ursprung · Ansatz · Funktion · Innervation · Segmente |
+  | Lernkarten-Rückseite | Funktion · Innervation · Segmente · Ursprung · Ansatz |
+  | Quiz-Vergleichskarte | Funktion · Ursprung · Ansatz · Innervation · (Lage) |
+
+  Jede Liste war für sich plausibel, und keine fiel je auf, weil kein Test zwei
+  davon nebeneinanderstellte. Für eine **Lern**-App ist das der teuerste Fehler
+  dieser Sorte, und zwar nicht aus Ordnungsliebe: Wer auswendig lernt, prägt sich
+  die **Position** mit ein. Wechselt die Reihenfolge zwischen Nachschlagen,
+  Üben und Abfragen, sucht der Lernende jedes Mal an der falschen Stelle.
+
+  Die Reihenfolge liegt jetzt **einmal** in `FACHFELDER` und folgt der
+  anatomischen Beschreibung: wo fängt der Muskel an, wo hört er auf, was tut er
+  deshalb, woher kommt der Befehl, aus welcher Rückenmarkshöhe. Alle drei
+  Anzeigen leiten sich daraus ab. Die Stern-Regel für ungeprüfte Segmente stand
+  dabei ebenfalls doppelt und ist mitgewandert — sonst hätte das nächste
+  Umsortieren sie wieder auseinandergezogen.
+
+  `folgtReihenfolge()` prüft als **Teilfolge**, nicht auf Gleichheit: Eine Anzeige
+  darf Felder auslassen (leere Segmente bei 28 von 150) und eigene anhängen
+  (Gelenke, TA-Code, Lage). Verboten ist nur das Vertauschen zweier Fachfelder.
+
+  Geprüft wird am **gerenderten DOM** aller 150 Muskeln, nicht an der Datenfunktion
+  — was zählt, ist was der Lernende sieht. Zwei Gegenproben:
+  **(A)** Reihenfolge in der Quelle zurückgedreht → 12 Fehlschläge in 5 Dateien.
+  **(B)** die wichtigere: nur die Quiz-Karte tanzt aus der Reihe, die Quelle bleibt
+  richtig → 3 Fehlschläge mit Fundstelle (`Funktion · Ursprung · Ansatz …`).
+  Ohne (B) hätte die Prüfung nur Änderungen an sich selbst bemerkt.
+
+  `ExplainSheet` hatte bisher **keinen** Test und hat jetzt einen (6 Fälle).
+  Die CSV-Spalten führten die Reihenfolge schon richtig; dort steht nun ein
+  Verweis, damit das nicht auseinanderläuft.
+
 - **Erzeugte Prüf-Tabellen liegen nicht mehr im Repo** (2026-07-27, `.gitignore`,
   `scripts/check-data.mjs`).
 
