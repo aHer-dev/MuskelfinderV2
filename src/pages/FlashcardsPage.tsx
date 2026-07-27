@@ -292,9 +292,16 @@ function SetupScreen({
       {dueForScope === 0 ? (
         <EmptySelection filter={filter} scope={scope} onFilter={onFilter} onScope={onScope} />
       ) : (
-        <button type="button" className="btn btn--primary btn--block" onClick={onStart}>
-          Lernen starten
-        </button>
+        /* Derselbe Griff wie bei `.fc-actions` in der Sitzung, und aus demselben Grund:
+           Auf 375 × 667 lag „Lernen starten" bei y=740 — 73 px UNTER der Falz. Der
+           Lernende sieht die Fälligkeitszahl, drei Auswahlfelder und keinen Knopf.
+           Die Reihenfolge im DOM bleibt (Einstellungen, dann Aktion), nur die Aktion
+           klebt auf dem Handy sichtbar am Rand. */
+        <div className="fc-setup__start">
+          <button type="button" className="btn btn--primary btn--block" onClick={onStart}>
+            Lernen starten
+          </button>
+        </div>
       )}
 
       <div className="fc-setup__section">

@@ -61,7 +61,12 @@
 
 @media (max-width: 860px) {
   .detail__grid {
-    grid-template-columns: 1fr;
+    /* `minmax(0, 1fr)` statt `1fr`: `1fr` ist `minmax(auto, 1fr)`, und `auto` heisst
+       min-content — die Spalte kann dann nicht schmaler werden als das laengste
+       unteilbare Wort. Bei 200 % Textzoom sprengte „Tuberculum supraglenoidale" die
+       Spalte auf 370 px in einem 343 px breiten Eltern. Ausgerechnet diese App ist
+       voll solcher Woerter. */
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

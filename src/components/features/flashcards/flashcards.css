@@ -384,6 +384,10 @@
   flex-direction: column;
   gap: var(--spacing-xs);
   flex: 1 1 200px;
+  /* Flex-Kinder haben `min-width: auto` und koennen deshalb nicht unter ihren
+     Inhalt schrumpfen. Bei 200 % Textzoom zog die laengste Option des Auswahlfelds
+     („Alle faelligen Karten") das Feld auf 414 px in einem 343 px breiten Eltern. */
+  min-width: 0;
 }
 .fc-field__label {
   font-family: var(--font-ui);
@@ -404,7 +408,7 @@
   background: var(--field-bg);
   color: var(--text-primary);
   font-family: var(--font-ui);
-  font-size: 14px;
+  /* Keine eigene Groesse: 16 px kommen aus base.css. Kleiner waere ein iOS-Zoom. */
 }
 .fc-select:hover {
   border-color: var(--hairline-strong);
@@ -528,6 +532,26 @@
 
 @media (max-width: 1023.98px) {
   .fc-actions {
+    position: sticky;
+    bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+    z-index: var(--z-base);
+    padding: var(--spacing-sm);
+    background: var(--glass-panel);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--glass-shadow);
+  }
+}
+
+/* Der Startknopf der Einrichtung hatte dasselbe Problem wie die Sitzungs-Leiste
+   darunter, nur ungeloest: Auf 375 × 667 lag er bei y=740, also 73 px unter der Falz —
+   drei gestapelte Auswahlfelder (227 px) und die Faelligkeitszahl (110 px) schoben ihn
+   hinaus. Gleiche Loesung, gleiche 96-px-Reserve wie `.fc-actions`, damit er nicht auf
+   der Tab-Leiste liegt. Ueber 1024 px gibt es keine Tab-Leiste und der Knopf passt. */
+@media (max-width: 1023.98px) {
+  .fc-setup__start {
     position: sticky;
     bottom: calc(96px + env(safe-area-inset-bottom, 0px));
     z-index: var(--z-base);

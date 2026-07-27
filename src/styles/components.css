@@ -173,9 +173,18 @@
 .sheet__panel {
   width: 100%;
   max-width: 640px;
-  max-height: 85vh;
+  /* `dvh`, nicht `vh`: Auf dem Handy zaehlt `vh` die Adressleiste mit, die sich beim
+     Scrollen ein- und ausfaehrt — das Sheet war dann zeitweise hoeher als der
+     sichtbare Bereich und sein Fussknopf lag unter der Leiste. `dvh` folgt dem
+     tatsaechlich sichtbaren Bereich. Der Rest der App nutzt schon `svh` (base.css),
+     hier war es nur nicht nachgezogen. */
+  max-height: 85dvh;
   display: flex;
   flex-direction: column;
+  /* Ohne `contain` scrollt ein Wisch, der im Sheet beginnt und dessen Ende erreicht,
+     die Seite DAHINTER weiter (Scroll-Verkettung). Auf dem Handy wirkt das wie ein
+     Fehler: Man wischt im Filter und die Trefferliste darunter wandert. */
+  overscroll-behavior: contain;
   padding: var(--spacing-sm) var(--spacing-md) calc(var(--spacing-lg) + env(safe-area-inset-bottom, 0px));
   background: var(--glass-panel);
   -webkit-backdrop-filter: var(--glass-blur);
@@ -286,7 +295,10 @@
 }
 
 .progress-ring__label {
-  font-size: 0.55rem;
+  /* 0.55rem waren 8.8 px — die kleinste Schrift der App und ausgerechnet die
+     Beschriftung einer Kennzahl. Auf einem Handy in Bewegung wird das geraten, nicht
+     gelesen. 0.7rem = 11.2 px, die Untergrenze, die `check:oberflaeche` erzwingt. */
+  font-size: 0.7rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-faint);

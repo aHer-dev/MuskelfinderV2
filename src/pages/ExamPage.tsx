@@ -287,9 +287,14 @@ export function ExamPage() {
             </li>
           </ul>
 
-          <button type="button" className="btn btn--primary btn--block" onClick={begin}>
-            Prüfung starten
-          </button>
+          {/* Klebt auf dem Handy, wie der Startknopf der Lernkarten und die
+              Sitzungs-Leiste: Auf 320 × 568 lag er bei y=659, also unter der Falz —
+              die drei Regelzeilen darueber schoben ihn hinaus. */}
+          <div className="exam-intro__start">
+            <button type="button" className="btn btn--primary btn--block" onClick={begin}>
+              Prüfung starten
+            </button>
+          </div>
         </div>
       )}
     </section>

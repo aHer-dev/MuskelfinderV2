@@ -64,6 +64,10 @@
 
 .onboarding__choice-meta {
   flex: 1;
+  /* `flex: 1` setzt `min-width` NICHT auf 0 — das Kind bleibt bei `auto` und damit
+     mindestens so breit wie sein laengstes Wort. Bei 200 % schob „Kau-, Zungenbein-
+     und Kehlkopfmuskulatur" die Auswahlkarte ueber den Rand. */
+  min-width: 0;
   font-family: var(--font-ui);
   font-size: 0.82rem;
   color: var(--text-tertiary);

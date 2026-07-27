@@ -149,16 +149,30 @@
 }
 
 .today__gap {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--spacing-xs) var(--spacing-sm);
-  padding: var(--spacing-sm) 0;
   border-bottom: 1px solid var(--hairline);
 }
 
 .today__gap:last-child {
   border-bottom: none;
+}
+
+/* Die ganze Zeile ist der Link — deshalb traegt SIE die Trefferflaeche (44 px, die
+   Projektregel unter 1024 px), nicht der Name darin. `align-items: center` statt
+   `baseline`: Sobald die Zeile umbricht, saehen an der Grundlinie ausgerichtete
+   Teile bei unterschiedlicher Schriftgroesse verrutscht aus. */
+.today__gap-link {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-xs) var(--spacing-sm);
+  min-height: 44px;
+  padding: var(--spacing-xs) 0;
+  text-decoration: none;
+  color: inherit;
+}
+
+.today__gap-link:hover .today__gap-name {
+  text-decoration: underline;
 }
 
 .today__gap-name {
@@ -168,11 +182,6 @@
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--text-primary);
-  text-decoration: none;
-}
-
-.today__gap-name:hover {
-  text-decoration: underline;
 }
 
 .today__gap-count {
