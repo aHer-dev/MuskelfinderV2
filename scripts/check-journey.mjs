@@ -28,7 +28,11 @@ const pruefe = (bedingung, text) => {
   if (!bedingung) fehler.push(text);
 };
 
-await withApp(async ({ page, goto, errors, BASE }) => {
+/* `BASE` wird hier NICHT mehr entgegengenommen: Seit der Harness die base aus
+   `dist/index.html` ableitet (`scripts/lib/dist-base.mjs`), baut `goto()` die URL
+   selbst zusammen — dieses Skript braucht sie nicht zu kennen. Sie stand nur noch
+   als unbenutzter Parameter da und wurde bei jedem CI-Lauf angemahnt. */
+await withApp(async ({ page, goto, errors }) => {
   const L = (s = '') => process.stdout.write(s + '\n');
   L('\n════════ check:wege (frischer Browser) ════════');
 

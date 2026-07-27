@@ -90,6 +90,11 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   „Physiotherapie" bei 32 px **274 px breit in einem 288-px-Knopf** und schob Beschreibung
   und Pfeil hinaus — jetzt darf die Zeile umbrechen.
 
+- **Unbenutzte `BASE` in `check-journey.mjs` entfernt** — ein Rest der
+  Base-Ableitung: Seit der Harness die base aus `dist/index.html` liest, baut `goto()`
+  die URL selbst zusammen. Der Parameter stand nur noch da und wurde bei jedem CI-Lauf
+  angemahnt. Gegengeprobt: wieder eingesetzt → oxlint warnt, entfernt → still.
+
 ### Neue Prüfregeln (`check:oberflaeche`)
 `IOS-ZOOM` · `UEBERLAUF-ZOOM` (200 % Textzoom, alle Routen) · `START-UNTER-FALZ` (nur
 auf den vier Seiten, deren Zweck das Starten ist — auf `/anleitung` gehört „Zurück zu
