@@ -243,6 +243,17 @@
   line-height: 1.45;
 }
 
+/* Stern-Legende: erscheint nur, wenn oben ein Wert die Marke traegt. Zurueckhaltend
+   gesetzt — sie soll den gelernten Inhalt nicht ueberstimmen, aber lesbar bleiben
+   (deshalb `--text-muted` und nicht `--text-faint` wie die Feldnamen). */
+.flashcard__note {
+  margin-top: var(--spacing-sm);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+  text-align: left;
+}
+
 /* ---- Leitner-Fächer --------------------------------------------------- */
 .leitner-boxes {
   display: grid;

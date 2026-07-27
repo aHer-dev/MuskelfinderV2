@@ -606,6 +606,34 @@ Stellen in drei Reihenfolgen (Detailseite / Lernkarten-Rueckseite / Quiz-Verglei
 - `scripts/export-csv.mjs` fuehrt dieselbe Reihenfolge in den Spalten (war schon richtig,
   traegt jetzt einen Verweis). `ExplainSheet` hatte keinen Test und hat jetzt einen.
 
+## ⚠️ EIN NAME, EINE STELLE (2026-07-27) — `mode-labels.ts`, `muscle-fields.ts`
+Nachpruefung der Reihenfolge-Arbeit: Es ging nicht um Ordnungsliebe, sondern es lagen **drei
+Klassen derselben Doppelung** vor. Was daraus hart gilt:
+
+- **Modusnamen: `src/data/mode-labels.ts` ist die einzige Quelle.** Vorher vier Stellen, zwei
+  davon zeichengleich (`MODE_CATEGORY` in `quiz.ts`, `QUIZ_MODE_LABELS` in `stats.ts`).
+  `exam.ts` liest die sechs MC-Formen von dort und besitzt nur `recall` selbst; `QuizPage`
+  liest die konkreten Richtungen von dort.
+- **Absichtliche Ausnahme, festgehalten durch einen Test:** „Gemischt" und „Starten" in
+  `QuizPage` bleiben eigene Knopftexte. Sie sind keine Modusnamen, sondern Beschriftungen im
+  Zusammenhang ihrer Karte. Unter „Ursprung & Ansatz" ist „Gemischt" verstaendlich,
+  „Ursprung ↔ Ansatz" waere umstaendlich. **Einheitlichkeit ist hier der Fehler**, und der
+  Test verhindert, dass jemand das „aufraeumt".
+- **`check-journey.mjs` behaelt seine Modus-Liste**: Sie ist eine Auswahl (6 von 11 werden
+  begangen), keine zweite Fassung der Tabelle. Weicht ein Label ab, faellt die Pruefung
+  ohnehin — sie nennt jetzt die Fundstelle.
+- **Der Stern brauchte auf der Lernkarte eine Legende** (Defekt, behoben). Die Detailseite
+  erklaerte ihn, die Karte nicht. Auf der Karte ist das teurer: dort wird der Wert
+  EINGEPRAEGT, ein ungeprueftes Datum ohne Hinweis wird als gesichert gelernt. 20 Muskeln
+  betroffen. Text und Bedingung stehen in `muscle-fields.ts`, damit beide woertlich dasselbe
+  sagen.
+- **`LabeledValue`** (`src/types/index.ts`) ersetzt `Fact`/`DataRow`/`Row` als Struktur; die
+  Namen bleiben als Aliase, weil sie am Aufruf mehr sagen. `nichtLeer()` ersetzt den dreifach
+  wiederholten Leer-Filter.
+- **Regel fuer kuenftige Arbeit:** Bevor eine Beschriftung an einer zweiten Stelle
+  hingeschrieben wird — pruefen, ob sie schon existiert. Zwei uebereinstimmende Kopien sind
+  kein Beweis, dass es gutgeht, sondern nur, dass es noch niemand angefasst hat.
+
 ## Kanonische Quellen
 - V1-Original: `../Muskelfinder` (`/home/pepperboy8/Documents/Muskelfinder`)
 - V2-Repo: `Muskelfinder-V2`

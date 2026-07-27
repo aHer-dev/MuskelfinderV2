@@ -7,6 +7,7 @@ import { QuizTimer } from '../components/features/quiz/QuizTimer';
 import { Icon } from '../components/ui/Icon';
 import { getRegions, getMuscles } from '../data';
 import { regionLabel } from '../data/labels';
+import { QUIZ_MODE_LABELS } from '../data/mode-labels';
 import {
   readQuizHandoff,
   QUIZ_SCOPES,
@@ -31,14 +32,23 @@ interface QuizFamily {
   directions: Array<{ mode: QuizMode; label: string }>;
 }
 
-/** Quiz-Typen wie in V1 (`quiz.html`): je Karte Richtungs-Buttons inkl. „Gemischt". */
+/**
+ * Quiz-Typen wie in V1 (`quiz.html`): je Karte Richtungs-Buttons inkl. „Gemischt".
+ *
+ * Die konkreten Richtungen tragen die Namen aus `data/mode-labels.ts` — sie muessen
+ * mit Statistik und Prüfung übereinstimmen, sonst sieht dieselbe Übung nach zwei
+ * verschiedenen aus. **„Gemischt" und „Starten" bleiben absichtlich hier:** Das sind
+ * keine Modusnamen, sondern Knopfbeschriftungen im Zusammenhang ihrer Karte. Unter
+ * „Ursprung & Ansatz" ist „Gemischt" verständlich; „Ursprung ↔ Ansatz" wäre dort nur
+ * umständlich. Ein gemeinsamer Name wäre hier der Fehler.
+ */
 const FAMILIES: QuizFamily[] = [
   {
     title: 'Bildzuordnung',
     desc: 'Erkenne den Muskel am Bild — oder das Bild zum Namen.',
     directions: [
-      { mode: 'image', label: 'Bild → Muskel' },
-      { mode: 'name-image', label: 'Name → Bild' },
+      { mode: 'image', label: QUIZ_MODE_LABELS.image },
+      { mode: 'name-image', label: QUIZ_MODE_LABELS['name-image'] },
       { mode: 'image-mixed', label: 'Gemischt' },
     ],
   },
@@ -46,8 +56,8 @@ const FAMILIES: QuizFamily[] = [
     title: 'Ursprung & Ansatz',
     desc: 'Ordne Ansätze und Ursprünge einander zu.',
     directions: [
-      { mode: 'origin-insertion', label: 'Ursprung → Ansatz' },
-      { mode: 'insertion-origin', label: 'Ansatz → Ursprung' },
+      { mode: 'origin-insertion', label: QUIZ_MODE_LABELS['origin-insertion'] },
+      { mode: 'insertion-origin', label: QUIZ_MODE_LABELS['insertion-origin'] },
       { mode: 'origin-insertion-mixed', label: 'Gemischt' },
     ],
   },
@@ -55,8 +65,8 @@ const FAMILIES: QuizFamily[] = [
     title: 'Funktions-Quiz',
     desc: 'Ordne Muskeln ihren Funktionen zu — oder umgekehrt.',
     directions: [
-      { mode: 'function-to-muscle', label: 'Funktion → Muskel' },
-      { mode: 'muscle-to-function', label: 'Muskel → Funktion' },
+      { mode: 'function-to-muscle', label: QUIZ_MODE_LABELS['function-to-muscle'] },
+      { mode: 'muscle-to-function', label: QUIZ_MODE_LABELS['muscle-to-function'] },
       { mode: 'function-mixed', label: 'Gemischt' },
     ],
   },

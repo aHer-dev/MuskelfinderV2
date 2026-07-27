@@ -53,6 +53,32 @@ export interface Fachfeld {
 export const UNGEPRUEFT_MARKE = ' *';
 
 /**
+ * Was der Stern bedeutet. Steht hier und nicht in den Anzeigen, weil ein Zeichen
+ * ohne Erklaerung kein Hinweis ist, sondern ein Raetsel — und weil zwei Fassungen
+ * derselben Erklaerung schlimmer waeren als eine.
+ */
+export const UNGEPRUEFT_ERKLAERUNG =
+  '* Dieser Wert ist nachgetragen und noch nicht im Lehrbuch gegengelesen.';
+
+/** Traegt eine dieser Beschriftungen die Ungeprueft-Marke? Dann braucht es die Legende. */
+export function brauchtLegende(labels: readonly string[]): boolean {
+  return labels.some((l) => l.endsWith(UNGEPRUEFT_MARKE));
+}
+
+/**
+ * Zeilen mit leerem Wert weglassen.
+ *
+ * Stand dreimal als `.filter((r) => r.value.trim() !== '')` im Code. Die Regel
+ * dahinter ist keine Formsache: Bei 28 von 150 Muskeln fehlen die Segmente, und
+ * ein Label ohne Wert liest sich wie ein Fehler der App, nicht wie eine Luecke im
+ * Bestand. Als benannte Funktion ist die Absicht am Aufruf sichtbar — und
+ * pruefbar.
+ */
+export function nichtLeer<T extends { value: string }>(zeilen: readonly T[]): T[] {
+  return zeilen.filter((z) => z.value.trim() !== '');
+}
+
+/**
  * Die fuenf Fachfelder in kanonischer Reihenfolge, Werte aus `quelle`.
  *
  * `quelle` ist absichtlich nur `Pick<…>` und nicht `Muscle`: Die Detailseite

@@ -1,10 +1,8 @@
-import { fachfelder } from '../../../data/muscle-fields';
-import type { Muscle } from '../../../types';
+import { fachfelder, nichtLeer } from '../../../data/muscle-fields';
+import type { LabeledValue, Muscle } from '../../../types';
 
-export interface Fact {
-  label: string;
-  value: string;
-}
+/** Ein Fakt der Kartenrueckseite. Alias auf `LabeledValue`. */
+export type Fact = LabeledValue;
 
 /* `UNGEPRUEFT_MARKE` wird durchgereicht, weil Tests und Legenden sie brauchen —
    definiert ist sie in `data/muscle-fields.ts`, zusammen mit der Regel, wann sie
@@ -21,7 +19,8 @@ export { UNGEPRUEFT_MARKE } from '../../../data/muscle-fields';
  * weil beim Auswendiglernen die Position mitgelernt wird.
  */
 export function facts(muscle: Muscle): Fact[] {
-  return fachfelder(muscle, muscle.segmentsUngeprueft === true)
-    .map(({ label, value }) => ({ label, value }))
-    .filter((f) => f.value.trim() !== '');
+  return nichtLeer(
+    fachfelder(muscle, muscle.segmentsUngeprueft === true)
+      .map(({ label, value }) => ({ label, value })),
+  );
 }

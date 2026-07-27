@@ -1,5 +1,6 @@
 import type { Muscle } from '../../../types';
 import { regionLabel } from '../../../data/labels';
+import { UNGEPRUEFT_ERKLAERUNG, brauchtLegende } from '../../../data/muscle-fields';
 import { facts } from './facts';
 
 interface FlashcardProps {
@@ -16,6 +17,8 @@ interface FlashcardProps {
  * springt dann ohne Animation um.
  */
 export function Flashcard({ muscle, revealed, onReveal }: FlashcardProps) {
+  /* Einmal berechnen: die Fakten und die Frage, ob die Stern-Legende dazugehoert. */
+  const rueckseite = facts(muscle);
   return (
     <button
       type="button"
@@ -39,13 +42,21 @@ export function Flashcard({ muscle, revealed, onReveal }: FlashcardProps) {
           </span>
 
           <dl className="flashcard__facts">
-            {facts(muscle).map(({ label, value }) => (
+            {rueckseite.map(({ label, value }) => (
               <div key={label}>
                 <dt>{label}</dt>
                 <dd>{value}</dd>
               </div>
             ))}
           </dl>
+
+          {/* Die Karte trug den Stern, erklaerte ihn aber nie — nur die Detailseite tat
+              das. Auf der Lernkarte ist das Versaeumnis teurer als dort: Hier wird der
+              Wert EINGEPRAEGT, und ein ungepruefter Wert ohne Hinweis wird als gesichert
+              gelernt. `<span>` und nicht `<p>`: Der Kartenkoerper ist ein <button>. */}
+          {brauchtLegende(rueckseite.map((f) => f.label)) && (
+            <span className="flashcard__note">{UNGEPRUEFT_ERKLAERUNG}</span>
+          )}
         </span>
       </span>
     </button>

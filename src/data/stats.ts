@@ -9,6 +9,7 @@
 import { MASTERED_FACH } from '../persistence/leitner';
 import { xpView, type XpView } from '../persistence/xp';
 import type { FlashcardCard, QuizSeriesSection } from '../persistence/types';
+import { modusLabel } from './mode-labels';
 import type { RegionId } from '../types';
 
 export interface CardBreakdown {
@@ -35,25 +36,6 @@ export interface QuizModeStat {
   answers: number;
   correct: number;
   accuracy: number;
-}
-
-/** Anzeige-Labels je Quiz-Modus; unbekannte (z. B. aus V1-Backups) fallen auf den Key zurück. */
-const QUIZ_MODE_LABELS: Record<string, string> = {
-  'function-to-muscle': 'Funktion → Muskel',
-  'muscle-to-function': 'Muskel → Funktion',
-  'function-mixed': 'Funktion ↔ Muskel',
-  innervation: 'Innervation',
-  'origin-insertion': 'Ursprung → Ansatz',
-  'insertion-origin': 'Ansatz → Ursprung',
-  'origin-insertion-mixed': 'Ursprung ↔ Ansatz',
-  image: 'Bild → Muskel',
-  'name-image': 'Name → Bild',
-  'image-mixed': 'Bild ↔ Name',
-  'group-odd-one-out': 'Funktionelle Gruppe',
-};
-
-function quizModeLabel(mode: string): string {
-  return QUIZ_MODE_LABELS[mode] ?? mode;
 }
 
 /** Meilensteine für gemeisterte Karten (V1). */
@@ -147,7 +129,7 @@ export function quizByMode(quizSeries: QuizSeriesSection): QuizModeStat[] {
   return [...acc.entries()]
     .map(([mode, a]) => ({
       mode,
-      label: quizModeLabel(mode),
+      label: modusLabel(mode),
       rounds: a.rounds,
       answers: a.answers,
       correct: a.correct,

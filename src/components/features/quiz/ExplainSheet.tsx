@@ -8,19 +8,18 @@
    ========================================================================= */
 
 import { regionLabel } from '../../../data/labels';
-import { fachfelder } from '../../../data/muscle-fields';
+import { fachfelder, nichtLeer } from '../../../data/muscle-fields';
 import type { FachfeldKey } from '../../../data/muscle-fields';
 import type { Explanation, ExplainAspect } from '../../../data/explain';
 import { Sheet } from '../../ui/Sheet';
-import type { Muscle } from '../../../types';
+import type { LabeledValue, Muscle } from '../../../types';
 
 function assetUrl(url: string): string {
   return `${import.meta.env.BASE_URL}${url}`;
 }
 
-interface Row {
-  label: string;
-  value: string;
+/** Vergleichszeile: eine `LabeledValue` plus der Aspekt, nach dem gefragt war. */
+interface Row extends LabeledValue {
   aspect: ExplainAspect;
 }
 
@@ -81,8 +80,7 @@ function CompareCard({
       )}
 
       <dl className="explain-card__rows">
-        {rows(muscle)
-          .filter((row) => row.value.trim() !== '')
+        {nichtLeer(rows(muscle))
           .map((row) => (
             <div
               key={row.label}

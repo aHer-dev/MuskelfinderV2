@@ -14,6 +14,11 @@
 
 import { withApp } from './checks/harness.mjs';
 
+/* Die sechs Modi, die dieser Durchlauf GEHT — eine Auswahl, keine zweite Fassung der
+   Tabelle: „Gemischt" und die Gruppenfrage bleiben absichtlich draussen, sie brauchen
+   je eigene Zusicherungen. Die Zeichenketten dienen als Klick-Ziel und muessen
+   deshalb zu `src/data/mode-labels.ts` passen. Weichen sie ab, faellt diese Pruefung
+   von selbst („Startknopf nicht gefunden") — dort steht dann auch, wo zu suchen ist. */
 const MODI = ['Bild → Muskel', 'Name → Bild', 'Ursprung → Ansatz', 'Ansatz → Ursprung',
               'Funktion → Muskel', 'Muskel → Funktion'];
 
@@ -277,7 +282,11 @@ await withApp(async ({ page, goto, errors, BASE }) => {
   for (const modus of MODI) {
     await goto('/quiz');
     const btn = page.locator('.quiz-dir-btn', { hasText: modus }).first();
-    if (!(await btn.count())) { pruefe(false, `${modus}: Startknopf nicht gefunden`); continue; }
+    if (!(await btn.count())) {
+      pruefe(false, `${modus}: Startknopf nicht gefunden — heisst der Modus in `
+        + 'src/data/mode-labels.ts noch so?');
+      continue;
+    }
     await btn.click();
     await page.waitForTimeout(600);
 
