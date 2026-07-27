@@ -19,6 +19,7 @@ import { checkAnswer, type AnswerCheck, type AnswerTarget } from './answer-check
 import { cardKey } from './card-key';
 import { explainWrongAnswer, type Explanation } from './explain';
 import { getMuscleById } from './loader';
+import { QUIZ_MODE_LABELS } from './mode-labels';
 import { createRng, eligibleFor, questionForMuscle, shuffle } from './quiz';
 import type { Muscle, QuizQuestion, RegionId } from '../types';
 
@@ -49,14 +50,19 @@ export type ExamForm =
   | 'insertion-origin'
   | 'image';
 
+/* Nur `recall` ist eigenes Pruefungs-Vokabular — es gibt im Quiz keinen Freitext.
+   Die sechs MC-Richtungen heissen genauso wie dort und kommen von dort: Stand die
+   Zeichenkette hier ein zweites Mal, hiesse dieselbe Uebung nach einer Umbenennung
+   in Quiz und Pruefung verschieden. Ausgeschrieben statt gefiltert, damit
+   TypeScript eine fehlende Form meldet, statt sie stillschweigend auszulassen. */
 export const EXAM_FORM_LABELS: Record<ExamForm, string> = {
   recall: 'Freier Abruf',
-  'function-to-muscle': 'Funktion → Muskel',
-  'muscle-to-function': 'Muskel → Funktion',
-  innervation: 'Innervation',
-  'origin-insertion': 'Ursprung → Ansatz',
-  'insertion-origin': 'Ansatz → Ursprung',
-  image: 'Bild → Muskel',
+  'function-to-muscle': QUIZ_MODE_LABELS['function-to-muscle'],
+  'muscle-to-function': QUIZ_MODE_LABELS['muscle-to-function'],
+  innervation: QUIZ_MODE_LABELS.innervation,
+  'origin-insertion': QUIZ_MODE_LABELS['origin-insertion'],
+  'insertion-origin': QUIZ_MODE_LABELS['insertion-origin'],
+  image: QUIZ_MODE_LABELS.image,
 };
 
 /** Wird reihum vergeben: 4 von 10 Fragen sind freier Abruf. */

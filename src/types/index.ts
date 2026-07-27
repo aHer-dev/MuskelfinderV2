@@ -246,3 +246,19 @@ export interface Collection {
 /* ---------- Theme ------------------------------------------------------- */
 
 export type Theme = 'light' | 'dark';
+
+/* ---------- Anzeige ----------------------------------------------------- */
+
+/**
+ * Eine Beschriftung/Wert-Zeile fuer Definitionslisten.
+ *
+ * Diese Form stand dreimal getrennt im Code (`Fact` in den Lernkarten, `DataRow`
+ * in der Detailseite, `Row` im Quiz-Sheet) — dreimal `{ label: string; value:
+ * string }`. Drei Namen fuer dieselbe Sache heisst: Wer eine erweitert, erweitert
+ * die anderen nicht mit. Die alten Namen bleiben als Aliase bestehen, weil sie am
+ * Ort des Aufrufs mehr sagen als `LabeledValue`.
+ */
+export interface LabeledValue {
+  label: string;
+  value: string;
+}

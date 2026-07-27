@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getMuscleById } from '../data';
 import { movementLabel, regionLabel } from '../data/labels';
-import { fachfelder } from '../data/muscle-fields';
+import { UNGEPRUEFT_ERKLAERUNG, brauchtLegende, fachfelder } from '../data/muscle-fields';
 import { groupsOf } from '../data/groups';
 import { isSupportedIn3D, threeDUrl } from '../data/threeD';
 import { DataList } from '../components/features/detail/DataList';
@@ -147,11 +147,10 @@ export function MuscleDetailPage() {
 
           {/* Der Stern braucht eine Erklaerung, sonst ist er nur ein Zeichen. Er steht
               nur da, wenn oben auch einer gesetzt wurde — eine Legende ohne Marke waere
-              eine Warnung ohne Anlass. */}
-          {rows.some((r) => r.label.endsWith(' *')) && (
-            <p className="detail-note">
-              * Dieser Wert ist nachgetragen und noch nicht im Lehrbuch gegengelesen.
-            </p>
+              eine Warnung ohne Anlass. Text und Bedingung kommen aus
+              `data/muscle-fields.ts`, damit die Lernkarte dasselbe sagt. */}
+          {brauchtLegende(rows.map((r) => r.label)) && (
+            <p className="detail-note">{UNGEPRUEFT_ERKLAERUNG}</p>
           )}
 
           {/* Der Name IST die Funktion — man muss ihn nur lesen koennen (8d). Das gehoert

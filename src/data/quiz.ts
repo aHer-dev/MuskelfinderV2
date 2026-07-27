@@ -7,6 +7,7 @@
    persistierte Serien-Statistik zu ADR 0002 kompatibel bleibt.
    ========================================================================= */
 
+import { QUIZ_MODE_LABELS, istQuizModus } from './mode-labels';
 import type { Muscle, QuizMode, QuizQuestion, RegionId } from '../types';
 
 /** Deterministischer PRNG (mulberry32) — für reproduzierbare Tests. */
@@ -114,19 +115,6 @@ function pickDistractors(
   return nearestFirst(unique, (c) => byId.get(c.muscleId), target, rng).slice(0, n);
 }
 
-const MODE_CATEGORY: Record<QuizMode, string> = {
-  'function-to-muscle': 'Funktion → Muskel',
-  'muscle-to-function': 'Muskel → Funktion',
-  'function-mixed': 'Funktion ↔ Muskel',
-  innervation: 'Innervation',
-  'origin-insertion': 'Ursprung → Ansatz',
-  'insertion-origin': 'Ansatz → Ursprung',
-  'origin-insertion-mixed': 'Ursprung ↔ Ansatz',
-  image: 'Bild → Muskel',
-  'name-image': 'Name → Bild',
-  'image-mixed': 'Bild ↔ Name',
-  'group-odd-one-out': 'Funktionelle Gruppe',
-};
 
 /** „Gemischt"-Modi lösen je Frage zufällig auf eine ihrer konkreten Richtungen auf. */
 const MIXED_SUBMODES: Partial<Record<QuizMode, QuizMode[]>> = {
@@ -136,9 +124,7 @@ const MIXED_SUBMODES: Partial<Record<QuizMode, QuizMode[]>> = {
 };
 
 /** Bekannter Quizmodus? V1-Backups können Serien-Keys enthalten, die es heute nicht gibt. */
-export function isQuizMode(value: unknown): value is QuizMode {
-  return typeof value === 'string' && Object.hasOwn(MODE_CATEGORY, value);
-}
+export const isQuizMode = istQuizModus;
 
 /**
  * Router-State, mit dem die Statistik (8c) direkt in einen Modus springt — dasselbe
@@ -399,7 +385,7 @@ function textQuestion(
     id: qid,
     mode: displayMode,
     concreteMode,
-    category: MODE_CATEGORY[concreteMode], // konkrete Richtung anzeigen (auch in „Gemischt")
+    category: QUIZ_MODE_LABELS[concreteMode], // konkrete Richtung anzeigen (auch in „Gemischt")
     muscleId: muscle.id,
     prompt: spec.prompt,
     imageUrl: spec.imageUrl,
@@ -451,7 +437,7 @@ function imageOptionQuestion(
     id: qid,
     mode: displayMode,
     concreteMode: 'name-image',
-    category: MODE_CATEGORY['name-image'], // konkrete Richtung, auch innerhalb „Bild ↔ Name"
+    category: QUIZ_MODE_LABELS['name-image'], // konkrete Richtung, auch innerhalb „Bild ↔ Name"
     muscleId: muscle.id,
     prompt: muscle.nameLatin,
     options,

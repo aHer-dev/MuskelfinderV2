@@ -10,7 +10,10 @@
 
 import { describe, expect, it } from 'vitest';
 import { getMuscles } from '.';
-import { FACHFELDER, fachfelder, folgtReihenfolge, UNGEPRUEFT_MARKE } from './muscle-fields';
+import {
+  FACHFELDER, fachfelder, folgtReihenfolge, nichtLeer, brauchtLegende,
+  UNGEPRUEFT_MARKE, UNGEPRUEFT_ERKLAERUNG,
+} from './muscle-fields';
 import { facts } from '../components/features/flashcards/facts';
 
 const KANON = ['Ursprung', 'Ansatz', 'Funktion', 'Innervation', 'Segmente'];
@@ -68,6 +71,42 @@ describe('folgtReihenfolge — der Waechter selbst', () => {
 
   it('LEHNT die alte Lernkarten-Reihenfolge ab (der behobene Fehler)', () => {
     expect(folgtReihenfolge(['Funktion', 'Ursprung', 'Ansatz', 'Innervation'])).toBe(false);
+  });
+});
+
+describe('brauchtLegende — ein Stern ohne Erklärung ist ein Rätsel', () => {
+  it('erkennt die Marke', () => {
+    expect(brauchtLegende(['Innervation', `Segmente${UNGEPRUEFT_MARKE}`])).toBe(true);
+  });
+
+  it('meldet nichts, wenn keine Marke gesetzt ist', () => {
+    expect(brauchtLegende(KANON)).toBe(false);
+    expect(brauchtLegende([])).toBe(false);
+  });
+
+  it('verwechselt einen Stern MITTEN im Text nicht mit der Marke', () => {
+    expect(brauchtLegende(['Funktion * mit Sternchen im Namen'])).toBe(false);
+  });
+
+  it('die Erklärung nennt den Stern und den Grund', () => {
+    expect(UNGEPRUEFT_ERKLAERUNG).toContain('*');
+    expect(UNGEPRUEFT_ERKLAERUNG).toMatch(/Lehrbuch/i);
+  });
+});
+
+describe('nichtLeer', () => {
+  it('lässt leere und reine Leerzeichen-Werte weg', () => {
+    const rein = nichtLeer([
+      { label: 'a', value: 'x' }, { label: 'b', value: '' }, { label: 'c', value: '   ' },
+    ]);
+    expect(rein.map((z) => z.label)).toEqual(['a']);
+  });
+
+  it('behält die Reihenfolge', () => {
+    const rein = nichtLeer([
+      { label: 'a', value: '1' }, { label: 'b', value: '' }, { label: 'c', value: '3' },
+    ]);
+    expect(rein.map((z) => z.label)).toEqual(['a', 'c']);
   });
 });
 

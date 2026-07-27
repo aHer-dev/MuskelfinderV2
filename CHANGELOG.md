@@ -6,7 +6,57 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Fixed
+- **Die Lernkarte trug den Stern, erklärte ihn aber nie** (2026-07-27,
+  `src/components/features/flashcards/Flashcard.tsx`).
+
+  Die Detailseite hat seit dem Segment-Nachtrag eine Legende („\* Dieser Wert ist
+  nachgetragen und noch nicht im Lehrbuch gegengelesen"). Die **Lernkarte zeigte
+  dasselbe `Segmente *` ohne jede Erklärung** — ein Zeichen ohne Legende ist kein
+  Hinweis, sondern ein Rätsel. Und auf der Lernkarte ist das Versäumnis teurer als
+  auf der Detailseite: **Hier wird der Wert eingeprägt.** Ein ungeprüfter Wert ohne
+  Hinweis wird als gesichert gelernt — 20 Muskeln sind betroffen.
+
+  Text und Bedingung liegen jetzt in `data/muscle-fields.ts`, damit beide Anzeigen
+  wörtlich dasselbe sagen. `<span>` statt `<p>`, weil der Kartenkörper ein
+  `<button>` ist. Gegengeprobt: Legende entfernt → 3 Fehlschläge, darunter der
+  Bestandstest über alle 20 betroffenen Muskeln.
+
 ### Changed
+- **Ein Modusname, überall derselbe** (2026-07-27, `src/data/mode-labels.ts`).
+
+  Dieselbe Label-Tabelle stand an **vier** Stellen, zwei davon Zeichen für Zeichen
+  identisch (`MODE_CATEGORY` in `quiz.ts` und `QUIZ_MODE_LABELS` in `stats.ts`,
+  je 11 Einträge). `exam.ts` wiederholte sechs davon, `QuizPage` die konkreten
+  Richtungen noch einmal.
+
+  Solange alle vier übereinstimmen, fällt das nie auf — genau das ist die Gefahr.
+  Wer „Ursprung → Ansatz" umbenennt, findet zwei der vier Stellen, und dann heißt
+  dieselbe Übung im Quiz anders als in der Statistik. Für den Lernenden sind das
+  zwei verschiedene Übungen, die er nicht zusammenbringt.
+
+  **Was absichtlich NICHT vereinheitlicht wurde:** „Gemischt" und „Starten" in
+  `QuizPage`. Das sind keine Modusnamen, sondern Knopfbeschriftungen im
+  Zusammenhang ihrer Karte — unter „Ursprung & Ansatz" ist „Gemischt" verständlich,
+  „Ursprung ↔ Ansatz" wäre dort nur umständlich. Ein Test hält das fest, damit es
+  niemand aus Einheitlichkeitsdrang „aufräumt".
+
+  `QuizPage` hatte **keinen** Test und hat jetzt einen. Gegenproben: Prüfung
+  erfindet einen eigenen Namen → Fehlschlag mit beiden Zeichenketten; „Gemischt"
+  wird „aufgeräumt" → Fehlschlag.
+
+- **Drei strukturgleiche Zeilentypen und drei Leer-Filter zusammengeführt**
+  (2026-07-27). `Fact`, `DataRow` und `Row` waren dreimal
+  `{ label: string; value: string }` — jetzt Aliase auf `LabeledValue`
+  (`src/types/index.ts`); die Namen bleiben, weil sie am Aufruf mehr sagen.
+  Das dreimal wiederholte `.filter((r) => r.value.trim() !== '')` heißt jetzt
+  `nichtLeer()`: Bei 28 von 150 Muskeln fehlen die Segmente, und ein Label ohne
+  Wert liest sich wie ein Fehler der App statt wie eine Lücke im Bestand.
+
+  `scripts/check-journey.mjs` behält seine eigene Modus-Liste — sie ist eine
+  **Auswahl** (6 von 11 werden begangen), keine zweite Fassung. Weicht ein Label
+  ab, fällt die Prüfung ohnehin; sie sagt jetzt nur dazu, wo zu suchen ist.
+
 - **Die Fachfelder stehen überall gleich: Ursprung → Ansatz → Funktion →
   Innervation → Segmente** (2026-07-27, `src/data/muscle-fields.ts`).
 

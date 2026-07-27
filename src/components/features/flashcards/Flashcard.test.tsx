@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { Flashcard } from './Flashcard'
 import { facts } from './facts'
+import { UNGEPRUEFT_MARKE, UNGEPRUEFT_ERKLAERUNG } from '../../../data/muscle-fields'
 import { getMuscles } from '../../../data'
 import type { Muscle } from '../../../types'
 
@@ -31,5 +32,41 @@ describe('Flashcard — Fakten der Rückseite', () => {
   it('Rückseite nennt den Muskelnamen — sonst ist nach dem Umdrehen der Bezug weg', () => {
     render(<Flashcard muscle={withSegments} revealed onReveal={() => {}} />)
     expect(screen.getAllByText('M. testus').length).toBeGreaterThanOrEqual(2)
+  })
+})
+
+describe('Flashcard — die Stern-Legende', () => {
+  const ungeprueft: Muscle = { ...base, nameLatin: 'M. testus', segments: 'C5, C6', segmentsUngeprueft: true }
+  const geprueft: Muscle = { ...base, nameLatin: 'M. testus', segments: 'C5, C6', segmentsUngeprueft: false }
+
+  /* Der eigentliche Defekt: Die Karte TRUG den Stern, erklaerte ihn aber nie — nur
+     die Detailseite tat das. Auf der Lernkarte ist das teurer: Hier wird der Wert
+     eingepraegt, ein ungeprueftes Datum ohne Hinweis wird als gesichert gelernt. */
+  it('erklärt den Stern, wenn ein Wert ihn trägt', () => {
+    render(<Flashcard muscle={ungeprueft} revealed onReveal={() => {}} />)
+    expect(screen.getByText(`Segmente${UNGEPRUEFT_MARKE}`)).toBeInTheDocument()
+    expect(screen.getByText(UNGEPRUEFT_ERKLAERUNG)).toBeInTheDocument()
+  })
+
+  it('zeigt keine Legende ohne Marke — eine Warnung ohne Anlass wäre schlimmer', () => {
+    render(<Flashcard muscle={geprueft} revealed onReveal={() => {}} />)
+    expect(screen.queryByText(UNGEPRUEFT_ERKLAERUNG)).not.toBeInTheDocument()
+  })
+
+  it('sagt auf Karte und Detailseite WÖRTLICH dasselbe', () => {
+    /* Zwei Fassungen derselben Erklaerung waeren schlimmer als eine: Der Lernende
+       muesste entscheiden, ob zwei verschiedene Dinge gemeint sind. */
+    render(<Flashcard muscle={ungeprueft} revealed onReveal={() => {}} />)
+    expect(screen.getByText(UNGEPRUEFT_ERKLAERUNG).textContent).toBe(UNGEPRUEFT_ERKLAERUNG)
+  })
+
+  it('jeder ungeprüfte Muskel des ECHTEN Bestands bekommt die Legende', () => {
+    const echte = getMuscles().filter((m) => m.segmentsUngeprueft === true)
+    expect(echte.length).toBeGreaterThan(0)
+    for (const m of echte) {
+      const { unmount } = render(<Flashcard muscle={m} revealed onReveal={() => {}} />)
+      expect(screen.getByText(UNGEPRUEFT_ERKLAERUNG), m.nameLatin).toBeInTheDocument()
+      unmount()
+    }
   })
 })
