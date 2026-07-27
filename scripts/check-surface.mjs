@@ -338,17 +338,23 @@ await withApp(async ({ page, goto, runAxe }) => {
      vergroessert hat (in dieser Zielgruppe haeufig), sieht genau das.
      Geprueft wird ueber die Wurzel-Schriftgroesse (16 → 32 px), also TEXT-Zoom;
      ein Seiten-Zoom wuerde auch das Layout mitskalieren und nichts beweisen. */
-  await page.setViewportSize({ width: 375, height: 667 });
-  for (const [route] of ROUTES) {
-    await goto(route);
-    await page.evaluate(() => { document.documentElement.style.fontSize = '32px'; });
-    await page.waitForTimeout(250);
-    const ueber = await page.evaluate(() => {
-      const d = document.documentElement;
-      return d.scrollWidth > d.clientWidth + 1 ? `${d.scrollWidth} > ${d.clientWidth}` : null;
-    });
-    if (ueber) record(`${route} @200%`, 'UEBERLAUF-ZOOM', ueber);
-    await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
+  /* Beide Breiten, nicht nur 375: Ein Live-Nachmessen zeigte, dass `/heute` und
+     `/start` bei 375 px sauber sind und bei 320 px um 28 px ueberlaufen. Der enge
+     Schirm UND die doppelte Schrift zusammen sind der schaerfste Fall — genau die
+     Kombination, die ein Handy mit vergroesserter Systemschrift erzeugt. */
+  for (const vp of HANDY) {
+    await page.setViewportSize({ width: vp.width, height: vp.height });
+    for (const [route] of ROUTES) {
+      await goto(route);
+      await page.evaluate(() => { document.documentElement.style.fontSize = '32px'; });
+      await page.waitForTimeout(250);
+      const ueber = await page.evaluate(() => {
+        const d = document.documentElement;
+        return d.scrollWidth > d.clientWidth + 1 ? `${d.scrollWidth} > ${d.clientWidth}` : null;
+      });
+      if (ueber) record(`${route} @200% @${vp.label}`, 'UEBERLAUF-ZOOM', ueber);
+      await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
+    }
   }
 }, { seed: SEED });
 /* ^ DER SEED HAT HIER GEFEHLT (bis 2026-07-27). Der ganze Handy-Block lief mit

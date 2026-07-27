@@ -668,6 +668,11 @@ Was daraus hart gilt:
   `/heute`). Auf `/anleitung` steht „Zurueck zu Heute" nach 2700 px Anleitung, und das ist
   richtig. Eine Regel „jede Hauptaktion ueber die Falz" haette Fehlalarm erzeugt und waere zu
   Recht ignoriert worden — eine Pruefung, die man ignoriert, ist schlechter als keine.
+- **Der 200-%-Zoom laeuft auf BEIDEN Handybreiten** (390 und 320). Nur 375 zu pruefen liess
+  drei Ueberlaeufe stehen: Toast mit `white-space: nowrap` (387 px breit auf 320 px Schirm),
+  die Textspalte des klinischen Hinweises (Flex-Kind ohne `min-width: 0`) und der
+  Onboarding-Knopf („Physiotherapie" = 274 px bei 32 px Schrift in 288 px Knopf).
+  Enger Schirm UND doppelte Schrift zusammen sind der schaerfste Fall.
 - ⚠️ **Der befuellte Lauf sieht den LEERZUSTAND nicht** — und umgekehrt. Nach dem
   Seed-Nachtrag war `/lernkarten` im befuellten Zustand sauber, im Erststart aber nicht:
   „Muskeln hinzufuegen" lag bei y=590 auf 320 × 568, weil zwei Navigationszeilen davor

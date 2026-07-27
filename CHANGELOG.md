@@ -80,6 +80,16 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   jedem Fall, „Freies Üben" läuft auch ohne eine einzige Karte. Die Prüfung deckt den
   Leerzustand jetzt mit ab.
 
+- **200 % Textzoom auch auf 320 px** — die Prüfung lief nur auf 375 px, und ein
+  Live-Nachmessen fand drei weitere Überläufe. Enger Schirm **und** doppelte Schrift
+  zusammen sind der schärfste Fall, genau die Kombination eines Handys mit vergrößerter
+  Systemschrift. Ursachen: der **Toast** hatte `white-space: nowrap` und war 387 px breit
+  (ragte auf 320 px beidseitig heraus, gemessen links −33/rechts 354) — jetzt umbrechend
+  mit `max-width`; die Textspalte des klinischen Hinweises konnte als Flex-Kind nicht
+  schrumpfen („Bizepssehnenruptur" hielt sie auf 310 px); und im Onboarding war
+  „Physiotherapie" bei 32 px **274 px breit in einem 288-px-Knopf** und schob Beschreibung
+  und Pfeil hinaus — jetzt darf die Zeile umbrechen.
+
 ### Neue Prüfregeln (`check:oberflaeche`)
 `IOS-ZOOM` · `UEBERLAUF-ZOOM` (200 % Textzoom, alle Routen) · `START-UNTER-FALZ` (nur
 auf den vier Seiten, deren Zweck das Starten ist — auf `/anleitung` gehört „Zurück zu

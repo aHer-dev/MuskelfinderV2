@@ -38,7 +38,12 @@
   font-size: 13px;
   font-weight: 600;
   color: var(--text-primary);
-  white-space: nowrap;
+  /* KEIN `white-space: nowrap`: Bei 200 % Textzoom war der Toast 387 px breit und ragte
+     auf einem 320-px-Schirm beidseitig heraus (gemessen: links -33, rechts 354). Ein
+     Hinweis, der nicht umbrechen darf, sprengt jede enge Ansicht. Stattdessen begrenzt
+     `max-width`, was er einnehmen darf — der Text bricht dann in eine zweite Zeile. */
+  max-width: min(90vw, 34rem);
+  text-align: center;
   animation: toast-in 0.22s cubic-bezier(0.2, 0.7, 0.3, 1);
 }
 

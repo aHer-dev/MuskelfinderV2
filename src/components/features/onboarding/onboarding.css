@@ -37,6 +37,10 @@
 
 .onboarding__choice {
   display: flex;
+  /* Umbruch erlaubt: Bei 200 % Textzoom auf 320 px passen Name, Beschreibung und Pfeil
+     nicht in eine Zeile. Ohne `wrap` schiebt die Zeile ueber den Rand hinaus, statt
+     einfach zweizeilig zu werden. */
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--spacing-md);
   min-height: 64px;
@@ -60,6 +64,10 @@
   font-family: var(--font-display);
   font-size: 1.1rem;
   font-weight: 600;
+  /* Auch der Berufsname ist ein Flex-Kind mit `min-width: auto`: „Physiotherapie" war
+     bei 200 % Textzoom 274 px breit in einem 288 px breiten Knopf und schob Beschreibung
+     und Pfeil hinaus. Zusammen mit dem Umbruch unten bleibt der Name meist ganz. */
+  min-width: 0;
 }
 
 .onboarding__choice-meta {

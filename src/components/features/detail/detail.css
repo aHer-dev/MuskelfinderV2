@@ -101,6 +101,12 @@
   margin-top: 2px;
 }
 
+.clinical-note__body {
+  /* Flex-Kinder starten bei `min-width: auto` — also mindestens so breit wie ihr
+     laengstes Wort. „Bizepssehnenruptur" bei 32 px Schrift hielt die Box auf 310 px. */
+  min-width: 0;
+}
+
 .clinical-note__label {
   margin: 0 0 2px;
   font-size: 0.72rem;
