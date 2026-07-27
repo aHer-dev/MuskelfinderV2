@@ -634,6 +634,45 @@ Klassen derselben Doppelung** vor. Was daraus hart gilt:
   hingeschrieben wird — pruefen, ob sie schon existiert. Zwei uebereinstimmende Kopien sind
   kein Beweis, dass es gutgeht, sondern nur, dass es noch niemand angefasst hat.
 
+## ⚠️ HANDY-DURCHGANG 2026-07-27 — DER PRUEFUNG FEHLTE DER SEED
+Nachpruefung der Handy-Ansicht. Der wichtigste Fund war **kein UI-Fehler, sondern ein Loch in
+der Pruefung**: `check-surface.mjs:182` rief den ganzen Handy-Block ohne `{ seed: SEED }`, also
+gegen Onboarding und leere Listen. Tippziele, axe, Ueberlauf und Scrollfallen sahen auf dem
+Handy fast leere Seiten. **Eine Pruefung, die den leeren Zustand misst, misst nicht die App** —
+dieselbe Klasse wie „beide liefen ausschliesslich auf 1440 × 900" (UX-Review 2026-07-26), eine
+Ebene tiefer.
+
+Was daraus hart gilt:
+
+- **Jeder neue `withApp`-Block, der befuellten Zustand braucht, bekommt den Seed.** Der leere
+  Zustand wird SEPARAT geprueft (Block 5) — das ist Absicht, aber es ersetzt den befuellten nicht.
+- **16 px sind die Untergrenze fuer Eingabefelder** (`base.css`, eine Regel fuer alle). Darunter
+  zoomt iOS Safari beim Fokussieren hinein und nicht zurueck. War an zwei von drei Stellen falsch.
+- **200 % Textzoom ist eine eigene Pruefstufe** (WCAG 1.4.4) und NICHT durch 320 px gedeckt: Dort
+  schrumpft der Platz, hier waechst der Inhalt. Ursache fast immer `min-width: auto` auf Flex-/
+  Grid-Kindern. In dieser App besonders scharf, weil lateinische Namen lang und unteilbar sind
+  (`M. sternocleidomastoideus` = 413 px bei 32 px Schrift).
+- **`overflow-wrap`: global `break-word`, punktuell `anywhere`.** Der Unterschied ist
+  spezifikationsrelevant — nur `anywhere` senkt die **min-content-Breite**, und nur die
+  entscheidet, wie schmal ein Flex-Kind werden darf. Global gesetzt liess `anywhere` auf 320 px
+  Elemente auf 19 px kollabieren (24 Befunde). Es gehoert nur dorthin, wo ein Kind unter sein
+  laengstes Wort schrumpfen MUSS (`.badge__label`).
+- **Klebende Startknoepfe unter 1024 px sind das Muster, nicht die Ausnahme.** `.fc-actions`
+  hatte es, `.fc-setup__start` und `.exam-intro__start` fehlten — dieselbe 96-px-Reserve fuer
+  die Tab-Leiste. Beim vierten Auftreten gehoert das in eine gemeinsame Klasse.
+- **Kleinste Schrift: 11 px, nicht 12 px.** Die 48 Stellen mit 11–11.5 px sind gesperrte
+  Mikro-Labels — ein legitimes Mittel, Kontrast von axe bestaetigt. Sie umzuwerfen waere eine
+  Designentscheidung, keine Reparatur. Behoben wurde, was DARUNTER lag: 8.8 px am
+  `.progress-ring__label` und fuenf Stellen mit 10 px.
+- **`START-UNTER-FALZ` gilt nur auf vier Seiten** (`/lernkarten`, `/quiz`, `/pruefung`,
+  `/heute`). Auf `/anleitung` steht „Zurueck zu Heute" nach 2700 px Anleitung, und das ist
+  richtig. Eine Regel „jede Hauptaktion ueber die Falz" haette Fehlalarm erzeugt und waere zu
+  Recht ignoriert worden — eine Pruefung, die man ignoriert, ist schlechter als keine.
+- ⚠️ **Zwei meiner eigenen Messungen waren Fehlalarm** und sind hier festgehalten, damit sie
+  niemand nachbaut: „feste Leisten belegen 96 % der Hoehe im Querformat" (die `stand-rail` liegt
+  bei y=737 unter dem Bild — Hoehen summiert, ohne die Position zu pruefen) und „ein Link liegt
+  hinter der TabBar" (Inhalt scrollt normal darunter hervor). Eine Zahl ist noch keine Diagnose.
+
 ## Kanonische Quellen
 - V1-Original: `../Muskelfinder` (`/home/pepperboy8/Documents/Muskelfinder`)
 - V2-Repo: `Muskelfinder-V2`

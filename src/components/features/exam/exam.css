@@ -387,7 +387,7 @@
 }
 
 .exam-outcome__form {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -454,4 +454,22 @@
 
 .quiz-exam-entry .btn {
   align-self: flex-start;
+}
+
+/* Dieselbe Behandlung wie `.fc-actions` und `.fc-setup__start` — dritte Stelle mit
+   demselben Problem, deshalb dieselbe Loesung und dieselbe 96-px-Reserve fuer die
+   Tab-Leiste. Gemessen auf 320 x 568: Startknopf bei y=659, 91 px unter der Falz. */
+@media (max-width: 1023.98px) {
+  .exam-intro__start {
+    position: sticky;
+    bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+    z-index: var(--z-base);
+    padding: var(--spacing-sm);
+    background: var(--glass-panel);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--glass-shadow);
+  }
 }

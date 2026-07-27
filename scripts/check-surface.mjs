@@ -259,9 +259,108 @@ await withApp(async ({ page, goto, runAxe }) => {
         vp.height,
       );
       for (const f of fallen) record(wo, 'SCROLLFALLE', f);
+
+      /* (e) iOS-Zoomfalle. Safari zoomt die Seite hinein, sobald ein FOKUSSIERTES
+         Feld kleiner als 16 px ist — und zoomt nicht zurueck. Der Fehler ist auf
+         dem Desktop unsichtbar und im Emulator ebenfalls: Man sieht ihn erst auf
+         einem echten iPhone, und dann als „das Layout springt beim Tippen".
+         Gefunden wurden so drei Auswahlfelder und das Suchfeld im Karteikasten. */
+      const zoomfallen = await page.evaluate(() => {
+        const out = [];
+        for (const el of document.querySelectorAll('input, select, textarea')) {
+          if (el.type === 'checkbox' || el.type === 'radio' || el.type === 'hidden') continue;
+          const r = el.getBoundingClientRect();
+          if (r.width === 0 || r.height === 0) continue;
+          const fs = parseFloat(getComputedStyle(el).fontSize);
+          if (fs < 16) {
+            const kennung = el.className || `${el.tagName.toLowerCase()}[${el.type ?? ''}]`;
+            out.push(`${fs}px — ${kennung}`);
+          }
+        }
+        return [...new Set(out)];
+      });
+      for (const z of zoomfallen) record(wo, 'IOS-ZOOM', z);
+
+      /* (g) Liegt die Startaktion unter der Falz?
+         NUR auf den Seiten, deren ZWECK das Starten einer Uebung ist. Die Liste ist
+         eine bewusste Entscheidung, kein Versehen: Auf `/anleitung` steht „Zurueck zu
+         Heute" am Ende von 2700 px Anleitung, und das ist genau richtig — ein Ruecklink
+         gehoert ans Ende. Eine Regel „jede Hauptaktion ueber die Falz" haette das als
+         Fehler gemeldet und waere zu Recht ignoriert worden.
+         Gefunden hat die Regel `/lernkarten`: Startknopf bei y=740 auf 667 px, hinaus-
+         geschoben von Faelligkeitszahl und drei Auswahlfeldern. Die Seite sah aus, als
+         koenne man nichts starten. Klebende Knoepfe erfuellen die Regel per Definition. */
+      const STARTSEITEN = ['/lernkarten', '/quiz', '/pruefung', '/heute'];
+      if (STARTSEITEN.includes(route)) {
+        const aktion = await page.evaluate(() => {
+          const el = document.querySelector('main .btn--primary, main .btn--block');
+          if (!el) return null;
+          const b = el.getBoundingClientRect();
+          return { top: Math.round(b.top), vh: window.innerHeight,
+            text: (el.textContent || '').trim().slice(0, 28) };
+        });
+        if (aktion && aktion.top > aktion.vh) {
+          record(wo, 'START-UNTER-FALZ',
+            `„${aktion.text}" bei y=${aktion.top} auf ${aktion.vh} px Viewport`);
+        }
+      }
+
+      /* (h) Zu kleine Schrift — Schwelle 11 px, und die Zahl ist begruendet:
+         Die App nutzt gesperrte Mikro-Labels bei 11–11.5 px (Eyebrow, Chips,
+         Feldnamen). Das ist ein legitimes typografisches Mittel, verbreitet und von
+         axe als kontrastreich bestaetigt; iOS beschriftet seine Tab-Leiste aehnlich
+         klein. **Diese 48 Stellen umzuwerfen waere eine Designentscheidung, keine
+         Reparatur** — deshalb liegt die Grenze NICHT bei 12 px.
+         Darunter (10 px, fuenf Stellen) war es zu wenig: Zaehl-Hinweise und
+         Pruefungs-Etiketten, die man auf einem Handy in Bewegung liest. */
+      const winzig = await page.evaluate(() => {
+        const out = new Map();
+        for (const el of document.querySelectorAll('main *, .tabbar *')) {
+          if (el.children.length > 0) continue;
+          const txt = (el.textContent || '').trim();
+          if (txt.length < 2) continue;
+          const fs = parseFloat(getComputedStyle(el).fontSize);
+          if (fs < 11) {
+            const k = `${fs}px — ${el.className || el.tagName}`;
+            out.set(k, (out.get(k) ?? 0) + 1);
+          }
+        }
+        return [...out].map(([k, n]) => `${k} (${n}×)`);
+      });
+      for (const w of winzig) record(wo, 'TEXT<11px', w);
     }
   }
-});
+
+  /* ---- (f) Text auf 200 % — WCAG 1.4.4 ----
+     Nicht dasselbe wie 320 px: Dort schrumpft der Platz, hier WAECHST der Inhalt.
+     Feste Breiten in `px`, `ch`-Mindestbreiten und nicht umbrechende Zeilen fallen
+     erst hier auf. Betroffen ist keine Randgruppe — wer die Systemschrift
+     vergroessert hat (in dieser Zielgruppe haeufig), sieht genau das.
+     Geprueft wird ueber die Wurzel-Schriftgroesse (16 → 32 px), also TEXT-Zoom;
+     ein Seiten-Zoom wuerde auch das Layout mitskalieren und nichts beweisen. */
+  await page.setViewportSize({ width: 375, height: 667 });
+  for (const [route] of ROUTES) {
+    await goto(route);
+    await page.evaluate(() => { document.documentElement.style.fontSize = '32px'; });
+    await page.waitForTimeout(250);
+    const ueber = await page.evaluate(() => {
+      const d = document.documentElement;
+      return d.scrollWidth > d.clientWidth + 1 ? `${d.scrollWidth} > ${d.clientWidth}` : null;
+    });
+    if (ueber) record(`${route} @200%`, 'UEBERLAUF-ZOOM', ueber);
+    await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
+  }
+}, { seed: SEED });
+/* ^ DER SEED HAT HIER GEFEHLT (bis 2026-07-27). Der ganze Handy-Block lief mit
+   frischem Browser, also gegen das Onboarding und leere Listen — waehrend der
+   Desktop-Block darueber befuellt prueft. Damit haben Tippziel-Messung, axe,
+   Ueberlauf und Scrollfallen auf dem Handy jahrelang fast leere Seiten geprueft.
+   Sofort nach dem Nachtragen fielen vier Befunde an: die Lueckenliste auf `/heute`
+   hat 21 px hohe Links — unter WCAG 2.5.8 (24 px) und weit unter der Projektregel
+   (44 px), ausgerechnet die Liste, ueber die der Lernende seine Schwaechen anspringt.
+   Dieselbe Fehlerklasse wie im UX-Review 2026-07-26 („beide liefen ausschliesslich
+   auf 1440 × 900"), nur eine Ebene tiefer: Eine Pruefung, die den leeren Zustand
+   misst, misst nicht die App. */
 
 /* ---- 5. Leere Zustaende mit FRISCHEM Browser (kein Seed) ---- */
 await withApp(async ({ page, goto, runAxe, setTheme, errors }) => {
@@ -344,6 +443,49 @@ await withApp(async ({ page, goto, runAxe, setTheme }) => {
       const knopf = await page.locator('.jgp__bar .btn--primary').boundingBox();
       if (knopf && knopf.height < 43.5) {
         record('/karteikasten (Auswahl)', 'ZIEL<44', `${Math.round(knopf.width)}×${Math.round(knopf.height)} Anlegen`);
+      }
+    }
+  }
+});
+
+/* ---- 7. Das offene Sheet auf dem Handy ----
+   Ein Sheet ist der einzige Ort, an dem zwei Scrollflaechen uebereinanderliegen. Ohne
+   `overscroll-behavior: contain` scrollt ein Wisch, der im Sheet beginnt und dessen
+   Ende erreicht, die Seite DAHINTER weiter — man wischt im Filter und die Trefferliste
+   darunter wandert. Das ist auf dem Desktop mit der Maus nicht zu bemerken.
+   Und die Hoehe muss aus dem SICHTBAREN Bereich kommen (`dvh`), nicht aus `vh`:
+   `vh` zaehlt die Adressleiste des Handys mit, die sich beim Scrollen wegfaehrt. */
+await withApp(async ({ page, goto }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  await goto('/suche');
+  const knopf = page.locator('button').filter({ hasText: /Filter/i }).first();
+  if ((await knopf.count()) === 0) {
+    record('/suche (Sheet)', 'INHALT', 'kein Filter-Knopf gefunden');
+  } else {
+    await knopf.click();
+    await page.waitForTimeout(500);
+    const s = await page.evaluate(() => {
+      const p = document.querySelector('.sheet__panel');
+      if (!p) return null;
+      const cs = getComputedStyle(p);
+      const b = p.getBoundingClientRect();
+      return { overscroll: cs.overscrollBehaviorY, hoehe: Math.round(b.height),
+        vh: window.innerHeight, bodyOverflow: getComputedStyle(document.body).overflow };
+    });
+    if (!s) {
+      record('/suche (Sheet)', 'INHALT', 'Sheet oeffnet nicht');
+    } else {
+      if (s.overscroll !== 'contain') {
+        record('/suche (Sheet)', 'OVERSCROLL',
+          `overscroll-behavior-y ist "${s.overscroll}" — der Wisch greift auf die Seite durch`);
+      }
+      if (s.hoehe > s.vh) {
+        record('/suche (Sheet)', 'ZU HOCH',
+          `${s.hoehe} px bei ${s.vh} px Viewport — Fussbereich liegt ausserhalb`);
+      }
+      if (s.bodyOverflow !== 'hidden') {
+        record('/suche (Sheet)', 'BODY-SCROLL',
+          `body overflow ist "${s.bodyOverflow}" — die Seite dahinter bleibt scrollbar`);
       }
     }
   }

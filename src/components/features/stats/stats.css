@@ -293,7 +293,7 @@
 }
 
 .stats__mode-best {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -461,6 +461,12 @@
 .badge__label {
   flex: 1;
   min-width: 0;
+  /* `min-width: 0` allein genuegt hier NICHT: Die Breite des Flex-Kindes richtet sich
+     nach der min-content-Breite seines Inhalts, und die bleibt bei `break-word` die
+     des laengsten Wortes. Gemessen bei 200 % Textzoom: „Rotatorenmanschette" hielt die
+     Box auf 341 px in einer 152-px-Spalte. Nur `anywhere` senkt die min-content-Breite
+     mit — global waere es zu scharf (siehe base.css), hier ist es genau richtig. */
+  overflow-wrap: anywhere;
   font-family: var(--font-ui);
   font-weight: 600;
   color: var(--text-primary);

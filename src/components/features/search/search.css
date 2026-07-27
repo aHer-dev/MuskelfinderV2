@@ -337,6 +337,10 @@
   font-size: 1.02rem;
   font-weight: 600;
   line-height: 1.25;
+  /* Der Name steht neben dem Schwierigkeitsgrad in einer Flex-Zeile. Ohne
+     `min-width: 0` kann er nicht unter seine Inhaltsbreite schrumpfen — bei 200 %
+     wurde „M. sternocleidomastoideus" 413 px breit und schob die Seite auf. */
+  min-width: 0;
 }
 
 .muscle-card__match {

@@ -10,9 +10,37 @@ body {
   min-height: 100svh;
   background: var(--stage-gradient);
   background-attachment: fixed;
+  /* Lateinische Fachbegriffe sind lang und unteilbar: „sternocleidomastoideus" ist
+     bei 200 % Textzoom 380 px breit — breiter als ein 375-px-Handy. Ohne diese Regel
+     bricht das Wort nicht, schiebt seine Karte auf und die ganze Seite waagerecht.
+     `break-word` und NICHT `anywhere` — als globale Vorgabe ist der Unterschied
+     entscheidend: Beide brechen ein zu langes Wort beim Rendern, aber `anywhere`
+     senkt zusaetzlich die **min-content-Breite**. Global gesetzt liess das im
+     Karteikasten auf 320 px Elemente auf 19 px Breite kollabieren, mit
+     buchstabenweise umgebrochenem Text (gemessen, `check:oberflaeche` fiel mit 24
+     Befunden). `anywhere` gehoert deshalb nur dorthin, wo ein Flex- oder Grid-Kind
+     wirklich unter sein laengstes Wort schrumpfen MUSS — siehe `.badge__label`. */
+  overflow-wrap: break-word;
 }
 
 #root { min-height: 100svh; }
+
+/* ---- Formularfelder: 16 px sind eine harte Untergrenze, kein Geschmack ----
+   iOS Safari ZOOMT die Seite hinein, sobald ein fokussiertes Feld kleiner als
+   16 px ist — und zoomt danach nicht zurueck. Der Lernende tippt ins Suchfeld,
+   das Layout springt, und er muss von Hand herauszoomen. Genau das passierte im
+   Karteikasten (14 px) und bei den Auswahlfeldern der Lernkarten (14 px), waehrend
+   die Suche schon richtig 16 px hatte — eine Regel an EINER Stelle statt drei
+   Einzelentscheidungen.
+
+   `max(16px, 1rem)`: Wer die Systemschrift vergroessert, bekommt mehr; kleiner als
+   16 px wird es nie. Wer hier bewusst abweichen will, muss es im Bauteil
+   ueberschreiben — und stolpert dann ueber `check:oberflaeche`. */
+input,
+select,
+textarea {
+  font-size: max(16px, 1rem);
+}
 
 /* Tastatur-Fokus sichtbar, Maus-Klick nicht */
 :focus-visible {

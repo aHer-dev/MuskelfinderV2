@@ -251,13 +251,20 @@ export function TodayPage() {
                 const muscle = getMuscleByCardKey(gap.name);
                 return (
                   <li key={gap.name} className="today__gap">
-                    <Link to={muscle ? `/muskel/${muscle.id}` : '/suche'} className="today__gap-name">
-                      {gap.name}
+                    {/* Die GANZE Zeile ist das Ziel, nicht nur der Name. Vorher war der
+                        Link 21 px hoch (unter WCAG 2.5.8: 24 px), und ein Tipp auf die
+                        Zaehlung tat nichts — auf dem Handy trifft man aber die Zeile,
+                        nicht das Wort. */}
+                    <Link
+                      to={muscle ? `/muskel/${muscle.id}` : '/suche'}
+                      className="today__gap-link"
+                    >
+                      <span className="today__gap-name">{gap.name}</span>
+                      <span className="today__gap-count">
+                        {gap.count}× nachgeschlagen
+                        {muscle ? ` · ${regionLabel(muscle.region)}` : ''}
+                      </span>
                     </Link>
-                    <span className="today__gap-count">
-                      {gap.count}× nachgeschlagen
-                      {muscle ? ` · ${regionLabel(muscle.region)}` : ''}
-                    </span>
                   </li>
                 );
               })}

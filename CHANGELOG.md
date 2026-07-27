@@ -7,6 +7,79 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Fixed
+- **Handy-Durchgang: der Prüfung fehlte der Seed — sie prüfte den leeren Zustand**
+  (2026-07-27, `scripts/check-surface.mjs:182`).
+
+  **Der Befund, der alle anderen erklärt:** Der gesamte Handy-Block lief mit frischem
+  Browser, also gegen Onboarding und leere Listen — während der Desktop-Block darüber
+  befüllt prüft. Tippziel-Messung, axe, Überlauf und Scrollfallen sahen auf dem Handy
+  jahrelang fast leere Seiten. Dieselbe Fehlerklasse wie im UX-Review 2026-07-26
+  („beide liefen ausschließlich auf 1440 × 900"), nur eine Ebene tiefer: **Eine
+  Prüfung, die den leeren Zustand misst, misst nicht die App.**
+
+  Sofort nach dem Nachtragen fielen vier Befunde an: Die Lückenliste auf `/heute` hatte
+  **21 px hohe Links** — unter WCAG 2.5.8 (24 px), weit unter der Projektregel (44 px),
+  und ausgerechnet die Liste, über die der Lernende seine Schwächen anspringt. Jetzt ist
+  die **ganze Zeile** das Ziel (44 px); vorher tat ein Tipp auf die Zählung nichts,
+  obwohl man auf dem Handy die Zeile trifft, nicht das Wort.
+
+- **Eingabefelder unter 16 px lösten auf iOS Auto-Zoom aus** (2026-07-27, `base.css`).
+
+  Safari zoomt die Seite hinein, sobald ein fokussiertes Feld kleiner als 16 px ist —
+  und zoomt **nicht zurück**. Der Lernende tippt ins Suchfeld, das Layout springt, er
+  muss von Hand herauszoomen. Betroffen: das Suchfeld im Karteikasten (14 px) und drei
+  Auswahlfelder der Lernkarten (14 px) — während die Suche schon richtig 16 px hatte.
+  Genau die Uneinheitlichkeit, die entsteht, wenn jedes Bauteil selbst entscheidet.
+  Jetzt eine Regel an einer Stelle (`input, select, textarea { font-size: max(16px, 1rem) }`).
+
+- **Bei 200 % Textzoom brach das Layout auf fünf Seiten waagerecht auf** (WCAG 1.4.4).
+
+  Nicht dasselbe wie 320 px: Dort schrumpft der Platz, hier **wächst der Inhalt**.
+  Ursache überall dieselbe Familie — Flex- und Grid-Kinder haben `min-width: auto` und
+  können nicht unter ihre Inhaltsbreite schrumpfen, und bei doppelter Schrift verdoppelt
+  die sich. In *dieser* App besonders scharf: `M. sternocleidomastoideus` ist bei 32 px
+  **413 px breit**. Behoben mit `minmax(0, 1fr)` (`.detail__grid`) und `min-width: 0`
+  (`.fc-field`, `.muscle-card__name`, `.onboarding__choice-meta`), plus global
+  `overflow-wrap: break-word`.
+
+  **Ein Zwischenschritt war falsch und die Prüfung hat es gefangen:** `overflow-wrap:
+  anywhere` global gesetzt ließ im Karteikasten auf 320 px Elemente auf **19 px Breite**
+  kollabieren, mit buchstabenweise umgebrochenem Text — 24 Befunde. Der Unterschied ist
+  spezifikationsrelevant: Beide Werte brechen beim Rendern, aber nur `anywhere` senkt
+  auch die **min-content-Breite**. Global ist das zu scharf; genau dort, wo ein Flex-Kind
+  unter sein längstes Wort schrumpfen *muss* (`.badge__label`: „Rotatorenmanschette"
+  hielt eine 152-px-Spalte auf 341 px), ist es richtig.
+
+- **Startknöpfe lagen unter der Falz** — `/lernkarten` bei y=740 auf 667 px,
+  `/pruefung` bei y=659 auf 568 px. Die Seite sah aus, als könne man nichts starten.
+  Beide bekommen dieselbe Behandlung wie die schon vorhandene `.fc-actions`-Leiste
+  (klebend unter 1024 px, dieselbe 96-px-Reserve für die Tab-Leiste) — drittes Auftreten
+  desselben Problems, also dieselbe Lösung statt einer dritten Erfindung.
+
+- **Filter-Sheet: Scroll-Verkettung und `vh`** — ohne `overscroll-behavior: contain`
+  scrollte ein Wisch am Ende des Sheets die Seite dahinter weiter. `85vh` → `85dvh`,
+  weil `vh` die Adressleiste mitzählt, die sich wegfährt (der Rest der App nutzte
+  längst `svh`).
+
+- **Zu kleine Schrift**: `.progress-ring__label` war **8,8 px** — die kleinste Schrift
+  der App und ausgerechnet die Beschriftung einer Kennzahl. Dazu fünf Stellen bei 10 px.
+  Alle auf ≥ 11 px.
+
+  **Was ich NICHT geändert habe, und warum:** Die App nutzt gesperrte Mikro-Labels bei
+  11–11,5 px an 48 Stellen (Eyebrow, Chips, Feldnamen). Das ist ein legitimes
+  typografisches Mittel, axe bestätigt den Kontrast, iOS beschriftet seine Tab-Leiste
+  ähnlich klein. 48 Stellen umzuwerfen wäre eine **Designentscheidung, keine
+  Reparatur** — deshalb liegt die Prüfschwelle bei 11 px und nicht bei 12 px.
+
+### Neue Prüfregeln (`check:oberflaeche`)
+`IOS-ZOOM` · `UEBERLAUF-ZOOM` (200 % Textzoom, alle Routen) · `START-UNTER-FALZ` (nur
+auf den vier Seiten, deren Zweck das Starten ist — auf `/anleitung` gehört „Zurück zu
+Heute" ans Ende von 2700 px, und eine Regel „jede Hauptaktion über die Falz" hätte das
+zu Recht ignoriert bekommen) · `TEXT<11px` · `OVERSCROLL`/`ZU HOCH`/`BODY-SCROLL` für
+das offene Sheet. Jede einzeln gegengeprobt: Fix zurückgedreht → Prüfung fällt mit
+Fundstelle → wiederhergestellt.
+
+### Ebenfalls behoben
 - **Die Lernkarte trug den Stern, erklärte ihn aber nie** (2026-07-27,
   `src/components/features/flashcards/Flashcard.tsx`).
 
