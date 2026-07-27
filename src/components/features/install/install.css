@@ -1,0 +1,41 @@
+/* „Als App aufs Handy" — Abschnitt auf /anleitung.
+   Erbt Satzspiegel und Typografie von `.guide__*`; hier steht nur, was dort
+   fehlt. Der Knopf ist die kanonische `.btn.btn--primary`, kein eigener. */
+
+.install {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.install__button {
+  margin-top: var(--spacing-xs);
+  align-self: flex-start;
+}
+
+/* Bestaetigungszeile: Haken und Text auf einer Grundlinie. */
+.install__ok {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: var(--accent-on-surface);
+}
+
+/* Die Schritt-fuer-Schritt-Anleitungen sind eine ECHTE Nummernliste — die
+   Reihenfolge ist Teil der Aussage, also traegt sie der Listentyp und nicht
+   ein handgesetztes Zeichen. `.guide__list` schaltet Marker ab, deshalb hier
+   wieder an. */
+.install__steps {
+  list-style: decimal outside;
+  padding-left: 1.5em;
+  gap: var(--spacing-xs);
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  max-width: var(--measure);
+}
+
+.install__steps strong {
+  color: var(--text-primary);
+}

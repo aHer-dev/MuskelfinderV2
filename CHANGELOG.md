@@ -6,7 +6,174 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+- **„Als App aufs Handy" — Installation wird jetzt aktiv angeboten** (2026-07-27,
+  `src/pwa/install.ts`, `src/components/features/install/`, Abschnitt auf `/anleitung`).
+
+  Auslöser war ein Befund aus der Praxis: Bei einem Nutzer klappte die Installation,
+  beim nächsten nicht. **Die App war nie kaputt** — sie erfüllte die Kriterien
+  (Manifest, Service Worker, Icons 192/512/maskable, HTTPS, `start_url`/`scope` passend
+  zur `base`). Es gab nur **kein eigenes Angebot**, also hing alles daran, ob der
+  Browser von sich aus fragt. Und das tut er je nach Plattform sehr unterschiedlich:
+
+  - **Chrome/Android** hat die automatische Einblendleiste abgeschafft; der Eintrag
+    steckt im ⋮-Menü, sein Wortlaut wechselt mit der Version.
+  - **iOS kennt `beforeinstallprompt` nicht** — dort geht es nur über Teilen → „Zum
+    Home-Bildschirm". Kein Knopf kann das ersetzen, nur eine Anleitung.
+  - **In-App-Browser** (Link aus WhatsApp, Instagram, Teams) können grundsätzlich
+    **nicht** installieren. Ohne Hinweis sucht man endlos nach einem Menüpunkt, den es
+    dort nicht gibt. Das ist in der Praxis die häufigste Ursache.
+
+  `angebot()` ist eine **reine Funktion** über einem Umgebungs-Objekt und deshalb ohne
+  Browser vollständig testbar — inklusive der Reihenfolge, die die eigentliche Aussage
+  trägt: *schon installiert* schlägt alles (ein Installationsknopf in der installierten
+  App ist eine Sackgasse), *In-App-Browser vor iOS* (im Instagram-Webview auf dem iPhone
+  führt die iOS-Anleitung ins Leere), *echter Knopf vor Anleitung*.
+
+  Das `beforeinstallprompt`-Ereignis wird **beim Modul-Import** gepuffert, nicht in einem
+  `useEffect`: Es trifft oft ein, bevor React gemountet hat — ein Effekt-Listener kommt zu
+  spät und der Knopf bleibt aus, obwohl der Browser installieren würde.
+
+- **`npm run check:pwa`** (`scripts/check-pwa.mjs`) — prüft das **gebaute `dist/`**, nicht
+  die Konfiguration, und leitet die erwartete `base` aus den Asset-Pfaden in
+  `dist/index.html` ab, statt sie noch einmal selbst zu behaupten.
+
+  Der gefährlichste Fehler dieser Klasse **fällt lokal nie auf**: Laufen `base` und
+  `start_url`/`scope` auseinander, installiert der Browser einen Scope, den es nicht gibt
+  — `vite preview` liefert für jeden Pfad die index.html aus, im Entwicklungsbetrieb sieht
+  alles richtig aus, und erst auf GitHub Pages startet die installierte App ins Nichts.
+  Geprüft werden ausserdem: Pflichtfelder im Manifest · jede Icon- und Screenshot-Datei
+  existiert **und hat die deklarierte Pixelgrösse** (eine lügende `sizes`-Angabe lässt
+  Chrome das Icon stillschweigend verwerfen) · Icons ≥192 und ≥512 · Service Worker ·
+  die vier iOS-/Mobile-Meta-Tags · `apple-touch-icon`. In `npm run verify` eingereiht,
+  nach `build` und vor den Browserläufen. Fünf Fehlerklassen gegengetestet.
+
+- **`npm run make:screenshots`** (`scripts/make-screenshots.mjs`) — erzeugt die
+  Manifest-Screenshots per Playwright aus der echten gebauten App (412×915). Mit ihnen
+  zeigt Chrome auf Android den reichen Installationsdialog statt einer kargen Zeile.
+  Braucht zwei Bauschritte (`build` → `make:screenshots` → `build`); wer den zweiten
+  vergisst, erfährt es von `check:pwa`.
+
 ### Fixed
+- **Die vier fehlenden iOS-/Mobile-Meta-Tags** in `index.html`. Ohne sie startete eine vom
+  Home-Bildschirm geöffnete App auf älteren iOS-Geräten als Safari-Tab **mit
+  Browserleiste**, und unter dem Icon stand der ganze `<title>` („Anatomie Fokus ·
+  Muskelfinder", abgeschnitten) statt „Muskelfinder".
+  `apple-mobile-web-app-status-bar-style` steht auf `default`, nicht
+  `black-translucent`: Die App startet hell, translucent hätte den Inhalt unter die
+  Statusleiste geschoben und die Uhrzeit weiss auf hellem Grund gezeichnet.
+
+### Changed
+- **Manifest um `id`, `display_override`, `categories`, `screenshots` erweitert**
+  (`vite.config.ts`). `id` ist der wichtige Teil: Ohne es leitet der Browser die
+  App-Identität aus `start_url` ab — eine spätere Änderung daran (etwa auf `#/heute`)
+  hätte installierte Apps als **andere** App gelten lassen, mit zwei Icons und
+  Neuinstallation. Der gesetzte Wert entspricht dem bisherigen impliziten,
+  **bestehende Installationen bleiben also gültig**.
+  **Bewusst kein `orientation`:** Die Fächer-Tabelle und die Muskelbilder gewinnen im
+  Querformat, und ein erzwungenes Portrait wäre auf einem Tablet nur lästig.
+- **Segment-Nachtrag als redaktionelle Ebene** (2026-07-27, `src/data/segments.ts`,
+  `src/data/editorial/segments.json`). Ein Abgleich gegen die `{{Infobox Muskel}}` der
+  deutschen Wikipedia (143 von 150 Muskeln getroffen, Tabelle in
+  `docs/pruefung/vergleich-wikipedia.csv`) zeigte 48 Datensätze mit leerem `segments`.
+
+  **Die 48 sind nicht 48 Lücken** — und das ist der eigentliche Befund. Blind aufgefüllt
+  hätte man Anatomie erfunden:
+  - **16 entfallen:** Muskeln am reinen Hirnnerv (V3/VII) — M. masseter, die Mimik,
+    Platysma. Die haben keine spinalen Segmente. Das Feld ist nicht unfertig, es ist
+    fertig. Wikipedia lässt es dort ebenfalls leer.
+  - **9 zu klären:** autochthone Rückenmuskulatur an den Rr. dorsales, segmental über
+    ihre ganze Spannweite innerviert. Ein einzelner String trifft das nicht — erst das
+    Modell entscheiden.
+  - **23 echte Lücken**, alle in der unteren Extremität/Fuß: eine geschlossene
+    Migrationslücke, keine verstreuten Einzelfälle. **20 davon sind eingetragen —
+    als `ungeprueft`** (die 3 ohne Wikipedia-Vorschlag bleiben `offen`).
+
+  **`ungeprueft` ist ein eigener Status, kein stiller Wert.** Auf Verlangen des
+  Projektinhabers stehen die 20 Wikipedia-Werte jetzt im Bestand, aber sichtbar
+  gekennzeichnet: `withSegments` setzt `Muscle.segmentsUngeprueft`, und Kartenrückseite
+  (`facts.ts`) wie Detailseite hängen einen **Stern an das Label** — „Segmente *", mit
+  Legende darunter. Der Stern steht am Label, nicht am Wert, damit ihn niemand für einen
+  Teil der Segmentangabe liest. `quelle` nennt Artikel, Datum und ausdrücklich
+  „NOCH NICHT im Lehrbuch gegengelesen". Nach dem Nachschlagen: Status auf `offen`,
+  `quelle` durch die Buchstelle ersetzen — der Stern verschwindet von selbst.
+
+  Die Werte sind auf die Hausschreibweise normalisiert („L5-S2" → „L5, S1, S2"), per
+  Skript statt von Hand: Übertragungsfehler sind genau die Fehlerklasse, um die es hier
+  geht. Die Klammer-Nuance bleibt erhalten („S1, S2 (L5)" = geringer/variabler Anteil).
+
+  Die Ebene liegt unter `editorial/`, nicht unter `generated/` (das überschreibt
+  `npm run migrate:data`) — dieselbe Regel wie bei `etymology.ts` und `palpation.ts`.
+  Gelesen wird ausschliesslich `segments`; `vorschlagWikipedia` ist ein
+  Nachschlage-Hinweis, kein Wert. **Der Vergleich findet Verdachtsfälle, er entscheidet
+  sie nicht** — Wikipedia war im Gegentest oft die schwächere Quelle (bei der Innervation
+  ist der eigene Bestand meist präziser, etwa M. biceps femoris nach Köpfen getrennt).
+
+### Changed
+- **`check:daten` sagt jetzt die Wahrheit über die Segmente** (`scripts/check-data.mjs`).
+  Zwei Fehler in einer Zeile: die nackte „48" las sich als Arbeitsvorrat, war aber zu
+  einem Drittel schon fertig — und sie zählte die **generierten** Daten, ohne die
+  Nachtragsebene, hätte also 48 Lücken behauptet, wo die App 28 zeigt. Neu:
+  `ohne Segment: 28 (48 generiert, 20 nachgetragen)`, darunter die Einordnung
+  (`16 entfaellt · 9 zu klaeren · 3 offen`) und eine Warnzeile für die 20 ungeprüften.
+- **`npm run export:csv` — der Bestand als Tabellen** (2026-07-27, `scripts/export-csv.mjs`).
+  Fachliche Richtigkeit kann kein Test prüfen; ein Mensch muss sie lesen, und zwar nicht in JSON.
+  20 Dateien nach `docs/pruefung/csv/`: alle 150 Datensätze, je Region, je Gelenkgruppe, die
+  Berufs-Vorsortierung, die funktionellen Gruppen, die 47 bildlosen Muskeln (21 davon in der
+  3D-App) und die wörtlich doppelten Felder. Semikolon + BOM + CRLF, damit Excel sie mit
+  Doppelklick richtig öffnet. **Keine zweite Wahrheit:** Das Skript lädt über Vites SSR-Lader
+  dieselben Module wie die App, statt die JSONs ein zweites Mal zu deuten. Wegweiser inkl.
+  „welche Spalte kommt aus welcher Quelldatei": `docs/pruefung/LIESMICH.md`.
+- **Mehrere Gelenkgruppen auf einmal** (2026-07-27) — vom Projektinhaber verlangt: „Hand +
+  Ellenbogen" ist der Regelfall im Kurs, nicht die Ausnahme.
+
+  Bis hierher legte **jeder** Klick im `JointGroupPicker` sofort Karten an. Auf dem
+  Erststart-Bildschirm war das eine Einbahnstraße: Sobald die erste Gruppe im Kasten lag, war
+  der Kasten nicht mehr leer — also ersetzte `/heute` den ganzen `DeckStarter` durch den
+  Tagesplan, und die zweite Gruppe war dort **gar nicht mehr wählbar**. Wer sie trotzdem wollte,
+  musste erst den Weg nach `/karteikasten` finden.
+
+  Jetzt kreuzt man an und legt **einmal** an:
+  - Die Zahl am Knopf ist die **Vereinigung, nicht die Summe** (`neueKartenDerAuswahl`). 26
+    Muskeln liegen in mehreren Gruppen — „Hüftgelenk 23 + Kniegelenk 15" legt **31** Karten an,
+    nicht 38. Die Differenz wird in der Leiste **benannt**, statt sie stillschweigend zu
+    verschlucken.
+  - Ab `MAX_DAILY_DOSE` (40) fragt das Anlegen nach — die Schwelle ist die eigene Obergrenze der
+    App, nicht Geschmack. Zwei benachbarte Gruppen (Hand + Ellenbogen = 35) laufen ohne Reibung
+    durch, alle elf auf einmal (148) nicht.
+  - **Rahmen-Invariante 2 (ADR 0009) bleibt:** Ohne Auswahl gibt es **keinen** Primärbutton; die
+    Leiste erscheint erst als Folge einer Wahl, die der Schüler getroffen hat. Zwei Prüfzeilen
+    halten beide Richtungen fest.
+  - Die Zeilen sind jetzt `label` + Kästchen statt Knöpfe (dasselbe Muster wie die Auswahlliste
+    auf `/karteikasten`); die ganze Zeile bleibt das Klickziel.
+
+  Neue Prüfzeilen: `JointGroupPicker.test.tsx` (Ankreuzen legt nichts an · Vereinigung ·
+  Rückfrage-Schwelle in beide Richtungen · Primärbutton-Invariante), `joint-groups.test.ts`
+  (`neueKartenDerAuswahl` gegen den echten Bestand), `check:wege` Station **2b2** (zwei Gruppen
+  in einem Zug: versprochen == angelegt) und `check:oberflaeche` Station **6** — die
+  Aktionsleiste existiert nur mit Auswahl und klebt unten, ein Ruhezustand-Lauf hätte sie **nie**
+  gerendert (axe Hell+Dunkel auf 320 px, Überlauf, Lage gegen die TabBar, Daumenmaß).
+
+### Changed
+- **Die Berufswahl verspricht eine Reihenfolge, keine Stoffgrenze** (2026-07-27). Hinter
+  „Ergotherapie" stand „Hand, Arm, Feinmotorik", hinter „Physiotherapie" „Extremitäten, Rumpf,
+  Palpation am Menschen". Vom Projektinhaber (Lehrkraft) beanstandet, und zu Recht: Das liest
+  sich als Stoffgrenze und ist fachlich falsch — ein Ergo braucht die obere Extremität
+  vollständig. Die App schränkt auch nichts ein, `orderedJointGroups` **sortiert nur**.
+  Die Texte nennen jetzt genau das („Hand, Ellenbogen und Schulter zuerst"), und der Satz
+  „Sie sortiert nur — jede Gelenkgruppe bleibt für jeden wählbar" steht auf dem Schirm. Eine
+  Prüfzeile hält **beide** Hälften fest: den Satz und dass die Datenschicht ihn hält.
+  Logopädie bleibt unverändert (vom Projektinhaber ausdrücklich als passend bestätigt).
+
+### Fixed
+- **„Stau" nur noch, wenn wirklich etwas liegen geblieben ist** (2026-07-27) — die Nebenwirkung
+  der Mehrfachwahl, gefunden beim Nachrechnen der Schwellen. Wer 45 Karten in einem Zug anlegt,
+  hat 45 **fällige**, aber **null versäumte** Karten; `getTodayPlan` kannte den Unterschied nicht
+  und die App hätte ihn eine Sekunde nach seiner eigenen Wahl mit „Wir holen den Stau in Etappen
+  auf" begrüßt. Genau dieser Satz war der Grund, die vier Regionen durch elf Gelenkgruppen zu
+  ersetzen — ohne den Fix wäre er zurück. `TodayPlan.overdueTotal` trägt jetzt die Unterscheidung,
+  der Deckel auf die Tagesdosis bleibt unverändert. Prüfzeilen in `today.test.ts` (4b/4c) und
+  `TodayPage.test.tsx`, gegengetestet (Verzweigung zurückgedreht → Test fällt).
 - **Der Hand-Kleinfingerballen ist lernbar** (ADR 0012, 2026-07-26) — der letzte offene Punkt
   aus `docs/todo.md`, gefunden am 2026-07-14.
 

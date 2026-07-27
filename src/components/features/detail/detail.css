@@ -149,6 +149,17 @@
   line-height: 1.5;
 }
 
+/* Legende zum Stern am Label: nachgetragener, noch nicht gegengelesener Wert.
+   Leise gesetzt — sie soll den Wert einordnen, nicht vor ihm warnen. */
+.detail-note {
+  margin: var(--spacing-sm) 0 0;
+  max-width: var(--measure);
+  font-family: var(--font-ui);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text-tertiary);
+}
+
 /* ---- Bild-Fenster ----------------------------------------------------- */
 .image-viewer {
   margin: 0;

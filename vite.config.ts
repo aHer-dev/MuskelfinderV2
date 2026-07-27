@@ -32,13 +32,38 @@ export default defineConfig({
         // Muessen dem base folgen — sonst installiert die PWA einen Scope, der nicht existiert.
         start_url: base,
         scope: base,
+        // Ohne `id` leitet der Browser die App-Identitaet aus `start_url` ab. Dann gilt eine
+        // installierte App nach einer Aenderung von `start_url` (etwa auf '#/heute') als
+        // ANDERE App: Der Nutzer haette zwei Icons und muesste neu installieren. Explizit
+        // gesetzt bleibt die Identitaet an `base` haengen und ueberlebt solche Umbauten.
+        id: base,
         display: 'standalone',
+        // Rueckfallkette, falls ein Browser `standalone` nicht kann.
+        display_override: ['standalone', 'minimal-ui'],
+        // BEWUSST KEIN `orientation`: Die Faecher-Tabelle und die Muskelbilder gewinnen im
+        // Querformat, und ein erzwungenes Portrait waere auf einem Tablet nur laestig.
+        // Ein Feld, das die Wahl des Nutzers ueberschreibt, braucht einen Grund — hier gibt
+        // es keinen.
+        categories: ['education', 'medical'],
         background_color: '#f1efe9',
         theme_color: '#f1efe9',
         icons: [
           { src: 'pwa-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'pwa-512.png', sizes: '512x512', type: 'image/png' },
           { src: 'pwa-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+        ],
+        // Mit Screenshots zeigt Chrome auf Android den reichen Installationsdialog (Bild +
+        // Beschreibung) statt der kargen Zeile. `form_factor: 'narrow'` ist Pflicht, sonst
+        // ignoriert Chrome sie fuers Handy. Erzeugt von `scripts/make-screenshots.mjs`.
+        screenshots: [
+          {
+            src: 'screenshots/heute-narrow.png', sizes: '412x915', type: 'image/png',
+            form_factor: 'narrow', label: 'Der Tagesplan mit den fälligen Karten',
+          },
+          {
+            src: 'screenshots/lernkarten-narrow.png', sizes: '412x915', type: 'image/png',
+            form_factor: 'narrow', label: 'Eine Lernkarte mit Muskelbild',
+          },
         ],
       },
       workbox: {

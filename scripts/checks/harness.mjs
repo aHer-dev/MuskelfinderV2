@@ -15,11 +15,16 @@ import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { chromium } from 'playwright';
+import { leseBaseAusDist } from '../lib/dist-base.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const AXE = readFileSync(join(ROOT, 'node_modules/axe-core/axe.min.js'), 'utf8');
 const PORT = Number(process.env.CHECK_PORT ?? 4319);
-const BASE = `http://localhost:${PORT}/MuskelfinderV2/`;
+/* Die base wird aus `dist/index.html` ABGELESEN, nicht hier wiederholt. Stand sie
+   als Literal, lief bei einem Wechsel (eigene Domain, anderer Repo-Name) die
+   Pruefung gegen eine URL, die es nicht gibt — und meldete Fehler, die keine sind.
+   Vite schreibt die Asset-Pfade beim Build um; sie sind die verlaessliche Spur. */
+const BASE = `http://localhost:${PORT}${leseBaseAusDist(join(ROOT, 'dist'))}`;
 
 const AXE_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'];
 

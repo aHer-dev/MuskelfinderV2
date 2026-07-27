@@ -13,6 +13,18 @@
          tatsaechlichen Theme; `useTheme` zieht sie beim Umschalten nach. -->
     <meta name="theme-color" content="#f1efe9" />
     <meta name="description" content="Muskelfinder — Nachschlagewerk & Lern-Tool für die Skelettmuskulatur." />
+    <!-- iOS liest das Manifest erst ab 16.4 vollstaendig. Ohne diese drei Zeilen startet
+         eine vom Home-Bildschirm geoeffnete App auf aelteren Geraeten als Safari-Tab MIT
+         Browserleiste, und unter dem Icon stuende der ganze <title> — abgeschnitten.
+         `apple-mobile-web-app-title` haelt den Namen kurz; `mobile-web-app-capable` ist
+         die standardisierte Fassung, die Chrome statt der Apple-Variante erwartet. -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Muskelfinder" />
+    <!-- `default` statt `black-translucent`: Die App startet hell (2026-07-26); translucent
+         wuerde den Inhalt UNTER die Statusleiste schieben und die Uhrzeit auf hellem Grund
+         weiss zeichnen. -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>Anatomie Fokus · Muskelfinder</title>
     <!-- Theme vor dem ersten Paint setzen (kein Flash). Liest den persistierten Zustand-Store;
          ohne eigene Wahl gilt **hell** — dieselbe Regel wie in `useThemeStore`. Diese Datei und

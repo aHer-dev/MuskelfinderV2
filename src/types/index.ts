@@ -66,6 +66,13 @@ export interface Muscle {
   functionDescription: string;
   innervation: string;       // „N. axillaris"
   segments: string;          // „C5–C6"
+  /**
+   * `true`, wenn der Segment-Wert aus dem Wikipedia-Abgleich nachgetragen und **noch
+   * nicht im Lehrbuch nachgeschlagen** ist (`status: 'ungeprueft'` in
+   * `src/data/editorial/segments.json`). Die Anzeige haengt dann einen Stern an das
+   * Label — ein ungeprüfter Wert ohne Hinweis waere die stille Behauptung, er sei geprueft.
+   */
+  segmentsUngeprueft?: boolean;
   clinicalNote?: string;     // klinischer Bezug
   difficulty: Difficulty;    // 1..3 (Punkt-Indikator)
   images: MuscleImage[];

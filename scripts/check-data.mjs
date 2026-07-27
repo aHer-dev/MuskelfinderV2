@@ -137,6 +137,25 @@ const ohneUrsprung = muscles.filter((m) => !m.origin?.trim());
 const ohneFunktion = muscles.filter((m) => !m.functionDescription?.trim());
 const ohneSegment = muscles.filter((m) => !m.segments?.trim());
 
+/* „48 ohne Segment" war die irrefuehrendste Zahl im Bericht: 16 davon sind Muskeln
+   am Hirnnerv, die gar keine Segmente HABEN — da fehlt nichts. Seit dem Wikipedia-
+   Abgleich steht die Einordnung in `src/data/editorial/segments.json`, also zeigt der
+   Bericht jetzt, wie viel davon wirklich Arbeit ist. */
+const segmentNachtrag = (() => {
+  try {
+    const eintraege = Object.values(read('src/data/editorial/segments.json').muskeln ?? {});
+    const z = { entfaellt: 0, klaeren: 0, offen: 0, ungeprueft: 0, belegt: 0 };
+    for (const e of eintraege) {
+      if (e.status === 'ungeprueft') z.ungeprueft++;
+      else if (e.segments?.trim()) z.belegt++;
+      else z[e.status] = (z[e.status] ?? 0) + 1;
+    }
+    return z;
+  } catch {
+    return null;  /* Datei fehlt -> die alte Zahl allein, kein harter Fehler */
+  }
+})();
+
 /* ═══════════════════════════════════════════════════════════════════════
    AUSGABE
    ═══════════════════════════════════════════════════════════════════════ */
@@ -160,7 +179,23 @@ for (const [titel, koll] of Object.entries(bericht)) {
 }
 
 L('\n── DATENLUECKEN (wie in V1 bewusst, nur zur Kontrolle) ──');
-L(`  ohne Bild: ${ohneBild.length} · ohne Ursprung: ${ohneUrsprung.length} · ohne Funktionstext: ${ohneFunktion.length} · ohne Segment: ${ohneSegment.length}`);
+/* Achtung: `muscles` sind die GENERIERTEN Daten, ohne die Nachtragsebene aus
+   `editorial/`. Die Zahl, die den Nutzer erreicht, ist die nach dem Nachtrag —
+   sonst behauptet der Bericht 48 Luecken, wo die App 28 zeigt. */
+const nachgetragen = segmentNachtrag ? segmentNachtrag.ungeprueft + segmentNachtrag.belegt : 0;
+const ohneSegmentEffektiv = ohneSegment.length - nachgetragen;
+L(`  ohne Bild: ${ohneBild.length} · ohne Ursprung: ${ohneUrsprung.length} · ohne Funktionstext: ${ohneFunktion.length}`
+  + ` · ohne Segment: ${ohneSegmentEffektiv}`
+  + (nachgetragen ? ` (${ohneSegment.length} generiert, ${nachgetragen} nachgetragen)` : ''));
+if (segmentNachtrag) {
+  const { entfaellt, klaeren, offen, ungeprueft, belegt } = segmentNachtrag;
+  L(`  Segmente eingeordnet: ${entfaellt} entfaellt (Hirnnerv, korrekt leer) · ${klaeren} zu klaeren (autochthon) · ${offen} offen`
+    + (belegt ? ` · ${belegt} belegt` : ''));
+  if (ungeprueft > 0) {
+    L(`  ⚠ ${ungeprueft} Segment-Werte sind UNGEPRUEFT (aus dem Wikipedia-Abgleich, `
+      + `Stern auf Karte und Detailseite). Zum Gegenlesen: docs/pruefung/vergleich-wikipedia.csv`);
+  }
+}
 
 /* ---- Urteil ---------------------------------------------------------- */
 L('\n── INTEGRITAET (harte Regeln) ──');
