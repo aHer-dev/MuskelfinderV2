@@ -5,6 +5,8 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { TodayPage } from './TodayPage'
 import { OnboardingPage } from './OnboardingPage'
+import { getJointGroups, orderedJointGroups } from '../data/joint-groups'
+import { PROFESSIONS } from '../data/profession'
 import { useProfileStore } from '../store/useProfileStore'
 import { useProgressStore } from '../store/useProgressStore'
 
@@ -36,6 +38,28 @@ describe('Onboarding — zwei Fragen, dann WÄHLT DER SCHÜLER (ADR 0009)', () =
     expect(screen.getByRole('heading', { level: 1, name: /Was lernst du\?/i })).toBeInTheDocument()
     for (const label of ['Physiotherapie', 'Ergotherapie', 'Logopädie']) {
       expect(screen.getByRole('button', { name: new RegExp(label) })).toBeInTheDocument()
+    }
+  })
+
+  it('die Berufswahl verspricht eine REIHENFOLGE, keine Stoffgrenze', () => {
+    /* Beanstandet vom Projektinhaber (Lehrkraft, 2026-07-27): Hinter „Ergotherapie" stand
+       „Hand, Arm, Feinmotorik", hinter „Physiotherapie" „Extremitäten, Rumpf, Palpation am
+       Menschen". Das liest sich als Stoffgrenze und ist fachlich falsch — ein Ergo braucht
+       die obere Extremität vollständig. Die App schränkt auch gar nichts ein.
+
+       Der Test hält BEIDE Hälften des Versprechens fest: dass der Satz auf dem Schirm steht
+       UND dass die Datenschicht ihn hält. Ein Text ist ein Versprechen (UX-Review-Regel 1),
+       und Prosa wird sonst nicht mitgetestet. */
+    renderIn(<TodayPage />)
+    expect(
+      screen.getByText(/sortiert nur — jede Gelenkgruppe bleibt für jeden wählbar/i),
+    ).toBeInTheDocument()
+
+    for (const p of PROFESSIONS) {
+      const { typisch, weitere } = orderedJointGroups(p)
+      expect(typisch.length + weitere.length, `${p} erreicht nicht alle Gruppen`).toBe(
+        getJointGroups().length,
+      )
     }
   })
 
@@ -104,12 +128,17 @@ describe('Onboarding — zwei Fragen, dann WÄHLT DER SCHÜLER (ADR 0009)', () =
     fireEvent.click(screen.getByRole('button', { name: /Ohne Datum weiter/i }))
     expect(deckNames()).toEqual([])
 
-    // „Kopf" ist der kleinste Bereich — die Zahl am Knopf ist die Zahl der Karten.
-    const kopf = screen.getByRole('button', { name: /Kopf/ })
-    const versprochen = Number(kopf.textContent?.match(/(\d+)\s*$/)?.[1])
+    /* Seit dem 2026-07-27 kreuzt man an und legt EINMAL an (Mehrfachwahl) — der Kern von
+       ADR 0009 gilt unveraendert: Bis der Schueler den Knopf drueckt, ist der Kasten leer. */
+    const kopf = screen.getByRole('checkbox', { name: /Mimik & Kopfmuskulatur/ })
+    fireEvent.click(kopf)
+    expect(deckNames()).toEqual([])
+
+    const anlegen = screen.getByRole('button', { name: /anlegen/i })
+    const versprochen = Number(anlegen.textContent?.match(/\d+/)?.[0])
     expect(versprochen).toBeGreaterThan(0)
 
-    fireEvent.click(kopf)
+    fireEvent.click(anlegen)
     expect(deckNames()).toHaveLength(versprochen)
   })
 

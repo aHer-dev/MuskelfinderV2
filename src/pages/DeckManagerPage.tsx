@@ -246,8 +246,8 @@ export function DeckManagerPage() {
       <div className="deck-section">
         <JointGroupPicker
           headingId="deck-gelenke"
-          title="Ganze Gelenkgruppe dazulegen"
-          hint="Die schnelle Art, den Kasten zu erweitern — z. B. wenn im Kurs ein neues Gelenk dran ist. Die Zahl ist, was der Klick anlegt."
+          title="Ganze Gelenkgruppen dazulegen"
+          hint="Die schnelle Art, den Kasten zu erweitern — z. B. wenn im Kurs ein neues Gelenk dran ist. Kreuze an, was du brauchst, auch mehrere; die Zahl am Knopf ist, was angelegt wird."
         />
       </div>
 

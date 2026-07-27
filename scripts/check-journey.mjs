@@ -70,6 +70,24 @@ await withApp(async ({ page, goto, errors, BASE }) => {
   const versprochen = parseInt((await gruppenKnopf.locator('.jgp__count').innerText()).trim(), 10);
   await gruppenKnopf.scrollIntoViewIfNeeded();
   await gruppenKnopf.click();
+  await page.waitForTimeout(300);
+
+  /* Seit der Mehrfachwahl (2026-07-27) ist Ankreuzen NICHT Anlegen. Das ist die Halbzeit,
+     in der ADR 0009 am verletzlichsten ist: Ein Kaestchen, das schon Karten anlegt, waere
+     wieder die App, die entscheidet. */
+  const nachAnkreuzen = await page.evaluate(() => {
+    const raw = localStorage.getItem('mf.progress');
+    if (!raw) return 0;
+    return Object.keys(JSON.parse(raw)?.state?.flashcards?.cards ?? {}).length;
+  });
+  pruefe(nachAnkreuzen === 0, `Ankreuzen allein legt nichts an (${nachAnkreuzen} Karten)`);
+
+  const anlegen = page.locator('.jgp__bar .btn--primary').first();
+  pruefe(await anlegen.count() > 0, 'Mit einer Wahl erscheint genau ein Anlegen-Knopf');
+  const amKnopf = parseInt((await anlegen.innerText()).match(/\d+/)?.[0] ?? '0', 10);
+  pruefe(amKnopf === versprochen,
+    `Der Knopf nennt dieselbe Zahl wie die Zeile (${amKnopf} == ${versprochen})`);
+  await anlegen.click();
   await page.waitForTimeout(500);
   const angelegt = await page.evaluate(() => {
     const s = JSON.parse(localStorage.getItem('mf.progress'));
@@ -126,6 +144,9 @@ await withApp(async ({ page, goto, errors, BASE }) => {
   const schulter = page.locator('.jgp__group').filter({ hasText: 'Schultergelenk' }).first();
   const versprochen2 = parseInt((await schulter.locator('.jgp__count').innerText()).trim(), 10);
   await schulter.click();
+  await page.waitForTimeout(300);
+  const anlegen2 = page.locator('.jgp__bar .btn--primary').first();
+  await anlegen2.click();
   await page.waitForTimeout(500);
   const angelegt2 = await page.evaluate(() => {
     const s = JSON.parse(localStorage.getItem('mf.progress'));
@@ -133,6 +154,44 @@ await withApp(async ({ page, goto, errors, BASE }) => {
   });
   pruefe(angelegt + versprochen2 === angelegt2,
     `„Schultergelenk" nach „Ellenbogen": ${versprochen2} versprochen == ${angelegt2 - angelegt} neu angelegt (Ueberlappung abgezogen)`);
+
+  /* ---- STATION 2b2: ZWEI Gruppen auf einmal — die Zahl ist die Vereinigung ----
+     Vom Projektinhaber verlangt (2026-07-27): „Hand + Ellenbogen" ist der Regelfall im Kurs.
+     Vorher legte jeder Klick sofort an, und auf `/heute` war nach der ersten Gruppe der ganze
+     Auswahlbildschirm weg (der Kasten war nicht mehr leer) — die zweite Gruppe war dort gar
+     nicht mehr waehlbar.
+
+     Die harte Behauptung ist die ARITHMETIK: 26 Muskeln liegen in mehreren Gruppen, also ist
+     die Summe der beiden Zeilenzahlen groesser als das, was der Klick anlegt. Ein Knopf, der
+     die Summe nennt, luegt. */
+  L('\n2b2. Zwei Gruppen in einem Zug — die Zahl am Knopf ist die Vereinigung');
+  const g1 = page.locator('.jgp__group').filter({ hasText: /^Hüftgelenk/ }).first();
+  const g2 = page.locator('.jgp__group').filter({ hasText: /^Kniegelenk/ }).first();
+  const z1 = parseInt((await g1.locator('.jgp__count').innerText()).trim(), 10);
+  const z2 = parseInt((await g2.locator('.jgp__count').innerText()).trim(), 10);
+  await g1.scrollIntoViewIfNeeded();
+  await g1.click();
+  await g2.click();
+  await page.waitForTimeout(300);
+
+  const anlegen3 = page.locator('.jgp__bar .btn--primary').first();
+  const versprochen3 = parseInt((await anlegen3.innerText()).match(/\d+/)?.[0] ?? '0', 10);
+  pruefe(versprochen3 < z1 + z2,
+    `Der Knopf nennt die Vereinigung, nicht die Summe (${versprochen3} < ${z1} + ${z2})`);
+  /* Und er sagt AUCH, warum die Zahl kleiner ist — sonst haelt der Schueler sie fuer falsch. */
+  pruefe(/liegen? in mehreren/.test(await page.locator('.jgp__bar-note').innerText().catch(() => '')),
+    'Die Leiste benennt die Doppelten, statt sie stillschweigend zu verschlucken');
+
+  await anlegen3.click();
+  await page.waitForTimeout(500);
+  const angelegt3 = await page.evaluate(() => {
+    const s = JSON.parse(localStorage.getItem('mf.progress'));
+    return Object.keys(s.state.flashcards.cards).length;
+  });
+  pruefe(angelegt2 + versprochen3 === angelegt3,
+    `Zwei Gruppen in einem Zug: ${versprochen3} versprochen == ${angelegt3 - angelegt2} angelegt`);
+  pruefe(await page.locator('.jgp__bar').count() === 0,
+    'Nach dem Anlegen ist die Auswahl leer — kein zweiter Klick legt dasselbe nochmal an');
 
   /* ---- STATION 2c: Der Handmuskel ist wirklich lernbar (ADR 0012) ----
      Bis zum 2026-07-26 hiess „M. abductor digiti minimi" in Hand UND Fuss gleich, und der
@@ -146,7 +205,9 @@ await withApp(async ({ page, goto, errors, BASE }) => {
      fuehrt wirklich zum Handmuskel. */
   L('\n2c. Der Handmuskel ist lernbar — nicht nur der gleichnamige Fussmuskel');
   const hand = page.locator('.jgp__group').filter({ hasText: /^Hand/ }).first();
+  await hand.scrollIntoViewIfNeeded();
   await hand.click();
+  await page.locator('.jgp__bar .btn--primary').first().click();
   await page.waitForTimeout(500);
 
   /* DER Beweis: Ein Klick auf „Hand" legt den HAND-Schluessel an. Vorher legte er den
@@ -171,6 +232,7 @@ await withApp(async ({ page, goto, errors, BASE }) => {
   const fuss = page.locator('.jgp__group').filter({ hasText: /^Sprunggelenk/ }).first();
   await fuss.scrollIntoViewIfNeeded();
   await fuss.click();
+  await page.locator('.jgp__bar .btn--primary').first().click();
   await page.waitForTimeout(500);
 
   const zwillingsZeilen = page.locator('table tbody tr').filter({ hasText: 'M. abductor digiti minimi' });

@@ -1,0 +1,59 @@
+﻿Feld;Wie oft;Betroffene Muskeln;Regionen;Ist derselbe Muskel;Wortlaut
+Ansatz;4;M. obturatorius internus · M. obturatorius externus · M. gemellus superior · M. gemellus inferior;Untere Extremität;nein;Fossa trochanterica des Femur
+Ansatz;3;M. latissimus dorsi · M. subscapularis · M. teres major;Obere Extremität;nein;Crista tuberculi minoris humeri
+Ansatz;3;M. sartorius · M. gracilis · M. semitendinosus;Untere Extremität;nein;Tibia, Facies medialis (Pes anserinus)
+Ansatz;3;M. vastus medialis · M. vastus intermedius · M. vastus lateralis;Untere Extremität;nein;Tuberositas tibiae (via Patellarsehne), Retinaculum patellae
+Ansatz;2;M. rhomboideus major · M. rhomboideus minor;Obere Extremität;nein;Margo medialis scapulae
+Ansatz;2;M. triceps brachii – Caput longum · M. triceps brachii – Caput laterale und mediale;Obere Extremität;nein;Olecranon ulnae
+Ansatz;2;M. flexor pollicis longus · M. extensor pollicis longus;Obere Extremität;nein;Basis der Endphalanx des Daumens
+Ansatz;2;M. flexor digiti minimi brevis · M. abductor digiti minimi;Obere Extremität;nein;Basis der Grundphalanx des V. Fingers, ulnares Sesambein
+Ansatz;2;M. psoas major · M. iliacus;Untere Extremität;nein;Trochanter minor des Femur
+Ansatz;2;M. gastrocnemius · M. soleus;Untere Extremität;nein;Tuber calcanei (über Achillessehne)
+Ansatz;2;M. geniohyoideus · M. sternohyoideus;Kopf & Hals;nein;Corpus ossis hyoidei
+Ansatz;2;M. stylohyoideus · M. omohyoideus;Kopf & Hals;nein;Corpus ossis hyoidei (Cornu majus)
+Funktion (Text);2;M. rhomboideus major · M. rhomboideus minor;Obere Extremität;nein;Retraktion, leichte Elevation und Abwärtsrotation der Scapula
+Funktion (Text);2;M. extensor carpi radialis brevis · M. extensor carpi radialis longus;Obere Extremität;nein;Dorsalextension und Radialabduktion im Handgelenk
+Funktion (Text);2;M. adductor longus · M. adductor brevis;Untere Extremität;nein;"Führt den Oberschenkel zur Körpermitte (Adduktion); unterstützt zugleich die Hüftbeugung und eine leichte Außenrotation"
+Funktion (Text);2;M. obturatorius internus · M. obturatorius externus;Untere Extremität;nein;Dreht den Oberschenkel im Hüftgelenk nach außen
+Funktion (Text);2;M. gemellus superior · M. gemellus inferior;Untere Extremität;nein;Unterstützt die Außenrotation im Hüftgelenk
+Innervation;14;M. triceps brachii – Caput longum · M. triceps brachii – Caput laterale und mediale · M. anconeus · M. brachioradialis · M. supinator · M. extensor carpi radialis brevis · M. extensor carpi radialis longus · M. extensor carpi ulnaris · M. extensor digitorum · M. extensor digiti minimi · M. extensor indicis · M. abductor pollicis longus · M. extensor pollicis brevis · M. extensor pollicis longus;Obere Extremität;nein;N. radialis
+Innervation;10;M. biceps femoris – Caput longum · M. semitendinosus · M. semimembranosus · M. popliteus · M. gastrocnemius · M. soleus · M. plantaris · M. tibialis posterior · M. flexor digitorum longus · M. flexor hallucis longus;Untere Extremität;nein;N. tibialis
+Innervation;9;Mm. interspinales · Mm. spinales · Mm. intertransversarii mediales · Mm. rotatores · M. semispinalis · Mm. multifidi · Mm. iliocostales · Mm. longissimi · Mm. splenii;Wirbelsäule & Rumpf;nein;Rr. dorsales der Spinalnerven
+Innervation;8;M. pronator teres · M. pronator quadratus · M. flexor carpi radialis · M. palmaris longus · M. flexor digitorum superficialis · M. flexor pollicis longus · M. abductor pollicis brevis · M. opponens pollicis;Obere Extremität;nein;N. medianus
+Innervation;8;M. flexor carpi ulnaris · Mm. interossei palmares I–III · Mm. interossei dorsales I–IV · M. flexor digiti minimi brevis · M. abductor digiti minimi · M. opponens digiti minimi · M. palmaris brevis · M. adductor pollicis;Obere Extremität;nein;N. ulnaris
+Innervation;7;M. quadratus plantae · Mm. interossei plantares · Mm. interossei dorsales · M. adductor hallucis · M. flexor digiti minimi brevis · M. abductor digiti minimi · M. opponens digiti minimi;Untere Extremität;nein;N. tibialis (N. plantaris lateralis)
+Innervation;6;M. piriformis · M. obturatorius internus · M. gemellus superior · M. gemellus inferior · M. quadratus femoris · M. coccygeus;Untere Extremität · Wirbelsäule & Rumpf;nein;Plexus sacralis
+Innervation;6;M. sartorius · M. rectus femoris · M. vastus medialis · M. vastus intermedius · M. vastus lateralis · M. articularis genus;Untere Extremität;nein;N. femoralis
+Innervation;6;M. stylohyoideus · M. orbicularis oculi · M. procerus · M. nasalis · M. nasalis · M. corrugator supercilii;Kopf & Hals;nein;N. facialis (VII)
+Innervation;5;M. tibialis anterior · M. extensor digitorum longus · M. extensor hallucis longus · M. extensor digitorum brevis · M. extensor hallucis brevis;Untere Extremität;nein;N. peroneus profundus
+Innervation;4;M. psoas minor · M. psoas major · M. iliacus · M. quadratus lumborum;Untere Extremität · Wirbelsäule & Rumpf;nein;Plexus lumbalis
+Innervation;4;M. adductor longus · M. adductor brevis · M. obturatorius externus · M. gracilis;Untere Extremität;nein;N. obturatorius
+Innervation;3;M. trapezius – Pars descendens · M. trapezius – Pars transversa · M. trapezius – Pars ascendens;Obere Extremität;nein;N. accessorius (XI), Plexus cervicalis
+Innervation;3;M. coracobrachialis · M. biceps brachii · M. brachialis;Obere Extremität;nein;N. musculocutaneus
+Innervation;3;M. gluteus medius · M. gluteus minimus · M. tensor fasciae latae;Untere Extremität;nein;N. gluteus superior
+Innervation;3;M. serratus posterior superior · M. serratus posterior inferior · M. rectus abdominis;Wirbelsäule & Rumpf;nein;Nn. intercostales
+Innervation;3;M. obliquus externus abdominis · M. obliquus internus abdominis · M. transversus abdominis;Wirbelsäule & Rumpf;nein;Nn. intercostales, N. iliohypogastricus, N. ilioinguinalis
+Innervation;3;M. sternohyoideus · M. sternothyroideus · M. omohyoideus;Kopf & Hals;nein;Ansa cervicalis
+Innervation;2;M. rhomboideus major · M. rhomboideus minor;Obere Extremität;nein;N. dorsalis scapulae
+Innervation;2;M. deltoideus · M. teres minor;Obere Extremität;nein;N. axillaris
+Innervation;2;M. subscapularis · M. teres major;Obere Extremität;nein;N. subscapularis
+Innervation;2;M. supraspinatus · M. infraspinatus;Obere Extremität;nein;N. suprascapularis
+Innervation;2;M. fibularis longus (M. peroneus longus) · M. fibularis brevis (M. peroneus brevis);Untere Extremität;nein;N. peroneus superficialis
+Innervation;2;M. flexor digitorum brevis · M. abductor hallucis;Untere Extremität;nein;N. tibialis (N. plantaris medialis)
+Innervation;2;Mm. lumbricales · M. flexor hallucis brevis;Untere Extremität;nein;N. tibialis (N. plantaris medialis und lateralis)
+Innervation;2;M. transversus perinei profundus · M. transversus perinei superficialis;Wirbelsäule & Rumpf;nein;N. pudendus
+Name;2;M. flexor digiti minimi brevis · M. flexor digiti minimi brevis;Obere Extremität · Untere Extremität;nein;M. flexor digiti minimi brevis
+Name;2;M. abductor digiti minimi · M. abductor digiti minimi;Obere Extremität · Untere Extremität;nein;M. abductor digiti minimi
+Name;2;M. opponens digiti minimi · M. opponens digiti minimi;Obere Extremität · Untere Extremität;nein;M. opponens digiti minimi
+Name;2;M. nasalis · M. nasalis;Kopf & Hals;ja;M. nasalis
+Name;2;M. occipitofrontalis · M. occipitofrontalis;Kopf & Hals;ja;M. occipitofrontalis
+Ursprung;5;M. gemellus inferior · M. biceps femoris – Caput longum · M. semitendinosus · M. semimembranosus · M. transversus perinei superficialis;Untere Extremität · Wirbelsäule & Rumpf;nein;Tuber ischiadicum
+Ursprung;2;M. brachioradialis · M. extensor carpi radialis longus;Obere Extremität;nein;Margo lateralis humeri
+Ursprung;2;M. flexor carpi radialis · M. palmaris longus;Obere Extremität;nein;Epicondylus medialis humeri
+Ursprung;2;M. extensor carpi radialis brevis · M. extensor digitorum;Obere Extremität;nein;Epicondylus lateralis humeri, Lig. collaterale radiale, Lig. anulare radii
+Ursprung;2;M. flexor digiti minimi brevis · M. opponens digiti minimi;Obere Extremität;nein;Hamulus ossis hamati und Retinaculum flexorum
+Ursprung;2;M. gluteus medius · M. gluteus minimus;Untere Extremität;nein;Ala ossis ilii, Facies glutealis
+Ursprung;2;M. adductor brevis · M. gracilis;Untere Extremität;nein;Os pubis, Ramus inferior
+Ursprung;2;M. gemellus superior · M. coccygeus;Untere Extremität · Wirbelsäule & Rumpf;nein;Spina ischiadica
+Ursprung;2;M. tensor fasciae latae · M. sartorius;Untere Extremität;nein;Spina iliaca anterior superior
+Ursprung;2;M. vastus intermedius · M. articularis genus;Untere Extremität;nein;Corpus femoris (ventral)

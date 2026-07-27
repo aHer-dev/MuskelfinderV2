@@ -25,6 +25,8 @@ docs/architecture.md · Prozess: AGENT_WORKFLOW.md
   check:oberflaeche · check:wege). **Vor jedem „fertig" laufen lassen.** Läuft auch bei
   jedem Push automatisch (`.github/workflows/verify.yml`).
   Einzeln: `check:daten` (Dateninvarianten + Kollisionsbericht für den Fachmann),
+  `export:csv` (Bestand als Tabellen nach `docs/pruefung/csv/` — für die fachliche Prüfung
+  durch den Projektinhaber; **erzeugte** Dateien, nie von Hand pflegen),
   `check:oberflaeche` (axe/Hover/Satzspiegel im Browser), `check:wege` (Schüler-Durchlauf).
   Warum es das gibt und was es NICHT kann: `docs/pruefstrategie.md`.
 

@@ -284,6 +284,71 @@ await withApp(async ({ page, goto, runAxe, setTheme, errors }) => {
   if (errors.length) for (const e of [...new Set(errors)]) record('(leer/global)', 'KONSOLE', e);
 });
 
+/* ---- 6. Die Gelenkwahl MIT Auswahl — ein Zustand, den kein Ruhelauf sieht ----
+   Die Aktionsleiste der Mehrfachwahl (2026-07-27) existiert nur, wenn etwas angekreuzt ist,
+   und sie klebt am unteren Rand. Beides zusammen heisst: Der Ruhezustand-Lauf oben rendert
+   sie NIE — dieselbe Luecke, durch die drei Hover-Fehler in Folge gerutscht sind.
+
+   Geprueft wird auf 320 px, wo die Leiste am ehesten anstoesst, und im Dunkeln (dort ist
+   eine durchscheinende Flaeche eine Leiste, durch die man den Text darunter liest). */
+await withApp(async ({ page, goto, runAxe, setTheme }) => {
+  await page.setViewportSize({ width: 320, height: 568 });
+  await goto('/karteikasten');
+
+  const kaestchen = page.locator('.jgp__group:not(.jgp__group--erledigt)');
+  const n = await kaestchen.count();
+  if (n < 2) {
+    record('/karteikasten (Auswahl)', 'INHALT', `nur ${n} waehlbare Gelenkgruppen gefunden`);
+  } else {
+    await kaestchen.nth(0).click();
+    await kaestchen.nth(1).click();
+    await page.waitForTimeout(250);
+
+    const bar = page.locator('.jgp__bar');
+    if ((await bar.count()) === 0) {
+      record('/karteikasten (Auswahl)', 'INHALT', 'Aktionsleiste erscheint nicht');
+    } else {
+      for (const theme of ['light', 'dark']) {
+        await setTheme(theme);
+        await page.waitForTimeout(300);
+        const v = await runAxe();
+        for (const x of v) {
+          record('/karteikasten (Auswahl)', `axe ${theme}`, `[${x.impact}] ${x.id} — ${x.target}`);
+        }
+      }
+
+      const ueber = await page.evaluate(() => {
+        const d = document.documentElement;
+        return d.scrollWidth > d.clientWidth + 1 ? `scrollW ${d.scrollWidth} > ${d.clientWidth}` : null;
+      });
+      if (ueber) record('/karteikasten (Auswahl)', 'UEBERLAUF', ueber);
+
+      /* Sie klebt unten — also darf sie nicht unter der schwebenden TabBar liegen und nicht
+         den halben Schirm einnehmen. Beides waere auf dem Desktop unsichtbar. */
+      const lage = await page.evaluate(() => {
+        const b = document.querySelector('.jgp__bar').getBoundingClientRect();
+        const tab = document.querySelector('.tabbar')?.getBoundingClientRect() ?? null;
+        return {
+          h: Math.round(b.height),
+          vh: window.innerHeight,
+          ueberdeckt: tab !== null && b.bottom > tab.top && b.top < tab.bottom,
+        };
+      });
+      if (lage.ueberdeckt) {
+        record('/karteikasten (Auswahl)', 'VERDECKT', 'Aktionsleiste liegt unter der TabBar');
+      }
+      if (lage.h > lage.vh * 0.4) {
+        record('/karteikasten (Auswahl)', 'ZU HOCH', `${lage.h} px von ${lage.vh} px Viewport`);
+      }
+
+      const knopf = await page.locator('.jgp__bar .btn--primary').boundingBox();
+      if (knopf && knopf.height < 43.5) {
+        record('/karteikasten (Auswahl)', 'ZIEL<44', `${Math.round(knopf.width)}×${Math.round(knopf.height)} Anlegen`);
+      }
+    }
+  }
+});
+
 /* ---- Urteil ---- */
 const L = (s = '') => process.stdout.write(s + '\n');
 if (befunde.length === 0) {

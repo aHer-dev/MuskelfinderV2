@@ -50,11 +50,12 @@
 }
 
 /* Ein echtes Bedienelement, kein Textlink: volle Fläche, sichtbarer Rand, Klickziel
-   deutlich über den 24 px aus WCAG 2.5.8 und über dem 44-px-Daumenmaß. */
+   deutlich über den 24 px aus WCAG 2.5.8 und über dem 44-px-Daumenmaß.
+   Seit der Mehrfachwahl ist es ein `label` um ein Kästchen (nicht mehr ein `button`) —
+   das Klickziel bleibt damit die ganze Zeile, nicht die 17 px des Kästchens. */
 .jgp__group {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: var(--spacing-sm);
   width: 100%;
   min-height: 52px;
@@ -67,26 +68,43 @@
   transition: var(--transition-smooth);
 }
 
-.jgp__group:hover:not(:disabled) {
+.jgp__group:hover:not(.jgp__group--erledigt) {
   background: var(--accent-tint);
   border-color: var(--accent-border);
 }
 
-.jgp__group:focus-visible {
+/* Der Fokusring gehört an die Zeile, nicht ans Kästchen: Die Tastatur landet auf dem
+   `input`, sichtbar ist aber die Zeile. */
+.jgp__group:focus-within {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
+}
+
+/* Angekreuzt — dieselbe Sprache wie die Auswahlliste auf `/karteikasten`. */
+.jgp__group--an {
+  background: var(--accent-tint);
+  border-color: var(--accent-border);
 }
 
 /* Eine Gruppe, die vollständig im Kasten liegt, ist kein toter Knopf, sondern eine
    erledigte Aufgabe — sie bleibt lesbar, statt auf Grau zu verblassen. Der gestrichelte
    Rand sagt „hier ist nichts mehr zu holen", ohne den Text unter AA zu drücken. */
-.jgp__group:disabled {
+.jgp__group--erledigt {
   cursor: default;
   border-style: dashed;
   background: var(--surface-sunken);
 }
 
+.jgp__box {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  accent-color: var(--accent);
+  cursor: inherit;
+}
+
 .jgp__label {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 1px;
@@ -96,7 +114,7 @@
   font-weight: 600;
   color: var(--text-primary);
 }
-.jgp__group:disabled .jgp__label {
+.jgp__group--erledigt .jgp__label {
   color: var(--text-secondary);
 }
 
@@ -135,4 +153,61 @@
   color: var(--text-faint);
   text-transform: none;
   letter-spacing: 0;
+}
+
+/* ---- Aktionsleiste der Mehrfachwahl (2026-07-27) ----------------------
+   Sie existiert nur mit einer Wahl (ADR 0009: der leere Kasten hat keinen Primärknopf) und
+   klebt am unteren Rand: Elf Zeilen sind auf 390 px höher als ein Bildschirm — eine Leiste
+   am Listenende hätte niemand gesehen, der oben ankreuzt.
+
+   **Deckende Fläche, keine Alpha-Schicht:** Sie schiebt sich beim Rollen über die Zeilen. */
+.jgp__bar {
+  position: sticky;
+  bottom: var(--spacing-sm);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--surface);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-field);
+  box-shadow: var(--card-shadow-hover);
+}
+
+/* Auf dem Handy schwebt die TabBar unten (`bottom: 20px`, ~64 px hoch) — eine Leiste auf
+   `bottom: 0` läge darunter und wäre unlesbar. Der Abstand ist derselbe, den
+   `.shell--mobile .content` als `padding-bottom` reserviert. */
+@media (max-width: 1023.98px) {
+  .jgp__bar {
+    bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+.jgp__bar-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: 0;
+  min-width: 0;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Warum die Zahl am Knopf kleiner ist als die Summe der angekreuzten Zeilen. */
+.jgp__bar-note {
+  max-width: var(--measure);
+  font-size: 11.5px;
+  font-weight: 400;
+  color: var(--text-tertiary);
+}
+
+.jgp__bar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
 }

@@ -14,11 +14,12 @@
       `backlog`-Zustand — die App begruesste einen neuen Schueler mit „Wir holen den Stau in
       Etappen auf". Eine Gelenkgruppe hat 8–26 Karten. Die Regionen bleiben in Suche und
       Filter; zum FUELLEN sind sie zu grob.
+      Seit dem 2026-07-27 kreuzt man dort **mehrere** Gruppen an und legt einmal an — sonst
+      war nach der ersten Gruppe der ganze Bildschirm weg (siehe `JointGroupPicker`).
    3. **Einzeln nachschlagen** — für alles, was er im Unterricht aufschnappt.
 
-   Die Zahl an jedem Knopf ist die Zahl der Karten, die er bekommt: nach `nameLatin`
-   entdoppelt (ADR 0002 §2 — fünf Namen gibt es zweimal, Hand und Fuß, und das ist je
-   EINE Karte).
+   Die Zahl an jedem Knopf ist die Zahl der Karten, die er bekommt: nach Kartenschluessel
+   entdoppelt (ADR 0002 §2 / ADR 0012).
    ========================================================================= */
 
 import { useMemo } from 'react';

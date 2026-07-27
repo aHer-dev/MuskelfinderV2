@@ -1,0 +1,34 @@
+﻿Beruf;Rang;Gelenkgruppe;Typisch für diesen Beruf;Karten in der Gruppe;Was steckt drin
+Physiotherapie;1;Hüftgelenk;ja;23;Art. coxae — Beuger, Strecker, Adduktoren
+Physiotherapie;2;Kniegelenk;ja;15;Art. genus — Quadrizeps, Ischiocrurale
+Physiotherapie;3;Sprunggelenk & Fuß;ja;24;Wade, Fußheber, Zehen
+Physiotherapie;4;Wirbelsäule;ja;16;Autochthone Rückenmuskulatur, Hals- und Kopfgelenke
+Physiotherapie;5;Mimik & Kopfmuskulatur;nein;13;Gesicht, Kauen, Platysma
+Physiotherapie;6;Zungenbein & Kehlkopf;nein;8;Supra- und infrahyoidale Muskeln
+Physiotherapie;7;Bauchwand & Beckenboden;nein;9;Bauchpresse, Beckenboden
+Physiotherapie;8;Schultergürtel;nein;9;Skapula gegen den Rumpf
+Physiotherapie;9;Schultergelenk;nein;11;Art. humeri — inkl. Rotatorenmanschette
+Physiotherapie;10;Ellenbogen;nein;17;Beugen, Strecken, Umwenden
+Physiotherapie;11;Hand;nein;26;Handgelenk, Finger, Daumen
+Ergotherapie;1;Hand;ja;26;Handgelenk, Finger, Daumen
+Ergotherapie;2;Ellenbogen;ja;17;Beugen, Strecken, Umwenden
+Ergotherapie;3;Schultergelenk;ja;11;Art. humeri — inkl. Rotatorenmanschette
+Ergotherapie;4;Schultergürtel;ja;9;Skapula gegen den Rumpf
+Ergotherapie;5;Mimik & Kopfmuskulatur;nein;13;Gesicht, Kauen, Platysma
+Ergotherapie;6;Zungenbein & Kehlkopf;nein;8;Supra- und infrahyoidale Muskeln
+Ergotherapie;7;Wirbelsäule;nein;16;Autochthone Rückenmuskulatur, Hals- und Kopfgelenke
+Ergotherapie;8;Bauchwand & Beckenboden;nein;9;Bauchpresse, Beckenboden
+Ergotherapie;9;Hüftgelenk;nein;23;Art. coxae — Beuger, Strecker, Adduktoren
+Ergotherapie;10;Kniegelenk;nein;15;Art. genus — Quadrizeps, Ischiocrurale
+Ergotherapie;11;Sprunggelenk & Fuß;nein;24;Wade, Fußheber, Zehen
+Logopädie;1;Mimik & Kopfmuskulatur;ja;13;Gesicht, Kauen, Platysma
+Logopädie;2;Zungenbein & Kehlkopf;ja;8;Supra- und infrahyoidale Muskeln
+Logopädie;3;Wirbelsäule;nein;16;Autochthone Rückenmuskulatur, Hals- und Kopfgelenke
+Logopädie;4;Bauchwand & Beckenboden;nein;9;Bauchpresse, Beckenboden
+Logopädie;5;Schultergürtel;nein;9;Skapula gegen den Rumpf
+Logopädie;6;Schultergelenk;nein;11;Art. humeri — inkl. Rotatorenmanschette
+Logopädie;7;Ellenbogen;nein;17;Beugen, Strecken, Umwenden
+Logopädie;8;Hand;nein;26;Handgelenk, Finger, Daumen
+Logopädie;9;Hüftgelenk;nein;23;Art. coxae — Beuger, Strecker, Adduktoren
+Logopädie;10;Kniegelenk;nein;15;Art. genus — Quadrizeps, Ischiocrurale
+Logopädie;11;Sprunggelenk & Fuß;nein;24;Wade, Fußheber, Zehen

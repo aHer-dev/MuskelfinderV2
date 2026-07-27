@@ -41,7 +41,14 @@ function headline(plan: TodayPlan): string {
     case 'new':
       return 'Alles wiederholt';
     case 'backlog':
-      return 'Wir holen den Stau in Etappen auf';
+      /* „Stau" ist eine Aussage über die Vergangenheit — sie setzt voraus, dass etwas
+         LIEGEN GEBLIEBEN ist. Seit der Mehrfachwahl (2026-07-27) legt ein Schüler in einem
+         Zug 35 Karten an; die sind sofort fällig, aber keine einzige ist versäumt. Genau
+         dieser Satz war der Grund für die Gelenkgruppen („Obere Extremität" = 53 Karten),
+         und ohne diese Verzweigung wäre er zurück. `overdueTotal` ist der Unterschied. */
+      return plan.overdueTotal === 0
+        ? 'Viel vorgenommen — wir teilen es ein'
+        : 'Wir holen den Stau in Etappen auf';
     case 'review':
       return 'Heute dran';
   }
@@ -223,8 +230,11 @@ export function TodayPage() {
 
             {plan.kind === 'backlog' && (
               <p className="today__note">
-                Der Rest bleibt liegen und wartet. Eine Sitzung am Stück ist mehr wert als eine, die
-                du abbrichst.
+                {plan.overdueTotal === 0
+                  ? 'Der Rest wartet auf die nächsten Tage — nichts davon ist versäumt. Eine Sitzung '
+                    + 'am Stück ist mehr wert als eine, die du abbrichst.'
+                  : 'Der Rest bleibt liegen und wartet. Eine Sitzung am Stück ist mehr wert als eine, '
+                    + 'die du abbrichst.'}
               </p>
             )}
           </div>
