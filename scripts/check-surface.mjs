@@ -372,6 +372,29 @@ await withApp(async ({ page, goto, runAxe, setTheme, errors }) => {
     const v = await runAxe();
     for (const x of v) record('/heute (Erststart)', `axe ${theme}`, `[${x.impact}] ${x.id} — ${x.target}`);
   }
+  /* Die Startaktion im LEEREN Zustand, auf dem kleinsten Schirm.
+     Der befuellte Lauf oben sieht das nicht — dort gibt es den Leerzustand nicht.
+     Gefunden hat das erst eine Messung an der Live-Seite: `/lernkarten` zeigte einem
+     neuen Nutzer auf 320 × 568 „Muskeln hinzufuegen" bei y=590, also unsichtbar.
+     Zwei Navigationszeilen (120 px) standen davor — eine davon mit demselben Ziel.
+     Das ist der erste Eindruck der App: Text und keine Aktion. */
+  await page.setViewportSize({ width: 320, height: 568 });
+  for (const route of ['/lernkarten', '/quiz', '/pruefung', '/heute']) {
+    await goto(route);
+    const aktion = await page.evaluate(() => {
+      const el = document.querySelector('main .btn--primary, main .btn--block');
+      if (!el) return null;
+      const b = el.getBoundingClientRect();
+      return { top: Math.round(b.top), vh: window.innerHeight,
+        text: (el.textContent || '').trim().slice(0, 28) };
+    });
+    if (aktion && aktion.top > aktion.vh) {
+      record(`${route} (Erststart) @320`, 'START-UNTER-FALZ',
+        `„${aktion.text}" bei y=${aktion.top} auf ${aktion.vh} px Viewport`);
+    }
+  }
+  await page.setViewportSize({ width: 1440, height: 900 });
+
   // Leerer Karteikasten
   await goto('/karteikasten');
   for (const theme of ['light', 'dark']) {

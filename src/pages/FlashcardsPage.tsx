@@ -87,13 +87,20 @@ export function FlashcardsPage() {
             das Quiz verliert den Tab-Rang, nicht die Erreichbarkeit). */}
         {!running && (
           <div className="flashcards__links">
-            <Link to="/karteikasten" className="flashcards__manage">
-              <Icon name="icList" size={16} />
-              <span>
-                Muskeln im Karteikasten verwalten{deckSize > 0 ? ` (${deckSize})` : ''}
-              </span>
-              <Icon name="icArrow" size={16} />
-            </Link>
+            {/* Nur bei GEFUELLTEM Kasten, und das ist keine Kosmetik: Bei leerem Kasten
+                bietet der Leerzustand darunter „Muskeln hinzufügen" — dasselbe Ziel wie
+                dieser Link. Zwei Wege zum selben Ort, und der zweitrangig gestaltete
+                stand oben, während der Hauptknopf 120 px tiefer bei y=590 auf einem
+                568 px hohen Schirm lag: unsichtbar. Wer die App zum ersten Mal öffnet,
+                sah Text und keine Aktion. Der Quiz-Link darunter bleibt in JEDEM Fall —
+                „Freies Üben" läuft über den ganzen Bestand, auch ohne eine Karte. */}
+            {deckSize > 0 && (
+              <Link to="/karteikasten" className="flashcards__manage">
+                <Icon name="icList" size={16} />
+                <span>Muskeln im Karteikasten verwalten ({deckSize})</span>
+                <Icon name="icArrow" size={16} />
+              </Link>
+            )}
             {/* Die zehn Quizmodi behalten ihren Platz — als „Freies Üben" für alle, die
                 gezielt einen Modus wählen wollen (ADR 0008). */}
             <Link to="/quiz" className="flashcards__manage">

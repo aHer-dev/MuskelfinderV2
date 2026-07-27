@@ -668,6 +668,12 @@ Was daraus hart gilt:
   `/heute`). Auf `/anleitung` steht „Zurueck zu Heute" nach 2700 px Anleitung, und das ist
   richtig. Eine Regel „jede Hauptaktion ueber die Falz" haette Fehlalarm erzeugt und waere zu
   Recht ignoriert worden — eine Pruefung, die man ignoriert, ist schlechter als keine.
+- ⚠️ **Der befuellte Lauf sieht den LEERZUSTAND nicht** — und umgekehrt. Nach dem
+  Seed-Nachtrag war `/lernkarten` im befuellten Zustand sauber, im Erststart aber nicht:
+  „Muskeln hinzufuegen" lag bei y=590 auf 320 × 568, weil zwei Navigationszeilen davor
+  standen, eine davon mit demselben Ziel. Gefunden hat das erst eine Messung an der
+  **Live-Seite**, nicht die Pruefung. Block 5 prueft die Startaktion jetzt auch leer.
+  Merksatz: **Jeder Zustand braucht seinen eigenen Lauf** — befuellt UND leer.
 - ⚠️ **Zwei meiner eigenen Messungen waren Fehlalarm** und sind hier festgehalten, damit sie
   niemand nachbaut: „feste Leisten belegen 96 % der Hoehe im Querformat" (die `stand-rail` liegt
   bei y=737 unter dem Bild — Hoehen summiert, ohne die Position zu pruefen) und „ein Link liegt

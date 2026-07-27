@@ -71,6 +71,15 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   ähnlich klein. 48 Stellen umzuwerfen wäre eine **Designentscheidung, keine
   Reparatur** — deshalb liegt die Prüfschwelle bei 11 px und nicht bei 12 px.
 
+- **Erststart auf `/lernkarten`: die Aktion war unsichtbar** — und *das* fand erst eine
+  Messung an der **Live-Seite**, nicht die Prüfung. Der befüllte Lauf sieht den
+  Leerzustand nicht; genau die Spiegelung des Hauptbefunds. Auf 320 × 568 lag
+  „Muskeln hinzufügen" bei y=590, weil zwei Navigationszeilen (120 px) davor standen —
+  **eine davon mit demselben Ziel**. Der erste Eindruck der App war Text ohne Aktion.
+  Der doppelte Link erscheint jetzt nur bei gefülltem Kasten; der Quiz-Link bleibt in
+  jedem Fall, „Freies Üben" läuft auch ohne eine einzige Karte. Die Prüfung deckt den
+  Leerzustand jetzt mit ab.
+
 ### Neue Prüfregeln (`check:oberflaeche`)
 `IOS-ZOOM` · `UEBERLAUF-ZOOM` (200 % Textzoom, alle Routen) · `START-UNTER-FALZ` (nur
 auf den vier Seiten, deren Zweck das Starten ist — auf `/anleitung` gehört „Zurück zu
