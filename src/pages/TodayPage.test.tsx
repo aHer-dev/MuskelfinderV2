@@ -108,12 +108,38 @@ describe('TodayPage — jeder Zustand hat genau einen Primärbutton', () => {
 
     renderPage()
 
+    expect(screen.getByRole('heading', { level: 1, name: /Stau/i })).toBeInTheDocument()
     expect(screen.getByText(/60 Karten fällig/i)).toBeInTheDocument()
     expect(screen.getByText(/heute 20 davon/i)).toBeInTheDocument()
     expect(primaryAction()).toHaveTextContent(/Los — 20 Karten lernen/i)
 
     fireEvent.click(primaryAction())
     expect(navigate.mock.calls[0][1].state.start.names).toHaveLength(20)
+  })
+
+  it('Frisch gefüllter Kasten: KEIN Stau — versäumt hat er nichts', () => {
+    /* Die Nebenwirkung der Mehrfachwahl (2026-07-27): 45 frisch angelegte Karten sind alle
+       sofort fällig. Vorher hing die Überschrift allein an `dueTotal`, also hätte die App
+       einen Schüler eine Sekunde nach seiner eigenen Wahl mit „Wir holen den Stau in Etappen
+       auf" begrüßt — genau der Satz, dessentwegen die vier Regionen durch elf Gelenkgruppen
+       ersetzt wurden. Der Deckel (20 heute) bleibt richtig, die Schuldzuweisung nicht.
+
+       Gegenprobe für diese Zeile: `overdueTotal` in `TodayPage.headline` ignorieren → der
+       Test fällt, weil „Stau" wieder dasteht. */
+    /* `inDays: -1` ergibt `nextDue` = HEUTE (der Helfer rechnet `dueDate(1, anker)`): fällig,
+       aber 0 Tage überfällig — genau der Zustand direkt nach dem Anlegen. */
+    const names = MUSCLES.slice(0, 45).map((m) => cardKey(m))
+    seed(names, { inDays: -1 })
+
+    renderPage()
+
+    expect(screen.queryByRole('heading', { level: 1, name: /Stau/i })).not.toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { level: 1, name: /Viel vorgenommen/i }),
+    ).toBeInTheDocument()
+    expect(screen.getByText(/nichts davon ist versäumt/i)).toBeInTheDocument()
+    // Gedeckelt wird trotzdem — 45 Karten am Stück lernt niemand.
+    expect(primaryAction()).toHaveTextContent(/Los — 20 Karten lernen/i)
   })
 
   it('Nichts fällig: schlägt neue Muskeln vor, legt sie an und lernt sie sofort', () => {

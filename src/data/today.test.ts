@@ -153,9 +153,37 @@ describe('getTodayPlan — die vier Zustände', () => {
 
     expect(result.kind).toBe('backlog');
     expect(result.dueTotal).toBe(80);
+    expect(result.overdueTotal).toBe(80); // hier ist der Stau echt
     expect(result.dueCards).toHaveLength(DEFAULT_DAILY_DOSE);
     expect(result.dailyDose).toBe(DEFAULT_DAILY_DOSE);
     expect(result.estimatedMinutes).toBe(estimateMinutes(DEFAULT_DAILY_DOSE));
+  });
+
+  it('4b. Frisch angelegt ist nicht versäumt: fällig ja, überfällig NEIN', () => {
+    /* Die Nebenwirkung der Mehrfachwahl (2026-07-27): Wer „Hand + Ellenbogen + Schulter"
+       ankreuzt, legt 40+ Karten an — alle sofort fällig, keine einzige versäumt. Mit
+       `dueTotal` als einzigem Maß hätte die App ihn eine Sekunde später mit „Wir holen den
+       Stau in Etappen auf" begrüßt. Genau dieser Satz war der Grund, die vier Regionen durch
+       elf Gelenkgruppen zu ersetzen — ohne `overdueTotal` wäre er zurück.
+
+       Der Deckel bleibt richtig und bleibt: 45 Karten am Stück lernt niemand. Nur der Satz
+       darüber ändert sich (`TodayPage`). */
+    const many = Array.from({ length: 45 }, (_, i) => muscle(`M. test ${String(i).padStart(2, '0')}`, 'upper'));
+    const cards = Object.fromEntries(many.map((m) => [m.nameLatin, card({ dueInDays: 0 })]));
+
+    const result = getTodayPlan({ cards, muscles: many, now: NOW });
+
+    expect(result.kind).toBe('backlog');
+    expect(result.dueTotal).toBe(45);
+    expect(result.overdueTotal).toBe(0);
+    expect(result.dueCards).toHaveLength(DEFAULT_DAILY_DOSE);
+  });
+
+  it('4c. … und einen Tag später ist es dann wirklich ein Stau', () => {
+    const many = Array.from({ length: 45 }, (_, i) => muscle(`M. test ${String(i).padStart(2, '0')}`, 'upper'));
+    const cards = Object.fromEntries(many.map((m) => [m.nameLatin, card({ dueInDays: -1 })]));
+
+    expect(getTodayPlan({ cards, muscles: many, now: NOW }).overdueTotal).toBe(45);
   });
 });
 

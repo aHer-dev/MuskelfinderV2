@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "migrate:data": "node scripts/migrate-v1-data.mjs",
+    "export:csv": "node scripts/export-csv.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
@@ -16,7 +17,10 @@
     "check:oberflaeche": "node scripts/check-surface.mjs",
     "check:wege": "node scripts/check-journey.mjs",
     "check:browser": "npm run check:oberflaeche && npm run check:wege",
-    "verify": "npm run lint && npm run test && npm run check:daten && npm run build && npm run check:browser"
+    "verify": "npm run lint && npm run test && npm run check:daten && npm run build && npm run check:pwa && npm run check:browser",
+    "make:screenshots": "node scripts/make-screenshots.mjs",
+    "check:pwa": "node scripts/check-pwa.mjs",
+    "vergleich:wikipedia": "node scripts/vergleich-wikipedia.mjs"
   },
   "dependencies": {
     "react": "^19.2.7",

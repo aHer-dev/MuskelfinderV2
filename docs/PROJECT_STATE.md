@@ -5,7 +5,7 @@
 > docs/migration-plan.md (abgeschlossen), docs/architecture.md und den ADRs.
 
 ## Stand
-- Datum: 2026-07-26
+- Datum: 2026-07-27
 - Branch: `main` · **Remote: github.com/aHer-dev/MuskelfinderV2** · Live: `aher-dev.github.io/MuskelfinderV2/`
 - Status: **Migration abgeschlossen (Etappen 0–6, `v1.0`). ETAPPE 7 KOMPLETT (7a–7f). ETAPPE 8
   KOMPLETT (8a–8f). ETAPPE 9 KOMPLETT (9a–9d). ETAPPE 10 KOMPLETT (10a–10f). ETAPPE 11 (Zeitdruck) — code-seitig. Offen ist
@@ -17,7 +17,7 @@
   niemandem mehr ungefragt Karten in den Kasten.**
   **ALLE VIER BRUECKEN STEHEN:** B1 (7d), B2 (7e), B3 (**9c**), B4 (8c).
   Statustafel: `docs/produkt-plan.md`. Offene Punkte: `docs/todo.md`.
-- Gate gruen: **`npm run verify`** — **673 Tests**.
+- Gate gruen: **`npm run verify`** — **692 Tests**.
 - A11y: axe 0 Verstoesse ueber **14 Routen x Light+Dark x Ruhe/HOVER/Fokus — und seit 2026-07-26
   ZUSAETZLICH auf 320 + 390 px** (Playwright+Chromium+axe-core).
   ⚠️ **Bis zum 2026-07-26 stand hier „Desktop+Handy", und das war FALSCH:** Weder
@@ -109,6 +109,16 @@ alle als Prüfzeile gegengetestet. Vier Regeln, die daraus für JEDEN Folge-Task
   die Auswahlliste im Karteikasten war 460 px auf einem 568-px-Schirm, jeder Wisch darin scrollte
   die Liste statt die Seite). **320 px ist Absicht:** Bei 390 px zeigt sich die Grid-Falle nicht.
 
+**Nachtrag 2026-07-27 — dieselbe Regel 2 hat sofort wieder zugeschlagen.** Die Mehrfachwahl
+macht es leicht, 45 Karten in einem Zug anzulegen. `getTodayPlan` kannte nur `dueTotal`, und
+frische Karten sind sofort faellig → der Schueler waere eine Sekunde nach seiner EIGENEN Wahl
+mit „Wir holen den Stau in Etappen auf" begruesst worden. **Genau der Satz, dessentwegen die
+vier Regionen durch elf Gelenkgruppen ersetzt wurden.** `TodayPlan.overdueTotal` trennt jetzt
+**faellig** von **versaeumt**; nur Letzteres darf „Stau" heissen. Der Deckel auf die Tagesdosis
+bleibt (45 Karten am Stueck lernt niemand), nur die Schuldzuweisung faellt weg.
+**Wer eine Zahl in einen bewertenden Satz giesst, prueft, ob sie das Urteil traegt** — dieselbe
+Wurzel wie die „schwaechste Region" ohne eine einzige Antwort.
+
 **Zwei Nachtraege vom selben Tag, beide aus dem Erstkontakt-Durchgang:**
 - **Keine Diagnose ohne Datengrundlage.** `/heute` nannte eine „schwaechste Region", bevor eine
   einzige Karte beantwortet war (frische Karten = Fach 1 = Beherrschung 0 in JEDER Region).
@@ -155,6 +165,21 @@ Kniegelenk · Sprunggelenk & Fuss.
   **Folge:** Die Mitgliederzahl ist NICHT die Zahl der neuen Karten. Wer eine Zahl an einen
   Knopf schreibt, nimmt **`neueKarten()`**. Gemessen: „Schultergelenk" verspricht nach
   „Ellenbogen" 9 statt 11 — und legt 9 an.
+- **MEHRFACHWAHL seit dem 2026-07-27 — ein Klick war eine Einbahnstrasse.** Jeder Klick legte
+  sofort an; damit war der Kasten nach der ERSTEN Gruppe nicht mehr leer, `/heute` ersetzte den
+  ganzen `DeckStarter` durch den Tagesplan, und die zweite Gruppe war dort **gar nicht mehr
+  waehlbar**. „Hand + Ellenbogen" ist aber der Regelfall im Kurs (Projektinhaber, 2026-07-27).
+  Jetzt: ankreuzen, EINMAL anlegen.
+  - **Die Zahl am Knopf ist die VEREINIGUNG, nicht die Summe** (`neueKartenDerAuswahl`).
+    „Hueftgelenk 23 + Kniegelenk 15" legt **31** an, nicht 38. Die Differenz wird **benannt**.
+  - **Rueckfrage ab `MAX_DAILY_DOSE` (40)** — die eigene Obergrenze der App, nicht Geschmack.
+    Eine einzelne Gruppe (< 30) und zwei benachbarte (Hand + Ellenbogen = 35) fragen nie.
+  - **Rahmen-Invariante 2 haelt:** Ohne Auswahl **kein** Primaerbutton (ADR 0009), mit Auswahl
+    genau einer. Zwei Pruefzeilen, beide Richtungen.
+  - **Die Aktionsleiste sieht kein Ruhelauf** — sie existiert nur mit Auswahl und klebt unten.
+    `check:oberflaeche` **Station 6** rendert diesen Zustand ausdruecklich (axe Hell+Dunkel auf
+    320 px, Ueberlauf, Lage gegen die TabBar, Daumenmass). Gegengetestet: `bottom: 0` auf dem
+    Handy → „Aktionsleiste liegt unter der TabBar".
 - **Die Wahl steht an ZWEI Stellen, und das ist keine Doppelung:** Der `DeckStarter` rendert nur
   bei leerem Kasten. Stand die Gruppenwahl nur dort, war sie nach der ersten Gruppe weg — wer im
   naechsten Kursabschnitt nachlegen wollte, musste 148 Kaestchen durchgehen. Der
@@ -162,6 +187,13 @@ Kniegelenk · Sprunggelenk & Fuss.
 - **Der Beruf sortiert vor, versteckt aber nichts** (Entscheidung des Projektinhabers): Ein Ergo,
   der die Huefte lernen will, soll sie nicht suchen muessen. Ein Test prueft, dass jeder Beruf
   alle elf Gruppen erreicht.
+  **Und das Onboarding sagt es jetzt auch so** (2026-07-27): Hinter „Ergotherapie" stand „Hand,
+  Arm, Feinmotorik" — vom Projektinhaber beanstandet, weil es sich als **Stoffgrenze** liest und
+  fachlich falsch ist (ein Ergo braucht die obere Extremitaet vollstaendig). Die Texte nennen
+  jetzt die REIHENFOLGE („Hand, Ellenbogen und Schulter zuerst"), und der Satz „Sie sortiert nur
+  — jede Gelenkgruppe bleibt fuer jeden waehlbar" steht auf dem Schirm; eine Pruefzeile haelt
+  Satz UND Verhalten fest. Logopaedie blieb unveraendert (ausdruecklich bestaetigt).
+  **Welche Gruppen ein Ergo oben sieht, ist weiter offen** — Fachfrage, steht in `docs/todo.md`.
 - Die vier Regionen bleiben in **Suche und Filter**. Nur zum FUELLEN sind sie zu grob.
 
 - **Die Gruppen leiten aus `CARD_MUSCLES` ab, NICHT aus `getMuscles()`.** Der erste Wurf lief
@@ -432,6 +464,120 @@ winzige Textzeile am Seitenende klebten.
 - **Die Schiene sagt, WO man steht. Sie fuehrt nicht.** „Schnell starten" gehoert in den Inhalt;
   Navigation hat links schon eine Heimat (Icon-Rail). Der Versuch, sie mit hineinzuraeumen, liess
   die linke Spalte nach dem einen Knopf abbrechen.
+
+## Fachliche Pruefung: `npm run export:csv` (2026-07-27)
+Was die Automatik NICHT kann, ist fachliche Richtigkeit — die muss ein Mensch lesen, und zwar
+nicht in JSON. `scripts/export-csv.mjs` schreibt den Bestand als 20 Tabellen nach
+**`docs/pruefung/csv/`**: alle 150 Datensaetze, je Region, je Gelenkgruppe, die
+Berufs-Vorsortierung, die funktionellen Gruppen, die 47 bildlosen Muskeln (21 davon in der
+3D-App) und die woertlich doppelten Felder. Wegweiser: `docs/pruefung/LIESMICH.md`.
+
+- **Erzeugte Dateien, und sie liegen NICHT im Repo** (`.gitignore`, seit 2026-07-27). Eine
+  Aenderung darin bewirkt nichts; der Weg zurueck steht im LIESMICH (Spalte → Quelldatei).
+  Eingecheckt waeren sie eine zweite Wahrheit: Wer eine drei Commits alte Tabelle gegenliest,
+  prueft einen Bestand, den die App nicht mehr hat, und meldet Fehler, die schon behoben sind.
+  `check:daten` faellt jetzt, wenn eine wieder im Versionsstand landet.
+  **Gegenbeispiel mit Absicht:** `public/screenshots/*.png` sind ebenfalls erzeugt, bleiben aber
+  eingecheckt — sie sind **Build-Eingabe** (Manifest + `check:pwa`), und `make:screenshots`
+  braucht einen fertigen Build, den ein frischer Klon noch nicht hat. Gegengeprobt: ohne sie
+  baut es durch und `check:pwa` faellt mit zwei Fehlern.
+- **Keine zweite Wahrheit:** Das Skript laedt ueber Vites SSR-Lader **dieselben Module wie die
+  App** (`getMuscles`, `getJointGroups`, `cardKey`, …), statt die JSONs noch einmal selbst zu
+  deuten. Ein Export mit eigener Meinung ueber die Daten waere genau der Fehler, den er
+  aufdecken soll. Gegenprobe beim Bau: „21 von 47 in der 3D-App" — dieselbe Zahl, die schon in
+  `docs/todo.md` stand.
+- 150 Zeilen, nicht 148: Die Spalte „Eigene Karte" macht die zwei Funktionszeilen von
+  `M. nasalis`/`M. occipitofrontalis` sichtbar, statt sie wegzufiltern.
+
+## ⚠️ SEGMENTE: 48 LEERE FELDER SIND 23 LUECKEN (2026-07-27) — `src/data/segments.ts`
+Ein Abgleich gegen die `{{Infobox Muskel}}` der deutschen Wikipedia (143 von 150 Muskeln
+getroffen; Tabelle: `docs/pruefung/vergleich-wikipedia.csv`) zeigte 48 Datensaetze mit leerem
+`segments`. **Blind aufgefuellt haette das Anatomie erfunden.** Die Einordnung steht jetzt in
+`src/data/editorial/segments.json`:
+
+| Klasse | Anzahl | Bedeutung |
+|---|---|---|
+| `entfaellt` | 16 | Reiner Hirnnerv (V3/VII) — M. masseter, Mimik, Platysma. **Die haben keine spinalen Segmente.** Nichts zu tun. |
+| `klaeren` | 9 | Autochthone Rueckenmuskulatur (Rr. dorsales), segmental ueber die ganze Spannweite. Ein einzelner String trifft das nicht — erst das Modell entscheiden. |
+| `ungeprueft` | 20 | Wikipedia-Wert **eingetragen und sichtbar markiert** — Stern am Label auf Karte und Detailseite. Noch nicht im Lehrbuch gegengelesen. |
+| `offen` | 3 | Echte Luecken ohne Vorschlag (Mm. interossei plantares/dorsales, Mm. lumbricales) — auch Wikipedia hat dort nichts. |
+
+Alle 23 echten Luecken lagen **in der unteren Extremitaet/Fuss** — eine geschlossene
+Migrationsluecke, keine verstreuten Einzelfaelle.
+
+**Der Stern ist Pflicht, nicht Kosmetik.** `withSegments` setzt `Muscle.segmentsUngeprueft`;
+`facts.ts` und `MuscleDetailPage` haengen ihn an das **Label** („Segmente *"), nicht an den
+Wert — sonst liest man ihn als Teil der Segmentangabe. Zwei Prueflinien halten das fest
+(`facts.test.ts`, gegengetestet): jeder ungeprueft markierte Muskel zeigt die Marke, kein
+anderer zeigt sie. Nach dem Nachschlagen: `status` auf `offen`, `quelle` durch die Buchstelle
+ersetzen — der Stern verschwindet von selbst.
+
+- **Zwei Invarianten gegen den echten Bestand** (`src/data/segments.test.ts`, beide
+  gegengetestet): kein Muskel am reinen Hirnnerv traegt Segmente; jede Luecke ist
+  klassifiziert. Damit kann niemand die 16 spaeter „vervollstaendigen" und kein neuer
+  Muskel rutscht unklassifiziert mit leerem Feld herein.
+- **Ein Wert ohne `quelle` laesst den Build fallen.** Sonst wandert ein Wikipedia-Vorschlag
+  beim Abtippen unbemerkt in den Bestand.
+- **Wikipedia ist Verdachtsgeber, nicht Wahrheit.** Bei der Innervation ist der eigene
+  Bestand meist *praeziser* (M. biceps femoris nach Koepfen getrennt, M. digastricus nach
+  Baeuchen, M. pterygoideus medialis mit V3-Zuordnung) — Wikipedia fasst zusammen. Und die
+  Segment-Abweichungen sind zu einem Drittel **systematisch** (8x „nur bei mir C6" am
+  N. radialis, 3x S1 am N. gluteus superior): eine Quellenentscheidung mehrfach uebertragen,
+  kein Fehler. Einmal im Buch nachschlagen klaert je ganze Gruppen.
+- **Mechanisch vergleichbar sind nur Segmente und Innervation.** Ursprung/Ansatz/Funktion
+  bleiben bei ~85–100 % markiert (lateinische Deklination, Freitext auf beiden Seiten) —
+  dafuer braucht es Sprachurteil, kein Textvergleich. Naechster Schritt.
+- ⚠️ `docs/pruefung/vergleich-wikipedia.csv` liegt **eine Ebene ueber** `csv/`, weil
+  `export-csv.mjs` sein Zielverzeichnis per `rmSync` leert.
+- ⚠️ Beide Dateien sind erzeugt und stehen in der `.gitignore`. Die Vergleichsliste ist die
+  **einzige, deren Neuerzeugen weh tut**: `npm run vergleich:wikipedia` braucht Netz und laeuft
+  Minuten (ein Abruf je Muskel, gedrosselt); sie ist zugleich die Eingabe fuer den offenen
+  naechsten Schritt (Ursprung/Ansatz per Sprachurteil). Ihre Eingabe wiederum ist
+  `csv/00-alle-muskeln.csv` — das Skript sagt es jetzt selbst, statt an einem ENOENT zu sterben.
+
+## ⚠️ INSTALLIERBARKEIT: DIE APP WAR NIE KAPUTT, ES FEHLTE DAS ANGEBOT (2026-07-27)
+Befund aus der Praxis: Installation klappte bei einem Nutzer, beim naechsten nicht. Die
+Kriterien waren **immer** erfuellt (Manifest, SW, Icons 192/512/maskable, HTTPS,
+`start_url`/`scope` passend zur `base`). Es gab nur kein eigenes Angebot — also hing alles
+daran, ob der Browser von sich aus fragt. Drei Plattformen, drei verschiedene Antworten:
+
+| Lage | Was der Nutzer braucht |
+|---|---|
+| Chrome/Android | Automatische Leiste ist abgeschafft; Eintrag steckt im ⋮-Menue → **eigener Knopf** |
+| iOS/iPadOS | `beforeinstallprompt` gibt es dort **nicht** → nur eine **Anleitung** (Teilen → Zum Home-Bildschirm) |
+| In-App-Browser (WhatsApp, Instagram, Teams) | Installieren ist **technisch unmoeglich** → erst rausschicken. **In der Praxis die haeufigste Ursache.** |
+
+- **`src/pwa/install.ts`**: `angebot()` ist eine reine Funktion ueber einem Umgebungs-Objekt,
+  also ohne Browser testbar. Die **Reihenfolge ist die Aussage**: schon installiert schlaegt
+  alles · In-App-Browser **vor** iOS (im Instagram-Webview auf dem iPhone fuehrt die
+  iOS-Anleitung ins Leere) · echter Knopf vor Anleitung.
+- **Der Ereignis-Puffer liegt im Modul, nicht in einem `useEffect`.** `beforeinstallprompt`
+  trifft oft ein, BEVOR React gemountet hat — ein Effekt-Listener kaeme zu spaet und der
+  Knopf blieb aus, obwohl der Browser installieren wuerde.
+- **UA-Erkennung nur, wo es nicht anders geht**: fuer „ist das iOS?" und „ist das ein
+  In-App-Browser?" gibt es keine Feature-Erkennung. iPadOS 13+ gibt sich als Mac aus —
+  `maxTouchPoints > 1` ist das einzige Unterscheidungsmerkmal.
+- Der Abschnitt steht am **Ende** von `/anleitung`: Er ist Technik, keine Lernerklaerung.
+
+### `npm run check:pwa` — gegen das gebaute `dist/`, nicht gegen die Konfiguration
+Der gefaehrlichste Fehler dieser Klasse **faellt lokal nie auf**: Laufen `base` und
+`start_url`/`scope` auseinander, installiert der Browser einen Scope, den es nicht gibt —
+`vite preview` liefert fuer jeden Pfad die index.html aus, alles sieht richtig aus, und erst
+auf GitHub Pages startet die installierte App ins Nichts.
+
+- **Keine zweite Wahrheit:** Die erwartete `base` wird aus den Asset-Pfaden in
+  `dist/index.html` **abgeleitet**, nicht noch einmal behauptet.
+- Geprueft: Manifest-Pflichtfelder · jede Icon-/Screenshot-Datei existiert **und hat die
+  deklarierte Pixelgroesse** (eine luegende `sizes`-Angabe laesst Chrome das Icon
+  stillschweigend verwerfen) · Icons ≥192 und ≥512 · Service Worker · die vier
+  iOS-/Mobile-Meta-Tags · `apple-touch-icon`.
+- In `verify` **nach `build`, vor den Browserlaeufen** — ein Manifest-Fehler soll auffallen,
+  bevor Playwright startet. Fuenf Fehlerklassen gegengetestet.
+- ⚠️ **Zwei Bauschritte fuer die Screenshots**: `build` → `make:screenshots` → `build`.
+  Wer den zweiten vergisst, erfaehrt es von `check:pwa`.
+- ⚠️ **Bekannte zweite Quelle**: `scripts/checks/harness.mjs` hat die `base` als Literal
+  (`/MuskelfinderV2/`). `check:pwa` faengt die Manifest-Seite ab, aber ein `base`-Wechsel
+  muesste dort **auch** nachgezogen werden.
 
 ## Kanonische Quellen
 - V1-Original: `../Muskelfinder` (`/home/pepperboy8/Documents/Muskelfinder`)

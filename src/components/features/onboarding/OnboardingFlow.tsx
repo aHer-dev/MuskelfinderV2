@@ -26,10 +26,23 @@ interface OnboardingFlowProps {
   onDone: (result: OnboardingResult) => void;
 }
 
-/** Wofür der Beruf gebraucht wird — ehrlich, weil er keine Karten mehr anlegt. */
+/**
+ * Was der Beruf BEWIRKT — nicht, was er angeblich umfasst.
+ *
+ * Hier stand bis zum 2026-07-27 „Extremitäten, Rumpf, Palpation am Menschen" (Physio) und
+ * „Hand, Arm, Feinmotorik" (Ergo). Vom Projektinhaber (Lehrkraft) beanstandet, und er hat
+ * recht: Das liest sich wie eine **Stoffgrenze**, und die ist fachlich falsch — ein Ergo
+ * braucht die obere Extremität vollständig, nicht nur „Hand und Feinmotorik". Die App
+ * schränkt auch gar nichts ein: `orderedJointGroups` **sortiert nur**, jede der elf Gruppen
+ * bleibt für jeden Beruf wählbar (Prüfzeile in `joint-groups.test.ts`).
+ *
+ * Die Texte nennen darum genau das, was der Beruf wirklich tut: welche Gruppen oben stehen.
+ * Sie folgen `TYPICAL` in `data/joint-groups.ts` — **wer dort etwas ändert, ändert es hier
+ * mit.**
+ */
 const PROFESSION_PURPOSE: Record<Profession, string> = {
-  physio: 'Extremitäten, Rumpf, Palpation am Menschen',
-  ergo: 'Hand, Arm, Feinmotorik',
+  physio: 'Wirbelsäule, Hüfte, Knie und Fuß zuerst',
+  ergo: 'Hand, Ellenbogen und Schulter zuerst',
   logo: 'Kau-, Zungenbein- und Kehlkopfmuskulatur',
 };
 
@@ -42,8 +55,9 @@ export function OnboardingFlow({ onDone }: OnboardingFlowProps) {
       <div className="onboarding">
         <h1 className="page__title onboarding__question">Was lernst du?</h1>
         <p className="onboarding__hint">
-          Damit die App weiß, welche Kursabschnitte zu dir gehören. Deinen Karteikasten stellst du
-          gleich selbst zusammen — die App legt dir nichts ungefragt hinein.
+          Damit die App weiß, welche Kursabschnitte zu dir gehören und was sie dir zuerst
+          vorschlägt. Sie sortiert nur — jede Gelenkgruppe bleibt für jeden wählbar. Deinen
+          Karteikasten stellst du selbst zusammen; die App legt dir nichts ungefragt hinein.
         </p>
 
         <div className="onboarding__choices">

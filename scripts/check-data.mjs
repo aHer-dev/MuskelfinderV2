@@ -18,6 +18,7 @@
    ========================================================================= */
 
 import { readFileSync, existsSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -137,6 +138,25 @@ const ohneUrsprung = muscles.filter((m) => !m.origin?.trim());
 const ohneFunktion = muscles.filter((m) => !m.functionDescription?.trim());
 const ohneSegment = muscles.filter((m) => !m.segments?.trim());
 
+/* „48 ohne Segment" war die irrefuehrendste Zahl im Bericht: 16 davon sind Muskeln
+   am Hirnnerv, die gar keine Segmente HABEN — da fehlt nichts. Seit dem Wikipedia-
+   Abgleich steht die Einordnung in `src/data/editorial/segments.json`, also zeigt der
+   Bericht jetzt, wie viel davon wirklich Arbeit ist. */
+const segmentNachtrag = (() => {
+  try {
+    const eintraege = Object.values(read('src/data/editorial/segments.json').muskeln ?? {});
+    const z = { entfaellt: 0, klaeren: 0, offen: 0, ungeprueft: 0, belegt: 0 };
+    for (const e of eintraege) {
+      if (e.status === 'ungeprueft') z.ungeprueft++;
+      else if (e.segments?.trim()) z.belegt++;
+      else z[e.status] = (z[e.status] ?? 0) + 1;
+    }
+    return z;
+  } catch {
+    return null;  /* Datei fehlt -> die alte Zahl allein, kein harter Fehler */
+  }
+})();
+
 /* ═══════════════════════════════════════════════════════════════════════
    AUSGABE
    ═══════════════════════════════════════════════════════════════════════ */
@@ -160,10 +180,68 @@ for (const [titel, koll] of Object.entries(bericht)) {
 }
 
 L('\n── DATENLUECKEN (wie in V1 bewusst, nur zur Kontrolle) ──');
-L(`  ohne Bild: ${ohneBild.length} · ohne Ursprung: ${ohneUrsprung.length} · ohne Funktionstext: ${ohneFunktion.length} · ohne Segment: ${ohneSegment.length}`);
+/* Achtung: `muscles` sind die GENERIERTEN Daten, ohne die Nachtragsebene aus
+   `editorial/`. Die Zahl, die den Nutzer erreicht, ist die nach dem Nachtrag —
+   sonst behauptet der Bericht 48 Luecken, wo die App 28 zeigt. */
+const nachgetragen = segmentNachtrag ? segmentNachtrag.ungeprueft + segmentNachtrag.belegt : 0;
+const ohneSegmentEffektiv = ohneSegment.length - nachgetragen;
+L(`  ohne Bild: ${ohneBild.length} · ohne Ursprung: ${ohneUrsprung.length} · ohne Funktionstext: ${ohneFunktion.length}`
+  + ` · ohne Segment: ${ohneSegmentEffektiv}`
+  + (nachgetragen ? ` (${ohneSegment.length} generiert, ${nachgetragen} nachgetragen)` : ''));
+if (segmentNachtrag) {
+  const { entfaellt, klaeren, offen, ungeprueft, belegt } = segmentNachtrag;
+  L(`  Segmente eingeordnet: ${entfaellt} entfaellt (Hirnnerv, korrekt leer) · ${klaeren} zu klaeren (autochthon) · ${offen} offen`
+    + (belegt ? ` · ${belegt} belegt` : ''));
+  if (ungeprueft > 0) {
+    L(`  ⚠ ${ungeprueft} Segment-Werte sind UNGEPRUEFT (aus dem Wikipedia-Abgleich, `
+      + `Stern auf Karte und Detailseite). Zum Gegenlesen: docs/pruefung/vergleich-wikipedia.csv`);
+  }
+}
+
+/* ---- Erzeugte Dateien gehoeren nicht in den Versionsstand -------------- */
+/* WARUM ES DAS GIBT: Die 20 Pruef-Tabellen und die Wikipedia-Vergleichsliste
+   lagen eine Zeit lang eingecheckt im Repo. Eine erzeugte Datei im
+   Versionsstand ist eine zweite Wahrheit ueber die eigenen Daten: Wer eine CSV
+   liest, die drei Commits alt ist, prueft einen Bestand, den die App nicht mehr
+   hat — und meldet Fehler, die schon behoben sind. `export-csv.mjs` loescht sein
+   Zielverzeichnis ausserdem vor jedem Lauf, eine Korrektur von Hand darin war
+   also ohnehin immer verloren.
+
+   ABSICHTLICHE AUSNAHME: `public/screenshots/*.png` sind ebenfalls erzeugt,
+   aber **Build-Eingabe** — das Manifest verweist darauf, `check:pwa` prueft
+   Existenz und Pixelmasse. Sie MUESSEN im Repo liegen: `make:screenshots`
+   braucht einen fertigen Build, den ein frischer Klon noch nicht hat. Deshalb
+   stehen sie hier nicht in der Liste. */
+const ERZEUGT_NICHT_EINCHECKEN = [
+  ['docs/pruefung/csv', 'npm run export:csv'],
+  ['docs/pruefung/vergleich-wikipedia.csv', 'npm run vergleich:wikipedia'],
+];
+
+let versionsstandGeprueft = false;
+let erzeugteImRepo = 0;
+try {
+  const git = (args) => execFileSync('git', args, { cwd: ROOT, encoding: 'utf8' });
+  git(['rev-parse', '--git-dir']); // wirft, wenn hier kein Repo liegt
+  versionsstandGeprueft = true;
+  for (const [pfad, befehl] of ERZEUGT_NICHT_EINCHECKEN) {
+    const treffer = git(['ls-files', '--', pfad]).split('\n').filter(Boolean);
+    if (treffer.length > 0) {
+      erzeugteImRepo += treffer.length;
+      fail(`${treffer.length} erzeugte Datei(en) unter "${pfad}" liegen im Versionsstand `
+        + `(z. B. ${treffer[0]}). Sie entstehen aus dem Bestand — eingecheckt veralten sie `
+        + `still. Raus damit: git rm --cached -r ${pfad}  ·  neu erzeugen: ${befehl}`);
+    }
+  }
+} catch {
+  /* Kein Git verfuegbar (Tarball-Kopie, Sandbox). Die Pruefung entfaellt dann
+     still — sie soll den Datencheck nicht wegen fehlendem Werkzeug fallen lassen. */
+}
 
 /* ---- Urteil ---------------------------------------------------------- */
 L('\n── INTEGRITAET (harte Regeln) ──');
+if (versionsstandGeprueft) {
+  L(`  erzeugte Pruef-Tabellen im Versionsstand: ${erzeugteImRepo} ${erzeugteImRepo === 0 ? '✓' : '✗'}`);
+}
 if (fehler.length === 0) {
   L('  ✓ Alle Bilder existieren, IDs eindeutig, Gruppen sauber, Regionen gueltig.');
   L('\n✓ check:daten bestanden.\n');

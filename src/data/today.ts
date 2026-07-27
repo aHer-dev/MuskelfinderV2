@@ -73,6 +73,16 @@ export interface TodayPlan {
   dueCards: string[];
   /** Alle fälligen Karten — größer als `dueCards.length`, wenn gedeckelt wurde. */
   dueTotal: number;
+  /**
+   * Wie viele der fälligen Karten wirklich ÜBERFÄLLIG sind (mindestens einen Tag).
+   *
+   * Der Unterschied ist kein Detail, sondern die Grenze zwischen „du hinkst hinterher" und
+   * „du hast dir gerade viel vorgenommen": Eine frisch angelegte Karte ist sofort fällig,
+   * aber niemand hat sie versäumt. Seit der Mehrfachwahl (2026-07-27) kann ein Schüler in
+   * einem Zug 35 Karten anlegen — mit `dueTotal` allein hätte ihn die App eine Sekunde
+   * später mit „Wir holen den Stau in Etappen auf" begrüßt. Das UI wählt daran den Satz.
+   */
+  overdueTotal: number;
   /** Der angewandte Deckel. */
   dailyDose: number;
   /** Schwächste Region mit fälligen Karten (bzw. mit Vorschlägen), sonst null. */
@@ -261,6 +271,9 @@ export function getTodayPlan({
   const due = prioritizeDueCards({ cards, lookupCounts, muscles, now });
   const dueTotal = due.length;
   const dueCards = due.slice(0, dose);
+  /* Fällig ist nicht versäumt: Eine heute angelegte Karte steht sofort in `due`, ist aber
+     0 Tage überfällig. Nur hierüber darf ein Satz „Stau" sagen. */
+  const overdueTotal = due.filter((key) => daysOverdue(cards[key], now) > 0).length;
 
   /* Neue Muskeln aus dem Pfad: schwache Region zuerst, dann was sie nachgeschlagen
      hat, dann die leichten.
@@ -308,6 +321,7 @@ export function getTodayPlan({
     kind,
     dueCards,
     dueTotal,
+    overdueTotal,
     dailyDose: dose,
     focusRegion,
     focusRegionCount,

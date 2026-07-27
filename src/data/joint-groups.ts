@@ -254,3 +254,25 @@ export function orderedJointGroups(profession: Profession | null): {
 export function neueKarten(group: JointGroup, cards: Record<string, unknown>): number {
   return group.muscles.filter((name) => !(name in cards)).length;
 }
+
+/**
+ * Dasselbe Versprechen für eine MEHRFACHwahl: welche Karten „Hand + Ellenbogen" wirklich
+ * anlegt — als Vereinigung, nicht als Summe.
+ *
+ * Die Summe wäre eine Lüge, und zwar eine messbare: 26 Muskeln liegen in mehreren Gruppen
+ * (`M. biceps brachii`: Ellenbogen + Schultergelenk). Wer zwei Einzelzahlen addiert und das
+ * Ergebnis an den Knopf schreibt, verspricht mehr, als `addCards` anlegt — genau der Fehler,
+ * den `neueKarten` für die Einzelwahl schon verhindert.
+ */
+export function neueKartenDerAuswahl(
+  groups: readonly JointGroup[],
+  cards: Record<string, unknown>,
+): string[] {
+  const neu = new Set<string>();
+  for (const group of groups) {
+    for (const key of group.muscles) {
+      if (!(key in cards)) neu.add(key);
+    }
+  }
+  return [...neu].sort((a, b) => a.localeCompare(b, 'de'));
+}

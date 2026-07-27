@@ -14,6 +14,7 @@
 import { Link } from 'react-router-dom';
 import { FACH_INTERVALS, MASTERED_FACH, MAX_FACH } from '../persistence/leitner';
 import { Icon } from '../components/ui/Icon';
+import { InstallSection } from '../components/features/install/InstallSection';
 import './guide.css';
 
 /** Ein Schritt des Ablaufs. Die Nummer trägt Bedeutung — es ist eine echte Reihenfolge. */
@@ -157,6 +158,10 @@ export function GuidePage() {
           Klick in die nächste Lernsitzung schieben.
         </p>
       </section>
+
+      {/* Steht ans Ende, weil es keine Lernerklaerung ist, sondern Technik — wer die
+          Anleitung liest, soll nicht erst am Installieren vorbei. */}
+      <InstallSection />
 
       <div className="guide__cta">
         <Link to="/heute" className="btn btn--primary">

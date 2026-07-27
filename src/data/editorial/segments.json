@@ -1,0 +1,304 @@
+{
+  "_hinweis": "Nachtrag der Segmente. Gelesen wird NUR `segments`; `status` steuert Prüfung und Anzeige. status \"ungeprueft\" = Wert steht drin, stammt aus dem Wikipedia-Abgleich und ist NOCH NICHT im Lehrbuch gegengelesen — die Anzeige hängt dafür einen Stern an das Label. Nach dem Nachschlagen auf \"offen\" wechseln und `quelle` durch die Buchstelle ersetzen (z. B. \"Prometheus 5. Aufl., S. 412\"). status \"entfaellt\" = Hirnnerv, es gibt keine Segmente. status \"klaeren\" = Modellfrage, erst entscheiden. `vorschlagWikipedia` bleibt als Herkunftsnachweis stehen, ist aber kein Wert.",
+  "muskeln": {
+    "interspinales": {
+      "nameLatin": "Mm. interspinales",
+      "status": "klaeren",
+      "segments": "",
+      "quelle": ""
+    },
+    "spinales": {
+      "nameLatin": "Mm. spinales",
+      "status": "klaeren",
+      "segments": "",
+      "quelle": ""
+    },
+    "intertransversarii-mediales": {
+      "nameLatin": "Mm. intertransversarii mediales",
+      "status": "klaeren",
+      "segments": "",
+      "quelle": ""
+    },
+    "rotatores": {
+      "nameLatin": "Mm. rotatores",
+      "status": "klaeren",
+      "segments": "",
+      "quelle": ""
+    },
+    "semispinalis": {
+      "nameLatin": "M. semispinalis",
+      "status": "klaeren",
+      "segments": "",
+      "quelle": ""
+    },
+    "multifidi": {
+      "nameLatin": "Mm. multifidi",
+      "status": "klaeren",
+      "segments": "",
+      "quelle": ""
+    },
+    "iliocostales": {
+      "nameLatin": "Mm. iliocostales",
+      "status": "klaeren",
+      "segments": "",
+      "quelle": ""
+    },
+    "longissimi": {
+      "nameLatin": "Mm. longissimi",
+      "status": "klaeren",
+      "segments": "",
+      "quelle": ""
+    },
+    "splenii": {
+      "nameLatin": "Mm. splenii",
+      "status": "klaeren",
+      "segments": "",
+      "vorschlagWikipedia": "C3, C4",
+      "quelle": ""
+    },
+    "gastrocnemius": {
+      "nameLatin": "M. gastrocnemius",
+      "status": "ungeprueft",
+      "segments": "S1, S2 (L5)",
+      "quelle": "de.wikipedia.org „Musculus gastrocnemius\" (Infobox Muskel), Abgleich 2026-07-27 — NOCH NICHT im Lehrbuch gegengelesen",
+      "vorschlagWikipedia": "S1-S2 (L5)"
+    },
+    "soleus": {
+      "nameLatin": "M. soleus",
+      "status": "ungeprueft",
+      "segments": "L5, S1",
+      "quelle": "de.wikipedia.org „Musculus soleus\" (Infobox Muskel), Abgleich 2026-07-27 — NOCH NICHT im Lehrbuch gegengelesen",
+      "vorschlagWikipedia": "L5, S1"
+    },
+    "plantaris": {
+      "nameLatin": "M. plantaris",
+      "status": "ungeprueft",
+      "segments": "L5, S1, S2",
+      "quelle": "de.wikipedia.org „Musculus plantaris\" (Infobox Muskel), Abgleich 2026-07-27 — NOCH NICHT im Lehrbuch gegengelesen",
+      "vorschlagWikipedia": "L5, S1-2"
+    },
+    "tibialis-posterior": {
+      "nameLatin": "M. tibialis posterior",
+      "status": "ungeprueft",
+      "segments": "L4, L5, S1",
+      "quelle": "de.wikipedia.org „Musculus tibialis posterior\" (Infobox Muskel), Abgleich 2026-07-27 — NOCH NICHT im Lehrbuch gegengelesen",
+      "vorschlagWikipedia": "L4, L5, S1"
+    },
+    "flexor-digitorum-longus": {
+      "nameLatin": "M. flexor digitorum longus",
+      "status": "ungeprueft",
+      "segments": "L5, S1, S2",
+      "quelle": "de.wikipedia.org „Musculus flexor digitorum longus\" (Infobox Muskel), Abgleich 2026-07-27 — NOCH NICHT im Lehrbuch gegengelesen",
+      "vorschlagWikipedia": "L5-S2"
+    },
+    "flexor-hallucis-longus": {
+      "nameLatin": "M. flexor hallucis longus",
+      "status": "ungeprueft",
+      "segments": "L5, S1, S2",
+      "quelle": "de.wikipedia.org „Musculus flexor hallucis longus\" (Infobox Muskel), Abgleich 2026-07-27 — NOCH NICHT im Lehrbuch gegengelesen",
+      "vorschlagWikipedia": "L5–S2"
+    },
+    "quadratus-plantae": {
+      "nameLatin": "M. quadratus plantae",
+      "status": "ungeprueft",
+      "segments": "S1, S2",
+      "quelle": "de.wikipedia.org „Musculus quadratus plantae\" (Infobox Muskel), Abgleich 2026-07-27 — NOCH NICHT im Lehrbuch gegengelesen",
+      "vorschlagWikipedia": "S1, S2",
+      "geschwisterAmNerv": "S2, S3"
+    },
+    "interossei-plantares": {
+      "nameLatin": "Mm. interossei plantares",
+      "status": "offen",
+      "segments": "",
+      "geschwisterAmNerv": "S2, S3",
+      "quelle": ""
+    },
+    "interossei-dorsales": {
+      "nameLatin": "Mm. interossei dorsales",
+      "status": "offen",
+      "segments": "",
+      "geschwisterAmNerv": "S2, S3",
+      "quelle": ""
+    },
+    "adductor-hallucis": {
+      "nameLatin": "M. adductor hallucis",
+      "status": "ungeprueft",
+      "segments": "S1, S2, S3",
+      "quelle": "de.wikipedia.org „Musculus adductor hallucis\" (Infobox Muskel), Abgleich 2026-07-27 — NOCH NICHT im Lehrbuch gegengelesen",
+      "vorschlagWikipedia": "S1-S3",
+      "geschwisterAmNerv": "S2, S3"
+    },
+    "flexor-digiti-minimi-brevis-lower-fuss-zeh-v-flexion-des-mtp-gelenks": {
+      "nameLatin": "M. flexor digiti minimi brevis",
+      "status": "ungeprueft",
+      "segments": "S2, S3",
+      "quelle": "de.wikipedia.org „Musculus flexor digiti minimi brevis\" (Infobox Muskel), Abgleich 2026-07-27 — NOCH NICHT im Lehrbuch gegengelesen",
+      "vorschlagWikipedia": "S2, S3",
+      "geschwisterAmNerv": "S2, S3"
+    },
+    "abductor-digiti-minimi-lower-fuss-zeh-v-flexion-und-abduktion-des-mtp-gelenks": {
+      "nameLatin": "M. abductor digiti minimi",
+      "status": "ungeprueft",
+      "segments": "S1, S2",
+      "quelle": "de.wikipedia.org „Musculus abductor digiti minimi\" (Infobox Muskel), Abgleich 2026-07-27 — NOCH NICHT im Lehrbuch gegengelesen",
+      "vorschlagWikipedia": "S1-S2",
+      "geschwisterAmNerv": "S2, S3"
+    },
+    "stylohyoideus": {
+      "nameLatin": "M. stylohyoideus",
+      "status": "entfaellt",
+      "begruendung": "Hirnnerv ohne spinalen Anteil — es gibt keine Segmente."
+    },
+    "orbicularis-oculi": {
+      "nameLatin": "M. orbicularis oculi",
+      "status": "entfaellt",
+      "begruendung": "Hirnnerv ohne spinalen Anteil — es gibt keine Segmente."
+    },
+    "procerus": {
+      "nameLatin": "M. procerus",
+      "status": "entfaellt",
+      "begruendung": "Hirnnerv ohne spinalen Anteil — es gibt keine Segmente."
+    },
+    "nasalis-head-mimikmuskulatur-verengt-nasenoffnung-pars-transversa": {
+      "nameLatin": "M. nasalis",
+      "status": "entfaellt",
+      "begruendung": "Hirnnerv ohne spinalen Anteil — es gibt keine Segmente."
+    },
+    "nasalis-head-mimikmuskulatur-erweitert-blaht-nasenloch-pars-alaris": {
+      "nameLatin": "M. nasalis",
+      "status": "entfaellt",
+      "begruendung": "Hirnnerv ohne spinalen Anteil — es gibt keine Segmente."
+    },
+    "corrugator-supercilii": {
+      "nameLatin": "M. corrugator supercilii",
+      "status": "entfaellt",
+      "begruendung": "Hirnnerv ohne spinalen Anteil — es gibt keine Segmente."
+    },
+    "tibialis-anterior": {
+      "nameLatin": "M. tibialis anterior",
+      "status": "ungeprueft",
+      "segments": "L4, L5",
+      "quelle": "de.wikipedia.org „Musculus tibialis anterior\" (Infobox Muskel), Abgleich 2026-07-27 — NOCH NICHT im Lehrbuch gegengelesen",
+      "vorschlagWikipedia": "L4, L5"
+    },
+    "extensor-digitorum-longus": {
+      "nameLatin": "M. extensor digitorum longus",
+      "status": "ungeprueft",
+      "segments": "L5, S1",
+      "quelle": "de.wikipedia.org „Musculus extensor digitorum longus\" (Infobox Muskel), Abgleich 2026-07-27 — NOCH NICHT im Lehrbuch gegengelesen",
+      "vorschlagWikipedia": "L5, S1"
+    },
+    "extensor-hallucis-longus": {
+      "nameLatin": "M. extensor hallucis longus",
+      "status": "ungeprueft",
+      "segments": "L5, S1",
+      "quelle": "de.wikipedia.org „Musculus extensor hallucis longus\" (Infobox Muskel), Abgleich 2026-07-27 — NOCH NICHT im Lehrbuch gegengelesen",
+      "vorschlagWikipedia": "L5, S1"
+    },
+    "extensor-digitorum-brevis": {
+      "nameLatin": "M. extensor digitorum brevis",
+      "status": "ungeprueft",
+      "segments": "L5, S1",
+      "quelle": "de.wikipedia.org „Musculus extensor digitorum brevis\" (Infobox Muskel), Abgleich 2026-07-27 — NOCH NICHT im Lehrbuch gegengelesen",
+      "vorschlagWikipedia": "L5, S1"
+    },
+    "extensor-hallucis-brevis": {
+      "nameLatin": "M. extensor hallucis brevis",
+      "status": "ungeprueft",
+      "segments": "L5, S1",
+      "quelle": "de.wikipedia.org „Musculus extensor hallucis brevis\" (Infobox Muskel), Abgleich 2026-07-27 — NOCH NICHT im Lehrbuch gegengelesen",
+      "vorschlagWikipedia": "L5, S1"
+    },
+    "fibularis-longus-m-peroneus-longus": {
+      "nameLatin": "M. fibularis longus (M. peroneus longus)",
+      "status": "ungeprueft",
+      "segments": "L5, S1",
+      "quelle": "de.wikipedia.org „Musculus fibularis longus\" (Infobox Muskel), Abgleich 2026-07-27 — NOCH NICHT im Lehrbuch gegengelesen",
+      "vorschlagWikipedia": "L5, S1"
+    },
+    "fibularis-brevis-m-peroneus-brevis": {
+      "nameLatin": "M. fibularis brevis (M. peroneus brevis)",
+      "status": "ungeprueft",
+      "segments": "L5, S1",
+      "quelle": "de.wikipedia.org „Musculus fibularis brevis\" (Infobox Muskel), Abgleich 2026-07-27 — NOCH NICHT im Lehrbuch gegengelesen",
+      "vorschlagWikipedia": "L5, S1"
+    },
+    "flexor-digitorum-brevis": {
+      "nameLatin": "M. flexor digitorum brevis",
+      "status": "ungeprueft",
+      "segments": "L5, S1",
+      "quelle": "de.wikipedia.org „Musculus flexor digitorum brevis\" (Infobox Muskel), Abgleich 2026-07-27 — NOCH NICHT im Lehrbuch gegengelesen",
+      "vorschlagWikipedia": "L5, S1"
+    },
+    "abductor-hallucis": {
+      "nameLatin": "M. abductor hallucis",
+      "status": "ungeprueft",
+      "segments": "S1, S2",
+      "quelle": "de.wikipedia.org „Musculus abductor hallucis\" (Infobox Muskel), Abgleich 2026-07-27 — NOCH NICHT im Lehrbuch gegengelesen",
+      "vorschlagWikipedia": "S1-S2"
+    },
+    "lumbricales": {
+      "nameLatin": "Mm. lumbricales",
+      "status": "offen",
+      "segments": "",
+      "quelle": ""
+    },
+    "flexor-hallucis-brevis": {
+      "nameLatin": "M. flexor hallucis brevis",
+      "status": "ungeprueft",
+      "segments": "S1, S2",
+      "quelle": "de.wikipedia.org „Musculus flexor hallucis brevis\" (Infobox Muskel), Abgleich 2026-07-27 — NOCH NICHT im Lehrbuch gegengelesen",
+      "vorschlagWikipedia": "S1, S2"
+    },
+    "masseter": {
+      "nameLatin": "M. masseter",
+      "status": "entfaellt",
+      "begruendung": "Hirnnerv ohne spinalen Anteil — es gibt keine Segmente."
+    },
+    "temporalis": {
+      "nameLatin": "M. temporalis",
+      "status": "entfaellt",
+      "begruendung": "Hirnnerv ohne spinalen Anteil — es gibt keine Segmente."
+    },
+    "pterygoideus-medialis": {
+      "nameLatin": "M. pterygoideus medialis",
+      "status": "entfaellt",
+      "begruendung": "Hirnnerv ohne spinalen Anteil — es gibt keine Segmente."
+    },
+    "pterygoideus-lateralis": {
+      "nameLatin": "M. pterygoideus lateralis",
+      "status": "entfaellt",
+      "begruendung": "Hirnnerv ohne spinalen Anteil — es gibt keine Segmente."
+    },
+    "mylohyoideus": {
+      "nameLatin": "M. mylohyoideus",
+      "status": "entfaellt",
+      "begruendung": "Hirnnerv ohne spinalen Anteil — es gibt keine Segmente."
+    },
+    "digastricus": {
+      "nameLatin": "M. digastricus",
+      "status": "entfaellt",
+      "begruendung": "Hirnnerv ohne spinalen Anteil — es gibt keine Segmente."
+    },
+    "orbicularis-oris": {
+      "nameLatin": "M. orbicularis oris",
+      "status": "entfaellt",
+      "begruendung": "Hirnnerv ohne spinalen Anteil — es gibt keine Segmente."
+    },
+    "occipitofrontalis-head-mimikmuskulatur-hebt-augenbrauen": {
+      "nameLatin": "M. occipitofrontalis",
+      "status": "entfaellt",
+      "begruendung": "Hirnnerv ohne spinalen Anteil — es gibt keine Segmente."
+    },
+    "occipitofrontalis-head-mimikmuskulatur-zieht-kopfhaut-nach-dorsal": {
+      "nameLatin": "M. occipitofrontalis",
+      "status": "entfaellt",
+      "begruendung": "Hirnnerv ohne spinalen Anteil — es gibt keine Segmente."
+    },
+    "platysma": {
+      "nameLatin": "Platysma",
+      "status": "entfaellt",
+      "begruendung": "Hirnnerv ohne spinalen Anteil — es gibt keine Segmente."
+    }
+  }
+}

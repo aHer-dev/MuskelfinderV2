@@ -2,14 +2,21 @@
 
 > Der Code-Fahrplan (Etappen 0–10) ist durch. Was hier steht, braucht entweder den
 > **Projektinhaber** (Fachinhalt, Deploys) oder ist ein **bewusst zurückgestellter** Task.
-> Stand: 2026-07-13. Single Source of Truth bleibt [PROJECT_STATE.md](PROJECT_STATE.md).
+> Stand: 2026-07-27. Single Source of Truth bleibt [PROJECT_STATE.md](PROJECT_STATE.md).
 
 ## Braucht den Projektinhaber (Fachinhalt — kein Agent macht das)
+
+> **Zum Gegenlesen gibt es Tabellen:** `npm run export:csv` schreibt den kompletten Bestand nach
+> `docs/pruefung/csv/` — je Region, je Gelenkgruppe, die Berufs-Vorsortierung, die
+> doppelten Felder. **Die Dateien liegen nicht im Repo** (erzeugt, siehe `.gitignore`) — erst
+> den Befehl laufen lassen, dann sind sie da. Was welche Datei enthält und wo eine Korrektur
+> hingehört: [pruefung/LIESMICH.md](pruefung/LIESMICH.md).
 
 | Was | Warum nur du | Anleitung |
 |---|---|---|
 | **Palpationstexte eintragen** | Ein falscher Landmarken-Hinweis wird auswendig gelernt und am Patienten angewandt. Die Texte kommen aus dem **Skript deiner Kollegen**. Am 2026-07-13 hast du alle 21 KI-Vorschläge gestrichen — zu Recht. Bis dahin steht auf **allen 150** Detailseiten ein Platzhalter. | [palpation-erfassen.md](palpation-erfassen.md) |
 | **Kursabschnitte eintragen** | Ein Kursabschnitt ist eine Behauptung darüber, was geprüft wird. Rät die KI ihn, lernt ein Schüler den falschen Stoff für die falsche Prüfung. Solange leer, zeigt der Erststart einen Platzhalter statt der Kursauswahl. | [curriculum-erfassen.md](curriculum-erfassen.md) |
+| **Ergo: obere Extremität und Rumpf nachschärfen** (dein Punkt vom 2026-07-27) | Zwei getrennte Fragen, beide fachlich: **(1)** Welche Gelenkgruppen stehen einem Ergo unter „Typisch für dich" oben? Heute sind es vier — `hand`, `ellenbogen`, `schultergelenk`, `schulterguertel` (`TYPICAL` in `src/data/joint-groups.ts`). Wirbelsäule/Rumpf ist bewusst **nicht** dabei; du sagtest, das stimmt so nicht. **(2)** Was steckt inhaltlich in „obere Extremität" und „Rumpf" für die Ergos — gehört etwas hinein oder heraus? Ein Agent rät das nicht: Die Reihenfolge ist eine Aussage darüber, womit dein Kurs anfängt. **Nichts ist versteckt** — alle elf Gruppen bleiben für jeden Beruf wählbar (Prüfzeile in `joint-groups.test.ts`), es geht nur um die Vorsortierung. Sag mir die Liste je Beruf, dann ist es ein Zweizeiler. | — |
 
 ## Braucht dich (Deploy / Betrieb)
 

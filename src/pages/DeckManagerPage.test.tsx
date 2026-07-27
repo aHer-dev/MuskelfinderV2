@@ -29,7 +29,12 @@ describe('DeckManagerPage', () => {
 
   it('fügt ausgewählte Muskeln per Checkbox + Button zum Kasten hinzu', () => {
     renderPage()
-    const check = screen.getAllByRole('checkbox')[0]
+    /* Ausdrücklich aus der Muskel-Liste, nicht irgendein Kästchen der Seite: Seit der
+       Mehrfachwahl (2026-07-27) hat auch die Gelenkgruppen-Wahl Kästchen, und die stehen
+       im DOM davor. `getAllByRole('checkbox')[0]` hätte hier still eine ganze Gruppe
+       angekreuzt und dann auf einen Knopf gewartet, der zu einer anderen Liste gehört. */
+    const zugang = screen.getByRole('region', { name: /Noch nicht im Karteikasten/i })
+    const check = within(zugang).getAllByRole('checkbox')[0]
     fireEvent.click(check)
     const addBtn = screen.getByRole('button', { name: /Ausgewählte hinzufügen \(1\)/i })
     fireEvent.click(addBtn)

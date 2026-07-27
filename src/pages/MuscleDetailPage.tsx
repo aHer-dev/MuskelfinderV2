@@ -23,12 +23,17 @@ type DetailMode = 'expert' | 'easy';
 
 function buildRows(muscle: Muscle, mode: DetailMode): DataRow[] {
   const src = mode === 'easy' && muscle.easy ? muscle.easy : muscle;
+  /* Der Stern gilt nur, wenn der ANGEZEIGTE Wert der nachgetragene ist. In der
+     einfachen Ansicht kommt `segments` aus `muscle.easy` — einen fremden Wert
+     duerfte die Marke nicht als ungeprueft ausweisen. */
+  const segmenteUngeprueft = muscle.segmentsUngeprueft === true
+    && src.segments === muscle.segments;
   return [
     { label: 'Ursprung', value: src.origin },
     { label: 'Ansatz', value: src.insertion },
     { label: 'Funktion', value: src.functionDescription },
     { label: 'Innervation', value: src.innervation },
-    { label: 'Segmente', value: src.segments },
+    { label: segmenteUngeprueft ? 'Segmente *' : 'Segmente', value: src.segments },
     { label: 'Gelenke', value: muscle.joints.join(', ') },
     ...(muscle.taCode ? [{ label: 'TA-Code', value: muscle.taCode }] : []),
   ];
@@ -67,6 +72,9 @@ export function MuscleDetailPage() {
       </section>
     );
   }
+
+  /* Einmal bauen: die Liste UND die Legende darunter lesen dieselben Zeilen. */
+  const rows = buildRows(muscle, mode);
 
   return (
     <article className="page detail">
@@ -135,7 +143,16 @@ export function MuscleDetailPage() {
             />
           )}
 
-          <DataList rows={buildRows(muscle, mode)} />
+          <DataList rows={rows} />
+
+          {/* Der Stern braucht eine Erklaerung, sonst ist er nur ein Zeichen. Er steht
+              nur da, wenn oben auch einer gesetzt wurde — eine Legende ohne Marke waere
+              eine Warnung ohne Anlass. */}
+          {rows.some((r) => r.label.endsWith(' *')) && (
+            <p className="detail-note">
+              * Dieser Wert ist nachgetragen und noch nicht im Lehrbuch gegengelesen.
+            </p>
+          )}
 
           {/* Der Name IST die Funktion — man muss ihn nur lesen koennen (8d). Das gehoert
               ins „Einfach"-Niveau; im Fachlichen bleibt es aus dem Weg. */}

@@ -15,6 +15,24 @@ dist-ssr
 # Screenshots der Browser-Pruefungen (check:oberflaeche / check:wege)
 check-shots
 
+# ---- Erzeugte Pruef-Tabellen -------------------------------------------------
+# Diese Dateien entstehen aus dem Bestand, sie sind keine Quelle. Eingecheckt
+# waeren sie eine zweite Wahrheit: Wer eine CSV liest, die drei Commits alt ist,
+# prueft einen Datenstand, den die App nicht mehr hat — und meldet Fehler, die
+# schon behoben sind. Wer sie braucht, erzeugt sie (Befehl steht dahinter).
+# `export-csv.mjs` loescht sein Zielverzeichnis vor jedem Lauf; eine Korrektur
+# von Hand in diesen Dateien war ohnehin immer verloren.
+# Neu erzeugen mit `npm run export:csv` (Sekunden, offline).
+docs/pruefung/csv/
+# Neu erzeugen mit `npm run vergleich:wikipedia` (Minuten, braucht Netz).
+docs/pruefung/vergleich-wikipedia.csv
+
+# NICHT ignoriert, obwohl ebenfalls erzeugt: public/screenshots/*.png.
+# Die sind **Build-Eingabe** — das Manifest verweist auf sie, `check:pwa` prueft
+# ihre Existenz und Pixelmasse. Ohne sie im Repo scheitert `npm run verify` auf
+# einem frischen Klon (und damit in der CI), weil `make:screenshots` einen
+# fertigen Build braucht, den es zu diesem Zeitpunkt noch nicht gibt.
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

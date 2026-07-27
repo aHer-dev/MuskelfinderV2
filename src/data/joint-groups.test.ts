@@ -4,6 +4,7 @@ import {
   getJointGroup,
   getJointGroups,
   neueKarten,
+  neueKartenDerAuswahl,
   orderedJointGroups,
 } from './joint-groups';
 import { CARD_MUSCLES, getMuscleByCardKey, getMuscles } from './loader';
@@ -226,5 +227,53 @@ describe('neueKarten — die Zahl am Knopf ist ein Versprechen', () => {
   it('eine vollständig vorhandene Gruppe legt 0 neue Karten an', () => {
     const g = getJointGroup('kniegelenk')!;
     expect(neueKarten(g, Object.fromEntries(g.muscles.map((n) => [n, {}])))).toBe(0);
+  });
+});
+
+describe('neueKartenDerAuswahl — die Mehrfachwahl zählt die Vereinigung, nicht die Summe', () => {
+  const ellenbogen = getJointGroup('ellenbogen')!;
+  const schulter = getJointGroup('schultergelenk')!;
+  const hand = getJointGroup('hand')!;
+
+  it('addierte Einzelzahlen wären eine LÜGE — der Beleg steht in den echten Daten', () => {
+    /* `M. biceps brachii` und das Caput longum des Triceps überspannen Ellenbogen UND
+       Schultergelenk. Wer „17 + 11 = 28" an den Knopf schreibt, verspricht Karten, die
+       `addCards` nie anlegt — genau der Fehler, den `neueKarten` für die Einzelwahl schon
+       verhindert, nur eine Ebene höher. */
+    const summe = neueKarten(ellenbogen, {}) + neueKarten(schulter, {});
+    const vereinigung = neueKartenDerAuswahl([ellenbogen, schulter], {});
+
+    expect(vereinigung.length).toBeLessThan(summe); // es gibt wirklich eine Überlappung
+    expect(new Set(vereinigung).size).toBe(vereinigung.length);
+    expect(vereinigung).toEqual(
+      [...new Set([...ellenbogen.muscles, ...schulter.muscles])].sort((a, b) =>
+        a.localeCompare(b, 'de'),
+      ),
+    );
+  });
+
+  it('liefert die Kartenschlüssel selbst, nicht nur ihre Zahl', () => {
+    /* Die Leiste zeigt die Zahl UND legt die Karten an. Kämen Zahl und Nutzlast aus zwei
+       getrennten Rechnungen, könnten sie auseinanderlaufen — dieselbe Wurzel wie bei
+       `applyWrong`/`applyExamMiss` (ADR 0011). */
+    const gewaehlt = neueKartenDerAuswahl([hand, ellenbogen], {});
+    for (const key of [...hand.muscles, ...ellenbogen.muscles]) {
+      expect(gewaehlt, `„${key}" fehlt in der Auswahl`).toContain(key);
+    }
+  });
+
+  it('zieht ab, was schon im Kasten liegt — auch quer über die gewählten Gruppen', () => {
+    const kasten = Object.fromEntries(ellenbogen.muscles.map((n) => [n, {}]));
+    const neu = neueKartenDerAuswahl([ellenbogen, schulter], kasten);
+
+    expect(neu).toEqual(
+      schulter.muscles.filter((n) => !ellenbogen.muscles.includes(n)).sort((a, b) =>
+        a.localeCompare(b, 'de'),
+      ),
+    );
+  });
+
+  it('ohne Auswahl ist nichts anzulegen', () => {
+    expect(neueKartenDerAuswahl([], {})).toEqual([]);
   });
 });
