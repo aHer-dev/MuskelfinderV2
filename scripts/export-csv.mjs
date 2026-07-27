@@ -93,6 +93,11 @@ function gelenkgruppenVon(muscle) {
 }
 
 /* ---- Die Spalten, die der Fachmann liest ------------------------------- */
+/* Die fuenf Fachfelder stehen in derselben Reihenfolge wie in der App
+   (`src/data/muscle-fields.ts`): Ursprung · Ansatz · Funktion · Innervation ·
+   Segmente. Wer beim Gegenlesen zwischen Tabelle und Bildschirm springt, soll
+   nicht umdenken muessen. „Funktionen (Filter)" ist keine Fachangabe, sondern
+   die Movement-IDs — sie stehen deshalb neben dem Funktionstext. */
 
 const FACH_SPALTEN = [
   'Muskel (lateinisch)', 'Deutsch', 'Region', 'Subregion', 'Gelenke', 'Gelenkgruppen',

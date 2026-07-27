@@ -13,7 +13,7 @@ describe('Flashcard — Fakten der Rückseite', () => {
   it('blendet leere Felder aus (Segmente fehlen bei 48 von 150 Muskeln)', () => {
     const labels = facts(withoutSegments).map((f) => f.label)
     expect(labels).not.toContain('Segmente')
-    expect(labels).toEqual(['Funktion', 'Innervation', 'Ursprung', 'Ansatz'])
+    expect(labels).toEqual(['Ursprung', 'Ansatz', 'Funktion', 'Innervation'])
   })
 
   it('zeigt Segmente, wenn vorhanden', () => {

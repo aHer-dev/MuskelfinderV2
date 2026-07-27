@@ -579,6 +579,33 @@ auf GitHub Pages startet die installierte App ins Nichts.
   (`/MuskelfinderV2/`). `check:pwa` faengt die Manifest-Seite ab, aber ein `base`-Wechsel
   muesste dort **auch** nachgezogen werden.
 
+## ⚠️ DIE FACHFELDER STEHEN UEBERALL GLEICH (2026-07-27) — `src/data/muscle-fields.ts`
+**Ursprung → Ansatz → Funktion → Innervation → Segmente.** Diese Reihenfolge liegt in
+`FACHFELDER` und wird nirgends sonst behauptet. Vorher standen dieselben fuenf Felder an drei
+Stellen in drei Reihenfolgen (Detailseite / Lernkarten-Rueckseite / Quiz-Vergleichskarte).
+
+- **Warum das in einer Lern-App teuer ist:** Wer auswendig lernt, praegt sich die **Position**
+  mit ein, nicht nur den Text. Wechselt die Reihenfolge zwischen Nachschlagen, Ueben und
+  Abfragen, sucht der Lernende jedes Mal an der falschen Stelle.
+- **Warum gerade diese Reihenfolge:** Sie folgt der anatomischen Beschreibung, in der auch
+  Lehrbuecher einen Muskel abhandeln — wo faengt er an, wo hoert er auf, was tut er deshalb,
+  woher kommt der Befehl, aus welcher Rueckenmarkshoehe.
+- **`folgtReihenfolge()` prueft als Teilfolge**, nicht auf Gleichheit: Auslassen ist erlaubt
+  (leere Segmente bei 28 von 150), Anhaengen auch (Gelenke, TA-Code, Lage). Verboten ist nur
+  das Vertauschen zweier Fachfelder gegeneinander.
+- **Geprueft am gerenderten DOM aller 150 Muskeln**, nicht an der Datenfunktion — was zaehlt,
+  ist was der Lernende sieht. `buildRows` bleibt modulprivat.
+- Die **Stern-Regel** fuer ungepruefte Segmente (`UNGEPRUEFT_MARKE`) stand ebenfalls doppelt
+  und liegt jetzt in derselben Datei. Sonst haette das naechste Umsortieren sie wieder
+  auseinandergezogen.
+- Gegengeprobt in **zwei** Richtungen: (A) Reihenfolge in der Quelle zurueckgedreht → 12
+  Fehlschlaege in 5 Dateien. (B) nur **eine** Anzeige tanzt aus der Reihe, Quelle bleibt
+  richtig → 3 Fehlschlaege mit Fundstelle. Ohne (B) haette die Pruefung nur Aenderungen an
+  sich selbst bemerkt — das ist der Unterschied zwischen „prueft die Konstante" und „prueft
+  die Anzeigen".
+- `scripts/export-csv.mjs` fuehrt dieselbe Reihenfolge in den Spalten (war schon richtig,
+  traegt jetzt einen Verweis). `ExplainSheet` hatte keinen Test und hat jetzt einen.
+
 ## Kanonische Quellen
 - V1-Original: `../Muskelfinder` (`/home/pepperboy8/Documents/Muskelfinder`)
 - V2-Repo: `Muskelfinder-V2`

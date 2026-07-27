@@ -8,6 +8,8 @@
    ========================================================================= */
 
 import { regionLabel } from '../../../data/labels';
+import { fachfelder } from '../../../data/muscle-fields';
+import type { FachfeldKey } from '../../../data/muscle-fields';
 import type { Explanation, ExplainAspect } from '../../../data/explain';
 import { Sheet } from '../../ui/Sheet';
 import type { Muscle } from '../../../types';
@@ -22,12 +24,28 @@ interface Row {
   aspect: ExplainAspect;
 }
 
+/* Nur die Felder, nach denen das Quiz ueberhaupt fragen kann (`ExplainAspect`).
+   `segments` fehlt absichtlich: Es gibt keinen Segment-Modus, und eine Zeile, die
+   nie hervorgehoben wird, verlaengert die Vergleichskarte ohne Nutzen. */
+const ASPEKT: Partial<Record<FachfeldKey, ExplainAspect>> = {
+  origin: 'origin',
+  insertion: 'insertion',
+  functionDescription: 'function',
+  innervation: 'innervation',
+};
+
+/**
+ * Zeilen der Vergleichskarte. Die Reihenfolge kommt aus `data/muscle-fields.ts`,
+ * damit sie zu Detailseite und Lernkarte passt — wer im Quiz danebenliegt, liest
+ * gleich danach dieselben Felder nach, und dann muessen sie gleich stehen.
+ * „Lage" ist kein Fachfeld dieser Liste und haengt hinten an.
+ */
 function rows(muscle: Muscle): Row[] {
   return [
-    { label: 'Funktion', value: muscle.functionDescription, aspect: 'function' },
-    { label: 'Ursprung', value: muscle.origin, aspect: 'origin' },
-    { label: 'Ansatz', value: muscle.insertion, aspect: 'insertion' },
-    { label: 'Innervation', value: muscle.innervation, aspect: 'innervation' },
+    ...fachfelder(muscle).flatMap(({ key, label, value }) => {
+      const aspect = ASPEKT[key];
+      return aspect ? [{ label, value, aspect }] : [];
+    }),
     { label: 'Lage', value: muscle.subregion, aspect: 'location' },
   ];
 }

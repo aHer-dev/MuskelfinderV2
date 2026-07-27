@@ -17,7 +17,7 @@ const muskel = (over: Partial<Muscle> = {}): Muscle => ({
 describe('facts', () => {
   it('lässt leere Felder weg', () => {
     const labels = facts(muskel({ segments: '', innervation: '' })).map((f) => f.label);
-    expect(labels).toEqual(['Funktion', 'Ursprung', 'Ansatz']);
+    expect(labels).toEqual(['Ursprung', 'Ansatz', 'Funktion']);
   });
 
   it('beschriftet Segmente ohne Marke, solange der Wert belegt ist', () => {

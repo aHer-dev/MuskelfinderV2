@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getMuscleById } from '../data';
 import { movementLabel, regionLabel } from '../data/labels';
+import { fachfelder } from '../data/muscle-fields';
 import { groupsOf } from '../data/groups';
 import { isSupportedIn3D, threeDUrl } from '../data/threeD';
 import { DataList } from '../components/features/detail/DataList';
@@ -28,12 +29,11 @@ function buildRows(muscle: Muscle, mode: DetailMode): DataRow[] {
      duerfte die Marke nicht als ungeprueft ausweisen. */
   const segmenteUngeprueft = muscle.segmentsUngeprueft === true
     && src.segments === muscle.segments;
+  /* Reihenfolge der fuenf Fachfelder aus `data/muscle-fields.ts` — dieselbe wie
+     auf der Lernkarten-Rueckseite. Gelenke und TA-Code sind keine Fachfelder in
+     diesem Sinn und haengen deshalb hinten an. */
   return [
-    { label: 'Ursprung', value: src.origin },
-    { label: 'Ansatz', value: src.insertion },
-    { label: 'Funktion', value: src.functionDescription },
-    { label: 'Innervation', value: src.innervation },
-    { label: segmenteUngeprueft ? 'Segmente *' : 'Segmente', value: src.segments },
+    ...fachfelder(src, segmenteUngeprueft).map(({ label, value }) => ({ label, value })),
     { label: 'Gelenke', value: muscle.joints.join(', ') },
     ...(muscle.taCode ? [{ label: 'TA-Code', value: muscle.taCode }] : []),
   ];
