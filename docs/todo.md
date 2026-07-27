@@ -7,9 +7,10 @@
 ## Braucht den Projektinhaber (Fachinhalt — kein Agent macht das)
 
 > **Zum Gegenlesen gibt es Tabellen:** `npm run export:csv` schreibt den kompletten Bestand nach
-> [pruefung/csv/](pruefung/csv/) — je Region, je Gelenkgruppe, die Berufs-Vorsortierung, die
-> doppelten Felder. Was welche Datei enthält und wo eine Korrektur hingehört:
-> [pruefung/LIESMICH.md](pruefung/LIESMICH.md).
+> `docs/pruefung/csv/` — je Region, je Gelenkgruppe, die Berufs-Vorsortierung, die
+> doppelten Felder. **Die Dateien liegen nicht im Repo** (erzeugt, siehe `.gitignore`) — erst
+> den Befehl laufen lassen, dann sind sie da. Was welche Datei enthält und wo eine Korrektur
+> hingehört: [pruefung/LIESMICH.md](pruefung/LIESMICH.md).
 
 | Was | Warum nur du | Anleitung |
 |---|---|---|

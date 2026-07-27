@@ -472,8 +472,15 @@ nicht in JSON. `scripts/export-csv.mjs` schreibt den Bestand als 20 Tabellen nac
 Berufs-Vorsortierung, die funktionellen Gruppen, die 47 bildlosen Muskeln (21 davon in der
 3D-App) und die woertlich doppelten Felder. Wegweiser: `docs/pruefung/LIESMICH.md`.
 
-- **Erzeugte Dateien.** Eine Aenderung darin bewirkt nichts; der Weg zurueck steht im LIESMICH
-  (Spalte → Quelldatei).
+- **Erzeugte Dateien, und sie liegen NICHT im Repo** (`.gitignore`, seit 2026-07-27). Eine
+  Aenderung darin bewirkt nichts; der Weg zurueck steht im LIESMICH (Spalte → Quelldatei).
+  Eingecheckt waeren sie eine zweite Wahrheit: Wer eine drei Commits alte Tabelle gegenliest,
+  prueft einen Bestand, den die App nicht mehr hat, und meldet Fehler, die schon behoben sind.
+  `check:daten` faellt jetzt, wenn eine wieder im Versionsstand landet.
+  **Gegenbeispiel mit Absicht:** `public/screenshots/*.png` sind ebenfalls erzeugt, bleiben aber
+  eingecheckt — sie sind **Build-Eingabe** (Manifest + `check:pwa`), und `make:screenshots`
+  braucht einen fertigen Build, den ein frischer Klon noch nicht hat. Gegengeprobt: ohne sie
+  baut es durch und `check:pwa` faellt mit zwei Fehlern.
 - **Keine zweite Wahrheit:** Das Skript laedt ueber Vites SSR-Lader **dieselben Module wie die
   App** (`getMuscles`, `getJointGroups`, `cardKey`, …), statt die JSONs noch einmal selbst zu
   deuten. Ein Export mit eigener Meinung ueber die Daten waere genau der Fehler, den er
@@ -522,6 +529,11 @@ ersetzen — der Stern verschwindet von selbst.
   dafuer braucht es Sprachurteil, kein Textvergleich. Naechster Schritt.
 - ⚠️ `docs/pruefung/vergleich-wikipedia.csv` liegt **eine Ebene ueber** `csv/`, weil
   `export-csv.mjs` sein Zielverzeichnis per `rmSync` leert.
+- ⚠️ Beide Dateien sind erzeugt und stehen in der `.gitignore`. Die Vergleichsliste ist die
+  **einzige, deren Neuerzeugen weh tut**: `npm run vergleich:wikipedia` braucht Netz und laeuft
+  Minuten (ein Abruf je Muskel, gedrosselt); sie ist zugleich die Eingabe fuer den offenen
+  naechsten Schritt (Ursprung/Ansatz per Sprachurteil). Ihre Eingabe wiederum ist
+  `csv/00-alle-muskeln.csv` — das Skript sagt es jetzt selbst, statt an einem ENOENT zu sterben.
 
 ## ⚠️ INSTALLIERBARKEIT: DIE APP WAR NIE KAPUTT, ES FEHLTE DAS ANGEBOT (2026-07-27)
 Befund aus der Praxis: Installation klappte bei einem Nutzer, beim naechsten nicht. Die

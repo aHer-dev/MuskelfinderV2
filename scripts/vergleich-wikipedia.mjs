@@ -1,10 +1,32 @@
-/* Probe: Bestand gegen die de-Wikipedia-Infobox stellen.
-   Noch nichts Eingechecktes — erst sehen, ob genug Signal herauskommt. */
+/* =========================================================================
+   vergleich:wikipedia — den Bestand gegen die de-Wikipedia-Infobox stellen.
+   scripts/vergleich-wikipedia.mjs
 
-import { readFileSync, writeFileSync } from 'node:fs';
+   WOFUER: Fuer Ursprung, Ansatz und Segmente gibt es keine eine wahre Quelle —
+   Lehrbuecher weichen legitim voneinander ab. Diese Liste ersetzt also kein
+   Lehrbuch, sie sagt nur: „hier steht woanders etwas anderes, schau hin."
+   Mechanisch vergleichbar sind **Segmente und Innervation**; Ursprung/Ansatz/
+   Funktion brauchen ein fachliches Urteil und werden nur markiert.
+
+   EIN- UND AUSGABE sind beide erzeugt und stehen deshalb in der .gitignore:
+     Eingabe:  docs/pruefung/csv/00-alle-muskeln.csv   (npm run export:csv)
+     Ausgabe:  docs/pruefung/vergleich-wikipedia.csv
+   Der Lauf braucht Netz und dauert Minuten (ein Abruf je Muskel, gedrosselt).
+   ========================================================================= */
+
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 
 const CSV = 'docs/pruefung/csv/00-alle-muskeln.csv';
 const UA = 'MuskelfinderV2-Datenabgleich/0.1 (Lernprojekt, einmaliger Abgleich)';
+
+/* Die Eingabe ist erzeugt und liegt nicht im Repo. Ohne diesen Hinweis stirbt
+   das Skript auf einem frischen Klon an einem nackten ENOENT, und der naechste
+   Leser sucht den Fehler im Netzabruf statt im fehlenden Export. */
+if (!existsSync(CSV)) {
+  console.error(`✗ ${CSV} fehlt. Die Datei ist erzeugt (nicht im Repo).`);
+  console.error('  Erst `npm run export:csv`, dann diesen Lauf noch einmal.');
+  process.exit(2);
+}
 
 /* ---- CSV lesen (Semikolon, BOM, CRLF, RFC-4180-Quotes) ----------------- */
 function parseCsv(text) {

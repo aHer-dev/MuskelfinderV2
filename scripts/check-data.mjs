@@ -18,6 +18,7 @@
    ========================================================================= */
 
 import { readFileSync, existsSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -197,8 +198,50 @@ if (segmentNachtrag) {
   }
 }
 
+/* ---- Erzeugte Dateien gehoeren nicht in den Versionsstand -------------- */
+/* WARUM ES DAS GIBT: Die 20 Pruef-Tabellen und die Wikipedia-Vergleichsliste
+   lagen eine Zeit lang eingecheckt im Repo. Eine erzeugte Datei im
+   Versionsstand ist eine zweite Wahrheit ueber die eigenen Daten: Wer eine CSV
+   liest, die drei Commits alt ist, prueft einen Bestand, den die App nicht mehr
+   hat — und meldet Fehler, die schon behoben sind. `export-csv.mjs` loescht sein
+   Zielverzeichnis ausserdem vor jedem Lauf, eine Korrektur von Hand darin war
+   also ohnehin immer verloren.
+
+   ABSICHTLICHE AUSNAHME: `public/screenshots/*.png` sind ebenfalls erzeugt,
+   aber **Build-Eingabe** — das Manifest verweist darauf, `check:pwa` prueft
+   Existenz und Pixelmasse. Sie MUESSEN im Repo liegen: `make:screenshots`
+   braucht einen fertigen Build, den ein frischer Klon noch nicht hat. Deshalb
+   stehen sie hier nicht in der Liste. */
+const ERZEUGT_NICHT_EINCHECKEN = [
+  ['docs/pruefung/csv', 'npm run export:csv'],
+  ['docs/pruefung/vergleich-wikipedia.csv', 'npm run vergleich:wikipedia'],
+];
+
+let versionsstandGeprueft = false;
+let erzeugteImRepo = 0;
+try {
+  const git = (args) => execFileSync('git', args, { cwd: ROOT, encoding: 'utf8' });
+  git(['rev-parse', '--git-dir']); // wirft, wenn hier kein Repo liegt
+  versionsstandGeprueft = true;
+  for (const [pfad, befehl] of ERZEUGT_NICHT_EINCHECKEN) {
+    const treffer = git(['ls-files', '--', pfad]).split('\n').filter(Boolean);
+    if (treffer.length > 0) {
+      erzeugteImRepo += treffer.length;
+      fail(`${treffer.length} erzeugte Datei(en) unter "${pfad}" liegen im Versionsstand `
+        + `(z. B. ${treffer[0]}). Sie entstehen aus dem Bestand — eingecheckt veralten sie `
+        + `still. Raus damit: git rm --cached -r ${pfad}  ·  neu erzeugen: ${befehl}`);
+    }
+  }
+} catch {
+  /* Kein Git verfuegbar (Tarball-Kopie, Sandbox). Die Pruefung entfaellt dann
+     still — sie soll den Datencheck nicht wegen fehlendem Werkzeug fallen lassen. */
+}
+
 /* ---- Urteil ---------------------------------------------------------- */
 L('\n── INTEGRITAET (harte Regeln) ──');
+if (versionsstandGeprueft) {
+  L(`  erzeugte Pruef-Tabellen im Versionsstand: ${erzeugteImRepo} ${erzeugteImRepo === 0 ? '✓' : '✗'}`);
+}
 if (fehler.length === 0) {
   L('  ✓ Alle Bilder existieren, IDs eindeutig, Gruppen sauber, Regionen gueltig.');
   L('\n✓ check:daten bestanden.\n');

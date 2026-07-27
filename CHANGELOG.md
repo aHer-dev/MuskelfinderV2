@@ -6,6 +6,34 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Changed
+- **Erzeugte Prüf-Tabellen liegen nicht mehr im Repo** (2026-07-27, `.gitignore`,
+  `scripts/check-data.mjs`).
+
+  `docs/pruefung/csv/` (20 Dateien) und `docs/pruefung/vergleich-wikipedia.csv` waren
+  eingecheckt. Sie entstehen aber aus dem Bestand — im Versionsstand sind sie eine
+  **zweite Wahrheit**: Wer eine drei Commits alte Tabelle fachlich gegenliest, prüft
+  einen Datenstand, den die App nicht mehr hat, und meldet Fehler, die längst behoben
+  sind. Bei `csv/` kam hinzu, dass `export-csv.mjs` sein Zielverzeichnis vor jedem Lauf
+  per `rmSync` leert: eine Korrektur von Hand darin war ohnehin immer verloren.
+
+  Nach der Prüf-Regel ist daraus **eine Prüfung** geworden, nicht nur ein `git rm`:
+  `check:daten` fällt jetzt, wenn eine dieser Dateien wieder im Versionsstand landet, und
+  nennt beide Befehle (`git rm --cached` · Neuerzeugen). Gegengeprobt: `git add -f` einer
+  CSV → Exit 1 mit Fundstelle, nach dem Zurückdrehen wieder Exit 0. Fehlt Git (Tarball,
+  Sandbox), entfällt die Prüfung still, statt den Datencheck am Werkzeug scheitern zu lassen.
+
+  **Absichtliche Ausnahme: `public/screenshots/*.png` bleiben eingecheckt.** Sie sind
+  ebenfalls erzeugt, aber **Build-Eingabe** — das Manifest verweist auf sie, `check:pwa`
+  prüft Existenz und Pixelmaße, und `make:screenshots` braucht einen fertigen Build, den
+  ein frischer Klon noch nicht hat. Auch das ist gegengeprobt statt behauptet: ohne den
+  Ordner **baut Vite anstandslos durch** und erst `check:pwa` fällt mit zwei Fehlern —
+  genau die Sorte Lücke, die lokal nie auffällt und in der CI zuschlägt.
+
+  `vergleich-wikipedia.mjs` sagt jetzt selbst, wenn seine Eingabe fehlt (`npm run
+  export:csv`, Exit 2), statt an einem nackten `ENOENT` zu sterben — die Kette
+  `export:csv → 00-alle-muskeln.csv → vergleich:wikipedia` war vorher nur im Code sichtbar.
+
 ### Added
 - **„Als App aufs Handy" — Installation wird jetzt aktiv angeboten** (2026-07-27,
   `src/pwa/install.ts`, `src/components/features/install/`, Abschnitt auf `/anleitung`).

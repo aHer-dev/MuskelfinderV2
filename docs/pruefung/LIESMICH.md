@@ -1,7 +1,12 @@
 # Fachliche Prüfung — die Daten als Tabellen
 
-Erzeugt mit **`npm run export:csv`** (`scripts/export-csv.mjs`), Ziel: [csv/](csv/).
+Erzeugt mit **`npm run export:csv`** (`scripts/export-csv.mjs`), Ziel: `csv/` neben dieser Datei.
 Stand des letzten Laufs: **2026-07-27** · 150 Datensätze · 148 Karten · 11 Gelenkgruppen.
+
+> **`csv/` liegt nicht im Repo** — der Ordner steht in der `.gitignore`. Eine eingecheckte
+> Tabelle wäre eine zweite Wahrheit: Wer sie drei Commits später liest, prüft einen Bestand,
+> den die App nicht mehr hat, und meldet Fehler, die längst behoben sind. Nach `npm run
+> export:csv` ist der Ordner da; `check:daten` schlägt Alarm, wenn er je wieder eingecheckt wird.
 
 > **Diese Dateien sind erzeugt.** Wer sie bearbeitet, ändert an der App nichts — der Weg ist:
 > hier lesen, in der Quelle ändern (Tabelle unten), `npm run verify`, `npm run export:csv`.
