@@ -7,6 +7,29 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Fixed
+- **Der Installationsknopf konnte in Chrome nie erscheinen** (2026-07-27,
+  `src/main.tsx`, `scripts/check-pwa.mjs`).
+
+  `pwa/install.ts` registriert beim Import einen `beforeinstallprompt`-Hörer und puffert
+  das Ereignis — genau deshalb, weil Chrome es **einmal, kurz nach dem Laden** feuert,
+  bevor React gemountet hat. Der Import hing aber an `InstallSection` → `GuidePage`, und
+  die ist ein **Lazy-Chunk** (Route-Code-Splitting, Etappe 5). Geladen wurde das Modul
+  also erst beim Aufruf von `/anleitung`. Da war das Ereignis lange durch, der Puffer
+  leer — und die Seite zeigte den Menü-Hinweis auf einem Chrome, das **installieren
+  wollte**. Der Kommentar im Modul sagte „deshalb wird beim Import gelauscht"; der
+  Import selbst kam zu spät und hob die ganze Vorsichtsmaßnahme auf.
+
+  Behoben mit einem Seiteneffekt-Import in `main.tsx`. Der Hörer liegt jetzt im
+  Start-Bundle (`index-*.js`) statt in `GuidePage-*.js`.
+
+  **Warum das lokal unsichtbar war** — und das ist die Lehre: Der Code war richtig, die
+  18 Unit-Tests grün (sie feuern das Ereignis selbst, *nach* dem Import), das Modul
+  funktionierte einwandfrei. Kaputt war allein der **Zeitpunkt seines Ladens**, und der
+  entsteht erst im Build. `check:pwa` prüft deshalb jetzt gegen `dist/`: In welchem
+  Chunk steht der Hörer, und lädt `index.html` diesen Chunk überhaupt? Gegengeprobt:
+  Import entfernt → „liegt nur in GuidePage-*.js — einem Chunk, den index.html NICHT
+  lädt", Exit 1.
+
 - **Handy-Durchgang: der Prüfung fehlte der Seed — sie prüfte den leeren Zustand**
   (2026-07-27, `scripts/check-surface.mjs:182`).
 

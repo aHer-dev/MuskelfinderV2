@@ -158,6 +158,45 @@ if (!/registerSW\.js/.test(html) && !/serviceWorker/.test(html)) {
   fail('dist/index.html registriert keinen Service Worker.');
 }
 
+/* ---- 5b. Liegt der `beforeinstallprompt`-Hoerer im START-Bundle? -------
+   DER FEHLER, DEN DIESE PRUEFUNG GEFUNDEN HAETTE: `pwa/install.ts` registriert beim
+   Import einen Hoerer und puffert das Ereignis, weil Chrome es einmal kurz nach dem
+   Laden feuert — noch bevor React gemountet hat. Der Import hing aber an
+   `InstallSection` → `GuidePage`, und die ist ein **Lazy-Chunk**. Geladen wurde das
+   Modul also erst beim Aufruf von `/anleitung`; da war das Ereignis lange durch, der
+   Puffer leer, und die Seite zeigte den Menue-Hinweis auf einem Chrome, das
+   installieren WOLLTE.
+
+   Das ist lokal nicht zu sehen: Der Code ist richtig, die Tests sind gruen (sie
+   feuern das Ereignis selbst, nach dem Import), das Modul funktioniert. Kaputt ist
+   allein der ZEITPUNKT seines Ladens — und der entsteht erst im Build.
+   Geprueft wird deshalb gegen `dist/`: In welchem Chunk steht der Hoerer, und wird
+   dieser Chunk von `index.html` geladen? */
+const MARKE = 'beforeinstallprompt';
+const assetsDir = join(DIST, 'assets');
+if (!existsSync(assetsDir)) {
+  fail('dist/assets/ fehlt — Build kaputt?');
+} else {
+  const traeger = readdirSync(assetsDir)
+    .filter((f) => f.endsWith('.js'))
+    .filter((f) => readFileSync(join(assetsDir, f), 'utf8').includes(MARKE));
+
+  if (traeger.length === 0) {
+    fail(`Kein gebautes Bundle enthaelt "${MARKE}" — der Installationsknopf kann nie `
+      + 'erscheinen. Wurde `src/pwa/install.ts` aus dem Baum entfernt?');
+  } else {
+    /* „Vom Start geladen" heisst: als <script> ODER als modulepreload im HTML genannt.
+       Ein Lazy-Chunk steht dort nicht — genau daran erkennt man den Fehler. */
+    const frueh = traeger.filter((f) => html.includes(f));
+    if (frueh.length === 0) {
+      fail(`Der "${MARKE}"-Hoerer liegt nur in ${traeger.join(', ')} — einem Chunk, den `
+        + 'index.html NICHT laedt (Lazy-Route). Chrome feuert das Ereignis einmal kurz '
+        + 'nach dem Laden; bis der Chunk kommt, ist es verpasst und der Knopf bleibt aus. '
+        + 'Abhilfe: `import \'./pwa/install\'` in `src/main.tsx`.');
+    }
+  }
+}
+
 /* ---- 6. iOS: was das Manifest dort NICHT leistet ---------------------- */
 /* iOS liest das Manifest erst ab 16.4 vollstaendig. Fehlen diese Tags, startet
    eine vom Home-Bildschirm geoeffnete App als Safari-Tab mit Browserleiste. */

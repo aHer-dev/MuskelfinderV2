@@ -535,6 +535,24 @@ ersetzen — der Stern verschwindet von selbst.
   naechsten Schritt (Ursprung/Ansatz per Sprachurteil). Ihre Eingabe wiederum ist
   `csv/00-alle-muskeln.csv` — das Skript sagt es jetzt selbst, statt an einem ENOENT zu sterben.
 
+## ⚠️ DER INSTALLATIONSKNOPF LAG IM FALSCHEN CHUNK (2026-07-27) — `src/main.tsx`
+Nachtrag zur Installierbarkeit, gefunden durch einen Praxisbericht („in Chrome wird nichts
+angezeigt"). `pwa/install.ts` lauscht **beim Import** auf `beforeinstallprompt`, weil Chrome
+es einmal kurz nach dem Laden feuert. Der Import hing aber an `InstallSection` → `GuidePage`
+— einem **Lazy-Chunk**. Das Modul kam also erst beim Aufruf von `/anleitung`; das Ereignis
+war durch, der Puffer leer, und die Seite zeigte den Menue-Hinweis auf einem Chrome, das
+installieren WOLLTE.
+
+- **Die Lehre:** Der Code war richtig, 18 Unit-Tests gruen, das Modul einwandfrei. Kaputt war
+  allein der **Zeitpunkt des Ladens** — und der entsteht erst im Build. Ein Modul mit
+  Seiteneffekt beim Import gehoert ins **Start-Bundle**; Route-Code-Splitting hebt die
+  Vorsichtsmassnahme sonst auf. Der Kommentar „deshalb wird beim Import gelauscht" stand da
+  und war trotzdem wirkungslos.
+- `check:pwa` prueft jetzt am gebauten Ergebnis, in welchem Chunk der Hoerer steht und ob
+  `index.html` diesen Chunk laedt. Gegengeprobt.
+- **Kein Test haette das gefunden**, weil Tests den Import selbst vornehmen und danach das
+  Ereignis feuern. Nur eine Pruefung gegen `dist/` sieht es.
+
 ## ⚠️ INSTALLIERBARKEIT: DIE APP WAR NIE KAPUTT, ES FEHLTE DAS ANGEBOT (2026-07-27)
 Befund aus der Praxis: Installation klappte bei einem Nutzer, beim naechsten nicht. Die
 Kriterien waren **immer** erfuellt (Manifest, SW, Icons 192/512/maskable, HTTPS,
