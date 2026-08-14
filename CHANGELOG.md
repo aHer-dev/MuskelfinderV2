@@ -6,6 +6,48 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Changed
+- **Abhängigkeiten auf den Stand vom 2026-08-14 gebracht** (`package-lock.json`).
+
+  Dreizehn Pakete innerhalb ihrer deklarierten Versionsbereiche nachgezogen — darunter
+  React/React-DOM 19.2.7 → 19.2.8, Vite 8.1.3 → 8.2.1, oxlint 1.73 → 1.78,
+  Playwright 1.61.1 → 1.62.1, axe-core 4.12.1 → 4.13.0, zustand 5.0.14 → 5.0.15.
+  `package.json` bleibt unberührt: Es sind ausschließlich Patch-/Minor-Sprünge, keine
+  Bereichsgrenze wurde angefasst. `npm run verify` ist danach grün — 782 Tests,
+  axe 0 Verstöße, alle vier Prüfungen bestanden.
+
+  **Ein Stolperstein, der zum Werkzeug gehört, nicht zum Code:** Nach dem
+  Playwright-Sprung fiel `check:oberflaeche` sofort mit „Executable doesn't exist at
+  …/chromium_headless_shell-1234" — die Browser-Binaries liegen in `~/.cache/ms-playwright`
+  und hängen an der **Paketversion**, nicht am Repo. Das Gate meldet dabei keinen
+  Prüf-Fehler, sondern eine uncaught exception, bevor die erste Behauptung überhaupt
+  läuft. `npx playwright install chromium` gehört deshalb zu jedem Playwright-Update.
+
+- **Die vier Major-Sprünge nachgezogen — drei hoch, einer RUNTER** (`package.json`).
+
+  TypeScript 6 → **7.0.2**, jsdom 29 → **30.0.1**, `@testing-library/jest-dom` 6 → **7.0.1**.
+  Alle drei ohne eine einzige Codeänderung: `tsc -b --force` läuft sauber durch, die 782
+  Tests bleiben grün. Einzeln eingespielt und je geprüft, damit ein Bruch einen Namen
+  gehabt hätte.
+
+  **`@types/node` ging 24 → 22, nicht 24 → 26 — und das ist der eigentliche Punkt.**
+  `npm outdated` zeigt hier eine 26 an und lockt damit in die falsche Richtung: Die
+  Major-Linie von `@types/node` beschreibt eine **Node-Laufzeit**, und die ist hier
+  **22** (CI `verify.yml:21`, lokal 22.22.1). Die Typen standen also schon eine Version
+  **über** dem, was tatsächlich läuft; ein Sprung auf 26 hätte den Abstand auf zwei
+  Majors verdoppelt. Praktisch heißt das: `tsc` segnet in `scripts/*.mjs` Node-APIs ab,
+  die es auf dem Rechner, der sie ausführt, gar nicht gibt — ein grüner Build, der zur
+  Laufzeit stirbt. Typen fürs Zielsystem sind keine Abhängigkeit, die man „aktuell" hält,
+  sondern eine, die man **angleicht**.
+
+  Damit das nicht wieder auseinanderläuft, steht die Laufzeit jetzt als `engines`-Feld
+  (`"node": "22.x"`) im Manifest. **`@types/node` wird ab jetzt mit der Node-Version
+  bewegt, nicht mit `npm outdated`** — dass dort dauerhaft eine 26 steht, ist der
+  gewollte Zustand, kein Rückstand.
+
+  TypeScript behält sein `~` (nur Patches, jetzt `~7.0.2`): TS-Minors bringen neue
+  Prüfungen mit, und die brechen einen Build, der `tsc -b` enthält.
+
 ### Fixed
 - **Der Installationsknopf konnte in Chrome nie erscheinen** (2026-07-27,
   `src/main.tsx`, `scripts/check-pwa.mjs`).

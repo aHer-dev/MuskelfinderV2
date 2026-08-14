@@ -5,7 +5,7 @@
 > docs/migration-plan.md (abgeschlossen), docs/architecture.md und den ADRs.
 
 ## Stand
-- Datum: 2026-07-27
+- Datum: 2026-08-14
 - Branch: `main` · **Remote: github.com/aHer-dev/MuskelfinderV2** · Live: `aher-dev.github.io/MuskelfinderV2/`
 - Status: **Migration abgeschlossen (Etappen 0–6, `v1.0`). ETAPPE 7 KOMPLETT (7a–7f). ETAPPE 8
   KOMPLETT (8a–8f). ETAPPE 9 KOMPLETT (9a–9d). ETAPPE 10 KOMPLETT (10a–10f). ETAPPE 11 (Zeitdruck) — code-seitig. Offen ist
@@ -17,7 +17,27 @@
   niemandem mehr ungefragt Karten in den Kasten.**
   **ALLE VIER BRUECKEN STEHEN:** B1 (7d), B2 (7e), B3 (**9c**), B4 (8c).
   Statustafel: `docs/produkt-plan.md`. Offene Punkte: `docs/todo.md`.
-- Gate gruen: **`npm run verify`** — **692 Tests**.
+- Gate gruen: **`npm run verify`** — **782 Tests in 69 Dateien** (Stand 2026-08-14, nach der
+  Abhaengigkeits-Aktualisierung). Hier stand bis dahin „692" — die Zahl war seit den Handy- und
+  PWA-Commits vom 2026-07-28 nicht nachgezogen worden.
+  ⚠️ **Nach einem Playwright-Minorsprung faellt `check:oberflaeche` mit „Executable doesn't exist"**,
+  bevor eine einzige Behauptung geprueft wird: Die Browser-Binaries haengen an der Paketversion, nicht
+  am Repo. `npx playwright install chromium` gehoert darum zu jedem Playwright-Update dazu.
+- Laufzeit: **Node 22** — CI (`verify.yml`) und `engines` in `package.json` sagen dasselbe.
+
+## ⚠️ `@types/node` FOLGT DER LAUFZEIT, NICHT `npm outdated` (2026-08-14)
+**Wer es auf die Zahl hebt, die `npm outdated` als „Latest" anzeigt, baut einen gruenen Build, der
+zur Laufzeit stirbt.**
+
+Die Major-Linie von `@types/node` beschreibt eine **Node-Version**. Hier laeuft **22** (CI und lokal).
+Das Paket stand auf **24** — schon eine Version ueber der Wirklichkeit — und `npm outdated` warb fuer
+**26**. Bei zwei Majors Abstand segnet `tsc` in `scripts/*.mjs` Node-APIs ab, die auf dem
+ausfuehrenden Rechner nicht existieren; der Fehler faellt nicht im Build, sondern im Skript.
+
+- Es wurde darum **auf `^22` heruntergezogen**, nicht hochgesetzt. `tsc -b --force` laeuft sauber.
+- **`npm outdated` zeigt hier dauerhaft eine hoehere Zahl. Das ist der gewollte Zustand.** Bewegt
+  wird das Paket erst, wenn die Node-Version in `verify.yml` bewegt wird — dann beide zusammen.
+- Dieselbe Frage bei jedem `@types/*`-Paket fuer eine Laufzeit: **angleichen, nicht aktualisieren.**
 - A11y: axe 0 Verstoesse ueber **14 Routen x Light+Dark x Ruhe/HOVER/Fokus — und seit 2026-07-26
   ZUSAETZLICH auf 320 + 390 px** (Playwright+Chromium+axe-core).
   ⚠️ **Bis zum 2026-07-26 stand hier „Desktop+Handy", und das war FALSCH:** Weder
