@@ -33,6 +33,10 @@ docs/pruefung/vergleich-wikipedia.csv
 # einem frischen Klon (und damit in der CI), weil `make:screenshots` einen
 # fertigen Build braucht, den es zu diesem Zeitpunkt noch nicht gibt.
 
+# Persoenliche Notizzettel des Projektinhabers (Merkzettel, Befehlsschnipsel).
+# Keine Projektdokumentation — was fuer andere gelten soll, gehoert nach docs/.
+jo.txt
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
