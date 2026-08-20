@@ -5,7 +5,7 @@
 > docs/migration-plan.md (abgeschlossen), docs/architecture.md und den ADRs.
 
 ## Stand
-- Datum: 2026-08-14
+- Datum: 2026-08-20
 - Branch: `main` · **Remote: github.com/aHer-dev/MuskelfinderV2** · Live: `aher-dev.github.io/MuskelfinderV2/`
 - Status: **Migration abgeschlossen (Etappen 0–6, `v1.0`). ETAPPE 7 KOMPLETT (7a–7f). ETAPPE 8
   KOMPLETT (8a–8f). ETAPPE 9 KOMPLETT (9a–9d). ETAPPE 10 KOMPLETT (10a–10f). ETAPPE 11 (Zeitdruck) — code-seitig. Offen ist
@@ -50,6 +50,28 @@ ausfuehrenden Rechner nicht existieren; der Fehler faellt nicht im Build, sonder
   **Der Pruef-Lauf legt jetzt erst Karten an, bevor er `/karteikasten` misst.** Ein frischer Browser
   hat einen leeren Kasten — dann rendert die Deck-Tabelle gar nicht, und der Lauf hat sie jahrelang
   nur uebersehen statt bestanden. Genau so blieb ihr fehlender Tab-Stop (WCAG 2.1.1) unentdeckt.
+- **Bild groess anschauen (2026-08-20).** Im Quiz und auf der Muskelseite oeffnet ein Tipp
+  auf das Bild eine formatfuellende Vollansicht (`components/ui/ImageLightbox.tsx`). Grund:
+  Der Rahmen zeigt vom 600x800-Bild nur 360 px (Desktop) bzw. 183 px (390 px) Breite.
+  Die Ansicht wird **nie groesser als die Quelle** — nur Obergrenzen in `vw`/`dvh`, keine
+  `width`/`height`, keine Prozentmasse gegen `aspect-ratio` (das war der Fehler darunter).
+  **Die Quiz-Uhr haelt an, solange sie offen ist** (`useQuizGame.pausiereUhr`): Zeitdruck
+  soll das Abrufen messen, nicht die Bildschirmgroesse. Esc/Fokus-Falle/Scroll-Sperre/
+  Fokus-Rueckgabe liegen jetzt in `hooks/useDialogVerhalten` — `Sheet` und die Vollansicht
+  teilen sie sich, statt sie zweimal zu fuehren.
+- ⚠️ **BEIDE BROWSER-PRUEFUNGEN FAHREN NUR CHROMIUM** (`scripts/checks/harness.mjs`:
+  `import { chromium } from 'playwright'` — es gibt keinen zweiten Aufruf). **Safari/WebKit
+  ist ungeprueft**, und genau darin sass der Fehler vom 2026-08-20: Im Quiz „Bild → Muskel"
+  fehlten auf einem MacBook oben und unten je ~20 % des Bildes. WebKit loest eine
+  prozentuale `max-height` nicht gegen eine Hoehe auf, die aus `aspect-ratio` entsteht —
+  die Begrenzung fiel weg, `overflow: hidden` schnitt ab. Chromium rechnet es korrekt,
+  also war hier nie etwas zu sehen. Dieselbe Bauform steckte im Bildbetrachter der
+  Detailseite. **Station 8 in `check:oberflaeche` prueft seitdem die BAUFORM statt der
+  Geometrie** (prozentuale Hoehe + `aspect-ratio`-Vorfahr bis zum beschneidenden Kasten) —
+  das faellt auch unter Chromium auf. Wer echte WebKit-Deckung will, braucht
+  `playwright.webkit` im Harness plus `npx playwright install-deps webkit`; solange das
+  fehlt, gilt: **eine engine-abhaengige Regel faengt man nur strukturell, nicht durch
+  mehr Routen.**
 - **8b ist erledigt:** Der Quiz-Pool-Filter ist gebaut (`src/data/quiz-pool.ts`). Die Antwort auf
   zu kleine Pools lautet: **die Distraktoren kommen von ausserhalb des Filters** — darum genuegt EINE
   passende Karte fuer eine vollstaendige 4-Optionen-Frage.
@@ -275,6 +297,10 @@ Die letzten vier offenen Fragen aus dem Brainstorming sind entschieden.
 - ✅ **Zeitdruck: ja.** Sekunden pro Frage `0 | 30 | 15`, **`0` (aus) ist die Vorgabe** — das ist die
   Bedingung, unter der ein Zeitlimit ueberhaupt zulaessig ist (**WCAG 2.2.1**: abschaltbar).
   **Wer irgendwo sonst ein Zeitlimit einbaut, haelt sich an dieselbe Regel.**
+  **Seit 2026-08-20 haelt die Uhr zusaetzlich an, solange die Bild-Vollansicht offen ist** —
+  genauer hinsehen darf keine Sekunden kosten, sonst misst der Zeitdruck die Bildschirmgroesse
+  mit. Damit ist das Limit nicht nur abschaltbar, sondern an der Stelle, an der es weh tut,
+  auch anhaltbar (WCAG 2.2.1). Die Anzeige sagt dann „Zeit angehalten".
   Zeit abgelaufen = falsch, aber `selectedId` bleibt `null`: Die Karte behauptet NICHT, es sei etwas
   Falsches angeklickt worden. Die Uhr laeuft gegen einen **Zeitstempel**, nicht gegen einen Zaehler
   (ein Intervall wird im Hintergrund-Tab gedrosselt).

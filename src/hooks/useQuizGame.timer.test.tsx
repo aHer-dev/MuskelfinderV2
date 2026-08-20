@@ -214,3 +214,78 @@ describe('Tastatur im Quiz', () => {
     expect(screen.getByText(/antworten/)).toBeInTheDocument();
   });
 })
+
+/* =========================================================================
+   Pause waehrend der Bild-Vollansicht (2026-08-20)
+
+   Warum das eine eigene Pruefung braucht: Die Uhr rechnet gegen einen ZEITSTEMPEL.
+   Ein blosses „Intervall anhalten" haette im Test genauso ausgesehen — die Anzeige
+   stuende still —, und beim Schliessen waere die Frage schlagartig abgelaufen, weil
+   die Deadline waehrend der Pause weitergelaufen ist. Darum wird hier BEIDES geprueft:
+   dass die Uhr steht UND dass sie danach mit der richtigen Restzeit weiterlaeuft.
+   ========================================================================= */
+describe('Bild groß anschauen hält die Uhr an', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    localStorage.clear();
+    useProgressStore.getState().clearProgress();
+    useQuizStore.setState({ quizSeries: {} });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  function starteBildRunde(zeit: string) {
+    render(
+      <MemoryRouter>
+        <QuizPage />
+      </MemoryRouter>,
+    );
+    fireEvent.click(screen.getByRole('button', { name: zeit }));
+    fireEvent.click(screen.getByRole('button', { name: 'Bild → Muskel' }));
+  }
+
+  it('die Uhr steht still, solange das Bild groß offen ist — und läuft danach weiter', () => {
+    starteBildRunde('15 Sekunden');
+    spuleVor(5);
+    expect(screen.getByRole('timer')).toHaveAttribute('aria-label', 'Noch 10 Sekunden');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Bild groß anzeigen' }));
+    expect(screen.getByRole('timer')).toHaveAttribute('aria-label', 'Zeit angehalten');
+
+    // Doppelt so lang wie die ganze Frage — und trotzdem laeuft nichts ab.
+    spuleVor(30);
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(screen.queryByText(/Zeit abgelaufen/i)).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Vollansicht schließen' }));
+    /* Die Restzeit ist DIESELBE wie vor der Pause — nicht null, nicht wieder 15. */
+    expect(screen.getByRole('timer')).toHaveAttribute('aria-label', 'Noch 10 Sekunden');
+
+    spuleVor(4);
+    expect(screen.getByRole('timer')).toHaveAttribute('aria-label', 'Noch 6 Sekunden');
+  });
+
+  it('während die Vollansicht offen ist, beantwortet keine Zifferntaste die Frage', () => {
+    starteBildRunde('15 Sekunden');
+    fireEvent.click(screen.getByRole('button', { name: 'Bild groß anzeigen' }));
+
+    act(() => {
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: '1', bubbles: true }));
+    });
+
+    /* Ohne den Riegel haette „1" die Frage im Ruecken der offenen Ansicht beantwortet —
+       man schaut hin und hat verloren, ohne es zu merken. */
+    expect(document.querySelectorAll('.quiz-option--correct').length).toBe(0);
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
+  it('ohne Uhr ändert die Vollansicht nichts', () => {
+    starteBildRunde('Ohne Zeit');
+    fireEvent.click(screen.getByRole('button', { name: 'Bild groß anzeigen' }));
+
+    expect(screen.queryByRole('timer')).not.toBeInTheDocument();
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+});

@@ -100,14 +100,21 @@ function QuizGame({
 }) {
   const game = useQuizGame(mode, 10, regions, scope, timeLimit);
 
+  /* Steht die Vollansicht offen, haelt die Uhr an — und die Anzeige sagt das auch.
+     Ohne das Zweite waere die Pause unsichtbar und sähe nach einem Fehler aus. */
+  const [bildGross, setBildGross] = useState(false);
+
   /* Tastatur wie in der Lernsitzung (UX-Review 2026-07-26). Dort gibt es seit 8a
      `Space`/`1`/`2`/`3`; im Quiz musste man bis dahin für JEDE Frage zur Maus greifen oder
      sich zum „Weiter"-Knopf durchtabben — unter der 15-Sekunden-Uhr ist das der Unterschied
      zwischen Denken und Hetzen. `1`–`4` wählt, Enter geht weiter.
 
      Zwei Riegel: Eingabefelder behalten ihre Tasten (dieselbe Regel wie in 8a), und ein
-     offenes Sheet (`ExplainSheet` liegt ÜBER der Frage) schluckt sie — sonst blättert Enter
-     die Frage weg, während man die Erklärung liest. */
+     offener modaler Kasten schluckt sie — sonst blättert Enter die Frage weg, während man
+     die Erklärung liest, oder eine Ziffer beantwortet die Frage, während man das Bild groß
+     anschaut. Der Riegel fragt nach `[role="dialog"][aria-modal="true"]` und nicht nach der
+     Sheet-Klasse: Sonst hätte die Bild-Vollansicht (2026-08-20) still daran vorbeigegriffen,
+     und jeder weitere Kasten müsste hier nachgetragen werden — was niemand tut. */
   const { phase, question, answer: antworte, next: weiter } = game;
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -120,7 +127,7 @@ function QuizGame({
       ) {
         return;
       }
-      if (document.querySelector('.sheet [role="dialog"], .sheet__panel')) return;
+      if (document.querySelector('[role="dialog"][aria-modal="true"]')) return;
 
       if (phase === 'answering' && question) {
         const nummer = Number(e.key);
@@ -171,7 +178,7 @@ function QuizGame({
         <QuizTimer
           limit={game.timeLimit}
           remaining={game.remaining}
-          paused={game.phase !== 'answering'}
+          paused={game.phase !== 'answering' || bildGross}
         />
       )}
 
@@ -182,6 +189,10 @@ function QuizGame({
           selectedId={game.selectedId}
           timedOut={game.timedOut}
           onAnswer={game.answer}
+          onVollansicht={(offen) => {
+            setBildGross(offen);
+            game.pausiereUhr(offen);
+          }}
         />
       )}
 

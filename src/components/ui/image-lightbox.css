@@ -1,0 +1,149 @@
+/* =========================================================================
+   Bild-Vollansicht (2026-08-20) — Stile zu `ImageLightbox.tsx`.
+
+   KEINE PROZENTMASSE FUER DIE BILDGROESSE. Der Fehler, aus dem diese Ansicht
+   entstanden ist, war genau das: eine prozentuale `max-height` gegen eine Hoehe,
+   die erst aus `aspect-ratio` entstand — WebKit loeste sie nicht auf und schnitt
+   40 % des Bildes ab. Hier begrenzen `vw`/`dvh`; die sind in jeder Engine eindeutig,
+   ganz ohne Bezugskasten.
+
+   Und: Das Bild bekommt KEINE `width`/`height`, nur Obergrenzen. Ein `<img>` waechst
+   von sich aus nie ueber sein Eigenmass hinaus — die Vollansicht ist damit hoechstens
+   so gross wie die Quelle (600 x 800) und erfindet keine Schaerfe dazu.
+   ========================================================================= */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.75rem, 3vw, 2rem);
+  /* Deutlich dichter als das Sheet (0.6): Hier soll ringsum nichts mehr ablenken,
+     und der helle Bildrand braucht einen ruhigen Grund. In beiden Themes gleich —
+     eine Bildbuehne ist dunkel, wie `--media-well` ueberall sonst in der App. */
+  background: rgba(6, 6, 7, 0.88);
+  animation: lightbox-auf 140ms ease-out;
+}
+
+@keyframes lightbox-auf {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.lightbox__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  outline: none;
+}
+
+.lightbox__img {
+  display: block;
+  max-width: 92vw;
+  /* 8rem lassen Platz fuer Innenabstand und Bildunterschrift, damit die Ansicht auf
+     kurzen Fenstern nicht laenger wird als der sichtbare Bereich. `dvh` statt `vh`:
+     Auf dem Handy zaehlt `vh` die Adressleiste mit, die sich beim Scrollen wegfaehrt. */
+  max-height: calc(100dvh - 8rem);
+  object-fit: contain;
+  border-radius: var(--radius-lg);
+  background: var(--media-well);
+}
+
+.lightbox__caption {
+  margin: 0;
+  max-width: 92vw;
+  text-align: center;
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
+  color: var(--media-fg);
+}
+
+.lightbox__close {
+  position: absolute;
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Projektregel: Bedienflaechen ab 44 px. Der Knopf liegt UEBER dem Bild, kostet
+     also keine Bildflaeche. */
+  width: var(--touch-min);
+  height: var(--touch-min);
+  border: none;
+  border-radius: var(--radius-pill);
+  background: rgba(0, 0, 0, 0.62);
+  color: var(--media-fg);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.lightbox__close:hover {
+  background: rgba(0, 0, 0, 0.82);
+}
+
+.lightbox__close:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* =========================================================================
+   Der Ausloeser — im Quiz und auf der Detailseite dieselbe Form.
+
+   Es ist ein echter `<button>`, kein Klick-Handler am Bild: Nur so kommt man per
+   Tastatur hin, nur so kuendigt der Screenreader eine Aktion an, und nur so
+   funktioniert Enter/Leertaste. Ein `<img onClick>` sieht mit der Maus gleich aus
+   und ist fuer alle anderen gar nicht da.
+   ========================================================================= */
+
+.bild-lupe {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: zoom-in;
+}
+
+.bild-lupe__zeichen {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-pill);
+  background: rgba(0, 0, 0, 0.55);
+  color: var(--media-fg);
+  transition: var(--transition-smooth);
+}
+
+.bild-lupe:hover .bild-lupe__zeichen {
+  background: rgba(0, 0, 0, 0.78);
+}
+
+/* Der Ring liegt INNEN (negativer Versatz), und das ist kein Geschmack: Der Knopf fuellt
+   seinen Rahmen komplett aus, und dieser Rahmen hat `overflow: hidden` (fuer die runden
+   Ecken) — sowohl im Quiz als auch im Bildbetrachter. Ein Ring nach aussen laege damit
+   vollstaendig im beschnittenen Bereich: vorhanden, aber unsichtbar. Wer per Tastatur
+   bedient, saehe nicht, wo er steht. */
+.bild-lupe:focus-visible {
+  /* Langform statt der sonst ueblichen Kurzschreibweise, und zwar aus einem konkreten
+     Grund: Steht in `outline:` ein `var()`, kann die CSSOM die Langformen daraus nicht
+     mehr ableiten — `outlineWidth` liest sich dann als leerer String. Station 8 in
+     `check:oberflaeche` liest genau diese Regel, um zu pruefen, ob der Ring ueberhaupt
+     existiert und ob er innen liegt. Als Kurzform waere die Regel fuer die Pruefung
+     unsichtbar und der Befund immer „kein Fokus-Ring". */
+  outline-width: 2px;
+  outline-style: solid;
+  outline-color: var(--focus-ring);
+  outline-offset: -3px;
+  border-radius: var(--radius-lg);
+}

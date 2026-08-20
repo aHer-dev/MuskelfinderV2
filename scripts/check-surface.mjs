@@ -520,6 +520,277 @@ await withApp(async ({ page, goto }) => {
   }
 });
 
+/* =========================================================================
+   8. BILDER MUESSEN IN IHREN RAHMEN PASSEN (2026-08-20)
+
+   Gemeldet aus dem Unterricht: Ein Schueler sah im Quiz „Bild → Muskel" auf einem
+   MacBook nur einen Ausschnitt — oben und unten fehlte je etwa ein Fuenftel. In
+   Chromium war nichts zu sehen, und genau darum konnte diese Pruefung den Fehler
+   jahrelang nicht finden: Sie faehrt NUR Chromium.
+
+   Die Ursache ist keine Zahl, sondern eine Bauform. Der Rahmen bekam seine Hoehe aus
+   `aspect-ratio`, das Bild wurde nur von `max-height: 100%` darin gehalten. Prozente
+   brauchen aber eine Bezugshoehe, und WebKit betrachtet eine erst aus `aspect-ratio`
+   entstandene Hoehe an dieser Stelle als unbestimmt — die Begrenzung faellt weg, das
+   Bild rendert in voller Hoehe, `overflow: hidden` schneidet den Rest ab. Alle 150
+   Muskelbilder sind 600x800 (hoch), jeder Rahmen ist 4/3 (quer): 40 % verschwanden.
+
+   Darum misst Station 8 NICHT nur die Geometrie (die ist in Chromium immer heil),
+   sondern die BAUFORM: prozentuale Hoehe am Bild + `aspect-ratio` an einem Vorfahren
+   bis zum beschneidenden Kasten. Das faellt hier auch ohne WebKit auf.
+
+   TEIL B — DIE VOLLANSICHT (2026-08-20). Aus demselben Befund ist sie entstanden: Im
+   Rahmen ist ein 600x800-Bild rund 360 px breit, auf dem Handy 183 px. Ein Tipp legt es
+   jetzt formatfuellend ueber die Seite. Drei Dinge muessen dabei stimmen, und keines
+   davon sieht die Routen-Messung oben, weil die Ansicht erst auf einen Klick entsteht:
+
+   1. Sie ist ueberhaupt GROESSER. Eine Lupe, die nichts vergroessert, ist die stillste
+      aller Regressionen — alles rendert, nichts faellt auf, der Nutzen ist weg.
+   2. Sie passt auf den Bildschirm. Sonst hat man denselben Fehler wie vorher, nur eine
+      Ebene hoeher.
+   3. axe im OFFENEN Zustand, hell und dunkel. Ein modaler Kasten hat eigene Farben,
+      eigene Fokusfolge und einen eigenen Namen; der Routen-Durchlauf sieht ihn nie.
+   ========================================================================= */
+
+/* Zwei Dinge, die erst am gerenderten Bild auffallen — beide sind mir beim Bau der
+   Vollansicht selbst passiert (2026-08-20):
+
+   (1) Der Lupen-Knopf ist `position: relative` und steht im Quelltext NACH dem
+       Zurueck-Pfeil. Ohne `z-index` am Pfeil malt der Browser den Knopf darueber: Der
+       Pfeil ist zu sehen, nimmt aber keinen Klick mehr an. Weder ein Unit-Test noch axe
+       findet das — beide fragen den DOM, nicht die Malreihenfolge. Eine Trefferprobe tut es.
+
+   (2) Der Knopf fuellt einen Rahmen mit `overflow: hidden` vollstaendig aus. Ein
+       Fokus-Ring NACH AUSSEN liegt damit komplett im beschnittenen Bereich: vorhanden,
+       messbar, unsichtbar. Wer per Tastatur bedient, sieht nicht, wo er steht.
+
+   Laeuft IM Browser — darf nichts von aussen schliessen. */
+const messeBedienung = () => {
+  const out = [];
+  const name = (el) => (el ? (typeof el.className === 'string' && el.className.trim()
+    ? '.' + el.className.trim().split(/\s+/)[0] : el.tagName.toLowerCase()) : 'nichts');
+
+  for (const nav of document.querySelectorAll('.image-viewer__nav')) {
+    const r = nav.getBoundingClientRect();
+    const x = r.left + r.width / 2;
+    const y = r.top + r.height / 2;
+    if (x < 0 || y < 0 || x > window.innerWidth || y > window.innerHeight) continue;
+    const treffer = document.elementFromPoint(x, y);
+    if (treffer !== nav && !nav.contains(treffer)) {
+      out.push({ art: 'VERDECKT', detail:
+        `„${nav.getAttribute('aria-label')}" bekommt seinen eigenen Klick nicht — `
+        + `obenauf liegt ${name(treffer)}` });
+    }
+  }
+
+  const lupe = document.querySelector('.bild-lupe');
+  if (lupe) {
+    /* Gelesen wird die REGEL, nicht der Zustand. `:focus-visible` greift bei einem
+       programmatischen `focus()` nur, wenn zuletzt die Tastatur im Spiel war — auf der
+       Detailseite (nur `goto`) haette dieselbe Messung bestanden und im Quiz (vorher ein
+       Mausklick auf den Startknopf) gemeldet. Eine Pruefung, deren Ergebnis von ihrer
+       eigenen Vorgeschichte abhaengt, misst nicht die Seite, sondern sich selbst. */
+    let regel = null;
+    for (const sheet of document.styleSheets) {
+      let rules;
+      try { rules = sheet.cssRules; } catch { continue; } // fremde Herkunft — nicht lesbar
+      for (const r of Array.from(rules)) {
+        if (r.selectorText && r.selectorText.includes('.bild-lupe:focus-visible')) regel = r.style;
+      }
+    }
+    const breite = regel ? parseFloat(regel.outlineWidth) || 0 : 0;
+    const versatz = regel ? parseFloat(regel.outlineOffset) || 0 : 0;
+    if (!regel || regel.outlineStyle === 'none' || breite === 0) {
+      out.push({ art: 'FOKUS', detail: 'der Lupen-Knopf hat keinen sichtbaren Fokus-Ring' });
+    } else {
+      let p = lupe.parentElement;
+      let clip = null;
+      while (p && p !== document.body) {
+        const cp = getComputedStyle(p);
+        if (cp.overflowX !== 'visible' || cp.overflowY !== 'visible') { clip = p; break; }
+        p = p.parentElement;
+      }
+      if (clip) {
+        const r = lupe.getBoundingClientRect();
+        const c = clip.getBoundingClientRect();
+        const aussen = versatz + breite;
+        const luft = Math.min(r.top - c.top, r.left - c.left, c.bottom - r.bottom, c.right - r.right);
+        if (aussen > 0 && luft < aussen) {
+          out.push({ art: 'FOKUS', detail:
+            `der Ring liegt ${aussen} px ausserhalb, aber ${name(clip)} beschneidet schon `
+            + `ab ${Math.round(luft)} px — er ist da und trotzdem unsichtbar` });
+        }
+      }
+    }
+  }
+  return out;
+};
+
+/* Laeuft IM Browser — darf nichts von aussen schliessen. */
+const messeBilder = () => {
+  const out = [];
+  const prozent = (v) => typeof v === 'string' && v.trim().endsWith('%');
+  const pfad = (el) => (typeof el.className === 'string' && el.className.trim()
+    ? '.' + el.className.trim().split(/\s+/).join('.')
+    : el.tagName.toLowerCase());
+
+  for (const img of document.querySelectorAll('main img')) {
+    const r = img.getBoundingClientRect();
+    if (r.height < 1) continue; // nicht gerendert — nichts zu messen
+    const ci = getComputedStyle(img);
+    const prozentHoehe = prozent(ci.maxHeight) ? `max-height: ${ci.maxHeight}`
+      : prozent(ci.height) ? `height: ${ci.height}` : null;
+
+    let el = img.parentElement;
+    let ratio = null;   // Vorfahr, dessen Hoehe aus aspect-ratio entsteht
+    let kasten = null;  // erster Vorfahr, der beschneidet
+    while (el && el !== document.body) {
+      const cs = getComputedStyle(el);
+      if (!ratio && cs.aspectRatio && cs.aspectRatio !== 'auto') {
+        ratio = { sel: pfad(el), wert: cs.aspectRatio };
+      }
+      if (cs.overflowX !== 'visible' || cs.overflowY !== 'visible') { kasten = el; break; }
+      el = el.parentElement;
+    }
+
+    if (prozentHoehe && ratio) {
+      out.push({ art: 'PROZENTHOEHE', detail:
+        `${pfad(img)} haelt sich mit „${prozentHoehe}" in ${ratio.sel} `
+        + `(aspect-ratio: ${ratio.wert}) — WebKit loest das nicht auf und schneidet ab` });
+    }
+    if (kasten) {
+      const rk = kasten.getBoundingClientRect();
+      if (r.height > rk.height + 1) {
+        out.push({ art: 'ABGESCHNITTEN', detail:
+          `${pfad(img)} ist ${Math.round(r.height)} px hoch in einem `
+          + `${Math.round(rk.height)} px hohen ${pfad(kasten)}` });
+      }
+      if (r.width > rk.width + 1) {
+        out.push({ art: 'ABGESCHNITTEN', detail:
+          `${pfad(img)} ist ${Math.round(r.width)} px breit in einem `
+          + `${Math.round(rk.width)} px breiten ${pfad(kasten)}` });
+      }
+    }
+  }
+  return out;
+};
+
+await withApp(async ({ page, goto, runAxe, setTheme }) => {
+  const L = (s = '') => process.stdout.write(s + '\n');
+  L('\n──── Bilder im Rahmen + Vollansicht (Desktop + 390 px) ────');
+
+  /* Wartet, bis das Bild wirklich geladen ist: ein Bild ohne Eigenmass ist 0 px hoch
+     und laeuft dann natuerlich ueber gar nichts hinaus — die Messung waere blind. */
+  const bildGeladen = (sel) => page.waitForFunction((s) => {
+    const i = document.querySelector(s);
+    return !!i && i.complete && i.naturalHeight > 0;
+  }, sel, { timeout: 8000 }).catch(() => false);
+
+  /* Oeffnet die Vollansicht ueber dem gerade gemessenen Bild und prueft, was nur im
+     offenen Zustand pruefbar ist. `rahmenBild` ist das Rechteck aus dem Rahmen. */
+  /* Die SICHTBARE Bildflaeche, nicht die Element-Box. Im Rahmen ist das Bild mit
+     `object-fit: contain` eingepasst: Das Element ist 590 px breit, das Bild darin nur
+     332 — der Rest sind leere Balken. Wer die Element-Box vergleicht, misst die Balken
+     mit und haelt eine Vergroesserung um 74 % fuer „vergroessert kaum". (Genau das ist
+     dieser Pruefung beim ersten Lauf passiert.) */
+  const bildflaeche = (sel) => page.evaluate((s) => {
+    const img = document.querySelector(s);
+    if (!img || !img.naturalWidth) return null;
+    const r = img.getBoundingClientRect();
+    const skala = Math.min(r.width / img.naturalWidth, r.height / img.naturalHeight);
+    return { width: img.naturalWidth * skala, height: img.naturalHeight * skala };
+  }, sel);
+
+  const pruefeVollansicht = async (wo, rahmenSel) => {
+    const rahmen = await bildflaeche(rahmenSel);
+    const lupe = page.locator('.bild-lupe').first();
+    if (!(await lupe.count())) {
+      record(wo, 'INHALT', 'kein Lupen-Knopf am Bild — Bild groß anzeigen geht nicht mehr');
+      return;
+    }
+    await lupe.click();
+    await page.waitForTimeout(300);
+
+    const dialog = page.locator('[role="dialog"][aria-modal="true"]');
+    if (!(await dialog.count())) {
+      record(wo, 'VOLLANSICHT', 'der Klick öffnet keinen modalen Kasten');
+      return;
+    }
+
+    const gross = await bildflaeche('.lightbox__img');
+    if (!gross) {
+      record(wo, 'VOLLANSICHT', 'die Vollansicht zeigt kein Bild');
+    } else {
+      /* (1) Sie muss wirklich vergroessern. 1,25x ist bewusst niedrig angesetzt — es
+         geht um „tut ueberhaupt noch etwas", nicht um eine Wunschzahl. */
+      if (rahmen && gross.width < rahmen.width * 1.25) {
+        record(wo, 'VOLLANSICHT',
+          `vergrößert kaum: ${Math.round(rahmen.width)} px → ${Math.round(gross.width)} px`);
+      }
+      // (2) Sie muss auf den Bildschirm passen.
+      const sicht = page.viewportSize();
+      if (gross.width > sicht.width + 1 || gross.height > sicht.height + 1) {
+        record(wo, 'VOLLANSICHT',
+          `${Math.round(gross.width)}×${Math.round(gross.height)} px passen nicht in `
+          + `${sicht.width}×${sicht.height} px`);
+      }
+    }
+
+    // (3) axe im OFFENEN Zustand — hell und dunkel.
+    for (const theme of ['light', 'dark']) {
+      await setTheme(theme);
+      await page.waitForTimeout(200);
+      const v = await runAxe();
+      for (const x of v) record(wo, `axe Vollansicht ${theme}`, `[${x.impact}] ${x.id} — ${x.msg}`);
+    }
+    await setTheme('light');
+
+    // Und sie muss sich per Tastatur wieder schliessen lassen.
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(250);
+    if (await page.locator('[role="dialog"][aria-modal="true"]').count()) {
+      record(wo, 'VOLLANSICHT', 'Esc schließt sie nicht — Tastaturnutzer sitzen fest');
+    }
+  };
+
+  for (const vp of [{ width: 1440, height: 900, label: 'Desktop' },
+                    { width: 390, height: 664, label: '390' }]) {
+    await page.setViewportSize({ width: vp.width, height: vp.height });
+
+    // (a) Detailseite — der Bildbetrachter.
+    const woD = `/muskel/biceps-brachii @${vp.label}`;
+    await goto('/muskel/biceps-brachii');
+    if (!(await page.locator('.image-viewer__img').count())) {
+      record(woD, 'INHALT', 'kein Bild im Betrachter — heisst die Klasse noch .image-viewer__img?');
+    } else {
+      await bildGeladen('.image-viewer__img');
+      for (const b of await page.evaluate(messeBilder)) record(woD, b.art, b.detail);
+      for (const b of await page.evaluate(messeBedienung)) record(woD, b.art, b.detail);
+      await pruefeVollansicht(woD, '.image-viewer__img');
+    }
+
+    // (b) Laufendes Quiz „Bild → Muskel" — die Stelle, an der es aufgefallen ist.
+    const woQ = `/quiz Bild → Muskel @${vp.label}`;
+    await goto('/quiz');
+    const btn = page.locator('.quiz-dir-btn', { hasText: 'Bild → Muskel' }).first();
+    if (!(await btn.count())) {
+      record(woQ, 'INHALT', 'Startknopf nicht gefunden — heisst der Modus in '
+        + 'src/data/mode-labels.ts noch so?');
+      continue;
+    }
+    await btn.click();
+    await page.waitForTimeout(600);
+    if (!(await page.locator('.quiz-card__media img').count())) {
+      record(woQ, 'INHALT', 'die Frage zeigt kein Bild — Modus oder Klasse geaendert?');
+    } else {
+      await bildGeladen('.quiz-card__media img');
+      for (const b of await page.evaluate(messeBilder)) record(woQ, b.art, b.detail);
+      for (const b of await page.evaluate(messeBedienung)) record(woQ, b.art, b.detail);
+      await pruefeVollansicht(woQ, '.quiz-card__media img');
+    }
+  }
+});
+
 /* ---- Urteil ---- */
 const L = (s = '') => process.stdout.write(s + '\n');
 if (befunde.length === 0) {
