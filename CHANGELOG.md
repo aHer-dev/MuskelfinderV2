@@ -49,6 +49,29 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   Prüfungen mit, und die brechen einen Build, der `tsc -b` enthält.
 
 ### Fixed
+- **Der M. flexor pollicis longus entsprang am falschen Knochen** (2026-08-18,
+  `src/data/generated/muscles.json`).
+
+  Der Datensatz führte `Epicondylus medialis humeri, ventrale Seite des Radius und
+  Membrana interossea` als Ursprung. Der FPL entspringt an der **Facies anterior des
+  Radius und an der Membrana interossea** — der Humerus war nie beteiligt. Belege:
+  DocCheck Flexikon, Kenhub, Physiopedia.
+
+  **Der Bestand widersprach sich selbst:** Jeder andere Muskel mit Ursprung am
+  Epicondylus medialis führt `Art. cubiti` in den Gelenken. Nur der FPL nicht — weil er
+  den Ellenbogen gar nicht überquert. Der Widerspruch stand also schon in den eigenen
+  Daten, bevor irgendein Lehrbuch dazukam.
+
+  Der akzessorische Kopf (Gantzer-Muskel) bleibt draußen: eine Variante gehört nicht an
+  die erste Stelle des Ursprungs.
+
+  Korrigiert wurde die V1-Quelle (`Muskelfinder/data/obere-extremitaet.json`), von der
+  `migrate:data` liest; hier steht nur das nachgezogene Ergebnis. **Diese Quelle liegt
+  außerhalb dieses Repos** — `muscles.json` ist der einzige versionierte Träger des Fixes.
+
+  Der Eintrag wurde am 2026-08-24 nachgetragen: Commit `286f9b0` kam ohne CHANGELOG-Zeile
+  auf `main`, obwohl CLAUDE.md sie pro Task verlangt.
+
 - **Der Installationsknopf konnte in Chrome nie erscheinen** (2026-07-27,
   `src/main.tsx`, `scripts/check-pwa.mjs`).
 
