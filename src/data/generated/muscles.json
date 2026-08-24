@@ -1778,7 +1778,7 @@
       "MCP",
       "IP"
     ],
-    "origin": "Epicondylus medialis humeri, ventrale Seite des Radius und Membrana interossea",
+    "origin": "Facies anterior des Radius und Membrana interossea",
     "insertion": "Basis der Endphalanx des Daumens",
     "functions": [
       "palmarflexion",
@@ -1804,7 +1804,7 @@
       "beuger"
     ],
     "easy": {
-      "origin": "Epicondylus medialis humeri, ventrale Seite des Radius und Membrana interossea",
+      "origin": "Facies anterior des Radius und Membrana interossea",
       "insertion": "Basis der Endphalanx des Daumens",
       "functionDescription": "Beugt den Daumen; unterstützt die Palmarflexion im Handgelenk",
       "innervation": "N. medianus",
