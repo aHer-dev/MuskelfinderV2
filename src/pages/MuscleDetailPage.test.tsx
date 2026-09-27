@@ -121,9 +121,9 @@ describe('MuscleDetailPage — Funktion in Kurzform', () => {
     expect(funktionsZeile().querySelector('details')?.textContent).toContain(muskel.easy!.functionDescription);
   });
 
-  it('solange die Kurzform ungeprüft ist, trägt das Label den Stern — mit Legende', () => {
+  it('abgenommene Kurzform: kein Stern, keine Legende (Abnahme 2026-09-27)', () => {
     renderAt('/muskel/rectus-femoris');
-    expect(funktionsZeile().querySelector('.datalist__label')?.textContent).toBe('Funktion *');
-    expect(screen.getByText(/noch nicht im Lehrbuch gegengelesen/)).toBeInTheDocument();
+    expect(funktionsZeile().querySelector('.datalist__label')?.textContent).toBe('Funktion');
+    expect(screen.queryByText(/noch nicht im Lehrbuch gegengelesen/)).not.toBeInTheDocument();
   });
 });

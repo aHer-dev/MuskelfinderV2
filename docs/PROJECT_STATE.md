@@ -63,9 +63,10 @@ ausfuehrenden Rechner nicht existieren; der Fehler faellt nicht im Build, sonder
   die Bewegung (`src/data/editorial/funktion-kurz.json`, Schluessel = id), der Text klappt als
   „Funktionsbeschreibung" darunter auf. `fachfelder()` liefert die Kurzform — Detailseite,
   Lernkarte und Quiz-Vergleichskarte folgen ohne eigene Regel; beide Funktionsmodi des Quiz
-  stellen sie ebenfalls. **Alle 150 sind KI-Entwuerfe, status „ungeprueft" (Stern).**
-  Offen: fachliche Abnahme durch den Projektinhaber ueber `funktion-kurzform.csv`, danach
-  Status auf „geprueft". Eine KI-Durchsicht (2026-09-27) fand 9 Stellen, an denen der
+  stellen sie ebenfalls. **Alle 150 sind KI-Entwuerfe, mit Quellen abgeglichen und am 2026-09-27
+  vom Projektinhaber abgenommen (status „geprueft", kein Stern).** Neue Eintraege ohne Abnahme
+  bekommen „ungeprueft" — dann erscheint der Stern wieder.
+  Abnahme erledigt (Pruefbogen fuer spaetere Aenderungen: `funktion-kurzform.csv`). Eine KI-Durchsicht (2026-09-27) fand 9 Stellen, an denen der
   FUNKTIONSTEXT vom Lehrbuch abweicht; **5 davon hat der Projektinhaber bestaetigt, sie sind in
   `generated/` korrigiert** (u. a. M. semimembranosus: Meniscus medialis statt lateralis). Die 4
   schwaecheren und die Gelenk-Luecken sind per Quellenabgleich (DocCheck, Kenhub, Wikipedia)

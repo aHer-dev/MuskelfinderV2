@@ -19,7 +19,8 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   Absätze. Die losen Bewegungs-Chips der Detailseite entfallen.
 
   Die 150 Kurzformen sind KI-Entwürfe, die **nur den vorhandenen Funktionstext verdichten**,
-  und tragen bis zur fachlichen Abnahme den Stern. Prüfbogen: `npm run export:csv` →
+  mit Quellen abgeglichen und am 2026-09-27 vom Projektinhaber abgenommen (kein Stern).
+  Ein neuer Eintrag ohne Abnahme bekommt „ungeprueft" und damit wieder den Stern. Prüfbogen: `npm run export:csv` →
   `funktion-kurzform.csv` (Kurzform und Text nebeneinander, dazu 14 Gelenke aus `joints`, zu
   denen der Text nichts sagt, und 21 Orte außerhalb von `joints`). Eine erste Durchsicht durch
   die KI fand 9 Stellen, an denen der **Funktionstext** vom Lehrbuch abweicht (z. B.

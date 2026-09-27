@@ -1,9 +1,9 @@
 {
-  "_hinweis": "Funktion in Kurzform (Etappe 15). HANDGEPFLEGT. Schluessel ist die Muskel-id (wie in segments.json), `nameLatin` ist die Gegenprobe. Je Zeile: `orte` = Etiketten aus `joints` (die Anzeige macht daraus den deutschen Gelenknamen) oder ein freier Ort, wenn der Funktionstext einen nennt, der nicht in `joints` steht; leer = der Muskel wirkt nicht auf ein Gelenk. `bewegungen` = kurz, Hauptfunktion zuerst. Die Kurzform VERDICHTET NUR den Funktionstext (`functionDescription`) und behauptet nichts, was dort nicht steht. Die Entwuerfe stammen von der KI (2026-09-27) und tragen status \"ungeprueft\" (Anzeige: Stern am Label). Nach der fachlichen Durchsicht auf \"geprueft\" setzen. Gelenke ohne Funktionszeile und Orte ausserhalb von `joints` listet `npm run check:daten`.",
+  "_hinweis": "Funktion in Kurzform (Etappe 15). HANDGEPFLEGT. Schluessel ist die Muskel-id (wie in segments.json), `nameLatin` ist die Gegenprobe. Je Zeile: `orte` = Etiketten aus `joints` (die Anzeige macht daraus den deutschen Gelenknamen) oder ein freier Ort, wenn der Funktionstext einen nennt, der nicht in `joints` steht; leer = der Muskel wirkt nicht auf ein Gelenk. `bewegungen` = kurz, Hauptfunktion zuerst. Die Kurzform VERDICHTET NUR den Funktionstext (`functionDescription`) und behauptet nichts, was dort nicht steht. Die Entwuerfe stammen von der KI (2026-09-27), wurden mit Quellen abgeglichen und am selben Tag vom Projektinhaber abgenommen: status \"geprueft\". Ein neuer oder geaenderter Eintrag ohne Abnahme bekommt \"ungeprueft\" (Anzeige: Stern am Label). Gelenke ohne Funktionszeile und Orte ausserhalb von `joints` listet `npm run check:daten`.",
   "muskeln": {
     "pectoralis-minor": {
       "nameLatin": "M. pectoralis minor",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -26,7 +26,7 @@
     },
     "serratus-anterior": {
       "nameLatin": "M. serratus anterior",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -42,7 +42,7 @@
     },
     "subclavius": {
       "nameLatin": "M. subclavius",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -57,7 +57,7 @@
     },
     "trapezius-pars-descendens": {
       "nameLatin": "M. trapezius – Pars descendens",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -81,7 +81,7 @@
     },
     "trapezius-pars-transversa": {
       "nameLatin": "M. trapezius – Pars transversa",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -95,7 +95,7 @@
     },
     "trapezius-pars-ascendens": {
       "nameLatin": "M. trapezius – Pars ascendens",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -110,7 +110,7 @@
     },
     "levator-scapulae": {
       "nameLatin": "M. levator scapulae",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -134,7 +134,7 @@
     },
     "rhomboideus-major": {
       "nameLatin": "M. rhomboideus major",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -150,7 +150,7 @@
     },
     "rhomboideus-minor": {
       "nameLatin": "M. rhomboideus minor",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -166,7 +166,7 @@
     },
     "pectoralis-major": {
       "nameLatin": "M. pectoralis major",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -182,7 +182,7 @@
     },
     "latissimus-dorsi": {
       "nameLatin": "M. latissimus dorsi",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -198,7 +198,7 @@
     },
     "deltoideus": {
       "nameLatin": "M. deltoideus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -213,7 +213,7 @@
     },
     "subscapularis": {
       "nameLatin": "M. subscapularis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -228,7 +228,7 @@
     },
     "supraspinatus": {
       "nameLatin": "M. supraspinatus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -243,7 +243,7 @@
     },
     "infraspinatus": {
       "nameLatin": "M. infraspinatus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -258,7 +258,7 @@
     },
     "teres-minor": {
       "nameLatin": "M. teres minor",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -273,7 +273,7 @@
     },
     "teres-major": {
       "nameLatin": "M. teres major",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -289,7 +289,7 @@
     },
     "coracobrachialis": {
       "nameLatin": "M. coracobrachialis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -304,7 +304,7 @@
     },
     "biceps-brachii": {
       "nameLatin": "M. biceps brachii",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -335,7 +335,7 @@
     },
     "triceps-brachii-caput-longum": {
       "nameLatin": "M. triceps brachii – Caput longum",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -358,7 +358,7 @@
     },
     "triceps-brachii-caput-laterale-und-mediale": {
       "nameLatin": "M. triceps brachii – Caput laterale und mediale",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -372,7 +372,7 @@
     },
     "anconeus": {
       "nameLatin": "M. anconeus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -387,7 +387,7 @@
     },
     "brachialis": {
       "nameLatin": "M. brachialis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -401,7 +401,7 @@
     },
     "pronator-teres": {
       "nameLatin": "M. pronator teres",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -423,7 +423,7 @@
     },
     "brachioradialis": {
       "nameLatin": "M. brachioradialis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -445,7 +445,7 @@
     },
     "supinator": {
       "nameLatin": "M. supinator",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -459,7 +459,7 @@
     },
     "pronator-quadratus": {
       "nameLatin": "M. pronator quadratus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -474,7 +474,7 @@
     },
     "flexor-carpi-radialis": {
       "nameLatin": "M. flexor carpi radialis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -489,7 +489,7 @@
     },
     "flexor-carpi-ulnaris": {
       "nameLatin": "M. flexor carpi ulnaris",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -504,7 +504,7 @@
     },
     "extensor-carpi-radialis-brevis": {
       "nameLatin": "M. extensor carpi radialis brevis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -519,7 +519,7 @@
     },
     "extensor-carpi-radialis-longus": {
       "nameLatin": "M. extensor carpi radialis longus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -534,7 +534,7 @@
     },
     "extensor-carpi-ulnaris": {
       "nameLatin": "M. extensor carpi ulnaris",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -549,7 +549,7 @@
     },
     "palmaris-longus": {
       "nameLatin": "M. palmaris longus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -563,7 +563,7 @@
     },
     "flexor-digitorum-superficialis": {
       "nameLatin": "M. flexor digitorum superficialis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -586,7 +586,7 @@
     },
     "extensor-digitorum": {
       "nameLatin": "M. extensor digitorum",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -610,7 +610,7 @@
     },
     "extensor-digiti-minimi": {
       "nameLatin": "M. extensor digiti minimi",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -634,7 +634,7 @@
     },
     "flexor-pollicis-longus": {
       "nameLatin": "M. flexor pollicis longus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -658,7 +658,7 @@
     },
     "flexor-digitorum-profundus": {
       "nameLatin": "M. flexor digitorum profundus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -682,7 +682,7 @@
     },
     "extensor-indicis": {
       "nameLatin": "M. extensor indicis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -706,7 +706,7 @@
     },
     "abductor-pollicis-longus": {
       "nameLatin": "M. abductor pollicis longus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -729,7 +729,7 @@
     },
     "extensor-pollicis-brevis": {
       "nameLatin": "M. extensor pollicis brevis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -751,7 +751,7 @@
     },
     "extensor-pollicis-longus": {
       "nameLatin": "M. extensor pollicis longus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -775,7 +775,7 @@
     },
     "interossei-palmares-i-iii": {
       "nameLatin": "Mm. interossei palmares I–III",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -799,7 +799,7 @@
     },
     "interossei-dorsales-i-iv": {
       "nameLatin": "Mm. interossei dorsales I–IV",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -823,7 +823,7 @@
     },
     "lumbricales-i-iv": {
       "nameLatin": "Mm. lumbricales I–IV",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -847,7 +847,7 @@
     },
     "flexor-digiti-minimi-brevis-upper-hand-mcp-flexion": {
       "nameLatin": "M. flexor digiti minimi brevis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -861,7 +861,7 @@
     },
     "abductor-digiti-minimi-upper-hand-ulnarabduktion": {
       "nameLatin": "M. abductor digiti minimi",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -885,7 +885,7 @@
     },
     "opponens-digiti-minimi-upper-hand-cmc-opposition": {
       "nameLatin": "M. opponens digiti minimi",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -899,7 +899,7 @@
     },
     "palmaris-brevis": {
       "nameLatin": "M. palmaris brevis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [],
@@ -911,7 +911,7 @@
     },
     "flexor-pollicis-brevis": {
       "nameLatin": "M. flexor pollicis brevis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -928,7 +928,7 @@
     },
     "abductor-pollicis-brevis": {
       "nameLatin": "M. abductor pollicis brevis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -945,7 +945,7 @@
     },
     "adductor-pollicis": {
       "nameLatin": "M. adductor pollicis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -961,7 +961,7 @@
     },
     "opponens-pollicis": {
       "nameLatin": "M. opponens pollicis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -975,7 +975,7 @@
     },
     "psoas-minor": {
       "nameLatin": "M. psoas minor",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -998,7 +998,7 @@
     },
     "psoas-major": {
       "nameLatin": "M. psoas major",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1022,7 +1022,7 @@
     },
     "iliacus": {
       "nameLatin": "M. iliacus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1045,7 +1045,7 @@
     },
     "gluteus-maximus": {
       "nameLatin": "M. gluteus maximus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1062,7 +1062,7 @@
     },
     "gluteus-medius": {
       "nameLatin": "M. gluteus medius",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1086,7 +1086,7 @@
     },
     "gluteus-minimus": {
       "nameLatin": "M. gluteus minimus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1102,7 +1102,7 @@
     },
     "pectineus": {
       "nameLatin": "M. pectineus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1118,7 +1118,7 @@
     },
     "adductor-longus": {
       "nameLatin": "M. adductor longus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1134,7 +1134,7 @@
     },
     "adductor-brevis": {
       "nameLatin": "M. adductor brevis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1150,7 +1150,7 @@
     },
     "adductor-magnus": {
       "nameLatin": "M. adductor magnus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1167,7 +1167,7 @@
     },
     "piriformis": {
       "nameLatin": "M. piriformis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1183,7 +1183,7 @@
     },
     "obturatorius-internus": {
       "nameLatin": "M. obturatorius internus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1197,7 +1197,7 @@
     },
     "obturatorius-externus": {
       "nameLatin": "M. obturatorius externus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1211,7 +1211,7 @@
     },
     "gemellus-superior": {
       "nameLatin": "M. gemellus superior",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1225,7 +1225,7 @@
     },
     "gemellus-inferior": {
       "nameLatin": "M. gemellus inferior",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1239,7 +1239,7 @@
     },
     "quadratus-femoris": {
       "nameLatin": "M. quadratus femoris",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1254,7 +1254,7 @@
     },
     "tensor-fasciae-latae": {
       "nameLatin": "M. tensor fasciae latae",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1278,7 +1278,7 @@
     },
     "sartorius": {
       "nameLatin": "M. sartorius",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1303,7 +1303,7 @@
     },
     "gracilis": {
       "nameLatin": "M. gracilis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1326,7 +1326,7 @@
     },
     "rectus-femoris": {
       "nameLatin": "M. rectus femoris",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1348,7 +1348,7 @@
     },
     "biceps-femoris-caput-longum": {
       "nameLatin": "M. biceps femoris – Caput longum",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1371,7 +1371,7 @@
     },
     "semitendinosus": {
       "nameLatin": "M. semitendinosus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1394,7 +1394,7 @@
     },
     "semimembranosus": {
       "nameLatin": "M. semimembranosus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1417,7 +1417,7 @@
     },
     "vastus-medialis": {
       "nameLatin": "M. vastus medialis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1439,7 +1439,7 @@
     },
     "vastus-intermedius": {
       "nameLatin": "M. vastus intermedius",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1453,7 +1453,7 @@
     },
     "vastus-lateralis": {
       "nameLatin": "M. vastus lateralis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1467,7 +1467,7 @@
     },
     "biceps-femoris-caput-breve": {
       "nameLatin": "M. biceps femoris – Caput breve",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1482,7 +1482,7 @@
     },
     "articularis-genus": {
       "nameLatin": "M. articularis genus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1496,7 +1496,7 @@
     },
     "popliteus": {
       "nameLatin": "M. popliteus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1511,7 +1511,7 @@
     },
     "gastrocnemius": {
       "nameLatin": "M. gastrocnemius",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1541,7 +1541,7 @@
     },
     "soleus": {
       "nameLatin": "M. soleus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1563,7 +1563,7 @@
     },
     "plantaris": {
       "nameLatin": "M. plantaris",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1585,7 +1585,7 @@
     },
     "tibialis-anterior": {
       "nameLatin": "M. tibialis anterior",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1607,7 +1607,7 @@
     },
     "tibialis-posterior": {
       "nameLatin": "M. tibialis posterior",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1637,7 +1637,7 @@
     },
     "fibularis-longus-m-peroneus-longus": {
       "nameLatin": "M. fibularis longus (M. peroneus longus)",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1667,7 +1667,7 @@
     },
     "fibularis-brevis-m-peroneus-brevis": {
       "nameLatin": "M. fibularis brevis (M. peroneus brevis)",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1689,7 +1689,7 @@
     },
     "extensor-digitorum-longus": {
       "nameLatin": "M. extensor digitorum longus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1719,7 +1719,7 @@
     },
     "flexor-digitorum-longus": {
       "nameLatin": "M. flexor digitorum longus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1749,7 +1749,7 @@
     },
     "extensor-hallucis-longus": {
       "nameLatin": "M. extensor hallucis longus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1771,7 +1771,7 @@
     },
     "flexor-hallucis-longus": {
       "nameLatin": "M. flexor hallucis longus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1801,7 +1801,7 @@
     },
     "extensor-digitorum-brevis": {
       "nameLatin": "M. extensor digitorum brevis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1815,7 +1815,7 @@
     },
     "flexor-digitorum-brevis": {
       "nameLatin": "M. flexor digitorum brevis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1829,7 +1829,7 @@
     },
     "quadratus-plantae": {
       "nameLatin": "M. quadratus plantae",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [],
@@ -1842,7 +1842,7 @@
     },
     "interossei-plantares": {
       "nameLatin": "Mm. interossei plantares",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1857,7 +1857,7 @@
     },
     "interossei-dorsales": {
       "nameLatin": "Mm. interossei dorsales",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1872,7 +1872,7 @@
     },
     "lumbricales": {
       "nameLatin": "Mm. lumbricales",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1888,7 +1888,7 @@
     },
     "extensor-hallucis-brevis": {
       "nameLatin": "M. extensor hallucis brevis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1902,7 +1902,7 @@
     },
     "flexor-hallucis-brevis": {
       "nameLatin": "M. flexor hallucis brevis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1918,7 +1918,7 @@
     },
     "abductor-hallucis": {
       "nameLatin": "M. abductor hallucis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1933,7 +1933,7 @@
     },
     "adductor-hallucis": {
       "nameLatin": "M. adductor hallucis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1956,7 +1956,7 @@
     },
     "flexor-digiti-minimi-brevis-lower-fuss-zeh-v-flexion-des-mtp-gelenks": {
       "nameLatin": "M. flexor digiti minimi brevis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1970,7 +1970,7 @@
     },
     "abductor-digiti-minimi-lower-fuss-zeh-v-flexion-und-abduktion-des-mtp-gelenks": {
       "nameLatin": "M. abductor digiti minimi",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -1985,7 +1985,7 @@
     },
     "opponens-digiti-minimi-lower-fuss-zeh-v-flexion-und-abduktion-des-mtp-gelenks": {
       "nameLatin": "M. opponens digiti minimi",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2000,7 +2000,7 @@
     },
     "interspinales": {
       "nameLatin": "Mm. interspinales",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2014,7 +2014,7 @@
     },
     "spinales": {
       "nameLatin": "Mm. spinales",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2029,7 +2029,7 @@
     },
     "intertransversarii-mediales": {
       "nameLatin": "Mm. intertransversarii mediales",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2044,7 +2044,7 @@
     },
     "rotatores": {
       "nameLatin": "Mm. rotatores",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2058,7 +2058,7 @@
     },
     "semispinalis": {
       "nameLatin": "M. semispinalis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2081,7 +2081,7 @@
     },
     "multifidi": {
       "nameLatin": "Mm. multifidi",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2096,7 +2096,7 @@
     },
     "iliocostales": {
       "nameLatin": "Mm. iliocostales",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2111,7 +2111,7 @@
     },
     "longissimi": {
       "nameLatin": "Mm. longissimi",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2127,7 +2127,7 @@
     },
     "splenii": {
       "nameLatin": "Mm. splenii",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2143,7 +2143,7 @@
     },
     "serratus-posterior-superior": {
       "nameLatin": "M. serratus posterior superior",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2157,7 +2157,7 @@
     },
     "serratus-posterior-inferior": {
       "nameLatin": "M. serratus posterior inferior",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2171,7 +2171,7 @@
     },
     "rectus-abdominis": {
       "nameLatin": "M. rectus abdominis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2186,7 +2186,7 @@
     },
     "obliquus-externus-abdominis": {
       "nameLatin": "M. obliquus externus abdominis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2203,7 +2203,7 @@
     },
     "obliquus-internus-abdominis": {
       "nameLatin": "M. obliquus internus abdominis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2219,7 +2219,7 @@
     },
     "transversus-abdominis": {
       "nameLatin": "M. transversus abdominis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2234,7 +2234,7 @@
     },
     "quadratus-lumborum": {
       "nameLatin": "M. quadratus lumborum",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2265,7 +2265,7 @@
     },
     "coccygeus": {
       "nameLatin": "M. coccygeus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2281,7 +2281,7 @@
     },
     "levator-ani": {
       "nameLatin": "M. levator ani",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2297,7 +2297,7 @@
     },
     "transversus-perinei-profundus": {
       "nameLatin": "M. transversus perinei profundus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2312,7 +2312,7 @@
     },
     "transversus-perinei-superficialis": {
       "nameLatin": "M. transversus perinei superficialis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2326,7 +2326,7 @@
     },
     "masseter": {
       "nameLatin": "M. masseter",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2342,7 +2342,7 @@
     },
     "temporalis": {
       "nameLatin": "M. temporalis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2357,7 +2357,7 @@
     },
     "pterygoideus-medialis": {
       "nameLatin": "M. pterygoideus medialis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2373,7 +2373,7 @@
     },
     "pterygoideus-lateralis": {
       "nameLatin": "M. pterygoideus lateralis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2388,7 +2388,7 @@
     },
     "mylohyoideus": {
       "nameLatin": "M. mylohyoideus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2410,7 +2410,7 @@
     },
     "digastricus": {
       "nameLatin": "M. digastricus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2432,7 +2432,7 @@
     },
     "geniohyoideus": {
       "nameLatin": "M. geniohyoideus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2454,7 +2454,7 @@
     },
     "stylohyoideus": {
       "nameLatin": "M. stylohyoideus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2469,7 +2469,7 @@
     },
     "sternohyoideus": {
       "nameLatin": "M. sternohyoideus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2483,7 +2483,7 @@
     },
     "sternothyroideus": {
       "nameLatin": "M. sternothyroideus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2497,7 +2497,7 @@
     },
     "thyrohyoideus": {
       "nameLatin": "M. thyrohyoideus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2519,7 +2519,7 @@
     },
     "omohyoideus": {
       "nameLatin": "M. omohyoideus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2541,7 +2541,7 @@
     },
     "sternocleidomastoideus": {
       "nameLatin": "M. sternocleidomastoideus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2572,7 +2572,7 @@
     },
     "longus-colli": {
       "nameLatin": "M. longus colli",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2587,7 +2587,7 @@
     },
     "longus-capitis": {
       "nameLatin": "M. longus capitis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2602,7 +2602,7 @@
     },
     "orbicularis-oris": {
       "nameLatin": "M. orbicularis oris",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2617,7 +2617,7 @@
     },
     "orbicularis-oculi": {
       "nameLatin": "M. orbicularis oculi",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2631,7 +2631,7 @@
     },
     "procerus": {
       "nameLatin": "M. procerus",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2647,7 +2647,7 @@
     },
     "nasalis-head-mimikmuskulatur-verengt-nasenoffnung-pars-transversa": {
       "nameLatin": "M. nasalis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2661,7 +2661,7 @@
     },
     "nasalis-head-mimikmuskulatur-erweitert-blaht-nasenloch-pars-alaris": {
       "nameLatin": "M. nasalis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2675,7 +2675,7 @@
     },
     "corrugator-supercilii": {
       "nameLatin": "M. corrugator supercilii",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2697,7 +2697,7 @@
     },
     "occipitofrontalis-head-mimikmuskulatur-hebt-augenbrauen": {
       "nameLatin": "M. occipitofrontalis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2720,7 +2720,7 @@
     },
     "occipitofrontalis-head-mimikmuskulatur-zieht-kopfhaut-nach-dorsal": {
       "nameLatin": "M. occipitofrontalis",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
@@ -2735,7 +2735,7 @@
     },
     "platysma": {
       "nameLatin": "Platysma",
-      "status": "ungeprueft",
+      "status": "geprueft",
       "zeilen": [
         {
           "orte": [
