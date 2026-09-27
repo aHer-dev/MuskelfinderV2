@@ -154,6 +154,7 @@ const GELENK_NAMEN: Readonly<Record<string, string>> = {
   'Art. manus': 'Handgelenk (Art. manus)',
   'Art. talocruralis': 'Oberes Sprunggelenk (Art. talocruralis)',
   'Art. subtalaris': 'Unteres Sprunggelenk (Art. subtalaris)',
+  'Art. radioulnaris distalis': 'Distales Radioulnargelenk (Art. radioulnaris distalis)',
   MCP: 'Grundgelenk (MCP)',
   PIP: 'Mittelgelenk (PIP)',
   DIP: 'Endgelenk (DIP)',

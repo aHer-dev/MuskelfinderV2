@@ -162,9 +162,9 @@ describe('funktionsLuecken — der Hinweis fuer den Fachmann', () => {
     })).toEqual({ gelenkeOhneZeile: ['Art. cubiti'], orteAusserhalb: ['Unterarm'] });
   });
 
-  it('am echten Bestand: M. tensor fasciae latae — Art. genus ohne Zeile, der Text nennt keine Kniefunktion', () => {
-    const tfl = MUSCLES.find((m) => m.id === 'tensor-fasciae-latae')!;
-    expect(funktionsLuecken(tfl).gelenkeOhneZeile).toEqual(['Art. genus']);
+  it('am echten Bestand: M. flexor carpi radialis — Art. cubiti ohne Zeile, der Text nennt dort nichts', () => {
+    const fcr = MUSCLES.find((m) => m.id === 'flexor-carpi-radialis')!;
+    expect(funktionsLuecken(fcr).gelenkeOhneZeile).toEqual(['Art. cubiti']);
   });
 });
 

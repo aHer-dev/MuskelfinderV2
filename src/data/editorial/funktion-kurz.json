@@ -67,6 +67,15 @@
             "Elevation",
             "Aufwärtsrotation"
           ]
+        },
+        {
+          "orte": [
+            "Halswirbelsäule"
+          ],
+          "bewegungen": [
+            "Lateralflexion zur gleichen Seite und Rotation des Kopfes zur Gegenseite (einseitig)",
+            "Extension (beidseitig)"
+          ]
         }
       ]
     },
@@ -454,10 +463,11 @@
       "zeilen": [
         {
           "orte": [
-            "Unterarm"
+            "Art. radioulnaris distalis"
           ],
           "bewegungen": [
-            "Pronation"
+            "Pronation",
+            "stabilisiert das Gelenk"
           ]
         }
       ]
@@ -969,18 +979,19 @@
       "zeilen": [
         {
           "orte": [
-            "Becken"
+            "LWS"
           ],
           "bewegungen": [
-            "Retroversion (kippt es nach dorsal)"
+            "Flexion (beidseitig)",
+            "Lateralflexion (einseitig)"
           ]
         },
         {
           "orte": [
-            "LWS"
+            "Fascia iliaca"
           ],
           "bewegungen": [
-            "stabilisiert in Streckstellung"
+            "spannt sie"
           ]
         }
       ]
@@ -1164,7 +1175,8 @@
           ],
           "bewegungen": [
             "Außenrotation",
-            "Abduktion (bei 90° Hüftflexion)"
+            "Abduktion",
+            "Innenrotation (ab ca. 80° Flexion)"
           ]
         }
       ]
@@ -1252,6 +1264,14 @@
             "Abduktion",
             "Flexion",
             "Innenrotation"
+          ]
+        },
+        {
+          "orte": [
+            "Art. genus"
+          ],
+          "bewegungen": [
+            "stabilisiert es in Streckstellung (über den Tractus iliotibialis)"
           ]
         }
       ]
@@ -2222,7 +2242,7 @@
           ],
           "bewegungen": [
             "Lateralflexion zur gleichen Seite (einseitig)",
-            "stabilisiert die Lendenregion (beidseitig)"
+            "Extension (beidseitig)"
           ]
         },
         {
@@ -2231,6 +2251,14 @@
           ],
           "bewegungen": [
             "hebt es (einseitig)"
+          ]
+        },
+        {
+          "orte": [
+            "Atmung"
+          ],
+          "bewegungen": [
+            "fixiert die 12. Rippe (forcierte Exspiration)"
           ]
         }
       ]

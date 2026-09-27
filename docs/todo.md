@@ -38,20 +38,26 @@ Kurzform nachgezogen, festgehalten in `src/data/lehrbuch-korrekturen.test.ts`:
 gebraucht: dort ebenfalls korrigieren. Ein `migrate:data` aus der unkorrigierten Quelle lässt
 `lehrbuch-korrekturen.test.ts` fallen — genau dafür steht er da.
 
-**Noch offen** (schwächere Punkte, nicht bestätigt — Einschätzung der KI, bitte im Buch nachschlagen):
+**Ebenfalls erledigt am 2026-09-27 — per Quellenabgleich** (Auftrag „prüfe im internet";
+DocCheck Flexikon, Kenhub, de.wikipedia; festgehalten im zweiten Block von
+`lehrbuch-korrekturen.test.ts`):
 
-| Muskel | Steht im Text / in den Daten | Lehrbuch (Vorschlag) |
-|---|---|---|
-| M. piriformis | „bei 90° Hüftbeugung zusätzlich Abduktor" | Außenrotation + Abduktion; ab ca. 60° Flexion Umkehr zur **Innenrotation** — fehlt im Text |
-| M. trapezius, Pars descendens | „unterstützt HWS-Bewegungen" (pauschal) | einseitig Lateralflexion gleiche Seite + Rotation zur Gegenseite, beidseitig Extension HWS |
-| M. tensor fasciae latae | `joints` nennt Art. genus, der Text keine Kniefunktion | stabilisiert das Knie in Streckstellung über den Tractus |
-| M. psoas minor | „stabilisiert die LWS in Streckstellung" | meist: schwache Flexion der LWS, spannt die Fascia iliaca |
+| Muskel | Vorher | Jetzt | Quellen |
+|---|---|---|---|
+| M. psoas minor | kippt das Becken nach dorsal, stabilisiert die LWS in Streckung | schwach: beugt/neigt die LWS, spannt die Fascia iliaca (`joints` Becken → LWS) | DocCheck, Kenhub, Wikipedia |
+| M. piriformis | bei 90° Flexion zusätzlich Abduktor | Außenrotation + Abduktion; ab ca. 80° Flexion Innenrotator | DocCheck (80°), Wikipedia (ohne Winkel) |
+| M. trapezius, Pars descendens | „unterstützt HWS-Bewegungen" | einseitig Seitneigung gleiche Seite + Kopfrotation zur Gegenseite, beidseitig Extension | DocCheck, Kenhub |
+| M. tensor fasciae latae | keine Kniefunktion | stabilisiert das gestreckte Knie über den Tractus | DocCheck |
+| M. quadratus lumborum | beidseitig „stabilisiert" | beidseitig Extension der LWS, fixiert die 12. Rippe (`joints` + Becken) | DocCheck |
+| M. pronator quadratus | `joints`: Art. cubiti | `joints`: Art. radioulnaris distalis (neues Etikett, Gelenkgruppe „Ellenbogen") | DocCheck |
+| M. gastrocnemius, M. soleus | `joints` ohne USG | `joints` + Art. subtalaris (Inversion des Rückfußes) | DocCheck |
+| M. geniohyoideus | `joints` ohne Kiefergelenk | `joints` + Kiefergelenk (wirkt bei der Kieferöffnung mit) | DocCheck |
 
-**Datenfelder, noch offen:**
-- `joints` ohne **Art. subtalaris** bei M. gastrocnemius und M. soleus — die Supination, die ihr Text nennt, geschieht im USG.
-- `joints` ohne das Gelenk, das der Text nennt: M. levator scapulae (HWS), M. geniohyoideus (Kiefergelenk), M. psoas minor (LWS), M. quadratus lumborum (Becken).
-- M. pronator quadratus steht unter `Art. cubiti`, wirkt aber nur im **distalen** Radioulnargelenk (zur Art. cubiti gehört nur das proximale).
-- Kein Handlungsbedarf: 8 Unterarmmuskeln führen `Art. cubiti`, ihr Text nennt dort keine Funktion (sie überqueren den Ellenbogen, wirken dort kaum). Der Bericht listet sie trotzdem.
+Wo nur **eine** Quelle steht, lohnt der Blick ins Lehrbuch.
+
+**Bewusst so gelassen:**
+- M. levator scapulae und M. trapezius (Pars descendens) wirken auf die HWS (DocCheck bestätigt: Seitneigung und Rotation), `joints` nennt sie aber **nicht** — sonst rutschten beide in die Gelenkgruppe „Wirbelsäule". Die Kurzform nennt die HWS trotzdem. Soll sich die Gruppe ändern, ist das eine Entscheidung über den Kartenumfang, keine Datenkorrektur.
+- 8 Unterarmmuskeln führen `Art. cubiti`, ihr Text nennt dort keine Funktion (sie überqueren den Ellenbogen, wirken dort kaum). Der Bericht listet sie trotzdem.
 
 ## Braucht dich (Deploy / Betrieb)
 

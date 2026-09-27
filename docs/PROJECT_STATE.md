@@ -67,8 +67,10 @@ ausfuehrenden Rechner nicht existieren; der Fehler faellt nicht im Build, sonder
   Offen: fachliche Abnahme durch den Projektinhaber ueber `funktion-kurzform.csv`, danach
   Status auf „geprueft". Eine KI-Durchsicht (2026-09-27) fand 9 Stellen, an denen der
   FUNKTIONSTEXT vom Lehrbuch abweicht; **5 davon hat der Projektinhaber bestaetigt, sie sind in
-  `generated/` korrigiert** (u. a. M. semimembranosus: Meniscus medialis statt lateralis), 4
-  schwaechere stehen offen in `docs/todo.md`.
+  `generated/` korrigiert** (u. a. M. semimembranosus: Meniscus medialis statt lateralis). Die 4
+  schwaecheren und die Gelenk-Luecken sind per Quellenabgleich (DocCheck, Kenhub, Wikipedia)
+  ebenfalls korrigiert; Tabelle mit Quellen in `docs/todo.md`. **Neues Gelenk-Etikett
+  `Art. radioulnaris distalis`** (M. pronator quadratus), haengt an der Gruppe „Ellenbogen".
   ⚠️ **Die V1-Quelle traegt noch die alten Texte** (lag nicht vor). `src/data/lehrbuch-korrekturen.test.ts`
   haelt alle Lehrbuch-Korrekturen fest, auch den FPL-Fix — wer `migrate:data` aus einer
   unkorrigierten Quelle laufen laesst, sieht ihn fallen, statt die Fehler still zurueckzuholen. **Die Kurzform verdichtet nur den Funktionstext — wer sie ergaenzt,

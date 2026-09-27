@@ -84,3 +84,43 @@ describe('Lehrbuch-Korrekturen bleiben stehen (auch nach migrate:data)', () => {
     expect(muskel('extensor-carpi-ulnaris').functions).toContain('dorsalextension');
   });
 });
+
+/* Internetabgleich vom 2026-09-27, im Auftrag des Projektinhabers („prüfe im internet").
+   Die Quelle(n) stehen je Zeile in Klammern (DocCheck Flexikon, Kenhub, de.wikipedia).
+   Wo nur eine steht, gab es nur eine — das sind Kandidaten fuer den Blick ins Lehrbuch. */
+describe('Korrekturen aus dem Quellenabgleich bleiben stehen', () => {
+  it('M. psoas minor kippt das Becken nicht — er beugt die LWS (DocCheck, Kenhub, Wikipedia)', () => {
+    const m = muskel('psoas-minor');
+    for (const t of texte(m)) expect(t).not.toMatch(/Retroversion/);
+    expect(m.joints).toEqual(['LWS']);
+    expect(m.functions).not.toContain('beckenkippung-ruckwarts');
+  });
+
+  it('M. piriformis wird bei zunehmender Hüftbeugung zum Innenrotator (DocCheck, Wikipedia)', () => {
+    const m = muskel('piriformis');
+    for (const t of texte(m)) expect(t).toMatch(/Innenrotator/);
+    expect(funktionAnzeige(m)).toMatch(/Innenrotation/);
+  });
+
+  it('M. pronator quadratus wirkt im distalen Radioulnargelenk, nicht im Ellenbogen (DocCheck)', () => {
+    expect(muskel('pronator-quadratus').joints).toEqual(['Art. radioulnaris distalis']);
+  });
+
+  it('M. quadratus lumborum streckt beidseitig die LWS (DocCheck)', () => {
+    for (const t of texte(muskel('quadratus-lumborum'))) expect(t).toMatch(/streckt er die Lendenwirbelsäule/);
+  });
+
+  it('M. tensor fasciae latae stabilisiert das gestreckte Knie (DocCheck)', () => {
+    expect(funktionAnzeige(muskel('tensor-fasciae-latae'))).toMatch(/Kniegelenk \(Art\. genus\): stabilisiert/);
+  });
+
+  it('M. trapezius, Pars descendens: Kopf zur Gegenseite, beidseitig Extension (DocCheck, Kenhub)', () => {
+    const t = funktionAnzeige(muskel('trapezius-pars-descendens'));
+    expect(t).toMatch(/Rotation des Kopfes zur Gegenseite/);
+    expect(t).toMatch(/Extension \(beidseitig\)/);
+  });
+
+  it('M. gastrocnemius und M. soleus supinieren im unteren Sprunggelenk (DocCheck)', () => {
+    for (const id of ['gastrocnemius', 'soleus']) expect(muskel(id).joints).toContain('Art. subtalaris');
+  });
+});

@@ -27,9 +27,11 @@
    Weil weder eines allein trägt:
    - `M. palmaris brevis` und `M. quadratus plantae` haben **gar kein** `joints`-Eintrag.
      Über die Subregion sind sie zu finden.
-   - Das Etikett `Becken` tragen **M. psoas minor** (Subregion „Hüfte") *und* die vier
-     Beckenbodenmuskeln. Ein Gelenk-Etikett allein hätte den Psoas in den Beckenboden
-     gelegt. Darum kommt „Bauchwand & Beckenboden" über die Subregion, nicht über `Becken`.
+   - Das Etikett `Becken` ist kein Gelenk, sondern ein Wirkort — es trägt die vier
+     Beckenbodenmuskeln und M. quadratus lumborum. Bis zum 2026-09-27 trug es auch
+     **M. psoas minor** (Subregion „Hüfte"): Ein Gelenk-Etikett allein hätte den Psoas in den
+     Beckenboden gelegt. Darum kommt „Bauchwand & Beckenboden" über die Subregion, nicht über
+     `Becken` — und das bleibt so, auch wenn der Psoas das Etikett nicht mehr trägt.
    - **Die Falle, die diese Datei fast gekostet hätte:** Das Etikett `Kopf` klingt nach
      Kopfmuskulatur, gehört aber zu `M. semispinalis`, `Mm. longissimi` und `Mm. splenii` —
      tiefe Rückenmuskeln, die den Kopf bewegen. Naiv zu „Mimik & Kopf" gezählt wären die
@@ -103,7 +105,7 @@ export const JOINT_GROUP_DEFS: readonly JointGroupDef[] = [
     id: 'bauchwand-beckenboden',
     label: 'Bauchwand & Beckenboden',
     hint: 'Bauchpresse, Beckenboden',
-    /* NICHT `Becken`: Das trägt auch M. psoas minor (siehe Dateikopf). */
+    /* NICHT `Becken`: Das Etikett ist ein Wirkort, keine Gruppe (siehe Dateikopf). */
     joints: ['Rumpf'],
     subregions: ['Bauchmuskulatur', 'Beckenboden'],
   },
@@ -125,7 +127,9 @@ export const JOINT_GROUP_DEFS: readonly JointGroupDef[] = [
     id: 'ellenbogen',
     label: 'Ellenbogen',
     hint: 'Beugen, Strecken, Umwenden',
-    joints: ['Art. cubiti'],
+    /* Das distale Radioulnargelenk gehoert zum „Umwenden" (2026-09-27): M. pronator
+       quadratus wirkt NUR dort und stand bis dahin faelschlich unter Art. cubiti. */
+    joints: ['Art. cubiti', 'Art. radioulnaris distalis'],
     subregions: [],
   },
   {

@@ -151,9 +151,11 @@
     "insertion": "Laterales Drittel der Clavicula, Akromion",
     "functions": [
       "elevation",
-      "laterorotation"
+      "laterorotation",
+      "lateralflexion-ipsilateral",
+      "rotation-kontralateral"
     ],
-    "functionDescription": "Hebt die Scapula und unterstützt die Aufwärtsrotation; unterstützt HWS-Bewegungen",
+    "functionDescription": "Hebt die Scapula und unterstützt die Aufwärtsrotation; einseitig neigt er Kopf und Halswirbelsäule zur gleichen Seite und dreht den Kopf zur Gegenseite, beidseitig streckt er Kopf und Halswirbelsäule",
     "innervation": "N. accessorius (XI), Plexus cervicalis",
     "segments": "C2, C3, C4",
     "clinicalNote": "Verspannungen, Zervikalsyndrom, Triggerpunkte",
@@ -184,7 +186,7 @@
     "easy": {
       "origin": "Linea nuchae superior, Protuberantia occipitalis externa, Lig. nuchae C1–C6",
       "insertion": "Laterales Drittel der Clavicula, Akromion",
-      "functionDescription": "Hebt die Scapula und unterstützt die Aufwärtsrotation; unterstützt HWS-Bewegungen",
+      "functionDescription": "Hebt die Scapula und unterstützt die Aufwärtsrotation; einseitig neigt er Kopf und Halswirbelsäule zur gleichen Seite und dreht den Kopf zur Gegenseite, beidseitig streckt er Kopf und Halswirbelsäule",
       "innervation": "N. accessorius (XI), Plexus cervicalis",
       "segments": "C2, C3, C4"
     }
@@ -1326,7 +1328,7 @@
     "region": "upper",
     "subregion": "Ellenbogen",
     "joints": [
-      "Art. cubiti"
+      "Art. radioulnaris distalis"
     ],
     "origin": "Distales Viertel der Facies anterior ulnae",
     "insertion": "Distales Viertel der Facies anterior radii",
@@ -2532,14 +2534,15 @@
     "region": "lower",
     "subregion": "Hüfte",
     "joints": [
-      "Becken"
+      "LWS"
     ],
     "origin": "Wirbelkörper Th12/L1",
     "insertion": "Eminentia iliopubica",
     "functions": [
-      "beckenkippung-ruckwarts"
+      "flexion",
+      "lateralflexion"
     ],
-    "functionDescription": "Kippt das Becken nach dorsal (Retroversion) und unterstützt die Stabilisierung der Lendenwirbelsäule in Streckstellung",
+    "functionDescription": "Schwacher Muskel ohne größere eigenständige Bedeutung: unterstützt den M. iliopsoas, beugt beidseitig die Lendenwirbelsäule und neigt sie einseitig zur Seite; spannt die Fascia iliaca",
     "innervation": "Plexus lumbalis",
     "segments": "L1",
     "clinicalNote": "Dieser Muskel fehlt bei etwa 10 % der Menschen und ist dann funktionell durch den Psoas major kompensiert – klinisch meist bedeutungslos, kann jedoch bei bildgebenden Verfahren als Zufallsbefund auffallen",
@@ -2553,7 +2556,7 @@
     "easy": {
       "origin": "Wirbelkörper Th12/L1",
       "insertion": "Eminentia iliopubica",
-      "functionDescription": "Kippt das Becken nach dorsal (Retroversion) und unterstützt die Stabilisierung der Lendenwirbelsäule in Streckstellung",
+      "functionDescription": "Schwacher Muskel ohne größere eigenständige Bedeutung: unterstützt den M. iliopsoas, beugt beidseitig die Lendenwirbelsäule und neigt sie einseitig zur Seite; spannt die Fascia iliaca",
       "innervation": "Plexus lumbalis",
       "segments": "L1"
     }
@@ -3027,9 +3030,10 @@
     "insertion": "Trochanter major des Femur",
     "functions": [
       "aussenrotation",
-      "abduktion"
+      "abduktion",
+      "innenrotation"
     ],
-    "functionDescription": "Außenrotiert den Oberschenkel im Hüftgelenk; wirkt bei 90° Hüftbeugung zusätzlich als Abduktor",
+    "functionDescription": "Außenrotiert und abduziert den Oberschenkel im Hüftgelenk, die Abduktion auch bei gebeugter Hüfte; bei zunehmender Hüftbeugung (ab etwa 80°) wird er zum Innenrotator",
     "innervation": "Plexus sacralis",
     "segments": "S1, S2",
     "clinicalNote": "Gehört zur Gruppe der tiefen Außenrotatoren; bei Verletzungen oder Reizzuständen können Beschwerden die ischiadikusähnliche Symptomatik imitieren",
@@ -3060,7 +3064,7 @@
     "easy": {
       "origin": "Os sacrum, Facies pelvica",
       "insertion": "Trochanter major des Femur",
-      "functionDescription": "Außenrotiert den Oberschenkel im Hüftgelenk; wirkt bei 90° Hüftbeugung zusätzlich als Abduktor",
+      "functionDescription": "Außenrotiert und abduziert den Oberschenkel im Hüftgelenk, die Abduktion auch bei gebeugter Hüfte; bei zunehmender Hüftbeugung (ab etwa 80°) wird er zum Innenrotator",
       "innervation": "Plexus sacralis",
       "segments": "S1, S2"
     }
@@ -3310,7 +3314,7 @@
       "flexion",
       "innenrotation"
     ],
-    "functionDescription": "Abduziert und beugt die Hüfte, dreht den Oberschenkel nach innen; spannt den Tractus iliotibialis und entlastet damit Femurschaft und -hals",
+    "functionDescription": "Abduziert und beugt die Hüfte, dreht den Oberschenkel nach innen; spannt den Tractus iliotibialis und entlastet damit Femurschaft und -hals; bei gestrecktem Knie stabilisiert er über den Tractus das Kniegelenk",
     "innervation": "N. gluteus superior",
     "segments": "L4, L5, S1",
     "clinicalNote": "Pes-anserinus-Syndrom (Insertion am medialen Tibiakopf); die Sehne wird zudem als autologes Transplantat bei Kreuzbandrekonstruktionen verwendet",
@@ -3342,7 +3346,7 @@
     "easy": {
       "origin": "Spina iliaca anterior superior",
       "insertion": "Tractus iliotibialis, Tuberculum von Gerdy an der Tibia",
-      "functionDescription": "Abduziert und beugt die Hüfte, dreht den Oberschenkel nach innen; spannt den Tractus iliotibialis und entlastet damit Femurschaft und -hals",
+      "functionDescription": "Abduziert und beugt die Hüfte, dreht den Oberschenkel nach innen; spannt den Tractus iliotibialis und entlastet damit Femurschaft und -hals; bei gestrecktem Knie stabilisiert er über den Tractus das Kniegelenk",
       "innervation": "N. gluteus superior",
       "segments": "L4, L5, S1"
     }
@@ -3963,7 +3967,8 @@
     "subregion": "Fuß & Sprunggelenk",
     "joints": [
       "Art. genus",
-      "Art. talocruralis"
+      "Art. talocruralis",
+      "Art. subtalaris"
     ],
     "origin": "Caput mediale: Femur, Facies poplitea, Condylus medialis; Caput laterale: Femur, Facies poplitea, Condylus lateralis",
     "insertion": "Tuber calcanei (über Achillessehne)",
@@ -4015,7 +4020,8 @@
     "region": "lower",
     "subregion": "Fuß & Sprunggelenk",
     "joints": [
-      "Art. talocruralis"
+      "Art. talocruralis",
+      "Art. subtalaris"
     ],
     "origin": "Dorsale Tibia, Fibula und Arcus tendineus",
     "insertion": "Tuber calcanei (über Achillessehne)",
@@ -5548,7 +5554,8 @@
     "subregion": "Bauchmuskulatur",
     "joints": [
       "Rumpf",
-      "LWS"
+      "LWS",
+      "Becken"
     ],
     "origin": "Crista iliaca, Lig. iliolumbale",
     "insertion": "12. Rippe, Procc. costarii L1–L4",
@@ -5557,7 +5564,7 @@
       "extension",
       "rippensenkung"
     ],
-    "functionDescription": "Hebt einseitig das Becken und neigt die LWS zur gleichen Seite; beidseitig stabilisiert er Lendenregion und 12. Rippe",
+    "functionDescription": "Hebt einseitig das Becken und neigt die LWS zur gleichen Seite; beidseitig streckt er die Lendenwirbelsäule und fixiert die 12. Rippe bei forcierter Ausatmung",
     "innervation": "Plexus lumbalis",
     "segments": "Th12, L1–L4",
     "clinicalNote": "LWS-Schmerzen, Beckenschiefstand",
@@ -5571,7 +5578,7 @@
     "easy": {
       "origin": "Crista iliaca, Lig. iliolumbale",
       "insertion": "12. Rippe, Procc. costarii L1–L4",
-      "functionDescription": "Hebt einseitig das Becken und neigt die LWS zur gleichen Seite; beidseitig stabilisiert er Lendenregion und 12. Rippe",
+      "functionDescription": "Hebt einseitig das Becken und neigt die LWS zur gleichen Seite; beidseitig streckt er die Lendenwirbelsäule und fixiert die 12. Rippe bei forcierter Ausatmung",
       "innervation": "Plexus lumbalis",
       "segments": "Th12, L1–L4"
     }
@@ -5917,7 +5924,8 @@
     "region": "head",
     "subregion": "Suprahyoidale Muskeln",
     "joints": [
-      "Zungenbein"
+      "Zungenbein",
+      "Kiefergelenk"
     ],
     "origin": "Spina mentalis (Innenseite des Corpus mandibulae)",
     "insertion": "Corpus ossis hyoidei",

@@ -139,6 +139,19 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   Prüfungen mit, und die brechen einen Build, der `tsc -b` enthält.
 
 ### Fixed
+- **Weitere Funktionen per Quellenabgleich korrigiert** (2026-09-27, DocCheck Flexikon,
+  Kenhub, de.wikipedia; `src/data/generated/`).
+
+  M. psoas minor kippt das Becken **nicht** (so stand es im Text): Er ist schwach, beugt und
+  neigt die LWS und spannt die Fascia iliaca — `joints` jetzt LWS statt Becken. M. piriformis
+  wird ab etwa 80° Hüftbeugung zum Innenrotator. M. trapezius (Pars descendens) nennt jetzt
+  seine Kopf- und HWS-Wirkung statt „unterstützt HWS-Bewegungen". M. tensor fasciae latae
+  stabilisiert das gestreckte Knie; M. quadratus lumborum streckt beidseitig die LWS.
+  Gelenklisten: M. pronator quadratus wirkt im distalen Radioulnargelenk (neues Etikett,
+  Gelenkgruppe „Ellenbogen"), nicht im Ellenbogengelenk; M. gastrocnemius und M. soleus
+  bekommen das USG, M. geniohyoideus das Kiefergelenk. Festgehalten im zweiten Block von
+  `lehrbuch-korrekturen.test.ts` (gegengetestet).
+
 - **Fünf Funktionen korrigiert, die vom Lehrbuch abwichen** (2026-09-27, vom Projektinhaber
   im Lehrbuch bestätigt; `src/data/generated/muscles.json`, `movements.json`).
 
