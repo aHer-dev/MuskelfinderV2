@@ -136,8 +136,8 @@
     "label": "Hüftflexion"
   },
   {
-    "id": "inklination-bilateral",
-    "label": "Inklination (bilateral)"
+    "id": "reklination-bilateral",
+    "label": "Reklination (bilateral)"
   },
   {
     "id": "innenrotation",
@@ -400,8 +400,8 @@
     "label": "Zeh II–V: Flexion der MTP- und proximalen IP-Gelenke"
   },
   {
-    "id": "zeh-ii-v-flexion-der-mtp-gelenke-zeh-iii-v-adduktion-zeh-ii-abduktion",
-    "label": "Zeh II–V: Flexion der MTP-Gelenke; Zeh III–V: Adduktion; Zeh II: Abduktion"
+    "id": "zeh-ii-v-flexion-der-mtp-extension-der-ip-gelenke-adduktion",
+    "label": "Zeh II–V: Flexion der MTP-, Extension der IP-Gelenke; Adduktion zur Großzehe"
   },
   {
     "id": "zeh-iii-v-flexion-und-adduktion-der-mtp-gelenke-zum-ii-strahl-hin",

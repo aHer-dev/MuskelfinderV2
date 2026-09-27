@@ -859,6 +859,15 @@
           ],
           "bewegungen": [
             "Abduktion (Kleinfinger)",
+            "Flexion"
+          ]
+        },
+        {
+          "orte": [
+            "PIP",
+            "DIP"
+          ],
+          "bewegungen": [
             "Extension"
           ]
         }
@@ -1034,7 +1043,8 @@
           "bewegungen": [
             "Extension",
             "Außenrotation",
-            "Abduktion (laterale Anteile)"
+            "Abduktion (kraniale Anteile)",
+            "Adduktion (kaudale Anteile)"
           ]
         }
       ]
@@ -1846,12 +1856,12 @@
       "zeilen": [
         {
           "orte": [
-            "MTP Zehen II–V"
+            "MTP und IP Zehen II–V"
           ],
           "bewegungen": [
-            "Flexion",
-            "Adduktion zum II. Strahl (Zehen III–V)",
-            "Abduktion (Zehe II)"
+            "Flexion im Grundgelenk",
+            "Extension in Mittel- und Endgelenk",
+            "Adduktion zur Großzehe hin"
           ]
         }
       ]
@@ -2510,8 +2520,16 @@
             "Kopfgelenke"
           ],
           "bewegungen": [
-            "Inklination (beidseitig)",
+            "Reklination (beidseitig)",
             "Rotation zur Gegenseite und Lateralflexion zur gleichen Seite (einseitig)"
+          ]
+        },
+        {
+          "orte": [
+            "Halswirbelsäule"
+          ],
+          "bewegungen": [
+            "Flexion (beidseitig)"
           ]
         },
         {

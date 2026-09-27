@@ -66,9 +66,12 @@ ausfuehrenden Rechner nicht existieren; der Fehler faellt nicht im Build, sonder
   stellen sie ebenfalls. **Alle 150 sind KI-Entwuerfe, status „ungeprueft" (Stern).**
   Offen: fachliche Abnahme durch den Projektinhaber ueber `funktion-kurzform.csv`, danach
   Status auf „geprueft". Eine KI-Durchsicht (2026-09-27) fand 9 Stellen, an denen der
-  FUNKTIONSTEXT vom Lehrbuch abweicht (u. a. M. semimembranosus: Meniscus lateralis statt
-  medialis) — Liste in `docs/todo.md`; korrigiert wird in der V1-Quelle, die auf dem
-  Entwicklungsrechner derzeit fehlt. **Die Kurzform verdichtet nur den Funktionstext — wer sie ergaenzt,
+  FUNKTIONSTEXT vom Lehrbuch abweicht; **5 davon hat der Projektinhaber bestaetigt, sie sind in
+  `generated/` korrigiert** (u. a. M. semimembranosus: Meniscus medialis statt lateralis), 4
+  schwaechere stehen offen in `docs/todo.md`.
+  ⚠️ **Die V1-Quelle traegt noch die alten Texte** (lag nicht vor). `src/data/lehrbuch-korrekturen.test.ts`
+  haelt alle Lehrbuch-Korrekturen fest, auch den FPL-Fix — wer `migrate:data` aus einer
+  unkorrigierten Quelle laufen laesst, sieht ihn fallen, statt die Fehler still zurueckzuholen. **Die Kurzform verdichtet nur den Funktionstext — wer sie ergaenzt,
   ergaenzt erst den Text.** Ein Muskel mit Funktionstext ohne Kurzform laesst den Loader werfen
   (sonst verriete eine lange Quiz-Option durch ihre Laenge die Antwort).
 - **Bild gross auch auf der Lernkarte (Etappe 14a, 2026-09-27).** Dieselbe Vollansicht wie

@@ -139,6 +139,23 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   Prüfungen mit, und die brechen einen Build, der `tsc -b` enthält.
 
 ### Fixed
+- **Fünf Funktionen korrigiert, die vom Lehrbuch abwichen** (2026-09-27, vom Projektinhaber
+  im Lehrbuch bestätigt; `src/data/generated/muscles.json`, `movements.json`).
+
+  M. semimembranosus zieht den Meniscus **medialis** nach dorsal (nicht lateralis).
+  M. abductor digiti minimi der Hand **beugt** im Grundgelenk und streckt in Mittel- und
+  Endgelenk (nicht „MCP-Extension"). M. sternocleidomastoideus rekliniert beidseitig den Kopf
+  und beugt die HWS (nicht „Inklination"). Die Mm. lumbricales des Fußes strecken die
+  Mittel- und Endgelenke und adduzieren zur Großzehe hin. Beim M. gluteus maximus abduzieren
+  die **kranialen** Anteile, die kaudalen adduzieren. Dazu fand die Suche nach
+  „Dorsalextension" den M. extensor carpi ulnaris nicht, obwohl sein Text sie nennt.
+  `joints`, Suchfilter und Kurzformen sind nachgezogen.
+
+  Die V1-Quelle, aus der `migrate:data` liest, lag nicht vor und trägt noch die alten Texte.
+  `src/data/lehrbuch-korrekturen.test.ts` hält die Korrekturen fest (mit dem FPL-Fix vom
+  2026-08-18, der bis dahin ungeschützt war) — ein Rück-Migrieren fällt dort auf
+  (gegengetestet).
+
 - **Die Freitext-Karte verriet in 31 Fällen die Antwort** (Etappe 15, 2026-09-27).
 
   Ab Fach 7 zeigt die Lernkarte die Fakten und fragt nach dem lateinischen Namen. 31 lange

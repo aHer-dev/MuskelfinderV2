@@ -21,29 +21,36 @@
 
 ### Fachfragen aus der Durchsicht der Funktions-Kurzformen (2026-09-27)
 
-Die Kurzform gibt den Funktionstext treu wieder — **diese Punkte stehen so im TEXT** (bzw. in
-`joints`/`functions`) und weichen vom Lehrbuch ab. Korrigiert wird in der **V1-Quelle**
-(`MUSKELFINDER_V1_SOURCE`, Standard `../Muskelfinder` — liegt auf dem Entwicklungsrechner
-derzeit **nicht** vor), dann `npm run migrate:data`, dann die Kurzform nachziehen. Einschätzung
-der KI, kein Beleg — bitte im Buch nachschlagen.
+**Erledigt am 2026-09-27** — vom Projektinhaber im Lehrbuch bestätigt, in
+`src/data/generated/muscles.json` korrigiert (Text beider Niveaus, `joints`, `functions`),
+Kurzform nachgezogen, festgehalten in `src/data/lehrbuch-korrekturen.test.ts`:
 
-| Muskel | Steht im Text / in den Daten | Lehrbuch (Prometheus/Schünke) | Sicherheit |
-|---|---|---|---|
-| M. semimembranosus | „zieht den Meniscus **lateralis** nach dorsal" | Meniscus **medialis** (den lateralen zieht der M. popliteus) | hoch |
-| M. abductor digiti minimi (Hand) | „unterstützt die **MCP-Extension**" | Grundgelenk **Flexion** + Abduktion, Mittel-/Endgelenk Extension (Dorsalaponeurose) | hoch |
-| M. sternocleidomastoideus | beidseitig „**Inklination**" | beidseitig Reklination des Kopfes bei Flexion der HWS (Kopf nach vorn schieben) — wird uneinheitlich dargestellt | mittel |
-| Mm. lumbricales (Fuß) | Adduktion „zur zweiten Achse", keine IP-Extension | Flexion MTP, **Extension PIP/DIP**, Adduktion zur Großzehe hin | mittel |
-| M. gluteus maximus | „**laterale** Anteile" abduzieren | **kraniale** Anteile abduzieren, kaudale adduzieren | mittel |
-| M. piriformis | „bei 90° Hüftbeugung zusätzlich Abduktor" | Außenrotation + Abduktion; ab ca. 60° Flexion Umkehr zur **Innenrotation** — fehlt im Text | niedrig |
-| M. trapezius, Pars descendens | „unterstützt HWS-Bewegungen" (pauschal) | einseitig Lateralflexion gleiche Seite + Rotation zur Gegenseite, beidseitig Extension HWS | niedrig |
-| M. tensor fasciae latae | `joints` nennt Art. genus, der Text keine Kniefunktion | stabilisiert das Knie in Streckstellung über den Tractus | niedrig |
-| M. psoas minor | „stabilisiert die LWS in Streckstellung" | meist: schwache Flexion der LWS, spannt die Fascia iliaca | niedrig |
+| Muskel | Vorher | Jetzt |
+|---|---|---|
+| M. semimembranosus | zieht den Meniscus **lateralis** nach dorsal | Meniscus **medialis** |
+| M. abductor digiti minimi (Hand) | unterstützt die MCP-Extension | Flexion im Grundgelenk, Extension in PIP/DIP (`joints` + PIP, DIP) |
+| M. sternocleidomastoideus | beidseitig Inklination | beidseitig Reklination des Kopfes + Flexion der HWS (`joints` + HWS) |
+| Mm. lumbricales (Fuß) | Adduktion zur zweiten Achse, keine IP-Extension | Flexion MTP, Extension IP, Adduktion zur Großzehe |
+| M. gluteus maximus | „laterale" Anteile abduzieren | kraniale abduzieren, kaudale adduzieren |
+| M. extensor carpi ulnaris | Suchfilter ohne Dorsalextension | Filter nachgetragen (der Text nannte sie schon) |
 
-**Datenfelder, nicht Text:**
+⚠️ **Die V1-Quelle trägt noch die alten Texte** (sie lag nicht vor). Wird sie wieder
+gebraucht: dort ebenfalls korrigieren. Ein `migrate:data` aus der unkorrigierten Quelle lässt
+`lehrbuch-korrekturen.test.ts` fallen — genau dafür steht er da.
+
+**Noch offen** (schwächere Punkte, nicht bestätigt — Einschätzung der KI, bitte im Buch nachschlagen):
+
+| Muskel | Steht im Text / in den Daten | Lehrbuch (Vorschlag) |
+|---|---|---|
+| M. piriformis | „bei 90° Hüftbeugung zusätzlich Abduktor" | Außenrotation + Abduktion; ab ca. 60° Flexion Umkehr zur **Innenrotation** — fehlt im Text |
+| M. trapezius, Pars descendens | „unterstützt HWS-Bewegungen" (pauschal) | einseitig Lateralflexion gleiche Seite + Rotation zur Gegenseite, beidseitig Extension HWS |
+| M. tensor fasciae latae | `joints` nennt Art. genus, der Text keine Kniefunktion | stabilisiert das Knie in Streckstellung über den Tractus |
+| M. psoas minor | „stabilisiert die LWS in Streckstellung" | meist: schwache Flexion der LWS, spannt die Fascia iliaca |
+
+**Datenfelder, noch offen:**
 - `joints` ohne **Art. subtalaris** bei M. gastrocnemius und M. soleus — die Supination, die ihr Text nennt, geschieht im USG.
 - `joints` ohne das Gelenk, das der Text nennt: M. levator scapulae (HWS), M. geniohyoideus (Kiefergelenk), M. psoas minor (LWS), M. quadratus lumborum (Becken).
 - M. pronator quadratus steht unter `Art. cubiti`, wirkt aber nur im **distalen** Radioulnargelenk (zur Art. cubiti gehört nur das proximale).
-- Filter `functions`: **M. extensor carpi ulnaris** fehlt „Dorsalextension" — die Suche nach Dorsalextension findet ihn nicht.
 - Kein Handlungsbedarf: 8 Unterarmmuskeln führen `Art. cubiti`, ihr Text nennt dort keine Funktion (sie überqueren den Ellenbogen, wirken dort kaum). Der Bericht listet sie trotzdem.
 
 ## Braucht dich (Deploy / Betrieb)

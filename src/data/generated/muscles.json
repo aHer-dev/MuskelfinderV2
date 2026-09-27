@@ -1561,6 +1561,7 @@
     "origin": "Epicondylus lateralis humeri, Lig. collaterale radiale, Margo posterior ulnae",
     "insertion": "Basis Os metacarpale V",
     "functions": [
+      "dorsalextension",
       "ulnarabduktion"
     ],
     "functionDescription": "Dorsalextension und Ulnarabduktion im Handgelenk",
@@ -2217,15 +2218,18 @@
     "region": "upper",
     "subregion": "Hand & Finger",
     "joints": [
-      "MCP"
+      "MCP",
+      "PIP",
+      "DIP"
     ],
     "origin": "Os pisiforme",
     "insertion": "Basis der Grundphalanx des V. Fingers, ulnares Sesambein",
     "functions": [
       "ulnarabduktion",
-      "extension"
+      "mcp-flexion",
+      "ip-extension"
     ],
-    "functionDescription": "Abduktion des kleinen Fingers; unterstützt die MCP-Extension",
+    "functionDescription": "Abduktion des kleinen Fingers; beugt ihn im Grundgelenk (MCP) und streckt ihn in Mittel- und Endgelenk (PIP, DIP)",
     "innervation": "N. ulnaris",
     "segments": "C8, Th1",
     "clinicalNote": "Ulnarisparese",
@@ -2248,7 +2252,7 @@
     "easy": {
       "origin": "Os pisiforme",
       "insertion": "Basis der Grundphalanx des V. Fingers, ulnares Sesambein",
-      "functionDescription": "Abduktion des kleinen Fingers; unterstützt die MCP-Extension",
+      "functionDescription": "Abduktion des kleinen Fingers; beugt ihn im Grundgelenk (MCP) und streckt ihn in Mittel- und Endgelenk (PIP, DIP)",
       "innervation": "N. ulnaris",
       "segments": "C8, Th1"
     }
@@ -2678,9 +2682,10 @@
     "functions": [
       "extension",
       "aussenrotation",
-      "abduktion"
+      "abduktion",
+      "adduktion"
     ],
-    "functionDescription": "Hauptextensor des Hüftgelenks; dreht den Oberschenkel nach außen; die lateralen Anteile wirken zusätzlich als Abduktoren und spannen den Tractus iliotibialis",
+    "functionDescription": "Hauptextensor des Hüftgelenks; dreht den Oberschenkel nach außen; die kranialen Anteile abduzieren und spannen den Tractus iliotibialis, die kaudalen Anteile adduzieren",
     "innervation": "N. gluteus inferior",
     "segments": "L5, S1, S2",
     "clinicalNote": "Insuffizienz führt zu positivem Trendelenburg-Zeichen; spielt eine wichtige Rolle beim Treppensteigen, Aufstehen und beim Hingleiten ins Hohlkreuz",
@@ -2712,7 +2717,7 @@
     "easy": {
       "origin": "Tiefer Teil: Ala ossis ilii (Facies glutealis), Lig. sacrotuberale\nOberflächlicher Teil: Fascia thoracolumbalis, Crista iliaca, SIPS, dorsale Fläche des Sacrums, Os coccygis",
       "insertion": "Tractus iliotibialis\nTuberositas glutealis femoris",
-      "functionDescription": "Hauptextensor des Hüftgelenks; dreht den Oberschenkel nach außen; die lateralen Anteile wirken zusätzlich als Abduktoren und spannen den Tractus iliotibialis",
+      "functionDescription": "Hauptextensor des Hüftgelenks; dreht den Oberschenkel nach außen; die kranialen Anteile abduzieren und spannen den Tractus iliotibialis, die kaudalen Anteile adduzieren",
       "innervation": "N. gluteus inferior",
       "segments": "L5, S1, S2"
     }
@@ -3619,7 +3624,7 @@
       "knieflexion",
       "knie-innenrotation"
     ],
-    "functionDescription": "Streckt die Hüfte (Extension in der Art. coxae) und beugt das Knie (Flexion in der Art. genus); bei gebeugtem Knie Innenrotation des Unterschenkels; zieht den Meniscus lateralis nach dorsal",
+    "functionDescription": "Streckt die Hüfte (Extension in der Art. coxae) und beugt das Knie (Flexion in der Art. genus); bei gebeugtem Knie Innenrotation des Unterschenkels; zieht den Meniscus medialis nach dorsal",
     "innervation": "N. tibialis",
     "segments": "L5, S1, S2",
     "clinicalNote": "Wie Semitendinosus ischiokrural gefährdet; die semimembranosus-Sehne kann eine Baker-Zyste unterhalten, wenn sie bei Kniepathologien mechanisch reizt",
@@ -3660,7 +3665,7 @@
     "easy": {
       "origin": "Tuber ischiadicum",
       "insertion": "Condylus medialis tibiae\nLig. popliteum obliquum",
-      "functionDescription": "Streckt die Hüfte (Extension in der Art. coxae) und beugt das Knie (Flexion in der Art. genus); bei gebeugtem Knie Innenrotation des Unterschenkels; zieht den Meniscus lateralis nach dorsal",
+      "functionDescription": "Streckt die Hüfte (Extension in der Art. coxae) und beugt das Knie (Flexion in der Art. genus); bei gebeugtem Knie Innenrotation des Unterschenkels; zieht den Meniscus medialis nach dorsal",
       "innervation": "N. tibialis",
       "segments": "L5, S1, S2"
     }
@@ -4704,14 +4709,14 @@
     "region": "lower",
     "subregion": "Fuß & Sprunggelenk",
     "joints": [
-      "MTP Zehen II–V"
+      "MTP und IP Zehen II–V"
     ],
     "origin": "Sehnen des M. flexor digitorum longus",
     "insertion": "Zehen II–V, Basen der proximalen Phalangen (medial)",
     "functions": [
-      "zeh-ii-v-flexion-der-mtp-gelenke-zeh-iii-v-adduktion-zeh-ii-abduktion"
+      "zeh-ii-v-flexion-der-mtp-extension-der-ip-gelenke-adduktion"
     ],
-    "functionDescription": "Beugen die MTP-Gelenke II–V; die Mm. lumbricales III–V adduzieren ihre Zehen zur zweiten Achse hin; Zehe II kann abgespreizt werden",
+    "functionDescription": "Beugen die Grundgelenke (MTP) der Zehen II–V und strecken ihre Mittel- und Endgelenke (IP); adduzieren die Zehen II–V zur Großzehe hin",
     "innervation": "N. tibialis (N. plantaris medialis und lateralis)",
     "segments": "",
     "clinicalNote": "Beim Spreizfuß und bei Krallenzehen geschwächt; Ausfälle der Lumbrikalfunktion begünstigen Hyperextension in MTP und Flexion in IP (Krallenzehe)",
@@ -4735,7 +4740,7 @@
     "easy": {
       "origin": "Sehnen des M. flexor digitorum longus",
       "insertion": "Zehen II–V, Basen der proximalen Phalangen (medial)",
-      "functionDescription": "Beugen die MTP-Gelenke II–V; die Mm. lumbricales III–V adduzieren ihre Zehen zur zweiten Achse hin; Zehe II kann abgespreizt werden",
+      "functionDescription": "Beugen die Grundgelenke (MTP) der Zehen II–V und strecken ihre Mittel- und Endgelenke (IP); adduzieren die Zehen II–V zur Großzehe hin",
       "innervation": "N. tibialis (N. plantaris medialis und lateralis)",
       "segments": ""
     }
@@ -6118,16 +6123,18 @@
     "region": "head",
     "subregion": "Halsmuskulatur",
     "joints": [
-      "Kopfgelenke"
+      "Kopfgelenke",
+      "Halswirbelsäule"
     ],
     "origin": "Caput sternale: Manubrium sterni; Caput claviculare: Mediales Klavikuladrittel",
     "insertion": "Proc. mastoideus; Linea nuchalis superior (lateraler Anteil)",
     "functions": [
       "rotation-kontralateral",
       "lateralflexion-ipsilateral",
-      "inklination-bilateral"
+      "reklination-bilateral",
+      "flexion-der-hws"
     ],
-    "functionDescription": "Beidseitig zieht der M. sternocleidomastoideus den Kopf in Inklination (Nickbewegung); einseitig rotiert er den Kopf zur Gegenseite und neigt ihn zur gleichen Seite. Er ist zudem ein wichtiger Atemhilfsmuskel bei forcierter Inspiration.",
+    "functionDescription": "Beidseitig neigt der M. sternocleidomastoideus den Kopf nach hinten (Reklination) und beugt die Halswirbelsäule, sodass der Kopf nach vorn geschoben wird; einseitig rotiert er den Kopf zur Gegenseite und neigt ihn zur gleichen Seite. Er ist zudem ein wichtiger Atemhilfsmuskel bei forcierter Inspiration.",
     "innervation": "N. accessorius (XI), Plexus cervicalis C2–C3",
     "segments": "C2–C3",
     "clinicalNote": "Der M. sternocleidomastoideus ist klinisch bedeutsam beim muskulären Schiefhals (Torticollis); er wird außerdem als Atemhilfsmuskel bei obstruktiver Lungenerkrankung aktiviert und ist ein wichtiges Leitgebilde für Halsoperationen.",
@@ -6143,7 +6150,7 @@
     "easy": {
       "origin": "Caput sternale: Manubrium sterni | Caput claviculare: Mediales Klavikuladrittel",
       "insertion": "Proc. mastoideus | Linea nuchalis superior (lateraler Anteil)",
-      "functionDescription": "Beidseitig zieht der M. sternocleidomastoideus den Kopf in Inklination (Nickbewegung); einseitig rotiert er den Kopf zur Gegenseite und neigt ihn zur gleichen Seite. Er ist zudem ein wichtiger Atemhilfsmuskel bei forcierter Inspiration.",
+      "functionDescription": "Beidseitig neigt der M. sternocleidomastoideus den Kopf nach hinten (Reklination) und beugt die Halswirbelsäule, sodass der Kopf nach vorn geschoben wird; einseitig rotiert er den Kopf zur Gegenseite und neigt ihn zur gleichen Seite. Er ist zudem ein wichtiger Atemhilfsmuskel bei forcierter Inspiration.",
       "innervation": "N. accessorius (XI), Plexus cervicalis C2–C3",
       "segments": "C2–C3"
     }

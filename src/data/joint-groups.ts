@@ -164,7 +164,6 @@ export const JOINT_GROUP_DEFS: readonly JointGroupDef[] = [
       'MTP und proximale IP Zehen II–V',
       'MTP Zehen III–V',
       'MTP Zehen II–IV',
-      'MTP Zehen II–V',
     ],
     subregions: ['Fuß & Sprunggelenk'],
   },
