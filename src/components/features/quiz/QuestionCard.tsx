@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { explainWrongAnswer } from '../../../data/explain';
 import type { QuizPhase, QuizQuestion } from '../../../types';
 import { Icon } from '../../ui/Icon';
+import { ImageLightbox } from '../../ui/ImageLightbox';
 import { ExplainSheet } from './ExplainSheet';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'] as const;
@@ -29,6 +30,12 @@ interface QuestionCardProps {
   /** Die Frage endete, weil die Zeit ablief (Etappe 11) — nicht durch eine falsche Wahl. */
   timedOut?: boolean;
   onAnswer: (optionId: string) => void;
+  /**
+   * Meldet, ob das Frage-Bild gerade formatfuellend offen ist. Das Quiz haelt daran die
+   * Uhr an: Genauer hinsehen soll keine Sekunden kosten — sonst misst der Zeitdruck die
+   * Bildschirmgroesse mit. Die Pruefung (`ExamPage`) hat keine Uhr und laesst das weg.
+   */
+  onVollansicht?: (offen: boolean) => void;
 }
 
 /** Eine MC-Frage mit vier Optionen; nach der Antwort werden richtig/falsch markiert. */
@@ -38,6 +45,7 @@ export function QuestionCard({
   selectedId,
   timedOut = false,
   onAnswer,
+  onVollansicht,
 }: QuestionCardProps) {
   const revealed = phase !== 'answering';
   const imageOptions = question.options.some((o) => o.imageUrl);
@@ -49,6 +57,16 @@ export function QuestionCard({
   // neuen Frage zurück auf die erste Option.
   const [roving, setRoving] = useState(0);
   const [explaining, setExplaining] = useState(false);
+  const [vollansicht, setVollansicht] = useState(false);
+
+  /* Nur aus Ereignishandlern gerufen — nie aus einem Effekt. Solange die Vollansicht
+     offen ist, kann die Frage nicht wechseln: „Weiter" liegt hinter dem Kasten, der
+     Fokus ist darin gefangen, die Zifferntasten sind gesperrt (QuizPage) und die Uhr
+     steht. Darum braucht es hier kein Zuruecksetzen beim Fragewechsel. */
+  const zeigeVollansicht = (offen: boolean) => {
+    setVollansicht(offen);
+    onVollansicht?.(offen);
+  };
   useEffect(() => {
     setRoving(0);
     setExplaining(false);
@@ -79,15 +97,34 @@ export function QuestionCard({
 
       {question.imageUrl ? (
         <div className="quiz-card__media">
-          <img
-            src={assetUrl(question.imageUrl)}
-            alt="Anatomie-Ansicht zum Erraten"
-            loading="lazy"
-            decoding="async"
-          />
+          <button
+            type="button"
+            className="bild-lupe"
+            aria-label="Bild groß anzeigen"
+            onClick={() => zeigeVollansicht(true)}
+          >
+            <img
+              src={assetUrl(question.imageUrl)}
+              alt="Anatomie-Ansicht zum Erraten"
+              loading="lazy"
+              decoding="async"
+            />
+            <span className="bild-lupe__zeichen" aria-hidden="true">
+              <Icon name="icSearch" size={17} />
+            </span>
+          </button>
         </div>
       ) : (
         <p className="quiz-card__prompt">{question.prompt}</p>
+      )}
+
+      {question.imageUrl && (
+        <ImageLightbox
+          open={vollansicht}
+          src={assetUrl(question.imageUrl)}
+          alt="Anatomie-Ansicht zum Erraten"
+          onClose={() => zeigeVollansicht(false)}
+        />
       )}
 
       <div

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import type { Muscle } from '../../../types';
+import { BildNachweis } from '../../ui/BildNachweis';
 import { Icon } from '../../ui/Icon';
+import { ImageLightbox } from '../../ui/ImageLightbox';
 import { MusclePlaceholder } from './MusclePlaceholder';
 
 function assetUrl(url: string): string {
@@ -10,6 +12,7 @@ function assetUrl(url: string): string {
 /** Bild-„Fenster" mit Ansichts-Umschaltung und sichtbarer Attribution (CC BY 4.0 Pflicht). */
 export function ImageViewer({ muscle }: { muscle: Muscle }) {
   const [index, setIndex] = useState(0);
+  const [vollansicht, setVollansicht] = useState(false);
   const { images, nameLatin: alt } = muscle;
 
   // 47 von 150 Muskeln haben kein Bild. Die Luecke soll absichtlich aussehen, nicht kaputt (8f).
@@ -34,13 +37,25 @@ export function ImageViewer({ muscle }: { muscle: Muscle }) {
             <Icon name="icArrowL" size={22} />
           </button>
         )}
-        <img
-          src={assetUrl(current.url)}
-          alt={`${alt} — ${current.view}`}
-          loading="lazy"
-          decoding="async"
-          className="image-viewer__img"
-        />
+        {/* Die Pfeile liegen absolut UEBER dem Bild und fangen ihre Klicks selbst ab —
+            wer blaettern will, loest keine Vollansicht aus. */}
+        <button
+          type="button"
+          className="bild-lupe"
+          aria-label={`${alt} — ${current.view} groß anzeigen`}
+          onClick={() => setVollansicht(true)}
+        >
+          <img
+            src={assetUrl(current.url)}
+            alt={`${alt} — ${current.view}`}
+            loading="lazy"
+            decoding="async"
+            className="image-viewer__img"
+          />
+          <span className="bild-lupe__zeichen" aria-hidden="true">
+            <Icon name="icSearch" size={17} />
+          </span>
+        </button>
         {images.length > 1 && (
           <button
             type="button"
@@ -82,16 +97,21 @@ export function ImageViewer({ muscle }: { muscle: Muscle }) {
           )}
         </span>
         <span className="image-viewer__attribution">
-          {current.attribution} ·{' '}
-          {current.licenseUrl ? (
-            <a href={current.licenseUrl} target="_blank" rel="noreferrer noopener">
-              {current.license}
-            </a>
-          ) : (
-            current.license
-          )}
+          <BildNachweis bild={current} />
         </span>
       </figcaption>
+
+      <ImageLightbox
+        open={vollansicht}
+        src={assetUrl(current.url)}
+        alt={`${alt} — ${current.view}`}
+        caption={
+          <>
+            {alt} — {current.view} · <BildNachweis bild={current} />
+          </>
+        }
+        onClose={() => setVollansicht(false)}
+      />
     </figure>
   );
 }

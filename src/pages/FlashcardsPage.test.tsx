@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { act, render, screen, fireEvent, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { FlashcardsPage } from './FlashcardsPage'
 import { useProgressStore } from '../store/useProgressStore'
@@ -116,5 +116,106 @@ describe('„Unsicher" wird sichtbar zurückgestellt', () => {
     }
     expect(screen.getByRole('heading', { name: /Sitzung geschafft/i })).toBeInTheDocument()
     expect(screen.getByText('zurückgestellt')).toBeInTheDocument()
+  })
+})
+
+/* ── Bild groß auf der Lernkarte (Etappe 14a) ──
+   Die Vollansicht kam zur Lernsitzung — und mit ihr drei Wege, die Karte HINTER dem
+   offenen Bild zu bewerten: die Ziffern, die Leertaste und das Wischen. Das Quiz hatte
+   seinen Tastenriegel schon, die Lernsitzung nicht. Jede der drei Prüfungen unten ist
+   gegengetestet: Riegel entfernt ⇒ sie fällt. */
+describe('Bild groß auf der Lernkarte', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    useProgressStore.getState().clearProgress()
+    useSessionStore.getState().exit()
+  })
+
+  function starte(...namen: string[]) {
+    useProgressStore.getState().addCards(namen)
+    renderPage()
+    fireEvent.click(screen.getByRole('button', { name: /Lernen starten/i }))
+  }
+
+  function oeffneVollansicht() {
+    fireEvent.click(screen.getByRole('button', { name: 'Mit Bild anzeigen' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Bild groß anzeigen' }))
+    return screen.getByRole('dialog')
+  }
+
+  const taste = (init: KeyboardEventInit) =>
+    act(() => {
+      window.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, ...init }))
+    })
+
+  it('ein Tipp auf das Bild öffnet die Vollansicht — mit Bildnachweis (CC BY 4.0)', () => {
+    starte('M. deltoideus')
+    const dialog = oeffneVollansicht()
+
+    expect(dialog).toHaveAttribute('aria-modal', 'true')
+    expect(within(dialog).getByRole('img')).toHaveAttribute('alt', 'M. deltoideus — Ventral')
+    expect(within(dialog).getByRole('link', { name: 'CC BY 4.0' })).toHaveAttribute(
+      'href',
+      'https://creativecommons.org/licenses/by/4.0/',
+    )
+  })
+
+  it('Vollansicht offen: eine Ziffer bewertet die Karte dahinter NICHT — nach dem Schließen wieder', () => {
+    starte('M. deltoideus')
+    fireEvent.click(screen.getByRole('button', { name: /Karte aufdecken/i }))
+    oeffneVollansicht()
+
+    taste({ key: '3' })
+    expect(useSessionStore.getState().reviewed).toBe(0)
+    expect(useProgressStore.getState().getCardState('M. deltoideus')?.fach).toBe(1)
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+
+    fireEvent.keyDown(document, { key: 'Escape' })
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    taste({ key: '3' })
+    expect(useProgressStore.getState().getCardState('M. deltoideus')?.fach).toBe(2)
+  })
+
+  it('Vollansicht offen: die Leertaste deckt die Karte NICHT auf', () => {
+    starte('M. deltoideus')
+    oeffneVollansicht()
+
+    taste({ key: ' ', code: 'Space' })
+    fireEvent.keyDown(document, { key: 'Escape' })
+    expect(screen.queryByRole('group', { name: /Karte bewerten/i })).not.toBeInTheDocument()
+  })
+
+  it('Wischen über das große Bild bewertet die Karte NICHT', () => {
+    starte('M. deltoideus')
+    fireEvent.click(screen.getByRole('button', { name: /Karte aufdecken/i }))
+    const dialog = oeffneVollansicht()
+
+    /* Die Vollansicht liegt per Portal im body, ihre Touch-Ereignisse erreichen aber den
+       Sitzungs-Container (React-Baum, nicht DOM-Baum) — genau das macht den Riegel nötig. */
+    const bild = within(dialog).getByRole('img')
+    fireEvent.touchStart(bild, { touches: [{ clientX: 0 }] })
+    fireEvent.touchEnd(bild, { changedTouches: [{ clientX: 200 }] })
+
+    expect(useSessionStore.getState().reviewed).toBe(0)
+  })
+
+  it('Freitext-Stufe (Fach 7): weder das Bild noch die Vollansicht verraten den Namen', () => {
+    useProgressStore.getState().addCards(['M. deltoideus'])
+    useProgressStore.setState((s) => ({
+      flashcards: {
+        ...s.flashcards,
+        cards: { ...s.flashcards.cards, 'M. deltoideus': { ...s.flashcards.cards['M. deltoideus'], fach: 7 } },
+      },
+    }))
+    renderPage()
+    fireEvent.click(screen.getByRole('button', { name: /Lernen starten/i }))
+    expect(screen.getByRole('textbox', { name: /Lateinischer Name/i })).toBeInTheDocument()
+
+    const dialog = oeffneVollansicht()
+    expect(dialog.getAttribute('aria-label')).not.toMatch(/deltoideus/i)
+    expect(dialog.textContent).not.toMatch(/deltoideus/i)
+    for (const bild of screen.getAllByRole('img', { hidden: true })) {
+      expect(bild.getAttribute('alt') ?? '').not.toMatch(/deltoideus/i)
+    }
   })
 })

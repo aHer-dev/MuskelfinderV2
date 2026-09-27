@@ -181,12 +181,15 @@
   color: var(--media-fg);
 }
 
+/* Kein `aspect-ratio` mehr auf der Buehne: Das Mass sitzt am Bild (siehe
+   `.image-viewer__img` unten und die lange Begruendung in quiz.css). Die Buehne ist
+   damit genau so hoch wie das Bild — Pfeile und Kennzeichnung liegen weiter absolut
+   darueber. */
 .image-viewer__stage {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  aspect-ratio: 4 / 3;
 }
 
 .image-viewer__badge {
@@ -204,13 +207,18 @@
 }
 
 .image-viewer__img {
-  max-width: 100%;
-  max-height: 100%;
+  width: 100%;
+  aspect-ratio: 4 / 3;
   object-fit: contain;
 }
 
 .image-viewer__nav {
   position: absolute;
+  /* MUSS gesetzt sein, seit das Bild in einem Lupen-Knopf steckt (2026-08-20): Der Knopf
+     ist `position: relative` und steht im Quelltext NACH dem Zurueck-Pfeil. Ohne eigene
+     Ebene malt der Browser den spaeteren positionierten Kasten obendrauf — der Pfeil waere
+     verdeckt und nicht mehr klickbar. */
+  z-index: 1;
   top: 50%;
   transform: translateY(-50%);
   display: inline-flex;

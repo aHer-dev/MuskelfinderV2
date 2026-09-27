@@ -6,6 +6,73 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+- **Bild groß auch auf der Lernkarte** (Etappe 14a, 2026-09-27,
+  `src/pages/FlashcardsPage.tsx`, `src/hooks/tastatur.ts`, `src/components/ui/BildNachweis.tsx`).
+
+  Das Bild über der Lernkarte öffnet jetzt dieselbe Vollansicht wie im Quiz und auf der
+  Muskelseite, mit Bildnachweis (CC BY 4.0), der auf der Lernkarte bisher ganz fehlte.
+  Auf der Freitext-Stufe (Fach 7) nennen weder `alt` noch Dialogname den Muskel: Der Name
+  ist dort die gesuchte Antwort.
+
+  **Die Vollansicht darf die Sitzung nicht im Rücken bedienen.** Die Lernsitzung hatte nur
+  den Eingabefeld-Riegel, nicht den Dialog-Riegel des Quiz. Eine Ziffer hätte die Karte
+  hinter dem offenen Bild bewertet, die Leertaste sie aufgedeckt, und ein Wischen über das
+  große Bild (Portal-Ereignisse blubbern durch den React-Baum) sie bewertet. Beide Riegel
+  stehen jetzt einmal in `hooks/tastatur.ts`; Quiz und Lernsitzung teilen sie.
+
+  **Prüfungen:** `check:wege` Station 4b (Ziffer bei offener Vollansicht bewertet nicht),
+  `check:oberflaeche` misst die Vollansicht jetzt auch in der Lernsitzung. Dabei korrigiert:
+  Station 4 behauptete „Taste [F] deckt auf" und „Taste [1] bewertet", maß aber nur, ob
+  Knöpfe bzw. eine Karte sichtbar sind; beide messen jetzt Bewertungsleiste und Zähler.
+
+- **Bild groß anschauen — im Quiz und auf der Muskelseite** (2026-08-20,
+  `src/components/ui/ImageLightbox.tsx`, `src/hooks/useDialogVerhalten.ts`,
+  `src/components/features/quiz/QuestionCard.tsx`,
+  `src/components/features/detail/ImageViewer.tsx`, `src/hooks/useQuizGame.ts`).
+
+  Der Rahmen zeigt vom 600 × 800 großen Muskelbild nur einen Bruchteil: **360 px breit
+  auf dem Desktop, 183 px auf einem 390-px-Handy** — weniger als ein Drittel der
+  vorhandenen Bildfläche, weil ein Hochformat in einem 4/3-Querrahmen zwangsläufig über
+  die Höhe begrenzt wird. Wer daran einen Ansatz erkennen soll, sieht ihn dort nicht.
+  Ein Tipp oder Klick legt das Bild jetzt formatfüllend über die Seite.
+
+  **Nie größer als die Quelle.** Das Bild bekommt in der Vollansicht nur Obergrenzen
+  (`max-width: 92vw`, `max-height: calc(100dvh - 8rem)`), keine `width`/`height` — ein
+  `<img>` wächst von sich aus nie über sein Eigenmaß hinaus. Die Ansicht ist damit
+  höchstens 600 × 800 und erfindet keine Schärfe dazu, die das Bild nicht hat.
+  Und bewusst **keine Prozentmaße gegen `aspect-ratio`**: Genau diese Bauform hat
+  darunter 40 % jedes Bildes abgeschnitten (siehe „Fixed").
+
+  **Die Uhr hält an, solange das Bild groß ist.** Zeitdruck soll das Abrufen messen,
+  nicht die Bildschirmgröße — wer auf einem kleinen Gerät hinsehen muss, darf dafür
+  keine Sekunden zahlen. Die Uhr rechnet gegen einen Zeitstempel, ein bloßes Anhalten des
+  Intervalls hätte also nur so ausgesehen und die Frage beim Schließen schlagartig
+  ablaufen lassen; `pausiereUhr` merkt sich die **Restzeit** und setzt beim Weiterlaufen
+  eine neue Deadline. Das ist zugleich ein Schritt weiter bei **WCAG 2.2.1**: Das
+  Zeitlimit war bisher abschaltbar, jetzt ist es an der Stelle, an der es weh tut, auch
+  anhaltbar. Die Anzeige sagt „Zeit angehalten", damit die Pause nicht wie ein Fehler
+  aussieht.
+
+  **Es ist ein echter Knopf**, kein Klick-Handler am Bild: nur so per Tastatur
+  erreichbar, nur so als Aktion angekündigt, nur so mit Enter/Leertaste bedienbar.
+  Esc, Fokus-Falle, Scroll-Sperre und Fokus-Rückgabe kommen aus dem neuen
+  `useDialogVerhalten` — dieselben vier Regeln, die vorher nur in `Sheet.tsx` standen
+  und beim zweiten Kasten Zeile für Zeile daneben gestanden hätten. Auf der Detailseite
+  trägt die Vollansicht die **CC-BY-Attribution** mit, weil sie sich über die
+  `figcaption` legt, die den Nachweis sonst zeigt.
+
+  Der Tastatur-Riegel im Quiz fragt jetzt nach `[role="dialog"][aria-modal="true"]`
+  statt nach der Sheet-Klasse. Sonst hätte eine Ziffer die Frage beantwortet, während
+  man das Bild anschaut — man sieht hin und hat verloren, ohne es zu merken.
+
+  Geprüft: Station 8 in `check:oberflaeche` öffnet die Ansicht auf beiden Seiten und in
+  beiden Breiten und misst, dass sie **wirklich vergrößert** (eine Lupe, die nichts
+  vergrößert, ist die stillste aller Regressionen), dass sie **auf den Bildschirm
+  passt**, dass **axe im offenen Zustand** hell wie dunkel sauber ist und dass **Esc**
+  wieder herausführt. Dazu 10 Unit-Tests. Gegengeprobt: Pause ausgebaut → der
+  Uhr-Test fällt; Riegel zurück auf die Sheet-Klasse → der Tasten-Test fällt.
+
 ### Changed
 - **Abhängigkeiten auf den Stand vom 2026-08-14 gebracht** (`package-lock.json`).
 
@@ -49,6 +116,55 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   Prüfungen mit, und die brechen einen Build, der `tsc -b` enthält.
 
 ### Fixed
+- **Lizenzlink in der Bild-Vollansicht nur 3:1 Kontrast** (2026-09-27,
+  `src/components/ui/image-lightbox.css`).
+
+  Der Link im Bildnachweis erbte das globale `a { color: var(--accent-on-surface) }`, das
+  für helle Flächen gewählt ist; auf der immer dunklen Bühne sind das 3,02:1 (WCAG AA
+  verlangt 4,5:1). Die Regel des Bildbetrachters erreicht die Vollansicht nicht, weil sie
+  per Portal im `body` liegt. Aufgefallen durch die neue Lernkarten-Station in
+  `check:oberflaeche` (axe, Vollansicht hell); jetzt `.lightbox__caption a` mit `--media-fg`.
+
+- **Safari schnitt 40 % jedes Quizbildes ab** (2026-08-20,
+  `src/components/features/quiz/quiz.css`, `src/components/features/detail/detail.css`,
+  `scripts/check-surface.mjs`).
+
+  Aus dem Unterricht gemeldet: Ein Schüler sah im Quiz „Bild → Muskel" auf einem MacBook
+  nur einen Ausschnitt des Muskelbildes — oben und unten fehlte je etwa ein Fünftel. Auf
+  jedem anderen Gerät war dasselbe Bild vollständig.
+
+  Kaputt war eine **Bauform**, keine Zahl. Der Rahmen bezog seine Höhe aus
+  `aspect-ratio: 4 / 3`, das Bild wurde darin allein von `max-height: 100%` gehalten.
+  Prozente brauchen eine Bezugshöhe — und WebKit betrachtet eine Höhe, die selbst erst
+  aus `aspect-ratio` entsteht, an dieser Stelle als unbestimmt. Die Begrenzung fällt
+  damit weg, das Bild rendert in voller Höhe, und `overflow: hidden` am Rahmen schneidet
+  den Überstand ab; `align-items: center` verteilt den Verlust auf oben und unten.
+  Nachgemessen bei 640 px Kartenbreite: Rahmen 640 × 480, Bild 600 × 800 — **320 px zu
+  hoch, 40 % weg**. Chromium klemmt korrekt auf 360 × 480 und zeigt 100 %.
+
+  Verschärft hat es der Bestand: **Alle 150 Muskelbilder sind 600 × 800 (hoch), jeder
+  Rahmen ist 4 / 3 (quer).** Das Bild musste also zwingend über die Höhe begrenzt werden
+  — genau über die Achse, deren Begrenzung ausfiel.
+
+  Behoben, indem das Maß ans **Bild** wandert statt an den Rahmen: `width: 100%` +
+  eigenes `aspect-ratio` + `object-fit: contain`. Da ist kein Prozentwert aufzulösen,
+  also gibt es nichts abzuschneiden. Dieselbe Form trugen die Antwortbilder
+  (`.quiz-option__img`) schon immer — sie waren nie betroffen. Zweite Fundstelle mit
+  identischer Bauform: der Bildbetrachter auf der Detailseite (`.image-viewer__stage` /
+  `.image-viewer__img`); dort war jedes Muskelbild ebenso beschnitten.
+
+  **Warum es niemand gesehen hat** — und das ist die Lehre: `check:oberflaeche` und
+  `check:wege` fahren **nur Chromium**. Eine Engine-abhängige Layoutregel kann dort
+  strukturell nicht auffallen, egal wie viele Routen, Themes und Viewports dazukommen.
+  Dieselbe Klasse wie „nur 1440 × 900" (2026-07-26) und „Handy ohne Seed" (2026-07-27):
+  **Eine Prüfung findet nur, was sie überhaupt betreten kann.**
+
+  Station 8 in `check:oberflaeche` misst deshalb nicht die Geometrie — die ist in
+  Chromium immer heil —, sondern die **Bauform**: prozentuale Höhe am Bild plus
+  `aspect-ratio` an einem Vorfahren bis zum beschneidenden Kasten. Geprüft auf
+  Detailseite und im laufenden Bild-Quiz, auf Desktop und 390 px. Die Geometrieprüfung
+  (Bild höher/breiter als sein Rahmen) läuft als allgemeines Netz mit.
+
 - **Der M. flexor pollicis longus entsprang am falschen Knochen** (2026-08-18,
   `src/data/generated/muscles.json`).
 

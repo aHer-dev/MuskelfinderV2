@@ -49,6 +49,13 @@ export interface QuizGameApi {
   timedOut: boolean;
   answer: (optionId: string) => void;
   next: () => void;
+  /**
+   * Haelt die Uhr an (`true`) und laesst sie mit der GLEICHEN Restzeit weiterlaufen
+   * (`false`). Gebraucht, solange das Frage-Bild formatfuellend offen ist: Genauer
+   * hinsehen darf keine Sekunden kosten, sonst misst der Zeitdruck mit, wie gross der
+   * Bildschirm ist. Ohne Uhr (`timeLimit === 0`) tut der Aufruf nichts.
+   */
+  pausiereUhr: (an: boolean) => void;
   result: QuizResult | null;
 }
 
@@ -161,6 +168,26 @@ export function useQuizGame(
        den Index aus dem Render, in dem die deadline gesetzt wurde. */
   }, [deadline, index]);
 
+  /* Pause heisst hier: deadline weg (das Intervall raeumt sich selbst ab) und die
+     RESTZEIT merken. Weiter heisst: neue deadline aus der gemerkten Restzeit. Ein
+     blosses „Intervall anhalten" reichte nicht — die Uhr rechnet gegen einen
+     Zeitstempel, der waehrend der Pause weiterlaeuft; sie waere beim Oeffnen der
+     Vollansicht scheinbar stehengeblieben und danach schlagartig abgelaufen. */
+  const restMs = useRef<number | null>(null);
+
+  function pausiereUhr(an: boolean) {
+    if (timeLimit === 0 || phase !== 'answering') return;
+    if (an) {
+      if (deadline === null) return;
+      restMs.current = Math.max(0, deadline - Date.now());
+      setDeadline(null);
+    } else {
+      if (restMs.current === null) return;
+      setDeadline(Date.now() + restMs.current);
+      restMs.current = null;
+    }
+  }
+
   function answer(optionId: string) {
     if (phase !== 'answering' || !question) return;
     if (gewertet.current === index) return;
@@ -234,6 +261,7 @@ export function useQuizGame(
     timedOut,
     answer,
     next,
+    pausiereUhr,
     result,
   };
 }
