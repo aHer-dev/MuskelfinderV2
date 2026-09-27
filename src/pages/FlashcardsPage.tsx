@@ -9,9 +9,12 @@ import { LeitnerBoxes } from '../components/features/flashcards/LeitnerBoxes';
 import { RatingBar } from '../components/features/flashcards/RatingBar';
 import { TypeCard } from '../components/features/flashcards/TypeCard';
 import { useFlashcardSession } from '../hooks/useFlashcardSession';
+import { modalOffen, tasteGehoertDerSeite } from '../hooks/tastatur';
 import { buildQueue, readSessionHandoff, type RegionScope } from '../store/useSessionStore';
 import { useProgressStore } from '../store/useProgressStore';
+import { BildNachweis } from '../components/ui/BildNachweis';
 import { Icon } from '../components/ui/Icon';
+import { ImageLightbox } from '../components/ui/ImageLightbox';
 import { EmptyState } from '../components/ui/EmptyState';
 import type { CardRating, Muscle, RegionId } from '../types';
 import '../components/features/flashcards/flashcards.css';
@@ -26,6 +29,16 @@ const FILTERS: Array<{ value: CardFilter; label: string }> = [
   { value: 'unseen', label: 'Nur nie gesehene' },
   { value: 'difficult', label: 'Nur schwierig markierte' },
 ];
+
+/**
+ * Bildbeschreibung auf der Lernkarte. Auf der Freitext-Stufe (Fach 7) ist der Name die
+ * gesuchte Antwort — stuende er im `alt`, laese ihn der Screenreader vor, bevor man
+ * getippt hat, und die Vollansicht truege ihn als Dialognamen.
+ */
+function bildBeschreibung(muscle: Muscle, produce: boolean): string {
+  const ansicht = muscle.images[0]?.view ?? '';
+  return produce ? `Anatomie-Ansicht — ${ansicht}` : `${muscle.nameLatin} — ${ansicht}`;
+}
 
 function assetUrl(url: string): string {
   return `${import.meta.env.BASE_URL}${url}`;
@@ -332,6 +345,7 @@ function CardScreen({
   const toggleDifficult = useProgressStore((s) => s.toggleDifficult);
   const [revealed, setRevealed] = useState(false);
   const [showImage, setShowImage] = useState(false);
+  const [vollansicht, setVollansicht] = useState(false);
   const touchStartX = useRef<number | null>(null);
 
   const current = session.current;
@@ -347,6 +361,7 @@ function CardScreen({
   useEffect(() => {
     setRevealed(false);
     setShowImage(false);
+    setVollansicht(false);
   }, [current]);
 
   /* `useCallback` mit der herausgezogenen Store-Aktion. `useFlashcardSession` baut bei
@@ -365,19 +380,11 @@ function CardScreen({
   // Tastatursteuerung (V1): Space=Aufdecken, 1/2/3=Falsch/Unsicher/Richtig, F=Schwierig.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      /* Auf der Freitext-Stufe ist die Tastatur die Eingabe: „F" schreibt ein F,
-         es markiert nicht die Karte, und Leertaste deckt nichts auf.
-         `textarea` und `select` gehören mit dazu — sonst bewertet ein Tastendruck die
-         Karte, während jemand in einem Feld schreibt oder eine Liste aufklappt. */
-      const ziel = e.target;
-      if (
-        ziel instanceof HTMLInputElement ||
-        ziel instanceof HTMLTextAreaElement ||
-        ziel instanceof HTMLSelectElement ||
-        (ziel instanceof HTMLElement && ziel.isContentEditable)
-      ) {
-        return;
-      }
+      /* Zwei Riegel (`hooks/tastatur.ts`): Auf der Freitext-Stufe ist die Tastatur die
+         Eingabe — „F" schreibt ein F, es markiert nicht die Karte. Und solange das Bild
+         gross offen ist, bewertet keine Ziffer die Karte dahinter; die Leertaste gehoert
+         dann dem Schliessen-Knopf, nicht dem Aufdecken. */
+      if (!tasteGehoertDerSeite(e)) return;
 
       if (e.key === 'f' || e.key === 'F') {
         if (current) toggleDifficult(current);
@@ -407,12 +414,15 @@ function CardScreen({
        `rate` ist über `useCallback` an die Store-Aktion gebunden und damit stabil. */
   }, [revealed, produce, current, rate, toggleDifficult]);
 
-  // Swipe (mobil): nach Aufdecken → rechts = Richtig, links = Falsch.
+  /* Swipe (mobil): nach Aufdecken → rechts = Richtig, links = Falsch.
+     Die Vollansicht liegt per Portal im `body` — React reicht ihre Touch-Ereignisse aber
+     trotzdem an DIESEN Container weiter (Portale blubbern durch den React-Baum, nicht
+     durch den DOM). Ohne den Riegel bewertete ein Wischen ueber das grosse Bild die Karte. */
   const onTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
   };
   const onTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current == null || !revealed) {
+    if (touchStartX.current == null || !revealed || modalOffen()) {
       touchStartX.current = null;
       return;
     }
@@ -484,14 +494,36 @@ function CardScreen({
                 {showImage ? 'Bild verbergen' : 'Mit Bild anzeigen'}
               </button>
               {showImage && (
-                <img
-                  className="fc-image"
-                  src={assetUrl(muscle.images[0].url)}
-                  alt={`${muscle.nameLatin} — ${muscle.images[0].view}`}
-                  loading="lazy"
-                  decoding="async"
-                />
+                <button
+                  type="button"
+                  className="bild-lupe fc-image-lupe"
+                  aria-label="Bild groß anzeigen"
+                  onClick={() => setVollansicht(true)}
+                >
+                  <img
+                    className="fc-image"
+                    src={assetUrl(muscle.images[0].url)}
+                    alt={bildBeschreibung(muscle, produce)}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span className="bild-lupe__zeichen" aria-hidden="true">
+                    <Icon name="icSearch" size={17} />
+                  </span>
+                </button>
               )}
+              {/* Nachweis ohne Muskelnamen: Auf der Freitext-Stufe ist der Name die Antwort. */}
+              <ImageLightbox
+                open={vollansicht}
+                src={assetUrl(muscle.images[0].url)}
+                alt={bildBeschreibung(muscle, produce)}
+                caption={
+                  <>
+                    {muscle.images[0].view} · <BildNachweis bild={muscle.images[0]} />
+                  </>
+                }
+                onClose={() => setVollansicht(false)}
+              />
             </div>
           )}
 

@@ -274,12 +274,65 @@ await withApp(async ({ page, goto, errors }) => {
   pruefe(await page.locator('.fc, .flashcard').first().isVisible().catch(() => false), 'Karte ist sichtbar');
   const actionsBox = await page.locator('.fc-actions').boundingBox().catch(() => null);
   pruefe(actionsBox !== null && actionsBox.y < 900, `Aktionen liegen im Sichtfeld (y=${actionsBox ? Math.round(actionsBox.y) : '?'} < 900)`);
-  await page.keyboard.press('f');
+
+  /* Bis 2026-09-16 stand hier „Taste [F] deckt auf" — F MARKIERT aber nur als schwierig,
+     aufgedeckt wird mit der Leertaste. Die Pruefung fiel trotzdem nie: Sie zaehlte Knoepfe in
+     `.fc-actions`, und „Karte aufdecken" IST ein Knopf dort. Ebenso „Taste [1] bewertet": gezaehlt
+     wurde nur, ob eine Karte sichtbar ist — das ist sie auch, wenn die Taste nichts tut. Beide
+     messen jetzt, was sie behaupten: die Bewertungsleiste und den Zaehler. */
+  const bewertet = async () => {
+    const text = await page.locator('.flashcards__progress-label').first().innerText().catch(() => '');
+    return Number.parseInt(text, 10);
+  };
+  const bewertungsleiste = () => page.getByRole('group', { name: 'Karte bewerten' }).count();
+  const dialogOffen = () => page.locator('[role="dialog"][aria-modal="true"]').count();
+
+  pruefe((await bewertungsleiste()) === 0, 'Vor dem Aufdecken keine Bewertungsleiste');
+  await page.keyboard.press('Space');
   await page.waitForTimeout(400);
-  pruefe(await page.locator('.fc-actions button').count() > 0, 'Taste [F] deckt auf, Bewertungsknoepfe da');
+  pruefe((await bewertungsleiste()) === 1, 'Taste [Space] deckt auf, Bewertungsleiste da');
+  const vorher = await bewertet();
   await page.keyboard.press('1');
   await page.waitForTimeout(400);
-  pruefe(await page.locator('.fc, .flashcard').first().isVisible().catch(() => false), 'Taste [1] bewertet, naechste Karte kommt');
+  pruefe((await bewertet()) === vorher + 1, `Taste [1] bewertet (Zaehler ${vorher} → ${await bewertet()})`);
+
+  /* ---- STATION 4b: Bild gross auf der Lernkarte (Etappe 14a) ----
+     Die Vollansicht darf die Sitzung nicht im Ruecken bedienen: Solange sie offen ist, bewertet
+     keine Ziffer die Karte dahinter. Nicht jeder Muskel hat ein Bild (47 von 150) — darum wird
+     bis zur ersten Karte MIT Bild weiterbewertet. */
+  L('\n4b. Lernkarte — Bild gross, und die Ziffern schweigen solange');
+  let mitBild = false;
+  for (let i = 0; i < 12; i++) {
+    if (await page.getByRole('button', { name: 'Mit Bild anzeigen' }).count()) { mitBild = true; break; }
+    await page.keyboard.press('Space');
+    await page.waitForTimeout(200);
+    await page.keyboard.press('3');
+    await page.waitForTimeout(300);
+  }
+  pruefe(mitBild, 'Eine Karte mit Bild ist erreicht');
+  if (mitBild) {
+    /* Erst aufdecken, DANN das Bild zeigen: Laege der Fokus schon auf „Mit Bild anzeigen",
+       wuerde die Leertaste diesen Knopf druecken und das Bild wieder verbergen. */
+    await page.keyboard.press('Space');
+    await page.waitForTimeout(300);
+    await page.getByRole('button', { name: 'Mit Bild anzeigen' }).click();
+    await page.getByRole('button', { name: 'Bild groß anzeigen' }).click();
+    await page.waitForTimeout(300);
+    pruefe((await dialogOffen()) === 1, 'Tipp auf das Bild oeffnet die Vollansicht');
+
+    const vorBild = await bewertet();
+    await page.keyboard.press('3');
+    await page.waitForTimeout(300);
+    pruefe((await bewertet()) === vorBild && (await dialogOffen()) === 1,
+      'Vollansicht offen: Taste [3] bewertet die Karte dahinter NICHT');
+
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(300);
+    pruefe((await dialogOffen()) === 0, 'Esc schliesst die Vollansicht');
+    await page.keyboard.press('3');
+    await page.waitForTimeout(300);
+    pruefe((await bewertet()) === vorBild + 1, 'Danach bewertet Taste [3] wieder');
+  }
 
   /* ---- STATION 5: Jeder Quizmodus — 4 Optionen, keine Doppel, Rueckmeldung ---- */
   L('\n5. Jeder Quizmodus — vier Optionen, keine Doppelung, Rueckmeldung');

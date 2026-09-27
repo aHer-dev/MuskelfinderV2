@@ -19,6 +19,7 @@ import {
 } from '../data/quiz';
 import { quizPoolSize } from '../data/quiz-pool';
 import { useQuizGame } from '../hooks/useQuizGame';
+import { tasteGehoertDerSeite } from '../hooks/tastatur';
 import { useProgressStore } from '../store/useProgressStore';
 import type { QuizMode, RegionId } from '../types';
 import '../components/features/quiz/quiz.css';
@@ -112,22 +113,11 @@ function QuizGame({
      Zwei Riegel: Eingabefelder behalten ihre Tasten (dieselbe Regel wie in 8a), und ein
      offener modaler Kasten schluckt sie — sonst blättert Enter die Frage weg, während man
      die Erklärung liest, oder eine Ziffer beantwortet die Frage, während man das Bild groß
-     anschaut. Der Riegel fragt nach `[role="dialog"][aria-modal="true"]` und nicht nach der
-     Sheet-Klasse: Sonst hätte die Bild-Vollansicht (2026-08-20) still daran vorbeigegriffen,
-     und jeder weitere Kasten müsste hier nachgetragen werden — was niemand tut. */
+     anschaut. Beide Riegel stehen in `hooks/tastatur.ts` — die Lernsitzung braucht dieselben. */
   const { phase, question, answer: antworte, next: weiter } = game;
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      const ziel = e.target;
-      if (
-        ziel instanceof HTMLInputElement ||
-        ziel instanceof HTMLTextAreaElement ||
-        ziel instanceof HTMLSelectElement ||
-        (ziel instanceof HTMLElement && ziel.isContentEditable)
-      ) {
-        return;
-      }
-      if (document.querySelector('[role="dialog"][aria-modal="true"]')) return;
+      if (!tasteGehoertDerSeite(e)) return;
 
       if (phase === 'answering' && question) {
         const nummer = Number(e.key);

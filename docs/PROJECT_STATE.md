@@ -5,7 +5,7 @@
 > docs/migration-plan.md (abgeschlossen), docs/architecture.md und den ADRs.
 
 ## Stand
-- Datum: 2026-08-20
+- Datum: 2026-09-27
 - Branch: `main` · **Remote: github.com/aHer-dev/MuskelfinderV2** · Live: `aher-dev.github.io/MuskelfinderV2/`
 - Status: **Migration abgeschlossen (Etappen 0–6, `v1.0`). ETAPPE 7 KOMPLETT (7a–7f). ETAPPE 8
   KOMPLETT (8a–8f). ETAPPE 9 KOMPLETT (9a–9d). ETAPPE 10 KOMPLETT (10a–10f). ETAPPE 11 (Zeitdruck) — code-seitig. Offen ist
@@ -17,8 +17,8 @@
   niemandem mehr ungefragt Karten in den Kasten.**
   **ALLE VIER BRUECKEN STEHEN:** B1 (7d), B2 (7e), B3 (**9c**), B4 (8c).
   Statustafel: `docs/produkt-plan.md`. Offene Punkte: `docs/todo.md`.
-- Gate gruen: **`npm run verify`** — **782 Tests in 69 Dateien** (Stand 2026-08-14, nach der
-  Abhaengigkeits-Aktualisierung). Hier stand bis dahin „692" — die Zahl war seit den Handy- und
+- Gate gruen: **`npm run verify`** — **801 Tests in 71 Dateien** (Stand 2026-09-27, Etappe 14a;
+  2026-08-14 nach der Abhaengigkeits-Aktualisierung waren es 782 in 69). Hier stand bis dahin „692" — die Zahl war seit den Handy- und
   PWA-Commits vom 2026-07-28 nicht nachgezogen worden.
   ⚠️ **Nach einem Playwright-Minorsprung faellt `check:oberflaeche` mit „Executable doesn't exist"**,
   bevor eine einzige Behauptung geprueft wird: Die Browser-Binaries haengen an der Paketversion, nicht
@@ -59,6 +59,12 @@ ausfuehrenden Rechner nicht existieren; der Fehler faellt nicht im Build, sonder
   soll das Abrufen messen, nicht die Bildschirmgroesse. Esc/Fokus-Falle/Scroll-Sperre/
   Fokus-Rueckgabe liegen jetzt in `hooks/useDialogVerhalten` — `Sheet` und die Vollansicht
   teilen sie sich, statt sie zweimal zu fuehren.
+- **Bild gross auch auf der Lernkarte (Etappe 14a, 2026-09-27).** Dieselbe Vollansicht wie
+  Quiz/Detailseite, mit Bildnachweis. Tastenkuerzel von Quiz UND Lernsitzung gehen durch
+  `hooks/tastatur.ts` (`tasteGehoertDerSeite`): Eingabefelder behalten ihre Tasten, ein offener
+  `[role="dialog"][aria-modal="true"]` schluckt sie. **Wer eine Seite mit Kuerzeln baut, nimmt
+  diesen Riegel, statt ihn nachzubauen** — zwei Kopien liefen schon einmal auseinander.
+  Fach 7 (Freitext): Bild-`alt` und Dialog nennen den Muskel NICHT.
 - ⚠️ **BEIDE BROWSER-PRUEFUNGEN FAHREN NUR CHROMIUM** (`scripts/checks/harness.mjs`:
   `import { chromium } from 'playwright'` — es gibt keinen zweiten Aufruf). **Safari/WebKit
   ist ungeprueft**, und genau darin sass der Fehler vom 2026-08-20: Im Quiz „Bild → Muskel"

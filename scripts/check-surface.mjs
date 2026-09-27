@@ -788,8 +788,40 @@ await withApp(async ({ page, goto, runAxe, setTheme }) => {
       for (const b of await page.evaluate(messeBedienung)) record(woQ, b.art, b.detail);
       await pruefeVollansicht(woQ, '.quiz-card__media img');
     }
+
+    /* (c) Lernsitzung (Etappe 14a) — das Bild ueber der Karte. Es hat keinen Rahmen wie
+       Quiz und Detailseite, darum sitzt der Lupen-Knopf hier eng am Bild; genau das kann
+       Fokus-Ring und Groessenverhaeltnis anders ausgehen lassen. Nicht jede Karte hat ein
+       Bild (47 von 150): Es wird bis zur ersten MIT Bild weiterbewertet. */
+    const woL = `/lernkarten Sitzung @${vp.label}`;
+    await goto('/lernkarten');
+    const lernen = page.getByRole('button', { name: /Lernen starten/i }).first();
+    if (!(await lernen.count())) {
+      record(woL, 'INHALT', 'kein „Lernen starten" — Seed nicht angekommen oder nichts fällig?');
+      continue;
+    }
+    await lernen.click();
+    await page.waitForTimeout(500);
+    const zeigeBild = page.getByRole('button', { name: 'Mit Bild anzeigen' });
+    for (let i = 0; i < 12 && !(await zeigeBild.count()); i++) {
+      await page.keyboard.press('Space');
+      await page.waitForTimeout(150);
+      await page.keyboard.press('3');
+      await page.waitForTimeout(250);
+    }
+    if (!(await zeigeBild.count())) {
+      record(woL, 'INHALT', 'in 12 Karten keine mit Bild — Seed oder Knopftext geaendert?');
+      continue;
+    }
+    await zeigeBild.click();
+    await bildGeladen('.fc-image');
+    for (const b of await page.evaluate(messeBilder)) record(woL, b.art, b.detail);
+    for (const b of await page.evaluate(messeBedienung)) record(woL, b.art, b.detail);
+    await pruefeVollansicht(woL, '.fc-image');
   }
-});
+}, { seed: SEED });
+/* ^ Seit 14a MIT Seed: Die Lernsitzung braucht Karten. Detailseite und Quiz („Alle
+   Muskeln") haengen nicht am Kasten, ihre Messung aendert sich dadurch nicht. */
 
 /* ---- Urteil ---- */
 const L = (s = '') => process.stdout.write(s + '\n');

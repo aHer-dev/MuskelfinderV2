@@ -62,6 +62,15 @@
   color: var(--media-fg);
 }
 
+/* Der Lizenzlink im Nachweis. Ohne diese Regel greift das globale `a` mit
+   `--accent-on-surface` — gewaehlt fuer helle Flaechen, auf dieser immer dunklen Buehne
+   nur 3:1. Die Regel am Bildbetrachter (`.image-viewer__attribution a`) erreicht die
+   Vollansicht nicht: Sie liegt per Portal im `body`. */
+.lightbox__caption a {
+  color: var(--media-fg);
+  text-decoration: underline;
+}
+
 .lightbox__close {
   position: absolute;
   top: var(--spacing-sm);

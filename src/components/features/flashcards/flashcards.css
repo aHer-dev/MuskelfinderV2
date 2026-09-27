@@ -505,7 +505,16 @@
   background: var(--surface-hover);
   color: var(--text-primary);
 }
+/* Der Lupen-Knopf (`.bild-lupe`, image-lightbox.css) fuellt im Quiz und auf der Detailseite
+   seinen Rahmen aus. Hier gibt es keinen Rahmen: Er muss so breit sein wie das Bild, sonst
+   saesse das Lupenzeichen am rechten Rand der Seite statt in der Ecke des Bildes. */
+.fc-image-lupe {
+  width: auto;
+  max-width: 100%;
+  border-radius: var(--radius-md);
+}
 .fc-image {
+  display: block;
   max-width: 100%;
   max-height: 260px;
   border-radius: var(--radius-md);

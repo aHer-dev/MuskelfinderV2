@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { Muscle } from '../../../types';
+import { BildNachweis } from '../../ui/BildNachweis';
 import { Icon } from '../../ui/Icon';
 import { ImageLightbox } from '../../ui/ImageLightbox';
 import { MusclePlaceholder } from './MusclePlaceholder';
@@ -96,14 +97,7 @@ export function ImageViewer({ muscle }: { muscle: Muscle }) {
           )}
         </span>
         <span className="image-viewer__attribution">
-          {current.attribution} ·{' '}
-          {current.licenseUrl ? (
-            <a href={current.licenseUrl} target="_blank" rel="noreferrer noopener">
-              {current.license}
-            </a>
-          ) : (
-            current.license
-          )}
+          <BildNachweis bild={current} />
         </span>
       </figcaption>
 
@@ -113,14 +107,7 @@ export function ImageViewer({ muscle }: { muscle: Muscle }) {
         alt={`${alt} — ${current.view}`}
         caption={
           <>
-            {alt} — {current.view} · {current.attribution} ·{' '}
-            {current.licenseUrl ? (
-              <a href={current.licenseUrl} target="_blank" rel="noreferrer noopener">
-                {current.license}
-              </a>
-            ) : (
-              current.license
-            )}
+            {alt} — {current.view} · <BildNachweis bild={current} />
           </>
         }
         onClose={() => setVollansicht(false)}

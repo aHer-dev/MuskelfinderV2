@@ -7,6 +7,25 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- **Bild groß auch auf der Lernkarte** (Etappe 14a, 2026-09-27,
+  `src/pages/FlashcardsPage.tsx`, `src/hooks/tastatur.ts`, `src/components/ui/BildNachweis.tsx`).
+
+  Das Bild über der Lernkarte öffnet jetzt dieselbe Vollansicht wie im Quiz und auf der
+  Muskelseite, mit Bildnachweis (CC BY 4.0), der auf der Lernkarte bisher ganz fehlte.
+  Auf der Freitext-Stufe (Fach 7) nennen weder `alt` noch Dialogname den Muskel: Der Name
+  ist dort die gesuchte Antwort.
+
+  **Die Vollansicht darf die Sitzung nicht im Rücken bedienen.** Die Lernsitzung hatte nur
+  den Eingabefeld-Riegel, nicht den Dialog-Riegel des Quiz. Eine Ziffer hätte die Karte
+  hinter dem offenen Bild bewertet, die Leertaste sie aufgedeckt, und ein Wischen über das
+  große Bild (Portal-Ereignisse blubbern durch den React-Baum) sie bewertet. Beide Riegel
+  stehen jetzt einmal in `hooks/tastatur.ts`; Quiz und Lernsitzung teilen sie.
+
+  **Prüfungen:** `check:wege` Station 4b (Ziffer bei offener Vollansicht bewertet nicht),
+  `check:oberflaeche` misst die Vollansicht jetzt auch in der Lernsitzung. Dabei korrigiert:
+  Station 4 behauptete „Taste [F] deckt auf" und „Taste [1] bewertet", maß aber nur, ob
+  Knöpfe bzw. eine Karte sichtbar sind; beide messen jetzt Bewertungsleiste und Zähler.
+
 - **Bild groß anschauen — im Quiz und auf der Muskelseite** (2026-08-20,
   `src/components/ui/ImageLightbox.tsx`, `src/hooks/useDialogVerhalten.ts`,
   `src/components/features/quiz/QuestionCard.tsx`,
@@ -97,6 +116,15 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   Prüfungen mit, und die brechen einen Build, der `tsc -b` enthält.
 
 ### Fixed
+- **Lizenzlink in der Bild-Vollansicht nur 3:1 Kontrast** (2026-09-27,
+  `src/components/ui/image-lightbox.css`).
+
+  Der Link im Bildnachweis erbte das globale `a { color: var(--accent-on-surface) }`, das
+  für helle Flächen gewählt ist; auf der immer dunklen Bühne sind das 3,02:1 (WCAG AA
+  verlangt 4,5:1). Die Regel des Bildbetrachters erreicht die Vollansicht nicht, weil sie
+  per Portal im `body` liegt. Aufgefallen durch die neue Lernkarten-Station in
+  `check:oberflaeche` (axe, Vollansicht hell); jetzt `.lightbox__caption a` mit `--media-fg`.
+
 - **Safari schnitt 40 % jedes Quizbildes ab** (2026-08-20,
   `src/components/features/quiz/quiz.css`, `src/components/features/detail/detail.css`,
   `scripts/check-surface.mjs`).
