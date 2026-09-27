@@ -162,8 +162,12 @@
 
 /* Die Funktions-Kurzform hat eine Zeile je Gelenk, getrennt durch Zeilenumbruch
    (`funktionKurzText`). Ohne `pre-line` liefen sie zu einem Satz zusammen. */
+/* Und lange Gelenknamen („Karpometakarpalgelenk", „(Radioulnargelenke)") trennen, statt
+   bei doppelter Systemschrift auf 320 px die Seite quer zu druecken (check:oberflaeche). */
 .datalist__text {
   white-space: pre-line;
+  hyphens: auto;
+  overflow-wrap: anywhere;
 }
 
 /* Legende zum Stern am Label: nachgetragener, noch nicht gegengelesener Wert.

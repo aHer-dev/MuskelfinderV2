@@ -65,7 +65,10 @@ ausfuehrenden Rechner nicht existieren; der Fehler faellt nicht im Build, sonder
   Lernkarte und Quiz-Vergleichskarte folgen ohne eigene Regel; beide Funktionsmodi des Quiz
   stellen sie ebenfalls. **Alle 150 sind KI-Entwuerfe, status „ungeprueft" (Stern).**
   Offen: fachliche Abnahme durch den Projektinhaber ueber `funktion-kurzform.csv`, danach
-  Status auf „geprueft". **Die Kurzform verdichtet nur den Funktionstext — wer sie ergaenzt,
+  Status auf „geprueft". Eine KI-Durchsicht (2026-09-27) fand 9 Stellen, an denen der
+  FUNKTIONSTEXT vom Lehrbuch abweicht (u. a. M. semimembranosus: Meniscus lateralis statt
+  medialis) — Liste in `docs/todo.md`; korrigiert wird in der V1-Quelle, die auf dem
+  Entwicklungsrechner derzeit fehlt. **Die Kurzform verdichtet nur den Funktionstext — wer sie ergaenzt,
   ergaenzt erst den Text.** Ein Muskel mit Funktionstext ohne Kurzform laesst den Loader werfen
   (sonst verriete eine lange Quiz-Option durch ihre Laenge die Antwort).
 - **Bild gross auch auf der Lernkarte (Etappe 14a, 2026-09-27).** Dieselbe Vollansicht wie

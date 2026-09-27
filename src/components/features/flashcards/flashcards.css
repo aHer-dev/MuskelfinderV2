@@ -241,8 +241,10 @@
 .flashcard__facts dd {
   margin: 0;
   line-height: 1.45;
-  /* Funktions-Kurzform: eine Zeile je Gelenk (Etappe 15). */
+  /* Funktions-Kurzform: eine Zeile je Gelenk (Etappe 15); lange Gelenknamen trennen. */
   white-space: pre-line;
+  hyphens: auto;
+  overflow-wrap: anywhere;
 }
 
 /* Stern-Legende: erscheint nur, wenn oben ein Wert die Marke traegt. Zurueckhaltend

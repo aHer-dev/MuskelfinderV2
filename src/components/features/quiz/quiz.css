@@ -219,6 +219,8 @@
   color: var(--text-primary);
   /* „Funktion → Muskel": Die Kurzform hat eine Zeile je Gelenk (Etappe 15). */
   white-space: pre-line;
+  hyphens: auto;
+  overflow-wrap: anywhere;
 }
 
 /* Das Bildmass haengt am BILD, nicht am Rahmen — und ohne Prozentwert.
@@ -318,8 +320,11 @@
 
 .quiz-option__label {
   min-width: 0;
-  /* „Muskel → Funktion": eine Zeile je Gelenk in der Kurzform (Etappe 15). */
+  /* „Muskel → Funktion": eine Zeile je Gelenk in der Kurzform (Etappe 15); lange
+     Gelenknamen trennen statt die Option zu sprengen. */
   white-space: pre-line;
+  hyphens: auto;
+  overflow-wrap: anywhere;
 }
 
 .quiz-option:not(:disabled):hover {
@@ -572,6 +577,8 @@
 .explain-row dd {
   margin: 0;
   white-space: pre-line;
+  hyphens: auto;
+  overflow-wrap: anywhere;
   font-family: var(--font-ui);
   font-size: 0.9rem;
   line-height: 1.45;

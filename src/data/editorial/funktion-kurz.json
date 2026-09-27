@@ -13,6 +13,14 @@
             "Depression",
             "Protraktion"
           ]
+        },
+        {
+          "orte": [
+            "Atmung"
+          ],
+          "bewegungen": [
+            "Atemhilfsmuskel (Inspiration, bei fixiertem Schultergürtel)"
+          ]
         }
       ]
     },
@@ -303,7 +311,14 @@
             "Art. cubiti"
           ],
           "bewegungen": [
-            "Flexion",
+            "Flexion"
+          ]
+        },
+        {
+          "orte": [
+            "Unterarm"
+          ],
+          "bewegungen": [
             "Supination"
           ]
         }

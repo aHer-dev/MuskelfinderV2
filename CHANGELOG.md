@@ -21,7 +21,14 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   Die 150 Kurzformen sind KI-Entwürfe, die **nur den vorhandenen Funktionstext verdichten**,
   und tragen bis zur fachlichen Abnahme den Stern. Prüfbogen: `npm run export:csv` →
   `funktion-kurzform.csv` (Kurzform und Text nebeneinander, dazu 14 Gelenke aus `joints`, zu
-  denen der Text nichts sagt, und 19 Orte außerhalb von `joints`).
+  denen der Text nichts sagt, und 21 Orte außerhalb von `joints`). Eine erste Durchsicht durch
+  die KI fand 9 Stellen, an denen der **Funktionstext** vom Lehrbuch abweicht (z. B.
+  M. semimembranosus: Meniscus lateralis statt medialis) — Liste in `docs/todo.md`.
+
+  Lange Gelenknamen („Karpometakarpalgelenk") drückten bei doppelter Systemschrift auf 320 px
+  die Seite quer; sie trennen jetzt überall, wo die Kurzform steht. `check:oberflaeche` prüft
+  dafür zusätzlich die Muskelseite mit dem längsten Wort der Kurzform — aus den Daten gewählt,
+  sie wandert mit (gegengetestet: ohne Umbruch 369 px auf 320).
 
 - **Bild groß auch auf der Lernkarte** (Etappe 14a, 2026-09-27,
   `src/pages/FlashcardsPage.tsx`, `src/hooks/tastatur.ts`, `src/components/ui/BildNachweis.tsx`).

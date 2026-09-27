@@ -161,6 +161,9 @@ const GELENK_NAMEN: Readonly<Record<string, string>> = {
   CMC: 'Karpometakarpalgelenk (CMC)',
   LWS: 'Lendenwirbelsäule (LWS)',
   Halswirbelsäule: 'Halswirbelsäule (HWS)',
+  /* Kein Etikett aus `joints`, aber der Ort, den die Texte fuer Pronation/Supination nennen.
+     Ohne Zusatz stuende dort ein Koerperteil, wo ueberall sonst ein Gelenk steht. */
+  Unterarm: 'Unterarm (Radioulnargelenke)',
 };
 
 /**

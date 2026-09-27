@@ -15,6 +15,7 @@
 
 import { withApp } from './checks/harness.mjs';
 import { SEED, SEED_CARD_COUNT } from './checks/seed.mjs';
+import { createServer } from 'vite';
 
 /* Alle Routen. Die meisten brauchen einen befuellten Zustand (Seed); die leeren
    Zustaende pruefen wir separat mit frischem Browser. */
@@ -39,6 +40,35 @@ const ROUTES = [
   ['/datenschutz', 'datenschutz'],
   ['/gibtsnicht', '404'],
 ];
+
+/* Die Muskelseite, deren Funktions-Kurzform das LAENGSTE Wort traegt (Etappe 15).
+   „Funktionsbeschreibung" und „(Radioulnargelenke):" haben bei doppelter Systemschrift auf
+   320 px die Detailseite quer gedrueckt — gefunden wurde es nur, weil zufaellig die
+   Bizeps-Seite in ROUTES steht. Ein fest eingetragener Muskel prueft das Wort von heute;
+   hier wird er aus den Daten gewaehlt und wandert mit, wenn sich die Kurzformen aendern.
+   Geladen ueber Vites SSR-Lader, wie in `export-csv.mjs`: dieselbe Anzeige-Regel wie die
+   App (`funktionAnzeige`), keine zweite Deutung der JSON. */
+const LANGES_WORT = await (async () => {
+  const server = await createServer({
+    root: new URL('..', import.meta.url).pathname,
+    server: { middlewareMode: true },
+    appType: 'custom',
+    logLevel: 'warn',
+  });
+  try {
+    const { getMuscles } = await server.ssrLoadModule('/src/data/index.ts');
+    const { funktionAnzeige } = await server.ssrLoadModule('/src/data/funktion-kurz.ts');
+    let best = { id: '', wort: '' };
+    for (const m of getMuscles()) {
+      for (const wort of funktionAnzeige(m).split(/\s+/)) {
+        if (wort.length > best.wort.length) best = { id: m.id, wort };
+      }
+    }
+    return best;
+  } finally {
+    await server.close();
+  }
+})();
 
 /* Hover-Ziele: je Route eine Auswahl der Bedien-/Link-Klassen. */
 const HOVER = [
@@ -342,9 +372,10 @@ await withApp(async ({ page, goto, runAxe }) => {
      `/start` bei 375 px sauber sind und bei 320 px um 28 px ueberlaufen. Der enge
      Schirm UND die doppelte Schrift zusammen sind der schaerfste Fall — genau die
      Kombination, die ein Handy mit vergroesserter Systemschrift erzeugt. */
+  const zoomRouten = [...ROUTES.map(([r]) => r), `/muskel/${LANGES_WORT.id}`];
   for (const vp of HANDY) {
     await page.setViewportSize({ width: vp.width, height: vp.height });
-    for (const [route] of ROUTES) {
+    for (const route of zoomRouten) {
       await goto(route);
       await page.evaluate(() => { document.documentElement.style.fontSize = '32px'; });
       await page.waitForTimeout(250);
