@@ -241,6 +241,8 @@
 .flashcard__facts dd {
   margin: 0;
   line-height: 1.45;
+  /* Funktions-Kurzform: eine Zeile je Gelenk (Etappe 15). */
+  white-space: pre-line;
 }
 
 /* Stern-Legende: erscheint nur, wenn oben ein Wert die Marke traegt. Zurueckhaltend

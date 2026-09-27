@@ -8,6 +8,7 @@
    ========================================================================= */
 
 import { QUIZ_MODE_LABELS, istQuizModus } from './mode-labels';
+import { funktionAnzeige } from './funktion-kurz';
 import type { Muscle, QuizMode, QuizQuestion, RegionId } from '../types';
 
 /** Deterministischer PRNG (mulberry32) — für reproduzierbare Tests. */
@@ -266,7 +267,7 @@ export function eligibleFor(muscles: readonly Muscle[], mode: QuizMode): Muscle[
 function eligible(muscles: readonly Muscle[], mode: QuizMode): Muscle[] {
   const sub = MIXED_SUBMODES[mode]?.[0] ?? mode; // gemischte teilen die Anforderung der Submodi
   if (sub === 'innervation') return muscles.filter((m) => m.innervation.trim() !== '');
-  if (sub === 'muscle-to-function') return muscles.filter((m) => m.functionDescription.trim() !== '');
+  if (sub === 'muscle-to-function') return muscles.filter((m) => funktionAnzeige(m).trim() !== '');
   if (sub === 'image' || sub === 'name-image') return muscles.filter((m) => m.images.length > 0);
   if (sub === 'origin-insertion' || sub === 'insertion-origin') {
     return muscles.filter((m) => m.origin.trim() !== '' && m.insertion.trim() !== '');
@@ -299,10 +300,10 @@ function specFor(muscle: Muscle, mode: QuizMode, all: readonly Muscle[]): Questi
     case 'muscle-to-function':
       return {
         prompt: muscle.nameLatin,
-        correctLabel: muscle.functionDescription,
-        distractorPool: candidates(all, (m) => m.functionDescription),
+        correctLabel: funktionAnzeige(muscle),
+        distractorPool: candidates(all, funktionAnzeige),
         gueltigeAntworten: gueltigeAntworten(
-          all, teilt((m) => m.nameLatin), (m) => m.functionDescription,
+          all, teilt((m) => m.nameLatin), funktionAnzeige,
         ),
       };
     case 'innervation':
@@ -350,11 +351,11 @@ function specFor(muscle: Muscle, mode: QuizMode, all: readonly Muscle[]): Questi
     case 'function-to-muscle':
     default:
       return {
-        prompt: muscle.functionDescription,
+        prompt: funktionAnzeige(muscle),
         correctLabel: muscle.nameLatin,
         distractorPool: candidates(all, (m) => m.nameLatin),
         gueltigeAntworten: gueltigeAntworten(
-          all, teilt((m) => m.functionDescription), (m) => m.nameLatin,
+          all, teilt(funktionAnzeige), (m) => m.nameLatin,
         ),
       };
   }

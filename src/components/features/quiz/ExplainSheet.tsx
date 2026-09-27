@@ -11,6 +11,7 @@ import { regionLabel } from '../../../data/labels';
 import { fachfelder, nichtLeer } from '../../../data/muscle-fields';
 import type { FachfeldKey } from '../../../data/muscle-fields';
 import type { Explanation, ExplainAspect } from '../../../data/explain';
+import { FunktionsBeschreibung } from '../../ui/FunktionsBeschreibung';
 import { Sheet } from '../../ui/Sheet';
 import type { LabeledValue, Muscle } from '../../../types';
 
@@ -41,7 +42,7 @@ const ASPEKT: Partial<Record<FachfeldKey, ExplainAspect>> = {
  */
 function rows(muscle: Muscle): Row[] {
   return [
-    ...fachfelder(muscle).flatMap(({ key, label, value }) => {
+    ...fachfelder(muscle, false, { funktionKurz: muscle.funktionKurz }).flatMap(({ key, label, value }) => {
       const aspect = ASPEKT[key];
       return aspect ? [{ label, value, aspect }] : [];
     }),
@@ -91,6 +92,12 @@ function CompareCard({
             </div>
           ))}
       </dl>
+
+      {/* Im Quiz steht die Kurzform (Etappe 15). Der lange Text bleibt erreichbar —
+          eingeklappt, fuer wen genauer nachlesen will, warum. */}
+      {muscle.funktionKurz?.length ? (
+        <FunktionsBeschreibung text={muscle.functionDescription} />
+      ) : null}
     </article>
   );
 }

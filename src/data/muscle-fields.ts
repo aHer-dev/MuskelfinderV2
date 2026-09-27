@@ -26,6 +26,7 @@
    fallen. `scripts/export-csv.mjs` folgt derselben Reihenfolge in den Spalten.
    ========================================================================= */
 
+import { funktionKurzText } from './funktion-kurz';
 import type { Muscle, MuscleEasyFields } from '../types';
 
 /** Ein Fachfeld: Datenschluessel und deutsches Label, in kanonischer Ordnung. */
@@ -90,6 +91,12 @@ export function nichtLeer<T extends { value: string }>(zeilen: readonly T[]): T[
  * Anzeigen, weil die Regel sonst wieder an zwei Stellen staende — genau die
  * Doppelung, die dieses Modul aufloest.
  *
+ * `funktion` traegt die Kurzform (Etappe 15). Ist sie da, steht SIE unter „Funktion",
+ * nicht der Text — und zwar in beiden Niveaus: Die Kurzform nennt Gelenk und Bewegung,
+ * das ist in „Einfach" nicht schwerer als in „Fachlich". Der Text steht aufklappbar
+ * darunter (`FunktionsBeschreibung`). Ungeprueft → Stern, dieselbe Regel wie bei den
+ * Segmenten.
+ *
  * Leere Werte werden **nicht** gefiltert. Ob ein leeres Feld verschwindet oder
  * als Luecke sichtbar bleibt, entscheidet die Anzeige: `segments` fehlt bei 28
  * von 150 Muskeln, und bei 16 davon ist das fachlich richtig (Hirnnerv).
@@ -97,12 +104,23 @@ export function nichtLeer<T extends { value: string }>(zeilen: readonly T[]): T[
 export function fachfelder(
   quelle: Pick<Muscle, FachfeldKey> | MuscleEasyFields,
   ungepruefteSegmente = false,
+  funktion?: Pick<Muscle, 'funktionKurz' | 'funktionKurzUngeprueft'>,
 ): Fachfeld[] {
-  return FACHFELDER.map(({ key, label }) => ({
-    key,
-    label: key === 'segments' && ungepruefteSegmente ? `${label}${UNGEPRUEFT_MARKE}` : label,
-    value: quelle[key],
-  }));
+  const kurz = funktion?.funktionKurz?.length ? funktion.funktionKurz : undefined;
+  return FACHFELDER.map(({ key, label }) => {
+    if (key === 'functionDescription' && kurz) {
+      return {
+        key,
+        label: funktion?.funktionKurzUngeprueft ? `${label}${UNGEPRUEFT_MARKE}` : label,
+        value: funktionKurzText(kurz),
+      };
+    }
+    return {
+      key,
+      label: key === 'segments' && ungepruefteSegmente ? `${label}${UNGEPRUEFT_MARKE}` : label,
+      value: quelle[key],
+    };
+  });
 }
 
 /**

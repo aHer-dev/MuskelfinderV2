@@ -219,3 +219,45 @@ describe('Bild groß auf der Lernkarte', () => {
     }
   })
 })
+
+/* ── Funktionsbeschreibung auf der Lernkarte (Etappe 15) ──
+   Die Rueckseite zeigt die Kurzform; der Text klappt darunter auf — erst nach dem
+   Aufdecken, und nie auf der Freitext-Stufe: Dort ist der Name die gesuchte Antwort, und
+   31 lange Texte nennen ihn. */
+describe('Funktionsbeschreibung auf der Lernkarte', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    useProgressStore.getState().clearProgress()
+    useSessionStore.getState().exit()
+  })
+
+  const beschreibung = () => screen.queryByText('Funktionsbeschreibung')
+
+  it('erscheint erst nach dem Aufdecken', () => {
+    useProgressStore.getState().addCards(['M. masseter'])
+    renderPage()
+    fireEvent.click(screen.getByRole('button', { name: /Lernen starten/i }))
+    expect(beschreibung()).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /Karte aufdecken/i }))
+    expect(beschreibung()).toBeInTheDocument()
+  })
+
+  it('erscheint nie auf der Freitext-Stufe (Fach 7)', () => {
+    useProgressStore.getState().addCards(['M. masseter'])
+    useProgressStore.setState((s) => ({
+      flashcards: {
+        ...s.flashcards,
+        cards: { ...s.flashcards.cards, 'M. masseter': { ...s.flashcards.cards['M. masseter'], fach: 7 } },
+      },
+    }))
+    renderPage()
+    fireEvent.click(screen.getByRole('button', { name: /Lernen starten/i }))
+    expect(screen.getByRole('textbox', { name: /Lateinischer Name/i })).toBeInTheDocument()
+    expect(beschreibung()).not.toBeInTheDocument()
+    /* Der lange Text beginnt mit „Der M. masseter ist …" — er darf hier nirgends stehen.
+       (Den Namen allgemein zu suchen, faende „Tuberositas masseterica" im Ansatz: Anatomie.) */
+    expect(document.body.textContent).not.toMatch(/Der M\. masseter/)
+  })
+})
+

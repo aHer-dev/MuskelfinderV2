@@ -157,6 +157,37 @@ const segmentNachtrag = (() => {
   }
 })();
 
+/* Funktion in Kurzform (Etappe 15). Die harten Regeln (id unbekannt, Name passt nicht,
+   Muskel ohne Kurzform) prueft schon der Loader — ein Verstoss laesst Build und Tests
+   fallen. Hier steht nur, was ein MENSCH entscheiden muss. */
+const kurzform = (() => {
+  try {
+    const eintraege = read('src/data/editorial/funktion-kurz.json').muskeln ?? {};
+    const text = (e) => e.zeilen.map((z) => `${z.orte.join(' + ')}: ${z.bewegungen.join(' · ')}`).join(' / ');
+    let ungeprueft = 0;
+    const ohneZeile = [];
+    const ausserhalb = [];
+    const nachText = new Map();
+    for (const m of muscles) {
+      const e = eintraege[m.id];
+      if (!e) continue;
+      if (e.status !== 'geprueft') ungeprueft++;
+      const orte = new Set(e.zeilen.flatMap((z) => z.orte));
+      const fehlt = (m.joints ?? []).filter((j) => !orte.has(j));
+      if (fehlt.length) ohneZeile.push(`${m.nameLatin} (${fehlt.join(', ')})`);
+      const fremd = [...orte].filter((o) => !(m.joints ?? []).includes(o));
+      if (fremd.length) ausserhalb.push(`${m.nameLatin} (${fremd.join(', ')})`);
+      const t = text(e);
+      if (!nachText.has(t)) nachText.set(t, []);
+      nachText.get(t).push(m.nameLatin);
+    }
+    const gleich = [...nachText.entries()].filter(([, ms]) => new Set(ms).size > 1);
+    return { anzahl: Object.keys(eintraege).length, ungeprueft, ohneZeile, ausserhalb, gleich };
+  } catch {
+    return null;
+  }
+})();
+
 /* ═══════════════════════════════════════════════════════════════════════
    AUSGABE
    ═══════════════════════════════════════════════════════════════════════ */
@@ -196,6 +227,19 @@ if (segmentNachtrag) {
     L(`  ⚠ ${ungeprueft} Segment-Werte sind UNGEPRUEFT (aus dem Wikipedia-Abgleich, `
       + `Stern auf Karte und Detailseite). Zum Gegenlesen: docs/pruefung/vergleich-wikipedia.csv`);
   }
+}
+
+if (kurzform) {
+  L('\n── FUNKTION IN KURZFORM (Etappe 15) ──');
+  L(`  ${kurzform.anzahl} Kurzformen · ${kurzform.ungeprueft} ungeprueft (Stern auf Karte und Detailseite)`);
+  L(`  Gelenk aus joints ohne Funktionszeile: ${kurzform.ohneZeile.length} — der Text nennt dort keine Funktion`);
+  for (const z of kurzform.ohneZeile.slice(0, 6)) L(`     ${z}`);
+  if (kurzform.ohneZeile.length > 6) L(`     … und ${kurzform.ohneZeile.length - 6} weitere`);
+  L(`  Ort ausserhalb von joints: ${kurzform.ausserhalb.length} — fehlt dort ein Gelenk?`);
+  L(`  Gleiche Kurzform (Quiz „Funktion → Muskel" hat dann mehrere richtige): ${kurzform.gleich.length}`);
+  for (const [t, ms] of kurzform.gleich.slice(0, 6)) L(`     „${t.slice(0, 60)}"  ${ms.join(' · ')}`);
+  if (kurzform.gleich.length > 6) L(`     … und ${kurzform.gleich.length - 6} weitere`);
+  L('  Zum Gegenlesen: npm run export:csv → docs/pruefung/csv/funktion-kurzform.csv');
 }
 
 /* ---- Erzeugte Dateien gehoeren nicht in den Versionsstand -------------- */

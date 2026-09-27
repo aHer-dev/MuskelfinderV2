@@ -1,0 +1,2706 @@
+{
+  "_hinweis": "Funktion in Kurzform (Etappe 15). HANDGEPFLEGT. Schluessel ist die Muskel-id (wie in segments.json), `nameLatin` ist die Gegenprobe. Je Zeile: `orte` = Etiketten aus `joints` (die Anzeige macht daraus den deutschen Gelenknamen) oder ein freier Ort, wenn der Funktionstext einen nennt, der nicht in `joints` steht; leer = der Muskel wirkt nicht auf ein Gelenk. `bewegungen` = kurz, Hauptfunktion zuerst. Die Kurzform VERDICHTET NUR den Funktionstext (`functionDescription`) und behauptet nichts, was dort nicht steht. Die Entwuerfe stammen von der KI (2026-09-27) und tragen status \"ungeprueft\" (Anzeige: Stern am Label). Nach der fachlichen Durchsicht auf \"geprueft\" setzen. Gelenke ohne Funktionszeile und Orte ausserhalb von `joints` listet `npm run check:daten`.",
+  "muskeln": {
+    "pectoralis-minor": {
+      "nameLatin": "M. pectoralis minor",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Schultergürtel"
+          ],
+          "bewegungen": [
+            "Depression",
+            "Protraktion"
+          ]
+        }
+      ]
+    },
+    "serratus-anterior": {
+      "nameLatin": "M. serratus anterior",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Schultergürtel"
+          ],
+          "bewegungen": [
+            "Protraktion",
+            "fixiert die Scapula am Thorax",
+            "Aufwärtsrotation (Pars inferior)"
+          ]
+        }
+      ]
+    },
+    "subclavius": {
+      "nameLatin": "M. subclavius",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Schultergürtel"
+          ],
+          "bewegungen": [
+            "Depression der Clavicula",
+            "stabilisiert die Clavicula"
+          ]
+        }
+      ]
+    },
+    "trapezius-pars-descendens": {
+      "nameLatin": "M. trapezius – Pars descendens",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Schultergürtel"
+          ],
+          "bewegungen": [
+            "Elevation",
+            "Aufwärtsrotation"
+          ]
+        }
+      ]
+    },
+    "trapezius-pars-transversa": {
+      "nameLatin": "M. trapezius – Pars transversa",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Schultergürtel"
+          ],
+          "bewegungen": [
+            "Retraktion"
+          ]
+        }
+      ]
+    },
+    "trapezius-pars-ascendens": {
+      "nameLatin": "M. trapezius – Pars ascendens",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Schultergürtel"
+          ],
+          "bewegungen": [
+            "Depression",
+            "Aufwärtsrotation"
+          ]
+        }
+      ]
+    },
+    "levator-scapulae": {
+      "nameLatin": "M. levator scapulae",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Schultergürtel"
+          ],
+          "bewegungen": [
+            "Elevation",
+            "Abwärtsrotation"
+          ]
+        },
+        {
+          "orte": [
+            "Halswirbelsäule"
+          ],
+          "bewegungen": [
+            "Lateralflexion zur gleichen Seite",
+            "Rotation zur gleichen Seite"
+          ]
+        }
+      ]
+    },
+    "rhomboideus-major": {
+      "nameLatin": "M. rhomboideus major",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Schultergürtel"
+          ],
+          "bewegungen": [
+            "Retraktion",
+            "Elevation (leicht)",
+            "Abwärtsrotation"
+          ]
+        }
+      ]
+    },
+    "rhomboideus-minor": {
+      "nameLatin": "M. rhomboideus minor",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Schultergürtel"
+          ],
+          "bewegungen": [
+            "Retraktion",
+            "Elevation (leicht)",
+            "Abwärtsrotation"
+          ]
+        }
+      ]
+    },
+    "pectoralis-major": {
+      "nameLatin": "M. pectoralis major",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. humeri"
+          ],
+          "bewegungen": [
+            "Adduktion",
+            "Innenrotation",
+            "Flexion oder Extension (je nach Anteil)"
+          ]
+        }
+      ]
+    },
+    "latissimus-dorsi": {
+      "nameLatin": "M. latissimus dorsi",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. humeri"
+          ],
+          "bewegungen": [
+            "Extension",
+            "Adduktion",
+            "Innenrotation"
+          ]
+        }
+      ]
+    },
+    "deltoideus": {
+      "nameLatin": "M. deltoideus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. humeri"
+          ],
+          "bewegungen": [
+            "Abduktion",
+            "Flexion, Extension, Innen- und Außenrotation (je nach Faserzug)"
+          ]
+        }
+      ]
+    },
+    "subscapularis": {
+      "nameLatin": "M. subscapularis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. humeri"
+          ],
+          "bewegungen": [
+            "Innenrotation",
+            "Adduktion"
+          ]
+        }
+      ]
+    },
+    "supraspinatus": {
+      "nameLatin": "M. supraspinatus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. humeri"
+          ],
+          "bewegungen": [
+            "Abduktion (leitet sie ein)",
+            "Außenrotation"
+          ]
+        }
+      ]
+    },
+    "infraspinatus": {
+      "nameLatin": "M. infraspinatus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. humeri"
+          ],
+          "bewegungen": [
+            "Außenrotation",
+            "Abduktion oder Adduktion (je nach Faseranteil)"
+          ]
+        }
+      ]
+    },
+    "teres-minor": {
+      "nameLatin": "M. teres minor",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. humeri"
+          ],
+          "bewegungen": [
+            "Außenrotation",
+            "Adduktion"
+          ]
+        }
+      ]
+    },
+    "teres-major": {
+      "nameLatin": "M. teres major",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. humeri"
+          ],
+          "bewegungen": [
+            "Innenrotation",
+            "Adduktion",
+            "Extension"
+          ]
+        }
+      ]
+    },
+    "coracobrachialis": {
+      "nameLatin": "M. coracobrachialis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. humeri"
+          ],
+          "bewegungen": [
+            "Flexion",
+            "Adduktion"
+          ]
+        }
+      ]
+    },
+    "biceps-brachii": {
+      "nameLatin": "M. biceps brachii",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. humeri"
+          ],
+          "bewegungen": [
+            "Flexion",
+            "Abduktion oder Adduktion (je nach Kopf)"
+          ]
+        },
+        {
+          "orte": [
+            "Art. cubiti"
+          ],
+          "bewegungen": [
+            "Flexion",
+            "Supination"
+          ]
+        }
+      ]
+    },
+    "triceps-brachii-caput-longum": {
+      "nameLatin": "M. triceps brachii – Caput longum",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. cubiti"
+          ],
+          "bewegungen": [
+            "Extension"
+          ]
+        },
+        {
+          "orte": [
+            "Art. humeri"
+          ],
+          "bewegungen": [
+            "Extension",
+            "Adduktion"
+          ]
+        }
+      ]
+    },
+    "triceps-brachii-caput-laterale-und-mediale": {
+      "nameLatin": "M. triceps brachii – Caput laterale und mediale",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. cubiti"
+          ],
+          "bewegungen": [
+            "Extension"
+          ]
+        }
+      ]
+    },
+    "anconeus": {
+      "nameLatin": "M. anconeus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. cubiti"
+          ],
+          "bewegungen": [
+            "Extension",
+            "stabilisiert das Gelenk"
+          ]
+        }
+      ]
+    },
+    "brachialis": {
+      "nameLatin": "M. brachialis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. cubiti"
+          ],
+          "bewegungen": [
+            "Flexion (stärkster Flexor)"
+          ]
+        }
+      ]
+    },
+    "pronator-teres": {
+      "nameLatin": "M. pronator teres",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Unterarm"
+          ],
+          "bewegungen": [
+            "Pronation"
+          ]
+        },
+        {
+          "orte": [
+            "Art. cubiti"
+          ],
+          "bewegungen": [
+            "Flexion"
+          ]
+        }
+      ]
+    },
+    "brachioradialis": {
+      "nameLatin": "M. brachioradialis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. cubiti"
+          ],
+          "bewegungen": [
+            "Flexion"
+          ]
+        },
+        {
+          "orte": [
+            "Unterarm"
+          ],
+          "bewegungen": [
+            "führt in Mittelstellung"
+          ]
+        }
+      ]
+    },
+    "supinator": {
+      "nameLatin": "M. supinator",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Unterarm"
+          ],
+          "bewegungen": [
+            "Supination"
+          ]
+        }
+      ]
+    },
+    "pronator-quadratus": {
+      "nameLatin": "M. pronator quadratus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Unterarm"
+          ],
+          "bewegungen": [
+            "Pronation"
+          ]
+        }
+      ]
+    },
+    "flexor-carpi-radialis": {
+      "nameLatin": "M. flexor carpi radialis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. manus"
+          ],
+          "bewegungen": [
+            "Palmarflexion",
+            "Radialabduktion"
+          ]
+        }
+      ]
+    },
+    "flexor-carpi-ulnaris": {
+      "nameLatin": "M. flexor carpi ulnaris",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. manus"
+          ],
+          "bewegungen": [
+            "Palmarflexion",
+            "Ulnarabduktion"
+          ]
+        }
+      ]
+    },
+    "extensor-carpi-radialis-brevis": {
+      "nameLatin": "M. extensor carpi radialis brevis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. manus"
+          ],
+          "bewegungen": [
+            "Dorsalextension",
+            "Radialabduktion"
+          ]
+        }
+      ]
+    },
+    "extensor-carpi-radialis-longus": {
+      "nameLatin": "M. extensor carpi radialis longus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. manus"
+          ],
+          "bewegungen": [
+            "Dorsalextension",
+            "Radialabduktion"
+          ]
+        }
+      ]
+    },
+    "extensor-carpi-ulnaris": {
+      "nameLatin": "M. extensor carpi ulnaris",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. manus"
+          ],
+          "bewegungen": [
+            "Dorsalextension",
+            "Ulnarabduktion"
+          ]
+        }
+      ]
+    },
+    "palmaris-longus": {
+      "nameLatin": "M. palmaris longus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. manus"
+          ],
+          "bewegungen": [
+            "Palmarflexion"
+          ]
+        }
+      ]
+    },
+    "flexor-digitorum-superficialis": {
+      "nameLatin": "M. flexor digitorum superficialis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. manus"
+          ],
+          "bewegungen": [
+            "Palmarflexion"
+          ]
+        },
+        {
+          "orte": [
+            "MCP",
+            "PIP"
+          ],
+          "bewegungen": [
+            "Flexion (Finger II–V)"
+          ]
+        }
+      ]
+    },
+    "extensor-digitorum": {
+      "nameLatin": "M. extensor digitorum",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. manus"
+          ],
+          "bewegungen": [
+            "Dorsalextension"
+          ]
+        },
+        {
+          "orte": [
+            "MCP",
+            "PIP",
+            "DIP"
+          ],
+          "bewegungen": [
+            "Extension (Finger II–V)"
+          ]
+        }
+      ]
+    },
+    "extensor-digiti-minimi": {
+      "nameLatin": "M. extensor digiti minimi",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "MCP",
+            "PIP",
+            "DIP"
+          ],
+          "bewegungen": [
+            "Extension (Kleinfinger)"
+          ]
+        },
+        {
+          "orte": [
+            "Art. manus"
+          ],
+          "bewegungen": [
+            "Dorsalextension"
+          ]
+        }
+      ]
+    },
+    "flexor-pollicis-longus": {
+      "nameLatin": "M. flexor pollicis longus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Daumensattelgelenk",
+            "MCP",
+            "IP"
+          ],
+          "bewegungen": [
+            "Flexion (Daumen)"
+          ]
+        },
+        {
+          "orte": [
+            "Art. manus"
+          ],
+          "bewegungen": [
+            "Palmarflexion"
+          ]
+        }
+      ]
+    },
+    "flexor-digitorum-profundus": {
+      "nameLatin": "M. flexor digitorum profundus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. manus"
+          ],
+          "bewegungen": [
+            "Palmarflexion"
+          ]
+        },
+        {
+          "orte": [
+            "MCP",
+            "PIP",
+            "DIP"
+          ],
+          "bewegungen": [
+            "Flexion (Finger II–V)"
+          ]
+        }
+      ]
+    },
+    "extensor-indicis": {
+      "nameLatin": "M. extensor indicis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "MCP",
+            "PIP",
+            "DIP"
+          ],
+          "bewegungen": [
+            "Extension (Zeigefinger)"
+          ]
+        },
+        {
+          "orte": [
+            "Art. manus"
+          ],
+          "bewegungen": [
+            "Dorsalextension"
+          ]
+        }
+      ]
+    },
+    "abductor-pollicis-longus": {
+      "nameLatin": "M. abductor pollicis longus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Daumensattelgelenk"
+          ],
+          "bewegungen": [
+            "Abduktion",
+            "Extension"
+          ]
+        },
+        {
+          "orte": [
+            "Art. manus"
+          ],
+          "bewegungen": [
+            "Radialabduktion"
+          ]
+        }
+      ]
+    },
+    "extensor-pollicis-brevis": {
+      "nameLatin": "M. extensor pollicis brevis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "MCP"
+          ],
+          "bewegungen": [
+            "Extension (Daumen)"
+          ]
+        },
+        {
+          "orte": [
+            "Daumensattelgelenk"
+          ],
+          "bewegungen": [
+            "Extension"
+          ]
+        }
+      ]
+    },
+    "extensor-pollicis-longus": {
+      "nameLatin": "M. extensor pollicis longus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Daumensattelgelenk",
+            "MCP",
+            "IP"
+          ],
+          "bewegungen": [
+            "Extension (Daumen)"
+          ]
+        },
+        {
+          "orte": [
+            "Art. manus"
+          ],
+          "bewegungen": [
+            "Dorsalextension"
+          ]
+        }
+      ]
+    },
+    "interossei-palmares-i-iii": {
+      "nameLatin": "Mm. interossei palmares I–III",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "MCP"
+          ],
+          "bewegungen": [
+            "Adduktion zum Mittelfinger",
+            "Flexion"
+          ]
+        },
+        {
+          "orte": [
+            "PIP",
+            "DIP"
+          ],
+          "bewegungen": [
+            "Extension"
+          ]
+        }
+      ]
+    },
+    "interossei-dorsales-i-iv": {
+      "nameLatin": "Mm. interossei dorsales I–IV",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "MCP"
+          ],
+          "bewegungen": [
+            "Abduktion vom Mittelfinger weg",
+            "Flexion"
+          ]
+        },
+        {
+          "orte": [
+            "PIP",
+            "DIP"
+          ],
+          "bewegungen": [
+            "Extension"
+          ]
+        }
+      ]
+    },
+    "lumbricales-i-iv": {
+      "nameLatin": "Mm. lumbricales I–IV",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "MCP"
+          ],
+          "bewegungen": [
+            "Flexion",
+            "Radialabduktion (leicht)"
+          ]
+        },
+        {
+          "orte": [
+            "PIP",
+            "DIP"
+          ],
+          "bewegungen": [
+            "Extension"
+          ]
+        }
+      ]
+    },
+    "flexor-digiti-minimi-brevis-upper-hand-mcp-flexion": {
+      "nameLatin": "M. flexor digiti minimi brevis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "MCP"
+          ],
+          "bewegungen": [
+            "Flexion (Kleinfinger)"
+          ]
+        }
+      ]
+    },
+    "abductor-digiti-minimi-upper-hand-ulnarabduktion": {
+      "nameLatin": "M. abductor digiti minimi",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "MCP"
+          ],
+          "bewegungen": [
+            "Abduktion (Kleinfinger)",
+            "Extension"
+          ]
+        }
+      ]
+    },
+    "opponens-digiti-minimi-upper-hand-cmc-opposition": {
+      "nameLatin": "M. opponens digiti minimi",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "CMC"
+          ],
+          "bewegungen": [
+            "Opposition (Kleinfinger)"
+          ]
+        }
+      ]
+    },
+    "palmaris-brevis": {
+      "nameLatin": "M. palmaris brevis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [],
+          "bewegungen": [
+            "spannt die Haut am Kleinfingerballen"
+          ]
+        }
+      ]
+    },
+    "flexor-pollicis-brevis": {
+      "nameLatin": "M. flexor pollicis brevis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Daumensattelgelenk",
+            "MCP"
+          ],
+          "bewegungen": [
+            "Flexion",
+            "Opposition",
+            "Adduktion"
+          ]
+        }
+      ]
+    },
+    "abductor-pollicis-brevis": {
+      "nameLatin": "M. abductor pollicis brevis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Daumensattelgelenk",
+            "MCP"
+          ],
+          "bewegungen": [
+            "Abduktion",
+            "Opposition",
+            "Flexion"
+          ]
+        }
+      ]
+    },
+    "adductor-pollicis": {
+      "nameLatin": "M. adductor pollicis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Daumensattelgelenk"
+          ],
+          "bewegungen": [
+            "Adduktion",
+            "Reposition",
+            "Flexion"
+          ]
+        }
+      ]
+    },
+    "opponens-pollicis": {
+      "nameLatin": "M. opponens pollicis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Daumensattelgelenk"
+          ],
+          "bewegungen": [
+            "Opposition"
+          ]
+        }
+      ]
+    },
+    "psoas-minor": {
+      "nameLatin": "M. psoas minor",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Becken"
+          ],
+          "bewegungen": [
+            "Retroversion (kippt es nach dorsal)"
+          ]
+        },
+        {
+          "orte": [
+            "LWS"
+          ],
+          "bewegungen": [
+            "stabilisiert in Streckstellung"
+          ]
+        }
+      ]
+    },
+    "psoas-major": {
+      "nameLatin": "M. psoas major",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. coxae"
+          ],
+          "bewegungen": [
+            "Flexion",
+            "Adduktion",
+            "Außenrotation"
+          ]
+        },
+        {
+          "orte": [
+            "LWS"
+          ],
+          "bewegungen": [
+            "verstärkt die Lordose (bei fixiertem Femur)"
+          ]
+        }
+      ]
+    },
+    "iliacus": {
+      "nameLatin": "M. iliacus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. coxae"
+          ],
+          "bewegungen": [
+            "Flexion",
+            "Außenrotation"
+          ]
+        },
+        {
+          "orte": [
+            "Becken"
+          ],
+          "bewegungen": [
+            "kippt das Ilium nach ventral (bei feststehendem Bein)"
+          ]
+        }
+      ]
+    },
+    "gluteus-maximus": {
+      "nameLatin": "M. gluteus maximus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. coxae"
+          ],
+          "bewegungen": [
+            "Extension",
+            "Außenrotation",
+            "Abduktion (laterale Anteile)"
+          ]
+        }
+      ]
+    },
+    "gluteus-medius": {
+      "nameLatin": "M. gluteus medius",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. coxae"
+          ],
+          "bewegungen": [
+            "Abduktion",
+            "Flexion und Innenrotation (vordere Fasern)",
+            "Extension und Außenrotation (hintere Fasern)"
+          ]
+        },
+        {
+          "orte": [
+            "Becken"
+          ],
+          "bewegungen": [
+            "stabilisiert es im Einbeinstand"
+          ]
+        }
+      ]
+    },
+    "gluteus-minimus": {
+      "nameLatin": "M. gluteus minimus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. coxae"
+          ],
+          "bewegungen": [
+            "Abduktion",
+            "Innenrotation (ventrale Fasern)",
+            "Außenrotation (dorsale Fasern)"
+          ]
+        }
+      ]
+    },
+    "pectineus": {
+      "nameLatin": "M. pectineus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. coxae"
+          ],
+          "bewegungen": [
+            "Adduktion",
+            "Flexion (leicht)",
+            "Außenrotation (gering)"
+          ]
+        }
+      ]
+    },
+    "adductor-longus": {
+      "nameLatin": "M. adductor longus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. coxae"
+          ],
+          "bewegungen": [
+            "Adduktion",
+            "Flexion",
+            "Außenrotation (leicht)"
+          ]
+        }
+      ]
+    },
+    "adductor-brevis": {
+      "nameLatin": "M. adductor brevis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. coxae"
+          ],
+          "bewegungen": [
+            "Adduktion",
+            "Flexion",
+            "Außenrotation (leicht)"
+          ]
+        }
+      ]
+    },
+    "adductor-magnus": {
+      "nameLatin": "M. adductor magnus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. coxae"
+          ],
+          "bewegungen": [
+            "Adduktion",
+            "Extension",
+            "Außenrotation (pubischer Anteil)",
+            "Innenrotation (ischiokruraler Anteil)"
+          ]
+        }
+      ]
+    },
+    "piriformis": {
+      "nameLatin": "M. piriformis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. coxae"
+          ],
+          "bewegungen": [
+            "Außenrotation",
+            "Abduktion (bei 90° Hüftflexion)"
+          ]
+        }
+      ]
+    },
+    "obturatorius-internus": {
+      "nameLatin": "M. obturatorius internus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. coxae"
+          ],
+          "bewegungen": [
+            "Außenrotation"
+          ]
+        }
+      ]
+    },
+    "obturatorius-externus": {
+      "nameLatin": "M. obturatorius externus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. coxae"
+          ],
+          "bewegungen": [
+            "Außenrotation"
+          ]
+        }
+      ]
+    },
+    "gemellus-superior": {
+      "nameLatin": "M. gemellus superior",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. coxae"
+          ],
+          "bewegungen": [
+            "Außenrotation"
+          ]
+        }
+      ]
+    },
+    "gemellus-inferior": {
+      "nameLatin": "M. gemellus inferior",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. coxae"
+          ],
+          "bewegungen": [
+            "Außenrotation"
+          ]
+        }
+      ]
+    },
+    "quadratus-femoris": {
+      "nameLatin": "M. quadratus femoris",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. coxae"
+          ],
+          "bewegungen": [
+            "Außenrotation",
+            "Adduktion (leicht)"
+          ]
+        }
+      ]
+    },
+    "tensor-fasciae-latae": {
+      "nameLatin": "M. tensor fasciae latae",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. coxae"
+          ],
+          "bewegungen": [
+            "Abduktion",
+            "Flexion",
+            "Innenrotation"
+          ]
+        }
+      ]
+    },
+    "sartorius": {
+      "nameLatin": "M. sartorius",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. coxae"
+          ],
+          "bewegungen": [
+            "Flexion",
+            "Außenrotation",
+            "Abduktion"
+          ]
+        },
+        {
+          "orte": [
+            "Art. genus"
+          ],
+          "bewegungen": [
+            "Flexion",
+            "Innenrotation"
+          ]
+        }
+      ]
+    },
+    "gracilis": {
+      "nameLatin": "M. gracilis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. coxae"
+          ],
+          "bewegungen": [
+            "Adduktion"
+          ]
+        },
+        {
+          "orte": [
+            "Art. genus"
+          ],
+          "bewegungen": [
+            "Flexion",
+            "Innenrotation"
+          ]
+        }
+      ]
+    },
+    "rectus-femoris": {
+      "nameLatin": "M. rectus femoris",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. coxae"
+          ],
+          "bewegungen": [
+            "Flexion"
+          ]
+        },
+        {
+          "orte": [
+            "Art. genus"
+          ],
+          "bewegungen": [
+            "Extension"
+          ]
+        }
+      ]
+    },
+    "biceps-femoris-caput-longum": {
+      "nameLatin": "M. biceps femoris – Caput longum",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. coxae"
+          ],
+          "bewegungen": [
+            "Extension"
+          ]
+        },
+        {
+          "orte": [
+            "Art. genus"
+          ],
+          "bewegungen": [
+            "Flexion",
+            "Außenrotation (bei gebeugtem Knie)"
+          ]
+        }
+      ]
+    },
+    "semitendinosus": {
+      "nameLatin": "M. semitendinosus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. coxae"
+          ],
+          "bewegungen": [
+            "Extension"
+          ]
+        },
+        {
+          "orte": [
+            "Art. genus"
+          ],
+          "bewegungen": [
+            "Flexion",
+            "Innenrotation (bei gebeugtem Knie)"
+          ]
+        }
+      ]
+    },
+    "semimembranosus": {
+      "nameLatin": "M. semimembranosus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. coxae"
+          ],
+          "bewegungen": [
+            "Extension"
+          ]
+        },
+        {
+          "orte": [
+            "Art. genus"
+          ],
+          "bewegungen": [
+            "Flexion",
+            "Innenrotation (bei gebeugtem Knie)"
+          ]
+        }
+      ]
+    },
+    "vastus-medialis": {
+      "nameLatin": "M. vastus medialis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. genus"
+          ],
+          "bewegungen": [
+            "Extension"
+          ]
+        },
+        {
+          "orte": [
+            "Patella"
+          ],
+          "bewegungen": [
+            "stabilisiert sie nach medial (VMO)"
+          ]
+        }
+      ]
+    },
+    "vastus-intermedius": {
+      "nameLatin": "M. vastus intermedius",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. genus"
+          ],
+          "bewegungen": [
+            "Extension"
+          ]
+        }
+      ]
+    },
+    "vastus-lateralis": {
+      "nameLatin": "M. vastus lateralis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. genus"
+          ],
+          "bewegungen": [
+            "Extension"
+          ]
+        }
+      ]
+    },
+    "biceps-femoris-caput-breve": {
+      "nameLatin": "M. biceps femoris – Caput breve",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. genus"
+          ],
+          "bewegungen": [
+            "Flexion",
+            "Außenrotation (bei gebeugtem Knie)"
+          ]
+        }
+      ]
+    },
+    "articularis-genus": {
+      "nameLatin": "M. articularis genus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. genus"
+          ],
+          "bewegungen": [
+            "spannt die Gelenkkapsel (Recessus suprapatellaris)"
+          ]
+        }
+      ]
+    },
+    "popliteus": {
+      "nameLatin": "M. popliteus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. genus"
+          ],
+          "bewegungen": [
+            "Flexion (leitet sie ein)",
+            "Innenrotation"
+          ]
+        }
+      ]
+    },
+    "gastrocnemius": {
+      "nameLatin": "M. gastrocnemius",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. genus"
+          ],
+          "bewegungen": [
+            "Flexion"
+          ]
+        },
+        {
+          "orte": [
+            "Art. talocruralis"
+          ],
+          "bewegungen": [
+            "Plantarflexion"
+          ]
+        },
+        {
+          "orte": [
+            "Art. subtalaris"
+          ],
+          "bewegungen": [
+            "Supination"
+          ]
+        }
+      ]
+    },
+    "soleus": {
+      "nameLatin": "M. soleus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. talocruralis"
+          ],
+          "bewegungen": [
+            "Plantarflexion (stärkster Plantarflexor)"
+          ]
+        },
+        {
+          "orte": [
+            "Art. subtalaris"
+          ],
+          "bewegungen": [
+            "Supination"
+          ]
+        }
+      ]
+    },
+    "plantaris": {
+      "nameLatin": "M. plantaris",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. talocruralis"
+          ],
+          "bewegungen": [
+            "Plantarflexion (schwach)"
+          ]
+        },
+        {
+          "orte": [
+            "Art. genus"
+          ],
+          "bewegungen": [
+            "Flexion (schwach)"
+          ]
+        }
+      ]
+    },
+    "tibialis-anterior": {
+      "nameLatin": "M. tibialis anterior",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. talocruralis"
+          ],
+          "bewegungen": [
+            "Dorsalextension"
+          ]
+        },
+        {
+          "orte": [
+            "Art. subtalaris"
+          ],
+          "bewegungen": [
+            "Supination"
+          ]
+        }
+      ]
+    },
+    "tibialis-posterior": {
+      "nameLatin": "M. tibialis posterior",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. talocruralis"
+          ],
+          "bewegungen": [
+            "Plantarflexion"
+          ]
+        },
+        {
+          "orte": [
+            "Art. subtalaris"
+          ],
+          "bewegungen": [
+            "Supination"
+          ]
+        },
+        {
+          "orte": [
+            "Fußgewölbe"
+          ],
+          "bewegungen": [
+            "stabilisiert das mediale Längsgewölbe"
+          ]
+        }
+      ]
+    },
+    "fibularis-longus-m-peroneus-longus": {
+      "nameLatin": "M. fibularis longus (M. peroneus longus)",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. talocruralis"
+          ],
+          "bewegungen": [
+            "Plantarflexion"
+          ]
+        },
+        {
+          "orte": [
+            "Art. subtalaris"
+          ],
+          "bewegungen": [
+            "Pronation"
+          ]
+        },
+        {
+          "orte": [
+            "Fußgewölbe"
+          ],
+          "bewegungen": [
+            "verspannt das Quergewölbe"
+          ]
+        }
+      ]
+    },
+    "fibularis-brevis-m-peroneus-brevis": {
+      "nameLatin": "M. fibularis brevis (M. peroneus brevis)",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. talocruralis"
+          ],
+          "bewegungen": [
+            "Plantarflexion"
+          ]
+        },
+        {
+          "orte": [
+            "Art. subtalaris"
+          ],
+          "bewegungen": [
+            "Pronation"
+          ]
+        }
+      ]
+    },
+    "extensor-digitorum-longus": {
+      "nameLatin": "M. extensor digitorum longus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. talocruralis"
+          ],
+          "bewegungen": [
+            "Dorsalextension"
+          ]
+        },
+        {
+          "orte": [
+            "Art. subtalaris"
+          ],
+          "bewegungen": [
+            "Pronation"
+          ]
+        },
+        {
+          "orte": [
+            "MTP und IP Zehen II–V"
+          ],
+          "bewegungen": [
+            "Extension"
+          ]
+        }
+      ]
+    },
+    "flexor-digitorum-longus": {
+      "nameLatin": "M. flexor digitorum longus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. talocruralis"
+          ],
+          "bewegungen": [
+            "Plantarflexion"
+          ]
+        },
+        {
+          "orte": [
+            "Art. subtalaris"
+          ],
+          "bewegungen": [
+            "Supination"
+          ]
+        },
+        {
+          "orte": [
+            "MTP und IP Zehen II–V"
+          ],
+          "bewegungen": [
+            "Flexion"
+          ]
+        }
+      ]
+    },
+    "extensor-hallucis-longus": {
+      "nameLatin": "M. extensor hallucis longus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. talocruralis"
+          ],
+          "bewegungen": [
+            "Dorsalextension"
+          ]
+        },
+        {
+          "orte": [
+            "MTP und IP Zeh I"
+          ],
+          "bewegungen": [
+            "Extension"
+          ]
+        }
+      ]
+    },
+    "flexor-hallucis-longus": {
+      "nameLatin": "M. flexor hallucis longus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Art. talocruralis"
+          ],
+          "bewegungen": [
+            "Plantarflexion"
+          ]
+        },
+        {
+          "orte": [
+            "Art. subtalaris"
+          ],
+          "bewegungen": [
+            "Supination"
+          ]
+        },
+        {
+          "orte": [
+            "MTP und IP Zeh I"
+          ],
+          "bewegungen": [
+            "Flexion"
+          ]
+        }
+      ]
+    },
+    "extensor-digitorum-brevis": {
+      "nameLatin": "M. extensor digitorum brevis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "MTP und IP Zehen II–IV"
+          ],
+          "bewegungen": [
+            "Extension"
+          ]
+        }
+      ]
+    },
+    "flexor-digitorum-brevis": {
+      "nameLatin": "M. flexor digitorum brevis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "MTP und proximale IP Zehen II–V"
+          ],
+          "bewegungen": [
+            "Flexion"
+          ]
+        }
+      ]
+    },
+    "quadratus-plantae": {
+      "nameLatin": "M. quadratus plantae",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [],
+          "bewegungen": [
+            "richtet den Zug des langen Zehenbeugers aus",
+            "Beugung der Kleinzehen (unterstützend)"
+          ]
+        }
+      ]
+    },
+    "interossei-plantares": {
+      "nameLatin": "Mm. interossei plantares",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "MTP Zehen III–V"
+          ],
+          "bewegungen": [
+            "Adduktion zum II. Strahl",
+            "Flexion"
+          ]
+        }
+      ]
+    },
+    "interossei-dorsales": {
+      "nameLatin": "Mm. interossei dorsales",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "MTP Zehen II–IV"
+          ],
+          "bewegungen": [
+            "Abduktion vom II. Strahl weg",
+            "Flexion"
+          ]
+        }
+      ]
+    },
+    "lumbricales": {
+      "nameLatin": "Mm. lumbricales",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "MTP Zehen II–V"
+          ],
+          "bewegungen": [
+            "Flexion",
+            "Adduktion zum II. Strahl (Zehen III–V)",
+            "Abduktion (Zehe II)"
+          ]
+        }
+      ]
+    },
+    "extensor-hallucis-brevis": {
+      "nameLatin": "M. extensor hallucis brevis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "MTP Zeh I"
+          ],
+          "bewegungen": [
+            "Extension"
+          ]
+        }
+      ]
+    },
+    "flexor-hallucis-brevis": {
+      "nameLatin": "M. flexor hallucis brevis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "MTP Zeh I"
+          ],
+          "bewegungen": [
+            "Flexion",
+            "Abduktion",
+            "Adduktion"
+          ]
+        }
+      ]
+    },
+    "abductor-hallucis": {
+      "nameLatin": "M. abductor hallucis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "MTP Zeh I"
+          ],
+          "bewegungen": [
+            "Abduktion vom II. Strahl weg",
+            "Flexion"
+          ]
+        }
+      ]
+    },
+    "adductor-hallucis": {
+      "nameLatin": "M. adductor hallucis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "MTP Zeh I"
+          ],
+          "bewegungen": [
+            "Adduktion zum II. Strahl",
+            "Flexion"
+          ]
+        },
+        {
+          "orte": [
+            "Fußgewölbe"
+          ],
+          "bewegungen": [
+            "verspannt das Quergewölbe (Caput transversum)"
+          ]
+        }
+      ]
+    },
+    "flexor-digiti-minimi-brevis-lower-fuss-zeh-v-flexion-des-mtp-gelenks": {
+      "nameLatin": "M. flexor digiti minimi brevis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "MTP Zeh V"
+          ],
+          "bewegungen": [
+            "Flexion"
+          ]
+        }
+      ]
+    },
+    "abductor-digiti-minimi-lower-fuss-zeh-v-flexion-und-abduktion-des-mtp-gelenks": {
+      "nameLatin": "M. abductor digiti minimi",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "MTP Zeh V"
+          ],
+          "bewegungen": [
+            "Abduktion",
+            "Flexion"
+          ]
+        }
+      ]
+    },
+    "opponens-digiti-minimi-lower-fuss-zeh-v-flexion-und-abduktion-des-mtp-gelenks": {
+      "nameLatin": "M. opponens digiti minimi",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "MTP Zeh V"
+          ],
+          "bewegungen": [
+            "Flexion",
+            "Abduktion"
+          ]
+        }
+      ]
+    },
+    "interspinales": {
+      "nameLatin": "Mm. interspinales",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Wirbelsäule"
+          ],
+          "bewegungen": [
+            "Extension (segmental)"
+          ]
+        }
+      ]
+    },
+    "spinales": {
+      "nameLatin": "Mm. spinales",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Wirbelsäule"
+          ],
+          "bewegungen": [
+            "Extension (beidseitig)",
+            "Lateralflexion zur gleichen Seite (einseitig)"
+          ]
+        }
+      ]
+    },
+    "intertransversarii-mediales": {
+      "nameLatin": "Mm. intertransversarii mediales",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Wirbelsäule"
+          ],
+          "bewegungen": [
+            "Lateralflexion zur gleichen Seite (einseitig)",
+            "Extension (beidseitig, ergänzend)"
+          ]
+        }
+      ]
+    },
+    "rotatores": {
+      "nameLatin": "Mm. rotatores",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Wirbelsäule"
+          ],
+          "bewegungen": [
+            "Rotation zur Gegenseite"
+          ]
+        }
+      ]
+    },
+    "semispinalis": {
+      "nameLatin": "M. semispinalis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Wirbelsäule"
+          ],
+          "bewegungen": [
+            "Extension von HWS und BWS (beidseitig)",
+            "Rotation der HWS zur Gegenseite (einseitig)"
+          ]
+        },
+        {
+          "orte": [
+            "Kopf"
+          ],
+          "bewegungen": [
+            "Rotation zur Gegenseite (einseitig)"
+          ]
+        }
+      ]
+    },
+    "multifidi": {
+      "nameLatin": "Mm. multifidi",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Wirbelsäule"
+          ],
+          "bewegungen": [
+            "Extension",
+            "Rotation zur Gegenseite (einseitig)"
+          ]
+        }
+      ]
+    },
+    "iliocostales": {
+      "nameLatin": "Mm. iliocostales",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Wirbelsäule"
+          ],
+          "bewegungen": [
+            "Extension",
+            "Lateralflexion (einseitig)"
+          ]
+        }
+      ]
+    },
+    "longissimi": {
+      "nameLatin": "Mm. longissimi",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Wirbelsäule",
+            "Kopf"
+          ],
+          "bewegungen": [
+            "Extension (beidseitig)",
+            "Lateralflexion und Rotation zur gleichen Seite (einseitig)"
+          ]
+        }
+      ]
+    },
+    "splenii": {
+      "nameLatin": "Mm. splenii",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Wirbelsäule",
+            "Kopf"
+          ],
+          "bewegungen": [
+            "Extension von Kopf und HWS (beidseitig)",
+            "Lateralflexion und Rotation zur gleichen Seite (einseitig)"
+          ]
+        }
+      ]
+    },
+    "serratus-posterior-superior": {
+      "nameLatin": "M. serratus posterior superior",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Rippen"
+          ],
+          "bewegungen": [
+            "hebt die oberen Rippen (Inspiration)"
+          ]
+        }
+      ]
+    },
+    "serratus-posterior-inferior": {
+      "nameLatin": "M. serratus posterior inferior",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Rippen"
+          ],
+          "bewegungen": [
+            "senkt die unteren Rippen (forcierte Exspiration)"
+          ]
+        }
+      ]
+    },
+    "rectus-abdominis": {
+      "nameLatin": "M. rectus abdominis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Rumpf"
+          ],
+          "bewegungen": [
+            "Flexion",
+            "Bauchpresse"
+          ]
+        }
+      ]
+    },
+    "obliquus-externus-abdominis": {
+      "nameLatin": "M. obliquus externus abdominis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Rumpf"
+          ],
+          "bewegungen": [
+            "Flexion (beidseitig)",
+            "Rotation zur Gegenseite (einseitig)",
+            "Lateralflexion zur gleichen Seite (einseitig)",
+            "Bauchpresse"
+          ]
+        }
+      ]
+    },
+    "obliquus-internus-abdominis": {
+      "nameLatin": "M. obliquus internus abdominis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Rumpf"
+          ],
+          "bewegungen": [
+            "Flexion (beidseitig)",
+            "Rotation zur gleichen Seite (einseitig)",
+            "Lateralflexion zur gleichen Seite (einseitig)"
+          ]
+        }
+      ]
+    },
+    "transversus-abdominis": {
+      "nameLatin": "M. transversus abdominis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Rumpf"
+          ],
+          "bewegungen": [
+            "Bauchpresse",
+            "stabilisiert LWS und Becken"
+          ]
+        }
+      ]
+    },
+    "quadratus-lumborum": {
+      "nameLatin": "M. quadratus lumborum",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "LWS"
+          ],
+          "bewegungen": [
+            "Lateralflexion zur gleichen Seite (einseitig)",
+            "stabilisiert die Lendenregion (beidseitig)"
+          ]
+        },
+        {
+          "orte": [
+            "Becken"
+          ],
+          "bewegungen": [
+            "hebt es (einseitig)"
+          ]
+        }
+      ]
+    },
+    "coccygeus": {
+      "nameLatin": "M. coccygeus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Becken"
+          ],
+          "bewegungen": [
+            "hebt den Beckenboden",
+            "zieht das Os coccygis nach ventral",
+            "sichert die Beckeneingeweide"
+          ]
+        }
+      ]
+    },
+    "levator-ani": {
+      "nameLatin": "M. levator ani",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Becken"
+          ],
+          "bewegungen": [
+            "trägt die Beckenorgane",
+            "Harn- und Stuhlkontinenz",
+            "hebt den Beckenboden"
+          ]
+        }
+      ]
+    },
+    "transversus-perinei-profundus": {
+      "nameLatin": "M. transversus perinei profundus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Becken"
+          ],
+          "bewegungen": [
+            "Kontinenz",
+            "Organhalt"
+          ]
+        }
+      ]
+    },
+    "transversus-perinei-superficialis": {
+      "nameLatin": "M. transversus perinei superficialis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Becken"
+          ],
+          "bewegungen": [
+            "stabilisiert das perineale Zentrum"
+          ]
+        }
+      ]
+    },
+    "masseter": {
+      "nameLatin": "M. masseter",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Kiefergelenk"
+          ],
+          "bewegungen": [
+            "Mundschluss",
+            "Protrusion (oberflächlicher Anteil)",
+            "Retrusion (tiefer Anteil)"
+          ]
+        }
+      ]
+    },
+    "temporalis": {
+      "nameLatin": "M. temporalis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Kiefergelenk"
+          ],
+          "bewegungen": [
+            "Mundschluss",
+            "Retrusion (hintere Fasern)"
+          ]
+        }
+      ]
+    },
+    "pterygoideus-medialis": {
+      "nameLatin": "M. pterygoideus medialis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Kiefergelenk"
+          ],
+          "bewegungen": [
+            "Mundschluss",
+            "Protrusion",
+            "Laterotrusion zur Gegenseite"
+          ]
+        }
+      ]
+    },
+    "pterygoideus-lateralis": {
+      "nameLatin": "M. pterygoideus lateralis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Kiefergelenk"
+          ],
+          "bewegungen": [
+            "Mundöffnung und Protrusion (beidseitig)",
+            "Laterotrusion zur Gegenseite (einseitig)"
+          ]
+        }
+      ]
+    },
+    "mylohyoideus": {
+      "nameLatin": "M. mylohyoideus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Zungenbein"
+          ],
+          "bewegungen": [
+            "hebt Zungenbein und Mundboden (Schlucken)"
+          ]
+        },
+        {
+          "orte": [
+            "Kiefergelenk"
+          ],
+          "bewegungen": [
+            "Mundöffnung (bei festem Zungenbein)"
+          ]
+        }
+      ]
+    },
+    "digastricus": {
+      "nameLatin": "M. digastricus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Kiefergelenk"
+          ],
+          "bewegungen": [
+            "Mundöffnung (bei fixiertem Zungenbein)"
+          ]
+        },
+        {
+          "orte": [
+            "Zungenbein"
+          ],
+          "bewegungen": [
+            "hebt es (bei fixierter Mandibula)"
+          ]
+        }
+      ]
+    },
+    "geniohyoideus": {
+      "nameLatin": "M. geniohyoideus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Zungenbein"
+          ],
+          "bewegungen": [
+            "zieht es nach ventral und kranial (Schlucken)"
+          ]
+        },
+        {
+          "orte": [
+            "Kiefergelenk"
+          ],
+          "bewegungen": [
+            "Mundöffnung (bei festem Zungenbein)"
+          ]
+        }
+      ]
+    },
+    "stylohyoideus": {
+      "nameLatin": "M. stylohyoideus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Zungenbein"
+          ],
+          "bewegungen": [
+            "zieht es nach dorsal und kranial",
+            "stabilisiert es"
+          ]
+        }
+      ]
+    },
+    "sternohyoideus": {
+      "nameLatin": "M. sternohyoideus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Zungenbein"
+          ],
+          "bewegungen": [
+            "senkt es (nach dem Schlucken)"
+          ]
+        }
+      ]
+    },
+    "sternothyroideus": {
+      "nameLatin": "M. sternothyroideus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Kehlkopf"
+          ],
+          "bewegungen": [
+            "senkt ihn (tiefere Tonlagen, nach dem Schlucken)"
+          ]
+        }
+      ]
+    },
+    "thyrohyoideus": {
+      "nameLatin": "M. thyrohyoideus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Kehlkopf"
+          ],
+          "bewegungen": [
+            "hebt ihn (bei fixiertem Zungenbein)"
+          ]
+        },
+        {
+          "orte": [
+            "Zungenbein"
+          ],
+          "bewegungen": [
+            "senkt es (bei fixiertem Kehlkopf)"
+          ]
+        }
+      ]
+    },
+    "omohyoideus": {
+      "nameLatin": "M. omohyoideus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Zungenbein"
+          ],
+          "bewegungen": [
+            "senkt es"
+          ]
+        },
+        {
+          "orte": [
+            "Halsfaszie"
+          ],
+          "bewegungen": [
+            "spannt die mittlere Halsfaszie"
+          ]
+        }
+      ]
+    },
+    "sternocleidomastoideus": {
+      "nameLatin": "M. sternocleidomastoideus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Kopfgelenke"
+          ],
+          "bewegungen": [
+            "Inklination (beidseitig)",
+            "Rotation zur Gegenseite und Lateralflexion zur gleichen Seite (einseitig)"
+          ]
+        },
+        {
+          "orte": [
+            "Atmung"
+          ],
+          "bewegungen": [
+            "Atemhilfsmuskel (forcierte Inspiration)"
+          ]
+        }
+      ]
+    },
+    "longus-colli": {
+      "nameLatin": "M. longus colli",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Halswirbelsäule"
+          ],
+          "bewegungen": [
+            "Flexion",
+            "stabilisiert segmental"
+          ]
+        }
+      ]
+    },
+    "longus-capitis": {
+      "nameLatin": "M. longus capitis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Kopfgelenke"
+          ],
+          "bewegungen": [
+            "Inklination",
+            "stabilisiert die obere HWS"
+          ]
+        }
+      ]
+    },
+    "orbicularis-oris": {
+      "nameLatin": "M. orbicularis oris",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Mund"
+          ],
+          "bewegungen": [
+            "schließt die Lippen",
+            "formt sie (Sprechen, Pusten, Pfeifen)"
+          ]
+        }
+      ]
+    },
+    "orbicularis-oculi": {
+      "nameLatin": "M. orbicularis oculi",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Augenlid"
+          ],
+          "bewegungen": [
+            "Lidschluss (Pars palpebralis spontan, Pars orbitalis festes Zukneifen)"
+          ]
+        }
+      ]
+    },
+    "procerus": {
+      "nameLatin": "M. procerus",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Nase",
+            "Stirn"
+          ],
+          "bewegungen": [
+            "Querfalten an der Nasenwurzel",
+            "senkt den medialen Augenbrauenanteil"
+          ]
+        }
+      ]
+    },
+    "nasalis-head-mimikmuskulatur-verengt-nasenoffnung-pars-transversa": {
+      "nameLatin": "M. nasalis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Nase"
+          ],
+          "bewegungen": [
+            "verengt die Nasenöffnung"
+          ]
+        }
+      ]
+    },
+    "nasalis-head-mimikmuskulatur-erweitert-blaht-nasenloch-pars-alaris": {
+      "nameLatin": "M. nasalis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Nase"
+          ],
+          "bewegungen": [
+            "erweitert die Nasenöffnung"
+          ]
+        }
+      ]
+    },
+    "corrugator-supercilii": {
+      "nameLatin": "M. corrugator supercilii",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Augenbraue"
+          ],
+          "bewegungen": [
+            "zieht sie nach medial und inferior"
+          ]
+        },
+        {
+          "orte": [
+            "Stirn"
+          ],
+          "bewegungen": [
+            "senkrechte Glabellafalten (Zornesfalte)"
+          ]
+        }
+      ]
+    },
+    "occipitofrontalis-head-mimikmuskulatur-hebt-augenbrauen": {
+      "nameLatin": "M. occipitofrontalis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Stirn"
+          ],
+          "bewegungen": [
+            "hebt die Augenbrauen",
+            "Querfalten der Stirn"
+          ]
+        },
+        {
+          "orte": [
+            "Galea"
+          ],
+          "bewegungen": [
+            "verschiebt sie nach anterior"
+          ]
+        }
+      ]
+    },
+    "occipitofrontalis-head-mimikmuskulatur-zieht-kopfhaut-nach-dorsal": {
+      "nameLatin": "M. occipitofrontalis",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Galea",
+            "Kopfhaut"
+          ],
+          "bewegungen": [
+            "zieht sie nach dorsal"
+          ]
+        }
+      ]
+    },
+    "platysma": {
+      "nameLatin": "Platysma",
+      "status": "ungeprueft",
+      "zeilen": [
+        {
+          "orte": [
+            "Hals"
+          ],
+          "bewegungen": [
+            "spannt die Halshaut"
+          ]
+        },
+        {
+          "orte": [
+            "Mundwinkel"
+          ],
+          "bewegungen": [
+            "zieht Mundwinkel und Unterlippe nach kaudolateral"
+          ]
+        },
+        {
+          "orte": [
+            "Mandibula"
+          ],
+          "bewegungen": [
+            "unterstützt die Absenkung"
+          ]
+        }
+      ]
+    }
+  }
+}

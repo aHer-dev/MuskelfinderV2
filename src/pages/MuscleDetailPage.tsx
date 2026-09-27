@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getMuscleById } from '../data';
-import { movementLabel, regionLabel } from '../data/labels';
+import { regionLabel } from '../data/labels';
 import { UNGEPRUEFT_ERKLAERUNG, brauchtLegende, fachfelder } from '../data/muscle-fields';
 import { groupsOf } from '../data/groups';
 import { isSupportedIn3D, threeDUrl } from '../data/threeD';
@@ -12,6 +12,7 @@ import { ImageViewer } from '../components/features/detail/ImageViewer';
 import { MuscleNote } from '../components/features/detail/MuscleNote';
 import { PalpationSection } from '../components/features/detail/PalpationSection';
 import { DifficultyDots } from '../components/ui/DifficultyDots';
+import { FunktionsBeschreibung } from '../components/ui/FunktionsBeschreibung';
 import { Icon } from '../components/ui/Icon';
 import { SegmentedControl } from '../components/ui/SegmentedControl';
 import { useCollectionStore } from '../store/useCollectionStore';
@@ -31,9 +32,17 @@ function buildRows(muscle: Muscle, mode: DetailMode): DataRow[] {
     && src.segments === muscle.segments;
   /* Reihenfolge der fuenf Fachfelder aus `data/muscle-fields.ts` — dieselbe wie
      auf der Lernkarten-Rueckseite. Gelenke und TA-Code sind keine Fachfelder in
-     diesem Sinn und haengen deshalb hinten an. */
+     diesem Sinn und haengen deshalb hinten an.
+     Unter „Funktion" steht die Kurzform; der Text des gewaehlten Niveaus klappt
+     direkt darunter auf (Etappe 15). */
   return [
-    ...fachfelder(src, segmenteUngeprueft).map(({ label, value }) => ({ label, value })),
+    ...fachfelder(src, segmenteUngeprueft, muscle).map(({ key, label, value }) => ({
+      label,
+      value,
+      zusatz: key === 'functionDescription' && muscle.funktionKurz?.length
+        ? <FunktionsBeschreibung text={src.functionDescription} />
+        : undefined,
+    })),
     { label: 'Gelenke', value: muscle.joints.join(', ') },
     ...(muscle.taCode ? [{ label: 'TA-Code', value: muscle.taCode }] : []),
   ];
@@ -179,16 +188,6 @@ export function MuscleDetailPage() {
                   <Link to={`/gruppe/${group.id}`} className="chip chip--link">
                     {group.label}
                   </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-
-          {muscle.functions.length > 0 && (
-            <ul className="detail__chips">
-              {muscle.functions.map((fn) => (
-                <li key={fn} className="chip">
-                  {movementLabel(fn)}
                 </li>
               ))}
             </ul>

@@ -51,10 +51,19 @@ describe('facts — echter Bestand', () => {
     }
   });
 
-  it('kein geprüfter Muskel zeigt die Marke', () => {
-    const geprueft = getMuscles().filter((m) => m.segmentsUngeprueft !== true);
-    for (const m of geprueft) {
-      expect(facts(m).some((f) => f.label.includes(UNGEPRUEFT_MARKE)), m.nameLatin).toBe(false);
+  /* Je FELD, nicht je Muskel: Seit Etappe 15 gibt es zwei Marken (Segmente, Funktion).
+     „kein geprüfter Muskel" liefe leer, solange alle Kurzformen ungeprueft sind. */
+  it('die Marke steht genau an den Feldern, die ungeprüft sind', () => {
+    for (const m of getMuscles()) {
+      const labels = facts(m).map((f) => f.label);
+      const segmente = labels.find((l) => l.startsWith('Segmente'));
+      const funktion = labels.find((l) => l.startsWith('Funktion'));
+      if (segmente) {
+        expect(segmente.endsWith(UNGEPRUEFT_MARKE), `${m.nameLatin} Segmente`).toBe(m.segmentsUngeprueft === true);
+      }
+      if (funktion) {
+        expect(funktion.endsWith(UNGEPRUEFT_MARKE), `${m.nameLatin} Funktion`).toBe(m.funktionKurzUngeprueft === true);
+      }
     }
   });
 });

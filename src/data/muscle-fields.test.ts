@@ -120,7 +120,8 @@ describe('die Anzeigen halten sich daran — gegen den ECHTEN Bestand', () => {
 
   it('Lernkarte zeigt Ursprung vor Funktion — nicht mehr umgekehrt', () => {
     const mitAllem = getMuscles().find((m) => m.origin && m.functionDescription);
-    const labels = facts(mitAllem!).map((f) => f.label);
+    /* Ohne Stern vergleichen: Die ungepruefte Kurzform traegt „Funktion *" (Etappe 15). */
+    const labels = facts(mitAllem!).map((f) => f.label.replace(UNGEPRUEFT_MARKE, ''));
     expect(labels.indexOf('Ursprung')).toBeLessThan(labels.indexOf('Funktion'));
   });
 });

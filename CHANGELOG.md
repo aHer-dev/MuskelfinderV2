@@ -7,6 +7,22 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- **Funktion in Kurzform, der Text klappt darunter auf** (Etappe 15, 2026-09-27, ADR 0013,
+  `src/data/funktion-kurz.ts`, `src/data/editorial/funktion-kurz.json`,
+  `src/components/ui/FunktionsBeschreibung.tsx`).
+
+  Unter „Funktion" steht jetzt je Gelenk kurz, was der Muskel tut, etwa
+  „Hüftgelenk (Art. coxae): Extension · Außenrotation · Abduktion (laterale Anteile)".
+  Der bisherige Text steht als aufklappbare „Funktionsbeschreibung" darunter: auf der
+  Detailseite in der Funktionszeile, auf der Lernkarte nach dem Aufdecken, in der
+  Quiz-Erklärung je Muskel. Beide Funktionsmodi des Quiz stellen die Kurzform statt der
+  Absätze. Die losen Bewegungs-Chips der Detailseite entfallen.
+
+  Die 150 Kurzformen sind KI-Entwürfe, die **nur den vorhandenen Funktionstext verdichten**,
+  und tragen bis zur fachlichen Abnahme den Stern. Prüfbogen: `npm run export:csv` →
+  `funktion-kurzform.csv` (Kurzform und Text nebeneinander, dazu 14 Gelenke aus `joints`, zu
+  denen der Text nichts sagt, und 19 Orte außerhalb von `joints`).
+
 - **Bild groß auch auf der Lernkarte** (Etappe 14a, 2026-09-27,
   `src/pages/FlashcardsPage.tsx`, `src/hooks/tastatur.ts`, `src/components/ui/BildNachweis.tsx`).
 
@@ -116,6 +132,14 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   Prüfungen mit, und die brechen einen Build, der `tsc -b` enthält.
 
 ### Fixed
+- **Die Freitext-Karte verriet in 31 Fällen die Antwort** (Etappe 15, 2026-09-27).
+
+  Ab Fach 7 zeigt die Lernkarte die Fakten und fragt nach dem lateinischen Namen. 31 lange
+  Funktionstexte nennen den Muskel aber selbst („Der M. masseter ist der kräftigste
+  Kaumuskel …"). Die Kurzform nennt ihn nie, und die aufklappbare Beschreibung erscheint
+  auf dieser Stufe nicht. Ein Test gegen den echten Bestand hält das fest (gegengetestet:
+  mit dem langen Text fällt er mit 31 Treffern).
+
 - **Lizenzlink in der Bild-Vollansicht nur 3:1 Kontrast** (2026-09-27,
   `src/components/ui/image-lightbox.css`).
 

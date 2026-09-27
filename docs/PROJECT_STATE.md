@@ -59,6 +59,15 @@ ausfuehrenden Rechner nicht existieren; der Fehler faellt nicht im Build, sonder
   soll das Abrufen messen, nicht die Bildschirmgroesse. Esc/Fokus-Falle/Scroll-Sperre/
   Fokus-Rueckgabe liegen jetzt in `hooks/useDialogVerhalten` — `Sheet` und die Vollansicht
   teilen sie sich, statt sie zweimal zu fuehren.
+- **Funktion in Kurzform (Etappe 15, 2026-09-27, ADR 0013).** Unter „Funktion" steht je Gelenk
+  die Bewegung (`src/data/editorial/funktion-kurz.json`, Schluessel = id), der Text klappt als
+  „Funktionsbeschreibung" darunter auf. `fachfelder()` liefert die Kurzform — Detailseite,
+  Lernkarte und Quiz-Vergleichskarte folgen ohne eigene Regel; beide Funktionsmodi des Quiz
+  stellen sie ebenfalls. **Alle 150 sind KI-Entwuerfe, status „ungeprueft" (Stern).**
+  Offen: fachliche Abnahme durch den Projektinhaber ueber `funktion-kurzform.csv`, danach
+  Status auf „geprueft". **Die Kurzform verdichtet nur den Funktionstext — wer sie ergaenzt,
+  ergaenzt erst den Text.** Ein Muskel mit Funktionstext ohne Kurzform laesst den Loader werfen
+  (sonst verriete eine lange Quiz-Option durch ihre Laenge die Antwort).
 - **Bild gross auch auf der Lernkarte (Etappe 14a, 2026-09-27).** Dieselbe Vollansicht wie
   Quiz/Detailseite, mit Bildnachweis. Tastenkuerzel von Quiz UND Lernsitzung gehen durch
   `hooks/tastatur.ts` (`tasteGehoertDerSeite`): Eingabefelder behalten ihre Tasten, ein offener

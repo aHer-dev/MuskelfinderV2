@@ -16,6 +16,7 @@ import { BildNachweis } from '../components/ui/BildNachweis';
 import { Icon } from '../components/ui/Icon';
 import { ImageLightbox } from '../components/ui/ImageLightbox';
 import { EmptyState } from '../components/ui/EmptyState';
+import { FunktionsBeschreibung } from '../components/ui/FunktionsBeschreibung';
 import type { CardRating, Muscle, RegionId } from '../types';
 import '../components/features/flashcards/flashcards.css';
 
@@ -533,6 +534,15 @@ function CardScreen({
           ) : (
             <Flashcard muscle={muscle} revealed={revealed} onReveal={() => setRevealed(true)} />
           )}
+
+          {/* Die Rueckseite zeigt die Kurzform; der Text klappt darunter auf (Etappe 15).
+              Nicht in der Karte: Sie ist ein <button>, und ein Aufklapper darin waere ein
+              Knopf im Knopf. Nie auf der Freitext-Stufe — viele Texte nennen den Muskel beim
+              Namen („Der M. masseter ist …"), und der Name ist dort die gesuchte Antwort.
+              `key`: Jede Karte beginnt eingeklappt. */}
+          {!produce && revealed && muscle.funktionKurz?.length ? (
+            <FunktionsBeschreibung key={muscle.id} text={muscle.functionDescription} />
+          ) : null}
 
           <LeitnerBoxes counts={byFach} activeBox={activeBox} />
 

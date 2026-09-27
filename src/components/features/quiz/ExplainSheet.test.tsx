@@ -74,3 +74,22 @@ describe('ExplainSheet', () => {
     }
   });
 });
+
+/* Im Quiz steht die Kurzform (Etappe 15); der lange Text bleibt eingeklappt erreichbar. */
+describe('ExplainSheet — Funktion in Kurzform', () => {
+  it('zeigt die Kurzform ohne Stern — eine Marke ohne Legende waere ein Raetsel', () => {
+    render(<ExplainSheet open explanation={erklaerung({ aspect: 'function' })} onClose={() => {}} />);
+    const karte = document.querySelector('.explain-card')!;
+    const zeile = Array.from(karte.querySelectorAll('.explain-row'))
+      .find((r) => r.querySelector('dt')?.textContent?.startsWith('Funktion'))!;
+    expect(zeile.querySelector('dt')?.textContent).toBe('Funktion');
+    expect(zeile.querySelector('dd')?.textContent).not.toBe(correct.functionDescription);
+  });
+
+  it('der lange Text klappt je Karte auf', () => {
+    render(<ExplainSheet open explanation={erklaerung({ aspect: 'function' })} onClose={() => {}} />);
+    const karte = document.querySelector('.explain-card')!;
+    expect(karte.querySelector('details summary')?.textContent).toBe('Funktionsbeschreibung');
+    expect(karte.querySelector('details')?.textContent).toContain(correct.functionDescription);
+  });
+});

@@ -91,6 +91,24 @@ export interface Muscle {
    * und die Detailseite zeigt die Sektion gar nicht erst.
    */
   palpation?: Palpation;
+  /**
+   * Funktion in Kurzform (Etappe 15): je Gelenk die Bewegungen. Handgepflegt in
+   * `src/data/editorial/funktion-kurz.json`, vom Loader dazugemischt. Der ausformulierte
+   * Text bleibt in `functionDescription` und steht aufklappbar darunter.
+   */
+  funktionKurz?: FunktionsZeile[];
+  /** `true`, solange die Kurzform nicht fachlich abgenommen ist — die Anzeige setzt den Stern. */
+  funktionKurzUngeprueft?: boolean;
+}
+
+/**
+ * Eine Zeile der Funktions-Kurzform: wo (`orte`) und was (`bewegungen`).
+ * `orte` sind Etiketten aus `Muscle.joints` oder ein freier Ort aus dem Funktionstext;
+ * leer, wenn der Muskel nicht auf ein Gelenk wirkt (M. palmaris brevis).
+ */
+export interface FunktionsZeile {
+  orte: string[];
+  bewegungen: string[];
 }
 
 /**
