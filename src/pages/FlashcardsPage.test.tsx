@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { FlashcardsPage } from './FlashcardsPage'
 import { useProgressStore } from '../store/useProgressStore'
 import { useSessionStore } from '../store/useSessionStore'
+import { FRAGEN_JE_KARTE } from '../data/quiz-mix'
 
 function renderPage() {
   return render(
@@ -261,3 +262,127 @@ describe('Funktionsbeschreibung auf der Lernkarte', () => {
   })
 })
 
+
+/* ── Quiz-Mix (Etappe 16, ADR 0014) ──────────────────────────────────────────
+   Die zweite Lernform auf derselben Seite. Geprueft wird, was die Schuelerin SIEHT und was
+   danach im Kasten steht — die Datenlogik selbst liegt in `quiz-mix.test.ts`, die Regel
+   „zweimal richtig" im Store-Test. */
+describe('Quiz-Mix auf /lernkarten', () => {
+  const A = 'M. deltoideus';
+  const B = 'M. soleus';
+
+  beforeEach(() => {
+    localStorage.clear();
+    useProgressStore.getState().clearProgress();
+    useSessionStore.getState().exit();
+  });
+
+  /** Die Option-Knoepfe stehen in der Reihenfolge der Frage — so findet der Test die richtige. */
+  function optionKnopf(richtig: boolean): HTMLElement {
+    const frage = useSessionStore.getState().fragen[0]!;
+    const index = frage.options.findIndex((o) => (o.id === frage.correctId) === richtig);
+    return screen.getAllByRole('radio')[index];
+  }
+
+  function starteQuizMix(names: string[]) {
+    useProgressStore.getState().addCards(names);
+    renderPage();
+    fireEvent.click(screen.getByRole('button', { name: 'Quiz-Mix', pressed: false }));
+    fireEvent.click(screen.getByRole('button', { name: /Quiz-Mix starten/i }));
+  }
+
+  it('die Lernform ist wählbar — Karteikarten sind die Vorgabe, der Startknopf sagt, was kommt', () => {
+    useProgressStore.getState().addCards([A]);
+    renderPage();
+    const wahl = screen.getByRole('group', { name: 'Lernform' });
+    expect(within(wahl).getByRole('button', { name: 'Karteikarten' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: /Lernen starten/i })).toBeInTheDocument();
+    expect(screen.getByText(/einmal richtig schiebt sie ein Fach weiter/i)).toBeInTheDocument();
+
+    fireEvent.click(within(wahl).getByRole('button', { name: 'Quiz-Mix' }));
+    expect(screen.getByRole('button', { name: /Quiz-Mix starten/i })).toBeInTheDocument();
+    expect(screen.getByText(/bunt gemischt/i)).toBeInTheDocument();
+    // Die Regel steht beim Waehlen da, nicht erst in der Anleitung.
+    expect(FRAGEN_JE_KARTE).toBe(2);
+    expect(screen.getByText(/Jede Karte kommt zweimal/i)).toBeInTheDocument();
+    expect(screen.getByText(/erst, wenn beide sitzen/i)).toBeInTheDocument();
+    expect(screen.getByText(/Fach 7 fragen weiter den Namen frei ab/i)).toBeInTheDocument();
+  });
+
+  it('einmal richtig: „1 von 2" — die Karte bleibt, bis auch die zweite Frage sitzt', () => {
+    starteQuizMix([A, B]);
+    expect(screen.getAllByRole('radio')).toHaveLength(4);
+    // Vor der Antwort gibt es keinen „Weiter"-Knopf: Die Antwort IST die Handlung.
+    expect(screen.queryByRole('button', { name: /^Weiter$/ })).not.toBeInTheDocument();
+    expect(screen.getByText('0/4')).toBeInTheDocument(); // zwei Karten, vier Fragen
+
+    fireEvent.click(optionKnopf(true));
+
+    expect(screen.getByRole('status')).toHaveTextContent('Richtig!');
+    // Der Name steht oft auch in der Frage — gemeint ist die Zeile, die die KARTE nennt.
+    expect(screen.getByText(A, { selector: '.fc-quiz-karte__name' })).toBeInTheDocument();
+    expect(screen.getByText(/1 von 2 richtig/)).toBeInTheDocument();
+    expect(useProgressStore.getState().getCardState(A)?.fach).toBe(1);
+
+    fireEvent.click(screen.getByRole('button', { name: /^Weiter$/ }));
+    fireEvent.click(optionKnopf(true)); // B, erste Frage
+    fireEvent.click(screen.getByRole('button', { name: /^Weiter$/ }));
+    fireEvent.click(optionKnopf(true)); // A, zweite Frage
+
+    expect(screen.getByText('2 von 2 richtig — weiter in Fach 2')).toBeInTheDocument();
+    expect(useProgressStore.getState().getCardState(A)?.fach).toBe(2);
+    expect(screen.getByText('3/4')).toBeInTheDocument();
+  });
+
+  it('falsch beantwortet: die richtige Antwort steht da, die Karte ist sofort verbucht', () => {
+    starteQuizMix([A, B]);
+    fireEvent.click(optionKnopf(false));
+    expect(screen.getByRole('status')).toHaveTextContent(/Leider falsch/);
+    expect(screen.getByText('bleibt in Fach 1')).toBeInTheDocument();
+    expect(useProgressStore.getState().getCardState(A)?.totalWrong).toBe(1);
+  });
+
+  it('per Tastatur: Ziffer antwortet, Enter geht weiter — bis zur Auswertung', () => {
+    starteQuizMix([A, B]);
+    for (let i = 0; i < 3; i++) {
+      fireEvent.keyDown(window, { key: '1' });
+      expect(screen.getByRole('button', { name: /^Weiter$/ })).toBeInTheDocument();
+      fireEvent.keyDown(window, { key: 'Enter' });
+    }
+
+    fireEvent.keyDown(window, { key: '2' });
+    // Die letzte Frage: Die Warteschlange ist leer, das Ergebnis steht trotzdem noch da.
+    expect(screen.getByRole('button', { name: /Zur Auswertung/i })).toBeInTheDocument();
+    fireEvent.keyDown(window, { key: 'Enter' });
+
+    expect(screen.getByRole('heading', { name: /Sitzung geschafft/i })).toBeInTheDocument();
+    expect(useProgressStore.getState().getCardState(A)?.lastSeen).not.toBeNull();
+    expect(useProgressStore.getState().getCardState(B)?.lastSeen).not.toBeNull();
+  });
+
+  it('eine Karte in Fach 7 erscheint mitten im Quiz-Mix als Freitext-Lernkarte', () => {
+    useProgressStore.getState().addCards([A]);
+    useProgressStore.setState((s) => ({
+      flashcards: { ...s.flashcards, cards: { [A]: { ...s.flashcards.cards[A], fach: 7 } } },
+    }));
+    renderPage();
+    fireEvent.click(screen.getByRole('button', { name: 'Quiz-Mix' }));
+    fireEvent.click(screen.getByRole('button', { name: /Quiz-Mix starten/i }));
+
+    expect(screen.queryAllByRole('radio')).toHaveLength(0);
+    expect(screen.getByRole('textbox')).toBeInTheDocument();
+  });
+
+  it('von /heute übergeben: startet direkt als Quiz-Mix, und nach dem Abbruch ist Quiz-Mix gewählt', () => {
+    useProgressStore.getState().addCards([A, B]);
+    render(
+      <MemoryRouter initialEntries={[{ pathname: '/lernkarten', state: { start: { names: [A, B], lernform: 'quiz' } } }]}>
+        <FlashcardsPage />
+      </MemoryRouter>,
+    );
+    expect(screen.getAllByRole('radio')).toHaveLength(4);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Zur Übersicht' }));
+    expect(screen.getByRole('button', { name: 'Quiz-Mix' })).toHaveAttribute('aria-pressed', 'true');
+  });
+});

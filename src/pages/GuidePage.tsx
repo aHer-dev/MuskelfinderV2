@@ -12,6 +12,7 @@
    ========================================================================= */
 
 import { Link } from 'react-router-dom';
+import { LERNFORM_LABELS } from '../data/quiz-mix';
 import { FACH_INTERVALS, MASTERED_FACH, MAX_FACH } from '../persistence/leitner';
 import { Icon } from '../components/ui/Icon';
 import { InstallSection } from '../components/features/install/InstallSection';
@@ -123,6 +124,31 @@ export function GuidePage() {
           Ab Fach {MASTERED_FACH} gilt ein Muskel als beherrscht — daraus entstehen die Abzeichen
           unter „Fortschritt". Vergisst du ihn wieder, verlierst du das Abzeichen. Das ist Absicht:
           Es misst, was du <em>kannst</em>, nicht, was du mal konntest.
+        </p>
+      </section>
+
+      {/* Etappe 16 (ADR 0014). Die Namen kommen aus `quiz-mix.ts` — dieselben wie am
+          Umschalter und am Knopf auf „Heute". Der letzte Satz ist die Grenze zum freien Quiz:
+          Das zaehlt NICHT in den Kasten, und wer beides verwechselt, wundert sich, warum seine
+          Karten faellig bleiben. */}
+      <section className="guide__section" aria-labelledby="guide-lernform">
+        <h2 className="guide__subtitle" id="guide-lernform">
+          Zwei Lernformen, dieselben Karten
+        </h2>
+        <p className="guide__body">
+          Die fälligen Karten lernst du als <strong>{LERNFORM_LABELS.karten}</strong> (aufdecken,
+          selbst bewerten) oder als <strong>{LERNFORM_LABELS.quiz}</strong>: Jede Karte wird zu
+          Fragen mit vier Antworten, und die Fragearten wechseln sich ab — Bild und Name,
+          Ursprung und Ansatz, Funktion, Innervation. Auf der Lernkarte schiebt eine richtige
+          Antwort die Karte ein Fach weiter. Im Quiz-Mix kommt jede Karte zweimal dran, in zwei
+          verschiedenen Arten, und rückt erst vor, wenn beide Antworten sitzen — aus vier
+          Möglichkeiten zu wählen ist leichter, als selbst darauf zu kommen. Falsch schickt die
+          Karte in beiden Formen zurück. In Fach {MAX_FACH} tippst du in beiden Formen den
+          Namen frei.
+        </p>
+        <p className="guide__note">
+          Das <Link to="/quiz">freie Quiz</Link> ist etwas anderes: Dort wählst du einen Modus
+          selbst und übst, so viel du willst — es verschiebt aber keine Karte im Kasten.
         </p>
       </section>
 

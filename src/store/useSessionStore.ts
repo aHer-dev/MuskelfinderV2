@@ -19,6 +19,7 @@
 import { create } from 'zustand';
 import { cardKey, getMuscles } from '../data';
 import { applyCardFilter, isCardFilter, type CardFilter } from '../data/card-filter';
+import { baueQuizMix, FRAGEN_JE_KARTE, isLernform, type Lernform } from '../data/quiz-mix';
 import { dailyDose, daysUntilExam } from '../data/today';
 import { isDue } from '../persistence/leitner';
 import { useProfileStore } from './useProfileStore';
@@ -26,10 +27,13 @@ import { useProgressStore } from './useProgressStore';
 import { useStreakStore } from './useStreakStore';
 import { notifyAward, notifyToast } from './useToastStore';
 import type { FlashcardCard } from '../persistence/types';
-import type { CardRating, RegionId } from '../types';
+import type { CardRating, QuizQuestion, RegionId } from '../types';
 
-/** Nächste Warteschlange nach einer Bewertung (rein, ohne Seiteneffekte). */
-export function advanceQueue(queue: string[], rating: CardRating): string[] {
+/**
+ * Nächste Warteschlange nach einer Bewertung (rein, ohne Seiteneffekte). Generisch, weil der
+ * Quiz-Mix neben den Namen die Fragen je Platz führt — beide rücken im Gleichschritt.
+ */
+export function advanceQueue<T>(queue: T[], rating: CardRating): T[] {
   if (queue.length === 0) return queue;
   const [current, ...rest] = queue;
   return rating === 'unsure' ? [...rest, current] : rest;
@@ -52,6 +56,11 @@ export interface SessionOptions {
    * „schwierig markiert". Fehlt er, ist alles wie vorher (`'all'`).
    */
   filter?: CardFilter;
+  /**
+   * Lernform (Etappe 16), additiv: dieselben Karten als Lernkarte oder als Quiz-Mix.
+   * Fehlt sie, ist alles wie vorher (`'karten'`).
+   */
+  lernform?: Lernform;
 }
 
 /**
@@ -100,11 +109,12 @@ export function readSessionHandoff(state: unknown): SessionOptions | null {
   const start = (state as { start?: unknown }).start;
   if (typeof start !== 'object' || start === null) return null;
 
-  const { names, limit, scope, filter } = start as {
+  const { names, limit, scope, filter, lernform } = start as {
     names?: unknown;
     limit?: unknown;
     scope?: unknown;
     filter?: unknown;
+    lernform?: unknown;
   };
   if (!Array.isArray(names) || !names.every((n) => typeof n === 'string') || names.length === 0) {
     return null;
@@ -114,12 +124,55 @@ export function readSessionHandoff(state: unknown): SessionOptions | null {
     limit: typeof limit === 'number' ? limit : 0,
     scope: scope === 'upper' || scope === 'lower' || scope === 'trunk' || scope === 'head' ? scope : 'all',
     filter: isCardFilter(filter) ? filter : 'all',
+    lernform: isLernform(lernform) ? lernform : 'karten',
   };
+}
+
+/**
+ * Was eine Quiz-Antwort mit der Karte gemacht hat (Etappe 16). Eine Karte rückt im Quiz-Mix
+ * erst nach `FRAGEN_JE_KARTE` richtigen Antworten vor; bis dahin bewegt sich nichts.
+ */
+export type QuizWirkung =
+  /** Richtig, aber noch nicht oft genug — die Karte bleibt, wo sie ist. */
+  | 'halb'
+  /** Die letzte nötige richtige Antwort: ein Fach weiter. */
+  | 'hoch'
+  /** Falsch: sofort zurück, wie auf der Lernkarte. */
+  | 'zurueck'
+  /** Eine weitere Frage zu einer Karte, die in dieser Sitzung schon verbucht ist. */
+  | 'uebung';
+
+/**
+ * Die gerade beantwortete Quizfrage (Quiz-Mix). Sie bleibt stehen, bis „Weiter" gedrückt
+ * ist — die Wertung ist da aber längst verbucht.
+ */
+export interface QuizAufdeckung {
+  /** Kartenschlüssel der gefragten Karte. Die Warteschlange zeigt schon auf den nächsten Platz. */
+  name: string;
+  frage: QuizQuestion;
+  selectedId: string;
+  richtig: boolean;
+  wirkung: QuizWirkung;
+  /** Richtige Antworten zu dieser Karte in dieser Sitzung, diese eingeschlossen. */
+  richtigBisher: number;
+  fachVorher: number;
+  fachNachher: number;
+}
+
+/** Wie weit eine Karte im Quiz-Mix dieser Sitzung ist. */
+interface QuizStand {
+  richtig: number;
+  /** Die Karte ist bewertet (Fach bewegt) — weitere Fragen zu ihr sind nur noch Übung. */
+  verbucht: boolean;
 }
 
 interface SessionState {
   /** Sitzung läuft (Setup verlassen). */
   started: boolean;
+  /**
+   * Was als Nächstes drankommt: Kartenschlüssel. Im Quiz-Mix sind es PLÄTZE — eine Karte
+   * steht dort `FRAGEN_JE_KARTE`-mal (siehe `baueQuizMix`).
+   */
   queue: string[];
   /** Kartenanzahl zu Sitzungsbeginn. */
   total: number;
@@ -130,9 +183,25 @@ interface SessionState {
   /** Anzahl „Unsicher"-Bewertungen (Karte wurde erneut einsortiert). */
   unsure: number;
   xpEarned: number;
+  lernform: Lernform;
+  /**
+   * Quiz-Mix: die Frage je Platz, im Gleichschritt mit `queue` (`null` = Lernkarte, Fach 7).
+   * Beim Start EINMAL gebaut. Läge der Bau in der Seite, würfelte jeder Seitenwechsel (das
+   * Suchfeld sitzt auf jeder Route, 7d) eine neue Frage — wer die alte nicht wusste, bekäme
+   * nach dem Nachschlagen eine leichtere. Ohne Quiz-Mix leer.
+   */
+  fragen: Array<QuizQuestion | null>;
+  /** Quiz-Mix: Plätze zu Sitzungsbeginn — die Grundlage der Fortschrittsanzeige. */
+  plaetzeGesamt: number;
+  quizStand: Record<string, QuizStand>;
+  aufgedeckt: QuizAufdeckung | null;
 
   start: (opts: SessionOptions) => void;
   rate: (rating: CardRating) => void;
+  /** Quiz-Mix: die aktuelle Frage beantworten. Wertet sofort, genau einmal. */
+  beantworte: (optionId: string) => void;
+  /** Quiz-Mix: die aufgedeckte Frage wegräumen, zur nächsten. */
+  weiter: () => void;
   /** Zurück zum Setup (Sitzung abbrechen/beenden). */
   exit: () => void;
 }
@@ -146,40 +215,129 @@ const IDLE = {
   wrong: 0,
   unsure: 0,
   xpEarned: 0,
+  lernform: 'karten' as Lernform,
+  fragen: [] as Array<QuizQuestion | null>,
+  plaetzeGesamt: 0,
+  quizStand: {} as Record<string, QuizStand>,
+  aufgedeckt: null as QuizAufdeckung | null,
 };
+
+/**
+ * Eine Karte bewerten: Leitner-Fach, XP, Tagesdosis. Die EINE Stelle dafür — Lernkarte und
+ * Quiz-Mix rufen sie beide, damit eine Karte in beiden Formen genau gleich zählt.
+ * Gibt die verdienten XP zurück.
+ */
+function verbuche(name: string, rating: CardRating): number {
+  const award = useProgressStore.getState().reviewCard(name, rating);
+  notifyAward(award);
+
+  /* Tages-Streak (7f): Jede bewertete Karte zaehlt auf die heutige Dosis ein — die
+     gleiche Dosis, die der Tagesplan vorschlaegt (ein naher Pruefungstermin hebt sie).
+     Der Streak waechst genau einmal am Tag, das Doppelte verdient einen Freeze.
+     Im Quiz-Mix zaehlt die KARTE, nicht die Frage — sonst waere die Dosis dort halb so gross. */
+  const { examDate } = useProfileStore.getState();
+  const dose = dailyDose(daysUntilExam(examDate));
+  const { completedToday, earnedFreeze } = useStreakStore.getState().review(dose);
+  if (completedToday) notifyToast('Tagesdosis geschafft');
+  if (earnedFreeze) notifyToast('Freeze verdient — ein Fehltag ist abgesichert');
+
+  return award.xpAdded;
+}
+
+/** Die Zähler der Zusammenfassung nach einer Bewertung. */
+function zaehle(s: SessionState, rating: CardRating, xp: number) {
+  return {
+    xpEarned: s.xpEarned + xp,
+    unsure: rating === 'unsure' ? s.unsure + 1 : s.unsure,
+    reviewed: rating === 'unsure' ? s.reviewed : s.reviewed + 1,
+    correct: rating === 'correct' ? s.correct + 1 : s.correct,
+    wrong: rating === 'wrong' ? s.wrong + 1 : s.wrong,
+  };
+}
 
 export const useSessionStore = create<SessionState>()((set, get) => ({
   ...IDLE,
 
   start: (opts) => {
-    const queue = buildQueue(opts);
-    set({ ...IDLE, started: true, queue, total: queue.length });
+    const karten = buildQueue(opts);
+    const lernform = opts.lernform ?? 'karten';
+    if (lernform !== 'quiz') {
+      set({ ...IDLE, started: true, queue: karten, total: karten.length });
+      return;
+    }
+    const plaetze = baueQuizMix({ names: karten, cards: useProgressStore.getState().flashcards.cards });
+    set({
+      ...IDLE,
+      started: true,
+      lernform,
+      queue: plaetze.map((p) => p.name),
+      fragen: plaetze.map((p) => p.frage),
+      total: karten.length,
+      plaetzeGesamt: plaetze.length,
+    });
   },
+
+  /* Die Antwort zählt SOFORT, nicht erst bei „Weiter". Sonst hiesse ein Seitenwechsel
+     zwischen Antwort und „Weiter": nichts verbucht — und wer falsch lag, kaeme zurueck und
+     bekaeme dieselbe Frage noch einmal, als waere nichts gewesen.
+
+     **Zwei richtige Antworten je Karte, bevor sie vorrueckt** (Projektinhaber, 2026-09-28,
+     `FRAGEN_JE_KARTE`). Auf der Lernkarte reicht eine. Die Karte wird genau EINMAL verbucht:
+     beim ersten Fehler (zurueck, wie auf der Lernkarte) oder bei der letzten noetigen
+     richtigen Antwort (ein Fach weiter). Was danach noch zu ihr kommt, ist Uebung — die
+     zweite Frage nach einem Fehler faellt nicht weg, sie zeigt den Muskel noch einmal in
+     einer anderen Form.
+
+     Riegel: `aufgedeckt` wird im selben synchronen Aufruf gesetzt, in dem gewertet wird.
+     Ein zweiter Klick (oder Taste) im selben Frame sieht ihn schon und tut nichts — dieselbe
+     Regel wie `gewertet` in `useQuizGame`: eine Frage, eine Wertung. */
+  beantworte: (optionId) => {
+    const { lernform, queue, fragen, aufgedeckt, quizStand } = get();
+    if (lernform !== 'quiz' || aufgedeckt !== null || queue.length === 0) return;
+    const name = queue[0];
+    const frage = fragen[0];
+    if (!frage || !frage.options.some((o) => o.id === optionId)) return;
+
+    const richtig = optionId === frage.correctId;
+    const stand = quizStand[name] ?? { richtig: 0, verbucht: false };
+    const richtigBisher = stand.richtig + (richtig ? 1 : 0);
+    const wirkung: QuizWirkung = stand.verbucht
+      ? 'uebung'
+      : !richtig
+        ? 'zurueck'
+        : richtigBisher >= FRAGEN_JE_KARTE
+          ? 'hoch'
+          : 'halb';
+    const bewertung: CardRating | null =
+      wirkung === 'zurueck' ? 'wrong' : wirkung === 'hoch' ? 'correct' : null;
+
+    const fachVorher = useProgressStore.getState().flashcards.cards[name]?.fach ?? 1;
+    const xp = bewertung ? verbuche(name, bewertung) : 0;
+    const fachNachher = useProgressStore.getState().flashcards.cards[name]?.fach ?? fachVorher;
+
+    set((s) => ({
+      queue: s.queue.slice(1),
+      fragen: s.fragen.slice(1),
+      quizStand: {
+        ...s.quizStand,
+        [name]: { richtig: richtigBisher, verbucht: stand.verbucht || bewertung !== null },
+      },
+      aufgedeckt: { name, frage, selectedId: optionId, richtig, wirkung, richtigBisher, fachVorher, fachNachher },
+      ...(bewertung ? zaehle(s, bewertung, xp) : {}),
+    }));
+  },
+
+  weiter: () => set({ aufgedeckt: null }),
 
   rate: (rating) => {
     const { queue } = get();
     if (queue.length === 0) return;
 
-    const name = queue[0];
-    const award = useProgressStore.getState().reviewCard(name, rating);
-    notifyAward(award);
-
-    /* Tages-Streak (7f): Jede bewertete Karte zaehlt auf die heutige Dosis ein — die
-       gleiche Dosis, die der Tagesplan vorschlaegt (ein naher Pruefungstermin hebt sie).
-       Der Streak waechst genau einmal am Tag, das Doppelte verdient einen Freeze. */
-    const { examDate } = useProfileStore.getState();
-    const dose = dailyDose(daysUntilExam(examDate));
-    const { completedToday, earnedFreeze } = useStreakStore.getState().review(dose);
-    if (completedToday) notifyToast('Tagesdosis geschafft');
-    if (earnedFreeze) notifyToast('Freeze verdient — ein Fehltag ist abgesichert');
-
+    const xp = verbuche(queue[0], rating);
     set((s) => ({
       queue: advanceQueue(s.queue, rating),
-      xpEarned: s.xpEarned + award.xpAdded,
-      unsure: rating === 'unsure' ? s.unsure + 1 : s.unsure,
-      reviewed: rating === 'unsure' ? s.reviewed : s.reviewed + 1,
-      correct: rating === 'correct' ? s.correct + 1 : s.correct,
-      wrong: rating === 'wrong' ? s.wrong + 1 : s.wrong,
+      fragen: advanceQueue(s.fragen, rating),
+      ...zaehle(s, rating, xp),
     }));
   },
 

@@ -267,7 +267,12 @@ export function eligibleFor(muscles: readonly Muscle[], mode: QuizMode): Muscle[
 function eligible(muscles: readonly Muscle[], mode: QuizMode): Muscle[] {
   const sub = MIXED_SUBMODES[mode]?.[0] ?? mode; // gemischte teilen die Anforderung der Submodi
   if (sub === 'innervation') return muscles.filter((m) => m.innervation.trim() !== '');
-  if (sub === 'muscle-to-function') return muscles.filter((m) => funktionAnzeige(m).trim() !== '');
+  /* Beide Richtungen, nicht nur „Muskel → Funktion": Bei „Funktion → Muskel" IST die Funktion
+     der Fragetext — ohne sie stuende eine leere Frage da. Der Quiz-Mix (Etappe 16) fragt jede
+     Frageart einzeln ab und verlaesst sich auf diese Regel. */
+  if (sub === 'muscle-to-function' || sub === 'function-to-muscle') {
+    return muscles.filter((m) => funktionAnzeige(m).trim() !== '');
+  }
   if (sub === 'image' || sub === 'name-image') return muscles.filter((m) => m.images.length > 0);
   if (sub === 'origin-insertion' || sub === 'insertion-origin') {
     return muscles.filter((m) => m.origin.trim() !== '' && m.insertion.trim() !== '');

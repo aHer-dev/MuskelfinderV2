@@ -37,14 +37,19 @@ function seed(names: string[], { fach = 1, inDays = 0 }: { fach?: number; inDays
   useProgressStore.setState((s) => ({ flashcards: { ...s.flashcards, cards } }))
 }
 
-/** Der eine Primärbutton des Screens — Link oder Button. */
+/**
+ * Der Vorschlag des Screens, in der Lernkarten-Form. Seit Etappe 16 (ADR 0014) steht der
+ * Quiz-Mix GLEICHWERTIG daneben — zwei Primärknöpfe, aber EIN Vorschlag: Beide starten
+ * dieselben Karten (geprüft unten). Ein dritter Primärknopf irgendwo auf dem Schirm fiele hier.
+ */
 function primaryAction(): HTMLElement {
   const primaries = document.querySelectorAll('.btn--primary')
-  expect(primaries).toHaveLength(1)
+  expect(primaries).toHaveLength(2)
+  expect(primaries[0].closest('.today__actions')).toBe(primaries[1].closest('.today__actions'))
   return primaries[0] as HTMLElement
 }
 
-describe('TodayPage — jeder Zustand hat genau einen Primärbutton', () => {
+describe('TodayPage — jeder Zustand hat genau einen Vorschlag', () => {
   beforeEach(() => {
     localStorage.clear()
     useProgressStore.getState().clearProgress()
@@ -167,6 +172,60 @@ describe('TodayPage — jeder Zustand hat genau einen Primärbutton', () => {
       'href',
       '/karteikasten',
     )
+  })
+})
+
+/* ── Quiz-Mix neben dem Vorschlag (Etappe 16, ADR 0014) ──
+   Derselbe Vorschlag, zweite Form, gleichwertig daneben (Entscheidung des Projektinhabers,
+   2026-09-28). Die harte Regel dahinter: Der Quiz-Knopf muss DIESELBEN Karten starten wie
+   „Los", mit derselben Zahl — sonst waere er ein zweiter Tagesplan neben dem ersten, und
+   genau DAS verbietet ADR 0007. */
+describe('TodayPage — „Los — … Karten als Quiz" gleichwertig neben „Los — … Karten lernen"', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    useProgressStore.getState().clearProgress()
+    useProfileStore.getState().setProfile('physio', null)
+    navigate.mockClear()
+  })
+
+  it('Heute dran: beide Knöpfe nennen dieselbe Zahl und starten dieselben Karten', () => {
+    const names = MUSCLES.slice(0, 60).map((m) => cardKey(m))
+    seed(names, { inDays: -3 })
+    renderPage()
+
+    const karten = primaryAction()
+    const quiz = screen.getByRole('button', { name: /Los — 20 Karten als Quiz/i })
+    expect(karten).toHaveTextContent(/Los — 20 Karten lernen/i)
+    expect(quiz).toHaveClass('btn--primary') // gleichwertig, nicht zweitrangig
+
+    fireEvent.click(karten)
+    fireEvent.click(quiz)
+
+    const [los, mix] = navigate.mock.calls.map(([, options]) => options.state.start)
+    expect(mix.names).toEqual(los.names) // dieselben 20, in derselben Reihenfolge
+    expect(mix.lernform).toBe('quiz')
+    // „Los" bleibt bitgleich wie vor Etappe 16 — die anderen Wege schicken auch keine Lernform.
+    expect(los).not.toHaveProperty('lernform')
+  })
+
+  it('die Zahl zählt Karten, nicht Fragen — auch in der Einzahl', () => {
+    /* Im Quiz-Mix kommt jede Karte zweimal (`FRAGEN_JE_KARTE`). „Los — 1 Quizfrage" hätte
+       zwei Fragen gestellt; die Karte ist die Einheit, die beide Knöpfe gemeinsam haben. */
+    seed([cardKey(MUSCLES[0])], { inDays: -1 })
+    renderPage()
+    expect(screen.getByRole('button', { name: /Los — 1 Karte als Quiz$/ })).toBeInTheDocument()
+  })
+
+  it('Nichts fällig: legt die neuen Muskeln an und startet sie als Quiz-Mix', () => {
+    seed([cardKey(MUSCLES[0])], { fach: 4, inDays: 30 })
+    renderPage()
+
+    fireEvent.click(screen.getByRole('button', { name: /5 neue als Quiz$/i }))
+
+    expect(Object.keys(useProgressStore.getState().flashcards.cards)).toHaveLength(6)
+    const start = navigate.mock.calls[0][1].state.start
+    expect(start.names).toHaveLength(5)
+    expect(start.lernform).toBe('quiz')
   })
 })
 

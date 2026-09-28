@@ -7,6 +7,33 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- **Quiz-Mix: die fälligen Karten als gemischte Quizfragen** (Etappe 16, 2026-09-28, ADR 0014,
+  `src/data/quiz-mix.ts`, `src/pages/FlashcardsPage.tsx`, `src/pages/TodayPage.tsx`).
+
+  Auf `/lernkarten` gibt es jetzt zwei Lernformen: **Karteikarten** (wie bisher) und
+  **Quiz-Mix**. Im Quiz-Mix wird jede fällige Karte zu Fragen mit vier Antworten, und die
+  Fragearten wechseln sich ab: Bild → Muskel, Name → Bild, Ursprung ↔ Ansatz, Funktion ↔
+  Muskel, Innervation, je Sitzung gleich oft und nie zweimal hintereinander. Bereich, Auswahl
+  und Kartenlimit (5/10/20/50) gelten für beide Formen gleich. Auf „Heute" stehen
+  **„Los — 20 Karten lernen"** und **„Los — 20 Karten als Quiz"** gleichwertig nebeneinander:
+  dieselben Karten, zwei Formen.
+
+  **Im Quiz-Mix rückt eine Karte erst nach zwei richtigen Antworten vor.** Jede Karte kommt
+  zweimal dran, in zwei verschiedenen Fragearten und mit einer ganzen Runde Abstand; die erste
+  richtige Antwort zeigt „1 von 2 richtig", erst die zweite schiebt die Karte ein Fach weiter.
+  Ein Fehler schickt sie sofort zurück (die zweite Frage kommt dann als Übung). Auf der
+  Lernkarte reicht weiterhin einmal. XP und Tagesdosis zählen je Karte, nicht je Frage. Nach
+  jeder Antwort steht da, welche Karte es war und was mit ihr passiert. Karten in Fach 7
+  fragen auch im Quiz-Mix den Namen frei ab. Das freie Quiz
+  (`/quiz`) bleibt, wie es ist, und verschiebt weiterhin keine Karte; die Anleitung erklärt
+  jetzt den Unterschied.
+
+  `check:wege` geht den Weg von „Heute" aus (Station 4c): Sie beantwortet die Fragen über die
+  Daten richtig und prüft am Speicher, dass 20 richtige Antworten in Runde 1 keine Karte
+  bewegen, die zweite die Karte weiterschiebt und ein Fehler sofort verbucht.
+  `check:oberflaeche` misst die laufende Sitzung vor und nach der Antwort (Block 9). Gefunden hat Block 9 sofort, dass „Weiter" auf dem Desktop
+  unter der Falz lag (y=1182 auf 900 px); die Leiste klebt jetzt auch dort.
+
 - **Funktion in Kurzform, der Text klappt darunter auf** (Etappe 15, 2026-09-27, ADR 0013,
   `src/data/funktion-kurz.ts`, `src/data/editorial/funktion-kurz.json`,
   `src/components/ui/FunktionsBeschreibung.tsx`).

@@ -76,6 +76,19 @@
   color: var(--text-tertiary);
 }
 
+/* Der eine Vorschlag, zwei gleichwertige Formen (Etappe 16, ADR 0014): Lernkarten und
+   Quiz-Mix. Mobil untereinander in voller Breite (Daumenzone), ab 640 px nebeneinander,
+   gleich breit und mittig. */
+.today__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.today__actions .btn svg {
+  flex: none;
+}
+
 /* ---- Sekundäres: ruhig, nie in Konkurrenz zum Primärbutton ------------ */
 .today__subtitle {
   margin: 0 0 var(--spacing-sm);
@@ -109,6 +122,22 @@
     width: auto;
     min-width: 260px;
     align-self: flex-start;
+  }
+
+  .today__actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* Gleich breit, egal wie lang die Beschriftung ist: Ein breiterer Knopf laese sich als der
+     wichtigere. `flex-basis` statt fester Breite, damit bei 200 % Text jeder in seine eigene
+     Zeile rutscht, statt die Karte quer zu druecken. Schlaegt die `min-width: 260px` von
+     oben, die fuer EINEN Knopf gedacht war. */
+  .today__actions .btn--block {
+    flex: 0 1 17rem;
+    min-width: 0;
+    align-self: auto;
   }
 
   .today__diagnosis li + li::before {
