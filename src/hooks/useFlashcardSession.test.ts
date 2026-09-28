@@ -9,6 +9,7 @@ import {
 } from '../store/useSessionStore';
 import { useProgressStore } from '../store/useProgressStore';
 import { useStreakStore } from '../store/useStreakStore';
+import { cardKey, getMuscles } from '../data';
 
 describe('advanceQueue (rein)', () => {
   it('richtig/falsch entfernen die aktuelle Karte', () => {
@@ -276,11 +277,28 @@ describe('Quiz-Mix — zweimal richtig, bevor die Karte vorrückt', () => {
     expect(fach(A)).toBe(2);
   });
 
-  it('die Tagesdosis zählt KARTEN, nicht Fragen', () => {
-    /* Zaehlte jede Frage, waere die Tagesdosis im Quiz-Mix nach der halben Arbeit „geschafft". */
+  it('die Tagesdosis misst Arbeit: eine Quiz-Karte zählt mit ihren zwei Antworten — einmal', () => {
+    /* 10 Quiz-Karten sind 20 Antworten, dieselbe Arbeit wie 20 Lernkarten — sonst waere die
+       Tagesdosis nach einer Quiz-Portion nur halb voll. Die Uebungsfrage nach einem Fehler
+       zaehlt NICHT noch einmal: verbucht wird je Karte genau einmal. */
     const result = starteQuiz([A, B]);
-    for (let i = 0; i < 4; i++) antworte(result, true);
-    expect(useStreakStore.getState().streak.reviewedToday).toBe(2);
+    antworte(result, false); // A: sofort verbucht, zaehlt 2
+    antworte(result, true); // B: erste Antwort, noch nichts
+    antworte(result, true); // A: Uebung, zaehlt nicht
+    antworte(result, true); // B: zweite richtige, zaehlt 2
+    expect(useStreakStore.getState().streak.reviewedToday).toBe(4);
+  });
+
+  it('das Limit zählt im Quiz-Mix ANTWORTEN: „20" heißt 10 Karten mit 20 Fragen', () => {
+    const namen = getMuscles().slice(0, 15).map((m) => cardKey(m));
+    const result = starteQuiz(namen);
+    act(() => result.current.exit());
+    act(() => result.current.start({ limit: 20, scope: 'all', lernform: 'quiz' }));
+    expect(result.current.total).toBe(10);
+    expect(result.current.gesamt).toBe(20);
+    // Die Karteikarten zaehlen weiter Karten.
+    act(() => result.current.start({ limit: 20, scope: 'all' }));
+    expect(result.current.total).toBe(15);
   });
 
   it('ein Doppelklick wertet einmal — der zweite trifft nicht die nächste Frage', () => {

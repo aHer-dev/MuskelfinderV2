@@ -60,18 +60,32 @@ auf „Heute" neben dem Vorschlag.
    Modus zu buchen, verfälschte genau die Zahl, aus der die Statistik den „schwächsten Modus"
    ableitet. Die Lernform selbst wird nicht gespeichert. ADR 0002 ist nicht berührt.
 7. **Auf „Heute" stehen beide Formen gleichwertig nebeneinander**: „Los — 20 Karten lernen"
-   und „Los — 20 Karten als Quiz", beide als Primärknopf, gleich breit, mittig. Die Zahl zählt
-   Karten, nicht Fragen — „20 Quizfragen" (so der erste Wortlaut) wären seit Entscheidung 2
-   in Wahrheit 40. Das ist eine
+   und „Los — 20 Quizfragen", beide als Primärknopf, gleich breit, mittig. Das ist eine
    Entscheidung des Projektinhabers (2026-09-28) und **lockert ADR 0007, Invariante 2 („genau
    ein Primärknopf je Zustand"), für genau dieses Paar.** Der erste Entwurf hatte den Quiz-Mix
    als ruhigen Zweitknopf daneben; er wirkte wie die schlechtere Wahl, und das ist er nicht.
-   Was von der Invariante bleibt, ist ihr Kern: **ein Vorschlag.** Beide Knöpfe nennen dieselbe
-   Zahl und starten dieselben Karten in derselben Reihenfolge; ein Quiz-Knopf mit eigener
-   Auswahl wäre ein zweiter Tagesplan. `TodayPage.test.tsx` und `check:wege` (Station 4c)
-   halten beides fest (gegengetestet: eine Karte weniger im Quiz-Knopf → Test fällt).
+   Was von der Invariante bleibt, ist ihr Kern: **ein Vorschlag.** Beide Knöpfe greifen in
+   dieselbe priorisierte Liste und versprechen dieselbe Arbeit (Entscheidung 9); ein
+   Quiz-Knopf mit eigener Auswahl wäre ein zweiter Tagesplan. `TodayPage.test.tsx` und
+   `check:wege` (Station 4c) halten das fest (gegengetestet).
 8. **Die Namen der Lernformen stehen an einer Stelle** (`LERNFORM_LABELS`): Umschalter,
    Knopf auf „Heute" und Anleitung lesen dort.
+9. **Eine Portion misst Antworten, nicht Karten** (Projektinhaber, 2026-09-28). Mit
+   Entscheidung 2 hätte „20" im Quiz-Mix 40 Fragen bedeutet — gemessen „1/40" auf dem Schirm,
+   doppelt so viel Arbeit wie 20 Lernkarten. Jetzt gilt in beiden Formen: 20 = 20 Antworten.
+   - „Heute": Der Quiz-Knopf nimmt die **obersten** Karten desselben Tagesplans, bis die
+     Tagesdosis an Antworten voll ist (`quizPortion`: 20 → 10 Karten), und nennt die genaue
+     Zahl der Fragen. Von vorn und ohne Lücke — keine billigere Karte von weiter hinten wird
+     vorgezogen, sonst käme eine weniger dringende vor einer dringenden. Eine Karte in Fach 7
+     kostet eine Antwort (Freitext), jede andere zwei.
+   - `/lernkarten`: Das Limit zählt im Quiz-Mix Fragen (`SessionOptions.limit`), angeboten
+     werden 10/20/40 (gerade Zahlen, eine Quiz-Karte kostet zwei). Beim Umschalten der
+     Lernform wandert das Limit zum nächstgelegenen Wert.
+   - Die Tagesdosis (Streak) zählt Antworten: Eine Quiz-Karte zählt bei ihrer Bewertung mit
+     zwei (`recordReview(…, anzahl)`), sonst wäre die Dosis nach einer Quiz-Portion halb voll.
+     Verbucht wird trotzdem je Karte genau einmal.
+   - Eine eigene Einstellung für die Portionsgröße gibt es noch nicht (es gibt überhaupt keine
+     Einstellungsseite); die Tagesdosis folgt weiter dem Prüfungstermin (`dailyDose`).
 
 ## Folgen
 
@@ -81,9 +95,10 @@ auf „Heute" neben dem Vorschlag.
   Fach; seit Entscheidung 2 sind es zwei, in zwei verschiedenen Arten. In Fach 7 verlangt die
   Karte in beiden Formen den Namen frei. Reicht auch das nicht, ist der nächste Hebel, den
   Quiz-Mix ab Fach 5 auf Lernkarten umzustellen, nicht, ihn aus dem Kasten zu nehmen.
-- Eine Quiz-Sitzung ist doppelt so lang wie eine Lernkarten-Sitzung mit derselben Zahl
-  Karten (20 Karten = 40 Fragen). Die Fortschrittsanzeige zählt darum Fragen, die
-  Zusammenfassung Karten.
+- Eine Quiz-Portion hat halb so viele Karten wie eine Lernkarten-Portion (20 Antworten =
+  10 Karten). Wer nur den Quiz-Mix nutzt, arbeitet den Stau darum langsamer ab — dieselbe
+  Arbeit bewegt weniger Karten, und jede davon sicherer. Die Fortschrittsanzeige zählt
+  Fragen, die Zusammenfassung Karten.
 - Eine Quizfrage nennt ihren Muskel oft nicht (Ursprung → Ansatz zeigt nur einen Ursprung).
   Nach der Antwort steht darum eine Zeile mit dem Namen der Karte und ihrem neuen Fach, und
   zwar **in** der klebenden Leiste neben „Weiter". Erst stand sie darüber; nach einer falschen

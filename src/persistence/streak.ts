@@ -127,6 +127,12 @@ export function recordReview(
   streak: StreakSection,
   dose: number,
   now: Date = new Date(),
+  /**
+   * Wie viele Antworten diese Bewertung gekostet hat. Eine Lernkarte: eine. Eine Karte im
+   * Quiz-Mix: zwei (`FRAGEN_JE_KARTE`) — die Tagesdosis misst Arbeit, und eine Quiz-Portion
+   * mit 10 Karten ist dieselbe Arbeit wie 20 Lernkarten (Etappe 16).
+   */
+  anzahl = 1,
 ): ReviewResult {
   const today = dayStamp(now);
   const base: StreakSection =
@@ -134,7 +140,7 @@ export function recordReview(
       ? streak
       : { ...streak, day: today, reviewedToday: 0, earnedFreezeToday: false };
 
-  const reviewedToday = base.reviewedToday + 1;
+  const reviewedToday = base.reviewedToday + anzahl;
   const target = Math.max(1, dose);
 
   // Der Streak zählt einen Tag genau einmal — auch wenn danach weitergelernt wird.

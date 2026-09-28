@@ -142,7 +142,9 @@ export function GuidePage() {
           Ursprung und Ansatz, Funktion, Innervation. Auf der Lernkarte schiebt eine richtige
           Antwort die Karte ein Fach weiter. Im Quiz-Mix kommt jede Karte zweimal dran, in zwei
           verschiedenen Arten, und rückt erst vor, wenn beide Antworten sitzen — aus vier
-          Möglichkeiten zu wählen ist leichter, als selbst darauf zu kommen. Falsch schickt die
+          Möglichkeiten zu wählen ist leichter, als selbst darauf zu kommen. Eine Portion hat
+          darum halb so viele Karten, aber gleich viele Antworten: 20 Quizfragen sind 10
+          Karten. Falsch schickt die
           Karte in beiden Formen zurück. In Fach {MAX_FACH} tippst du in beiden Formen den
           Namen frei.
         </p>

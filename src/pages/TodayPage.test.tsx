@@ -107,13 +107,17 @@ describe('TodayPage — jeder Zustand hat genau einen Vorschlag', () => {
     expect(options.state.start.names.sort()).toEqual([...names].sort())
   })
 
-  it('Überfällig-Stau: deckelt auf die Tagesdosis, nennt aber die volle Zahl', () => {
+  it('Überfällig: deckelt auf die Tagesdosis, nennt die volle Zahl — und kein „Stau"', () => {
+    /* „Wir holen den Stau in Etappen auf" und „Der Rest bleibt liegen und wartet …" sind vom
+       Projektinhaber gestrichen (2026-09-28): Die Diagnosezeile sagt die Lage schon. */
     const names = MUSCLES.slice(0, 60).map((m) => cardKey(m))
     seed(names, { inDays: -3 })
 
     renderPage()
 
-    expect(screen.getByRole('heading', { level: 1, name: /Stau/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'Heute dran' })).toBeInTheDocument()
+    expect(screen.queryByText(/Stau/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Der Rest/i)).not.toBeInTheDocument()
     expect(screen.getByText(/60 Karten fällig/i)).toBeInTheDocument()
     expect(screen.getByText(/heute 20 davon/i)).toBeInTheDocument()
     expect(primaryAction()).toHaveTextContent(/Los — 20 Karten lernen/i)
@@ -129,8 +133,9 @@ describe('TodayPage — jeder Zustand hat genau einen Vorschlag', () => {
        auf" begrüßt — genau der Satz, dessentwegen die vier Regionen durch elf Gelenkgruppen
        ersetzt wurden. Der Deckel (20 heute) bleibt richtig, die Schuldzuweisung nicht.
 
-       Gegenprobe für diese Zeile: `overdueTotal` in `TodayPage.headline` ignorieren → der
-       Test fällt, weil „Stau" wieder dasteht. */
+       Die Stau-Zeile ist seit 2026-09-28 ganz gestrichen; die Unterscheidung bleibt: Frisch
+       angelegte Karten bekommen „Viel vorgenommen", versäumte „Heute dran".
+       Gegenprobe: `overdueTotal` in `TodayPage.headline` ignorieren → der Test fällt. */
     /* `inDays: -1` ergibt `nextDue` = HEUTE (der Helfer rechnet `dueDate(1, anker)`): fällig,
        aber 0 Tage überfällig — genau der Zustand direkt nach dem Anlegen. */
     const names = MUSCLES.slice(0, 45).map((m) => cardKey(m))
@@ -142,7 +147,7 @@ describe('TodayPage — jeder Zustand hat genau einen Vorschlag', () => {
     expect(
       screen.getByRole('heading', { level: 1, name: /Viel vorgenommen/i }),
     ).toBeInTheDocument()
-    expect(screen.getByText(/nichts davon ist versäumt/i)).toBeInTheDocument()
+    expect(screen.queryByText(/Der Rest/i)).not.toBeInTheDocument()
     // Gedeckelt wird trotzdem — 45 Karten am Stück lernt niemand.
     expect(primaryAction()).toHaveTextContent(/Los — 20 Karten lernen/i)
   })
@@ -177,10 +182,10 @@ describe('TodayPage — jeder Zustand hat genau einen Vorschlag', () => {
 
 /* ── Quiz-Mix neben dem Vorschlag (Etappe 16, ADR 0014) ──
    Derselbe Vorschlag, zweite Form, gleichwertig daneben (Entscheidung des Projektinhabers,
-   2026-09-28). Die harte Regel dahinter: Der Quiz-Knopf muss DIESELBEN Karten starten wie
-   „Los", mit derselben Zahl — sonst waere er ein zweiter Tagesplan neben dem ersten, und
-   genau DAS verbietet ADR 0007. */
-describe('TodayPage — „Los — … Karten als Quiz" gleichwertig neben „Los — … Karten lernen"', () => {
+   2026-09-28). Die harte Regel dahinter: Der Quiz-Knopf greift in DIESELBE priorisierte Liste
+   wie „Los" (ihre obersten Karten) und verspricht dieselbe Arbeit — sonst waere er ein zweiter
+   Tagesplan neben dem ersten, und genau DAS verbietet ADR 0007. */
+describe('TodayPage — „Los — 20 Quizfragen" gleichwertig neben „Los — 20 Karten lernen"', () => {
   beforeEach(() => {
     localStorage.clear()
     useProgressStore.getState().clearProgress()
@@ -188,13 +193,16 @@ describe('TodayPage — „Los — … Karten als Quiz" gleichwertig neben „Lo
     navigate.mockClear()
   })
 
-  it('Heute dran: beide Knöpfe nennen dieselbe Zahl und starten dieselben Karten', () => {
+  it('Heute dran: gleiche Arbeit — 20 Karten lernen oder 20 Quizfragen zu den obersten 10 Karten', () => {
+    /* Eine Quiz-Karte kommt zweimal dran (`FRAGEN_JE_KARTE`). „20" heisst in beiden Formen
+       20 Antworten (Projektinhaber, 2026-09-28) — und der Quiz-Knopf nimmt die OBERSTEN Karten
+       derselben Liste: dieselbe Priorisierung, kein zweiter Tagesplan. */
     const names = MUSCLES.slice(0, 60).map((m) => cardKey(m))
     seed(names, { inDays: -3 })
     renderPage()
 
     const karten = primaryAction()
-    const quiz = screen.getByRole('button', { name: /Los — 20 Karten als Quiz/i })
+    const quiz = screen.getByRole('button', { name: /Los — 20 Quizfragen/i })
     expect(karten).toHaveTextContent(/Los — 20 Karten lernen/i)
     expect(quiz).toHaveClass('btn--primary') // gleichwertig, nicht zweitrangig
 
@@ -202,18 +210,23 @@ describe('TodayPage — „Los — … Karten als Quiz" gleichwertig neben „Lo
     fireEvent.click(quiz)
 
     const [los, mix] = navigate.mock.calls.map(([, options]) => options.state.start)
-    expect(mix.names).toEqual(los.names) // dieselben 20, in derselben Reihenfolge
+    expect(mix.names).toEqual(los.names.slice(0, 10))
     expect(mix.lernform).toBe('quiz')
     // „Los" bleibt bitgleich wie vor Etappe 16 — die anderen Wege schicken auch keine Lernform.
     expect(los).not.toHaveProperty('lernform')
   })
 
-  it('die Zahl zählt Karten, nicht Fragen — auch in der Einzahl', () => {
-    /* Im Quiz-Mix kommt jede Karte zweimal (`FRAGEN_JE_KARTE`). „Los — 1 Quizfrage" hätte
-       zwei Fragen gestellt; die Karte ist die Einheit, die beide Knöpfe gemeinsam haben. */
+  it('die Zahl am Quiz-Knopf ist die Zahl der Fragen — eine Karte in Fach 7 kostet nur eine', () => {
+    /* Fach 7 bleibt auch im Quiz-Mix Freitext, EINMAL (ADR 0008). */
+    seed([cardKey(MUSCLES[0])], { fach: 7, inDays: -1 })
+    renderPage()
+    expect(screen.getByRole('button', { name: /Los — 1 Quizfrage$/ })).toBeInTheDocument()
+  })
+
+  it('… und eine gewöhnliche Karte zwei', () => {
     seed([cardKey(MUSCLES[0])], { inDays: -1 })
     renderPage()
-    expect(screen.getByRole('button', { name: /Los — 1 Karte als Quiz$/ })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Los — 2 Quizfragen$/ })).toBeInTheDocument()
   })
 
   it('Nichts fällig: legt die neuen Muskeln an und startet sie als Quiz-Mix', () => {

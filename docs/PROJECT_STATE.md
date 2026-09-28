@@ -9,6 +9,8 @@
 - Branch: `main` · **Remote: github.com/aHer-dev/MuskelfinderV2** · Live: `aher-dev.github.io/MuskelfinderV2/`
 - **Etappe 15 (Funktion in Kurzform) und Etappe 16 (Quiz-Mix) sind am 2026-09-28 auf `main`
   gemergt** (Branch `feat/etappe-16-quiz-mix`, CI gruen) und gehen ueber `deploy.yml` live.
+  Danach, ebenfalls 2026-09-28: `feat/etappe-16b-quiz-portion` (Quiz-Portion = 20 Antworten,
+  Stau-Satz auf `/heute` gestrichen).
 - Status: **Migration abgeschlossen (Etappen 0–6, `v1.0`). ETAPPE 7 KOMPLETT (7a–7f). ETAPPE 8
   KOMPLETT (8a–8f). ETAPPE 9 KOMPLETT (9a–9d). ETAPPE 10 KOMPLETT (10a–10f). ETAPPE 11 (Zeitdruck) — code-seitig. Offen ist
   nur noch, was den FACHMANN braucht: `docs/todo.md`.** Die Abrufhaerte waechst mit der Beherrschung,
@@ -19,7 +21,7 @@
   niemandem mehr ungefragt Karten in den Kasten.**
   **ALLE VIER BRUECKEN STEHEN:** B1 (7d), B2 (7e), B3 (**9c**), B4 (8c).
   Statustafel: `docs/produkt-plan.md`. Offene Punkte: `docs/todo.md`.
-- Gate gruen: **`npm run verify`** — **880 Tests in 74 Dateien** (Stand 2026-09-28, Etappe 16;
+- Gate gruen: **`npm run verify`** — **891 Tests in 74 Dateien** (Stand 2026-09-28, Etappe 16;
   am 2026-09-27 nach Etappe 14a waren es 801 in 71;
   2026-08-14 nach der Abhaengigkeits-Aktualisierung waren es 782 in 69). Hier stand bis dahin „692" — die Zahl war seit den Handy- und
   PWA-Commits vom 2026-07-28 nicht nachgezogen worden.
@@ -62,12 +64,18 @@ ausfuehrenden Rechner nicht existieren; der Fehler faellt nicht im Build, sonder
   soll das Abrufen messen, nicht die Bildschirmgroesse. Esc/Fokus-Falle/Scroll-Sperre/
   Fokus-Rueckgabe liegen jetzt in `hooks/useDialogVerhalten` — `Sheet` und die Vollansicht
   teilen sie sich, statt sie zweimal zu fuehren.
+- **„Wir holen den Stau in Etappen auf" ist gestrichen** (Projektinhaber, 2026-09-28), ebenso
+  der Hinweis „Der Rest bleibt liegen und wartet …" (beide Varianten, `.today__note` ist weg).
+  Versaeumte Karten bekommen jetzt „Heute dran"; die Diagnosezeile („53 Karten faellig · heute
+  20 davon") sagt die Lage. Frisch angelegte Karten behalten „Viel vorgenommen — wir teilen es
+  ein" (`overdueTotal` trennt weiter). **Nicht wieder einbauen** — ein Test prueft, dass weder
+  „Stau" noch „Der Rest" auf `/heute` steht.
 - **Quiz-Mix als zweite Lernform (Etappe 16, 2026-09-28, ADR 0014).** Auf `/lernkarten`
   waehlt man „Karteikarten" oder „Quiz-Mix"; auf `/heute` stehen „Los — 20 Karten lernen" und
-  „Los — 20 Karten als Quiz" **gleichwertig** nebeneinander (beide Primaerknopf, mittig).
+  „Los — 20 Quizfragen" **gleichwertig** nebeneinander (beide Primaerknopf, mittig).
   ⚠️ **Das lockert ADR 0007, Invariante 2, fuer genau dieses Paar** (Projektinhaber,
-  2026-09-28). Es bleibt EIN Vorschlag: gleiche Zahl, gleiche Karten — ein Test und
-  `check:wege` 4c wachen darueber. Wer dem Quiz-Knopf eine eigene Auswahl gibt, baut einen
+  2026-09-28). Es bleibt EIN Vorschlag: dieselbe priorisierte Liste, dieselbe Arbeit — ein
+  Test und `check:wege` 4c wachen darueber. Wer dem Quiz-Knopf eine eigene Auswahl gibt, baut einen
   zweiten Tagesplan. Dieselbe Sitzung (`useSessionStore`, `SessionOptions.lernform`), dieselbe
   Warteschlange, dieselbe Portion.
   ⚠️ **ZWEIMAL RICHTIG, BEVOR EINE KARTE VORRUECKT** (Projektinhaber, 2026-09-28,
@@ -77,7 +85,12 @@ ausfuehrenden Rechner nicht existieren; der Fehler faellt nicht im Build, sonder
   Ein Fehler: sofort `wrong`, die zweite Frage bleibt als Uebung ohne Wirkung. Jede Karte wird
   genau EINMAL verbucht (`verbuche()` im Store — dieselbe Stelle wie die Lernkarte), die
   Tagesdosis zaehlt Karten, nicht Fragen. **Auf der Lernkarte reicht weiterhin einmal.**
-  Die Knopfzahl zaehlt darum KARTEN („20 Karten als Quiz" = 40 Fragen).
+  ⚠️ **EINE PORTION MISST ANTWORTEN, NICHT KARTEN** (Projektinhaber, 2026-09-28): „20" heisst
+  in beiden Formen 20 Antworten. Quiz-Knopf auf `/heute` = die obersten Karten desselben Plans,
+  bis 20 Fragen voll sind (`quizPortion`, 10 Karten; Fach 7 kostet eine). `/lernkarten`:
+  „Fragenlimit" 10/20/40 im Quiz-Mix. Die Tagesdosis zaehlt Antworten (`recordReview` mit
+  `anzahl`), sonst waere sie nach einer Quiz-Portion halb voll. **Eine Einstellungsseite gibt
+  es nicht** — die Tagesdosis folgt weiter dem Pruefungstermin (`dailyDose`).
   Die sieben Fragearten verteilt `verteileFormen` gleich oft und nie zweimal hintereinander.
   **Fach 7 bleibt auch im Quiz-Mix Freitext** (ADR 0008), einmal, wie auf der Lernkarte.
   Kein Eintrag in `mf.quizSeries`, kein neuer Speicherschluessel (ADR 0002 unberuehrt).

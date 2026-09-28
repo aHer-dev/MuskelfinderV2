@@ -26,8 +26,11 @@ interface StreakState {
 
   /** Beim App-Start: Fehltage abrechnen (Freeze einlösen oder neu beginnen). */
   rollOver: (now?: Date) => RollOverResult;
-  /** Eine bewertete Karte verbuchen; `dose` ist die heutige Tagesdosis (aus `data/today.ts`). */
-  review: (dose: number, now?: Date) => ReviewResult;
+  /**
+   * Eine bewertete Karte verbuchen; `dose` ist die heutige Tagesdosis (aus `data/today.ts`),
+   * `anzahl` die Antworten, die sie gekostet hat (Quiz-Mix: zwei).
+   */
+  review: (dose: number, now?: Date, anzahl?: number) => ReviewResult;
 
   /* Persistenz-Bridge (Backup-Import / Reset). */
   replaceStreak: (streak: StreakSection) => void;
@@ -45,8 +48,8 @@ export const useStreakStore = create<StreakState>()(
         return result;
       },
 
-      review: (dose, now = new Date()) => {
-        const result = recordReview(get().streak, dose, now);
+      review: (dose, now = new Date(), anzahl = 1) => {
+        const result = recordReview(get().streak, dose, now, anzahl);
         set({ streak: result.streak });
         return result;
       },
