@@ -61,6 +61,8 @@ describe('GuidePage — die Anleitung (10b)', () => {
     // Die Regel „zweimal richtig" (`FRAGEN_JE_KARTE`, Store-Test) — hier als Satz.
     expect(abschnitt).toHaveTextContent(/kommt jede Karte zweimal dran/);
     expect(abschnitt).toHaveTextContent(/erst vor, wenn beide Antworten sitzen/);
+    // Die Portion misst Antworten (`quizPortion`, TodayPage-Test) — hier als Satz.
+    expect(abschnitt).toHaveTextContent(/20 Quizfragen sind 10\s+Karten/);
     expect(within(abschnitt).getByRole('link', { name: /freie Quiz/i })).toHaveAttribute('href', '/quiz');
   });
 });

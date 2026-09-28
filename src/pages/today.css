@@ -68,13 +68,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-.today__note {
-  max-width: var(--measure); /* Satzspiegel. */
-  margin: 0;
-  font-size: 0.85rem;
-  line-height: 1.5;
-  color: var(--text-tertiary);
-}
 
 /* Der eine Vorschlag, zwei gleichwertige Formen (Etappe 16, ADR 0014): Lernkarten und
    Quiz-Mix. Mobil untereinander in voller Breite (Daumenzone), ab 640 px nebeneinander,

@@ -25,7 +25,9 @@ dieselben Karten, dieselbe Portion, und jede Antwort zählt in den Leitner-Kaste
       reicht einmal (Projektinhaber, 2026-09-28). Tagesdosis/XP je Karte, nicht je Frage
 - [x] Nach der Antwort: welche Karte es war und wohin sie ging; „Weiter" liegt im Bild
 - [x] Karten in Fach 7 bleiben Freitext (ADR 0008), auch im Quiz-Mix
-- [x] `/heute`: „Los — N Karten als Quiz" gleichwertig neben „Los — N Karten lernen", mittig,
+- [x] Eine Portion misst Antworten: „20 Quizfragen" = die obersten 10 Karten; Fragenlimit
+      10/20/40 auf `/lernkarten`; Tagesdosis zählt Antworten (Projektinhaber, 2026-09-28)
+- [x] `/heute`: „Los — 20 Quizfragen" gleichwertig neben „Los — 20 Karten lernen", mittig,
       dieselben Karten (Projektinhaber, 2026-09-28: gleichwertig statt Zweitknopf)
 - [x] Anleitung beschreibt beide Lernformen und die Grenze zum freien Quiz
 - [x] Tastatur: 1–4 antworten, Enter weiter, F schwierig

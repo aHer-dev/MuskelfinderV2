@@ -10,9 +10,12 @@ import {
   baueQuizMix,
   formenFuer,
   FRAGEN_JE_KARTE,
+  fragenFuerKarte,
   isLernform,
   LERNFORM_LABELS,
   MIX_FORMEN,
+  quizFragenAnzahl,
+  quizPortion,
   type MixForm,
   type QuizPlatz,
 } from './quiz-mix';
@@ -178,5 +181,50 @@ describe('Quiz-Mix — Regeln am Rand', () => {
     expect(isLernform('quiz')).toBe(true);
     expect(isLernform('toString')).toBe(false);
     expect(isLernform(undefined)).toBe(false);
+  });
+});
+
+describe('Quiz-Mix — die Portion misst Antworten, nicht Karten', () => {
+  /* „20" heisst in beiden Lernformen 20 Antworten (Projektinhaber, 2026-09-28). Eine Quiz-Karte
+     kostet zwei, eine Karte in Fach 7 eine (Freitext, ADR 0008). */
+  const frisch = ALLE_KARTEN.slice(0, 30);
+
+  it('Budget 20 über frische Karten: die obersten 10, in ihrer Reihenfolge', () => {
+    expect(quizPortion(frisch, kasten(frisch), 20)).toEqual(frisch.slice(0, 10));
+  });
+
+  it('Budget 0 heißt alle — wie „Alle fälligen" bei den Lernkarten', () => {
+    expect(quizPortion(frisch, kasten(frisch), 0)).toEqual(frisch);
+  });
+
+  it('eine Karte in Fach 7 kostet eine Antwort, die anderen zwei', () => {
+    const [a, b, c] = frisch;
+    const cards = { ...kasten([a, b]), ...kasten([c], 7) };
+    expect(fragenFuerKarte(a, cards)).toBe(FRAGEN_JE_KARTE);
+    expect(fragenFuerKarte(c, cards)).toBe(1);
+    expect(quizPortion([c, a, b], cards, 5)).toEqual([c, a, b]);
+  });
+
+  it('von vorn und ohne Lücke — keine billigere Karte von weiter hinten wird vorgezogen', () => {
+    /* Die Reihenfolge ist die Priorisierung des Tagesplans (7a). Passt die naechste Karte nicht
+       mehr, endet die Portion — sonst kaeme eine weniger dringende Karte vor einer dringenden. */
+    const [a, b, c] = frisch;
+    const cards = { ...kasten([a, b]), ...kasten([c], 7) };
+    expect(quizPortion([a, b, c], cards, 3)).toEqual([a]);
+  });
+
+  it('mindestens eine Karte, auch wenn das Budget kleiner ist als ihre Fragen', () => {
+    expect(quizPortion(frisch, kasten(frisch), 1)).toEqual([frisch[0]]);
+  });
+
+  it('die Zahl am Knopf ist genau die Zahl der Plätze, die die Sitzung stellt', () => {
+    /* `quizFragenAnzahl` steht auf dem Knopf, `baueQuizMix` baut die Sitzung — zwei Wege zur
+       selben Zahl, und hier wird geprueft, dass sie nicht auseinanderlaufen. */
+    const gemischt = { ...kasten(frisch), ...kasten(frisch.slice(0, 8), 7) };
+    const portion = quizPortion(frisch, gemischt, 20);
+    expect(quizFragenAnzahl(portion, gemischt)).toBe(
+      baueQuizMix({ names: portion, cards: gemischt, rng: createRng(4) }).length,
+    );
+    expect(quizFragenAnzahl(portion, gemischt)).toBe(20);
   });
 });

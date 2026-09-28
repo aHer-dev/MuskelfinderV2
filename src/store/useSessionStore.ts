@@ -19,7 +19,13 @@
 import { create } from 'zustand';
 import { cardKey, getMuscles } from '../data';
 import { applyCardFilter, isCardFilter, type CardFilter } from '../data/card-filter';
-import { baueQuizMix, FRAGEN_JE_KARTE, isLernform, type Lernform } from '../data/quiz-mix';
+import {
+  baueQuizMix,
+  FRAGEN_JE_KARTE,
+  isLernform,
+  quizPortion,
+  type Lernform,
+} from '../data/quiz-mix';
 import { dailyDose, daysUntilExam } from '../data/today';
 import { isDue } from '../persistence/leitner';
 import { useProfileStore } from './useProfileStore';
@@ -42,7 +48,10 @@ export function advanceQueue<T>(queue: T[], rating: CardRating): T[] {
 export type RegionScope = RegionId | 'all';
 
 export interface SessionOptions {
-  /** 0 = alle fälligen, sonst Obergrenze. */
+  /**
+   * 0 = alle fälligen, sonst Obergrenze. Karteikarten: Karten. Quiz-Mix: ANTWORTEN (eine
+   * Quiz-Karte kostet `FRAGEN_JE_KARTE`) — so ist „20" in beiden Formen dieselbe Arbeit.
+   */
   limit: number;
   scope: RegionScope;
   /**
@@ -225,19 +234,22 @@ const IDLE = {
 /**
  * Eine Karte bewerten: Leitner-Fach, XP, Tagesdosis. Die EINE Stelle dafür — Lernkarte und
  * Quiz-Mix rufen sie beide, damit eine Karte in beiden Formen genau gleich zählt.
+ * `antworten`: was die Karte an Arbeit gekostet hat (Quiz-Mix: `FRAGEN_JE_KARTE`).
  * Gibt die verdienten XP zurück.
  */
-function verbuche(name: string, rating: CardRating): number {
+function verbuche(name: string, rating: CardRating, antworten = 1): number {
   const award = useProgressStore.getState().reviewCard(name, rating);
   notifyAward(award);
 
   /* Tages-Streak (7f): Jede bewertete Karte zaehlt auf die heutige Dosis ein — die
      gleiche Dosis, die der Tagesplan vorschlaegt (ein naher Pruefungstermin hebt sie).
      Der Streak waechst genau einmal am Tag, das Doppelte verdient einen Freeze.
-     Im Quiz-Mix zaehlt die KARTE, nicht die Frage — sonst waere die Dosis dort halb so gross. */
+     Die Dosis misst ARBEIT: Eine Quiz-Karte zaehlt mit ihren Antworten, sonst waere sie nach
+     einer Quiz-Portion (10 Karten, 20 Antworten) nur halb geschafft. Verbucht wird trotzdem
+     je Karte einmal — die zweite Frage nach einem Fehler zaehlt nicht noch einmal. */
   const { examDate } = useProfileStore.getState();
   const dose = dailyDose(daysUntilExam(examDate));
-  const { completedToday, earnedFreeze } = useStreakStore.getState().review(dose);
+  const { completedToday, earnedFreeze } = useStreakStore.getState().review(dose, undefined, antworten);
   if (completedToday) notifyToast('Tagesdosis geschafft');
   if (earnedFreeze) notifyToast('Freeze verdient — ein Fehltag ist abgesichert');
 
@@ -259,13 +271,17 @@ export const useSessionStore = create<SessionState>()((set, get) => ({
   ...IDLE,
 
   start: (opts) => {
-    const karten = buildQueue(opts);
     const lernform = opts.lernform ?? 'karten';
     if (lernform !== 'quiz') {
+      const karten = buildQueue(opts);
       set({ ...IDLE, started: true, queue: karten, total: karten.length });
       return;
     }
-    const plaetze = baueQuizMix({ names: karten, cards: useProgressStore.getState().flashcards.cards });
+    /* Im Quiz-Mix zaehlt `limit` ANTWORTEN, nicht Karten: „20" heisst 20 Antworten, also
+       10 Karten — dieselbe Arbeit wie 20 Lernkarten (Projektinhaber, 2026-09-28). */
+    const { cards } = useProgressStore.getState().flashcards;
+    const karten = quizPortion(buildQueue({ ...opts, limit: 0 }), cards, opts.limit);
+    const plaetze = baueQuizMix({ names: karten, cards });
     set({
       ...IDLE,
       started: true,
@@ -312,7 +328,7 @@ export const useSessionStore = create<SessionState>()((set, get) => ({
       wirkung === 'zurueck' ? 'wrong' : wirkung === 'hoch' ? 'correct' : null;
 
     const fachVorher = useProgressStore.getState().flashcards.cards[name]?.fach ?? 1;
-    const xp = bewertung ? verbuche(name, bewertung) : 0;
+    const xp = bewertung ? verbuche(name, bewertung, FRAGEN_JE_KARTE) : 0;
     const fachNachher = useProgressStore.getState().flashcards.cards[name]?.fach ?? fachVorher;
 
     set((s) => ({

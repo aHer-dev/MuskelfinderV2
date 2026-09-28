@@ -309,6 +309,21 @@ describe('Quiz-Mix auf /lernkarten', () => {
     expect(screen.getByText(/Fach 7 fragen weiter den Namen frei ab/i)).toBeInTheDocument();
   });
 
+  it('das Limit zählt im Quiz-Mix Fragen — und wandert beim Umschalten mit', () => {
+    /* „20" heisst in beiden Formen 20 Antworten. „5 Fragen" gibt es nicht (eine Quiz-Karte
+       kostet zwei); wer 5 Karten gewaehlt hatte, bekommt das naechstgelegene: 10 Fragen. */
+    useProgressStore.getState().addCards([A]);
+    renderPage();
+    fireEvent.change(screen.getByRole('combobox', { name: 'Kartenlimit' }), { target: { value: '5' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Quiz-Mix' }));
+
+    const feld = screen.getByRole('combobox', { name: 'Fragenlimit' });
+    expect(feld).toHaveValue('10');
+    expect(within(feld).getAllByRole('option').map((o) => o.textContent)).toEqual([
+      'Alle fälligen', '10 Fragen', '20 Fragen', '40 Fragen',
+    ]);
+  });
+
   it('einmal richtig: „1 von 2" — die Karte bleibt, bis auch die zweite Frage sitzt', () => {
     starteQuizMix([A, B]);
     expect(screen.getAllByRole('radio')).toHaveLength(4);

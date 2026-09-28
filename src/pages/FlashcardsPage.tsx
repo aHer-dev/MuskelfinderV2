@@ -31,6 +31,21 @@ import '../components/features/quiz/quiz.css';
 
 const REGION_ORDER = getRegions().map((r) => r.id) as RegionId[];
 const LIMITS = [0, 5, 10, 20, 50];
+/* Im Quiz-Mix zaehlt das Limit ANTWORTEN (`SessionOptions.limit`): „20" ist in beiden Formen
+   dieselbe Arbeit. Nur gerade Zahlen — eine Quiz-Karte kostet zwei (`FRAGEN_JE_KARTE`), und
+   „5 Fragen" haette 2 Karten mit 4 Fragen bedeutet. */
+const QUIZ_LIMITS = [0, 10, 20, 40];
+
+/**
+ * Das Limit beim Wechsel der Lernform: bleibt, wenn die neue Form es auch anbietet, sonst das
+ * naechstgelegene. Ohne das zeigte das Auswahlfeld eine Zahl, mit der die Sitzung nicht startet.
+ */
+function limitFuer(limit: number, liste: readonly number[]): number {
+  if (limit === 0 || liste.includes(limit)) return limit;
+  return liste
+    .filter((n) => n > 0)
+    .reduce((best, n) => (Math.abs(n - limit) < Math.abs(best - limit) ? n : best));
+}
 
 /** Die drei Lücken-Filter (8b). „Alle" ist kein Filter, sondern seine Abwesenheit. */
 const FILTERS: Array<{ value: CardFilter; label: string }> = [
@@ -173,7 +188,10 @@ export function FlashcardsPage() {
           onLimit={setLimit}
           onScope={setScope}
           onFilter={setFilter}
-          onLernform={setLernform}
+          onLernform={(form) => {
+            setLernform(form);
+            setLimit((l) => limitFuer(l, form === 'quiz' ? QUIZ_LIMITS : LIMITS));
+          }}
           onStart={() => session.start({ limit, scope, filter, lernform })}
         />
       ) : session.done ? (
@@ -354,15 +372,17 @@ function SetupScreen({
         </label>
 
         <label className="fc-field">
-          <span className="fc-field__label">Kartenlimit</span>
+          <span className="fc-field__label">
+            {lernform === 'quiz' ? 'Fragenlimit' : 'Kartenlimit'}
+          </span>
           <select
             className="fc-select"
             value={limit}
             onChange={(e) => onLimit(Number(e.target.value))}
           >
-            {LIMITS.map((n) => (
+            {(lernform === 'quiz' ? QUIZ_LIMITS : LIMITS).map((n) => (
               <option key={n} value={n}>
-                {n === 0 ? 'Alle fälligen' : `${n} Karten`}
+                {n === 0 ? 'Alle fälligen' : `${n} ${lernform === 'quiz' ? 'Fragen' : 'Karten'}`}
               </option>
             ))}
           </select>

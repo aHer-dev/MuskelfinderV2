@@ -6,6 +6,13 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Changed
+- **„Heute" ohne Stau-Satz** (2026-09-28, `src/pages/TodayPage.tsx`). Die Überschrift „Wir holen
+  den Stau in Etappen auf" und der Hinweis „Der Rest bleibt liegen und wartet. Eine Sitzung am
+  Stück ist mehr wert als eine, die du abbrichst." sind gestrichen (auch die Variante für frisch
+  angelegte Karten). Bei versäumten Karten steht jetzt „Heute dran"; die Diagnosezeile („53
+  Karten fällig · heute 20 davon") sagt die Lage schon.
+
 ### Added
 - **Quiz-Mix: die fälligen Karten als gemischte Quizfragen** (Etappe 16, 2026-09-28, ADR 0014,
   `src/data/quiz-mix.ts`, `src/pages/FlashcardsPage.tsx`, `src/pages/TodayPage.tsx`).
@@ -15,14 +22,17 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   Fragearten wechseln sich ab: Bild → Muskel, Name → Bild, Ursprung ↔ Ansatz, Funktion ↔
   Muskel, Innervation, je Sitzung gleich oft und nie zweimal hintereinander. Bereich, Auswahl
   und Kartenlimit (5/10/20/50) gelten für beide Formen gleich. Auf „Heute" stehen
-  **„Los — 20 Karten lernen"** und **„Los — 20 Karten als Quiz"** gleichwertig nebeneinander:
-  dieselben Karten, zwei Formen.
+  **„Los — 20 Karten lernen"** und **„Los — 20 Quizfragen"** gleichwertig nebeneinander:
+  derselbe Plan, dieselbe Arbeit.
 
   **Im Quiz-Mix rückt eine Karte erst nach zwei richtigen Antworten vor.** Jede Karte kommt
   zweimal dran, in zwei verschiedenen Fragearten und mit einer ganzen Runde Abstand; die erste
   richtige Antwort zeigt „1 von 2 richtig", erst die zweite schiebt die Karte ein Fach weiter.
   Ein Fehler schickt sie sofort zurück (die zweite Frage kommt dann als Übung). Auf der
-  Lernkarte reicht weiterhin einmal. XP und Tagesdosis zählen je Karte, nicht je Frage. Nach
+  Lernkarte reicht weiterhin einmal. **Eine Portion misst Antworten, nicht Karten:** „20
+  Quizfragen" sind die obersten 10 Karten des Tagesplans, je zweimal; auf `/lernkarten` heißt
+  das Limit im Quiz-Mix „Fragenlimit" (10/20/40). Die Tagesdosis zählt Antworten, eine
+  Quiz-Karte also zwei. Nach
   jeder Antwort steht da, welche Karte es war und was mit ihr passiert. Karten in Fach 7
   fragen auch im Quiz-Mix den Namen frei ab. Das freie Quiz
   (`/quiz`) bleibt, wie es ist, und verschiebt weiterhin keine Karte; die Anleitung erklärt

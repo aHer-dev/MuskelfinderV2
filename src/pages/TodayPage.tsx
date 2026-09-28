@@ -12,7 +12,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { getMuscleByCardKey } from '../data';
 import { regionLabel } from '../data/labels';
 import { lookupSuggestions } from '../data/lookups';
-import type { Lernform } from '../data/quiz-mix';
+import { quizFragenAnzahl, quizPortion, type Lernform } from '../data/quiz-mix';
 import type { TodayPlan } from '../data/today';
 import { useTodayPlan } from '../hooks/useTodayPlan';
 import { useCompleteOnboarding } from '../hooks/useCompleteOnboarding';
@@ -35,6 +35,10 @@ function muscleWord(n: number): string {
   return n === 1 ? 'Muskel' : 'Muskeln';
 }
 
+function questionWord(n: number): string {
+  return n === 1 ? 'Quizfrage' : 'Quizfragen';
+}
+
 
 /** Überschrift je Zustand. Keine Schuld-Botschaft, kein Jubel — nur die Lage. */
 function headline(plan: TodayPlan): string {
@@ -44,14 +48,12 @@ function headline(plan: TodayPlan): string {
     case 'new':
       return 'Alles wiederholt';
     case 'backlog':
-      /* „Stau" ist eine Aussage über die Vergangenheit — sie setzt voraus, dass etwas
-         LIEGEN GEBLIEBEN ist. Seit der Mehrfachwahl (2026-07-27) legt ein Schüler in einem
-         Zug 35 Karten an; die sind sofort fällig, aber keine einzige ist versäumt. Genau
-         dieser Satz war der Grund für die Gelenkgruppen („Obere Extremität" = 53 Karten),
-         und ohne diese Verzweigung wäre er zurück. `overdueTotal` ist der Unterschied. */
-      return plan.overdueTotal === 0
-        ? 'Viel vorgenommen — wir teilen es ein'
-        : 'Wir holen den Stau in Etappen auf';
+      /* Hier stand bei versäumten Karten „Wir holen den Stau in Etappen auf" — vom
+         Projektinhaber gestrichen (2026-09-28), ebenso der Hinweis „Der Rest bleibt liegen
+         und wartet …" darunter. Die Diagnosezeile sagt die Lage schon („53 Karten fällig ·
+         heute 20 davon"); ein Satz, der sie noch einmal bewertet, ist nur Druck.
+         Frisch angelegte Karten (0 versäumt, `overdueTotal`) behalten ihre eigene Zeile. */
+      return plan.overdueTotal === 0 ? 'Viel vorgenommen — wir teilen es ein' : 'Heute dran';
     case 'review':
       return 'Heute dran';
   }
@@ -159,6 +161,11 @@ export function TodayPage() {
     });
   };
 
+  /* Die Quiz-Portion: die obersten Karten desselben Plans, bis die Tagesdosis an ANTWORTEN
+     voll ist. Die Zahl am Knopf ist genau die Zahl der Fragen, die die Sitzung stellt. */
+  const quizKarten = quizPortion(plan.dueCards, cards, plan.dailyDose);
+  const quizFragen = quizFragenAnzahl(quizKarten, cards);
+
   /** „Neue aus dem Pfad": erst in den Kasten, dann direkt lernen. */
   const learnSuggestions = (lernform: Lernform = 'karten') => {
     addCards(plan.newSuggestions);
@@ -226,13 +233,13 @@ export function TodayPage() {
               ))}
             </ul>
 
-            {/* Zwei Wege zu DENSELBEN Karten (Etappe 16): als Lernkarten oder als Quiz-Mix.
+            {/* Zwei Wege zu DEMSELBEN Vorschlag (Etappe 16): als Lernkarten oder als Quiz-Mix.
                 Gleichwertig nebeneinander — Entscheidung des Projektinhabers (2026-09-28,
                 ADR 0014). Das lockert ADR 0007 (Invariante 2) fuer genau dieses Paar: Es bleibt
-                EIN Vorschlag, denn beide Knoepfe starten dieselben Karten mit derselben Zahl;
-                waehlbar ist nur die Form. Ein Test haelt das fest (`TodayPage.test.tsx`).
-                Die Zahl zaehlt KARTEN, nicht Fragen: Im Quiz-Mix kommt jede Karte zweimal
-                (`FRAGEN_JE_KARTE`) — „Los — 20 Quizfragen" waeren in Wahrheit 40 gewesen. */}
+                EIN Vorschlag, denn beide Knoepfe greifen in dieselbe priorisierte Liste und
+                versprechen dieselbe ARBEIT — 20 Lernkarten oder 20 Quizfragen. Weil eine
+                Quiz-Karte zweimal drankommt (`FRAGEN_JE_KARTE`), sind das die obersten 10
+                Karten (`quizPortion`). Ein Test haelt das fest (`TodayPage.test.tsx`). */}
             <div className="today__actions">
               {plan.kind === 'new' ? (
                 <>
@@ -266,24 +273,15 @@ export function TodayPage() {
                   <button
                     type="button"
                     className="btn btn--primary btn--block"
-                    onClick={() => startSession(plan.dueCards, 'quiz')}
+                    onClick={() => startSession(quizKarten, 'quiz')}
                   >
                     <Icon name="icQuiz" size={18} />
-                    Los — {plan.dueCards.length} {cardWord(plan.dueCards.length)} als Quiz
+                    Los — {quizFragen} {questionWord(quizFragen)}
                   </button>
                 </>
               )}
             </div>
 
-            {plan.kind === 'backlog' && (
-              <p className="today__note">
-                {plan.overdueTotal === 0
-                  ? 'Der Rest wartet auf die nächsten Tage — nichts davon ist versäumt. Eine Sitzung '
-                    + 'am Stück ist mehr wert als eine, die du abbrichst.'
-                  : 'Der Rest bleibt liegen und wartet. Eine Sitzung am Stück ist mehr wert als eine, '
-                    + 'die du abbrichst.'}
-              </p>
-            )}
           </div>
         )}
 

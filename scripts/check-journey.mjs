@@ -393,14 +393,15 @@ await withApp(async ({ page, goto, errors }) => {
      „weiter in Fach 2" sagen, ohne dass etwas verbucht wurde. */
   L('\n4c. Quiz-Mix von /heute — zweimal richtig, bevor eine Karte vorrueckt');
   await goto('/heute');
-  const quizMix = page.getByRole('button', { name: /als Quiz$/ }).first();
+  const quizMix = page.getByRole('button', { name: /Quizfragen?$/ }).first();
   pruefe(await quizMix.count() > 0, '/heute bietet den Quiz-Mix neben dem Vorschlag an');
-  /* Gleichwertig daneben (Projektinhaber, 2026-09-28) — aber EIN Vorschlag: Beide Knoepfe
-     nennen dieselbe Zahl. Ein Quiz-Knopf mit eigener Zahl waere ein zweiter Tagesplan. */
+  /* Gleichwertig daneben (Projektinhaber, 2026-09-28) — und dieselbe ARBEIT: „20 Karten
+     lernen" und „20 Quizfragen" (die obersten 10 Karten, je zweimal). In diesem Kasten liegt
+     keine Karte in Fach 7, also muessen beide Zahlen gleich sein. */
   const zahlen = (await page.locator('.today__actions .btn--primary').allInnerTexts())
     .map((t) => t.match(/\d+/)?.[0]);
   pruefe(zahlen.length === 2 && zahlen[0] === zahlen[1],
-    `Zwei gleichwertige Knoepfe, dieselbe Zahl (${zahlen.join(' / ')}) — ein Vorschlag, zwei Formen`);
+    `Zwei gleichwertige Knoepfe, dieselbe Arbeit (${zahlen.join(' Karten / ')} Fragen)`);
   await quizMix.click();
   await page.waitForTimeout(600);
 

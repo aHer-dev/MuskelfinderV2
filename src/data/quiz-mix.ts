@@ -150,6 +150,68 @@ export function verteileFormen(
 }
 
 /**
+ * Der Muskel, zu dem eine Karte im Quiz-Mix gefragt wird — oder `null`: Die Karte kommt als
+ * Lernkarte (siehe `baueQuizMix`). Die EINE Regel dafür, damit Portion und Sitzung dieselbe
+ * Karte gleich behandeln.
+ */
+function quizMuskelFuer(
+  name: string,
+  cards: Record<string, FlashcardCard>,
+  resolve: (key: string) => Muscle | undefined,
+): Muscle | null {
+  const card = cards[name];
+  if (card && recallStage(card.fach) === 'produce') return null;
+  const muscle = resolve(name);
+  return muscle && formenFuer(muscle).length > 0 ? muscle : null;
+}
+
+/** Wie viele Antworten eine Karte im Quiz-Mix kostet: `FRAGEN_JE_KARTE`, als Lernkarte eine. */
+export function fragenFuerKarte(
+  name: string,
+  cards: Record<string, FlashcardCard>,
+  resolve: (key: string) => Muscle | undefined = getMuscleByCardKey,
+): number {
+  return quizMuskelFuer(name, cards, resolve) ? FRAGEN_JE_KARTE : 1;
+}
+
+/** Wie viele Antworten eine Quiz-Mix-Sitzung über diese Karten hat. */
+export function quizFragenAnzahl(
+  names: readonly string[],
+  cards: Record<string, FlashcardCard>,
+  resolve: (key: string) => Muscle | undefined = getMuscleByCardKey,
+): number {
+  return names.reduce((summe, name) => summe + fragenFuerKarte(name, cards, resolve), 0);
+}
+
+/**
+ * Die Karten einer Quiz-Mix-Portion: von vorn, solange ihre Fragen ins Budget passen
+ * (`budget` = Antworten; 0 = alle).
+ *
+ * **Die Portion misst Arbeit, nicht Karten** (Projektinhaber, 2026-09-28): 20 Lernkarten sind
+ * 20 Antworten, 20 Quiz-Karten wären 40. Mit Budget 20 nimmt der Quiz-Mix darum 10 Karten.
+ * Von vorn und ohne Lücke: Die Reihenfolge ist die Priorisierung des Tagesplans (7a) —
+ * eine billigere Karte von weiter hinten vorzuziehen, hiesse eine weniger dringende zuerst.
+ * Mindestens eine Karte, sonst gäbe es bei knappem Budget gar keine Sitzung.
+ */
+export function quizPortion(
+  names: readonly string[],
+  cards: Record<string, FlashcardCard>,
+  budget: number,
+  resolve: (key: string) => Muscle | undefined = getMuscleByCardKey,
+): string[] {
+  if (budget <= 0) return [...names];
+  const portion: string[] = [];
+  let fragen = 0;
+  for (const name of names) {
+    const kosten = fragenFuerKarte(name, cards, resolve);
+    if (fragen + kosten > budget && portion.length > 0) break;
+    portion.push(name);
+    fragen += kosten;
+  }
+  return portion;
+}
+
+/**
  * Ein Platz in der Sitzung: eine Quizfrage zu einer Karte — oder `frage: null`, dann kommt
  * die Karte als Lernkarte (siehe `baueQuizMix`).
  */
@@ -197,10 +259,8 @@ export function baueQuizMix({
 }: QuizMixInput): QuizPlatz[] {
   const quizMuskel = new Map<string, Muscle>();
   for (const name of names) {
-    const card = cards[name];
-    if (card && recallStage(card.fach) === 'produce') continue;
-    const muscle = resolve(name);
-    if (muscle && formenFuer(muscle).length > 0) quizMuskel.set(name, muscle);
+    const muscle = quizMuskelFuer(name, cards, resolve);
+    if (muscle) quizMuskel.set(name, muscle);
   }
 
   // Die Folge der Plätze: Runde 1 alle Karten, jede weitere Runde nur die Quiz-Karten.

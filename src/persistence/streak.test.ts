@@ -84,6 +84,26 @@ describe('recordReview — der Streak wächst mit der Tagesdosis', () => {
   });
 });
 
+describe('recordReview — die Dosis misst Antworten (Etappe 16)', () => {
+  it('eine Quiz-Karte zählt mit ihren zwei Antworten: 10 Quiz-Karten füllen eine Dosis von 20', () => {
+    /* Eine Quiz-Portion hat 10 Karten und 20 Antworten — dieselbe Arbeit wie 20 Lernkarten.
+       Zaehlte jede Karte nur einmal, waere die Tagesdosis nach der Quiz-Portion halb voll. */
+    let state = streak();
+    let completed = 0;
+    for (let i = 0; i < 10; i++) {
+      const result = recordReview(state, DOSE, at('2026-09-28'), 2);
+      state = result.streak;
+      if (result.completedToday) completed++;
+    }
+    expect(state.reviewedToday).toBe(20);
+    expect(completed).toBe(1);
+  });
+
+  it('ohne Angabe zählt eine Bewertung eins — wie bisher', () => {
+    expect(recordReview(streak(), DOSE, at('2026-09-28')).streak.reviewedToday).toBe(1);
+  });
+});
+
 describe('Freeze — verdient durch Überperformen, nie gekauft', () => {
   it('das Doppelte der Tagesdosis verdient genau einen Freeze', () => {
     const { state, freezes } = reviewMany(streak(), DOSE * 2, '2026-07-12');
