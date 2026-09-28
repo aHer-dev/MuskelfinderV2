@@ -7,6 +7,8 @@
 ## Stand
 - Datum: 2026-09-28
 - Branch: `main` · **Remote: github.com/aHer-dev/MuskelfinderV2** · Live: `aher-dev.github.io/MuskelfinderV2/`
+- **Etappe 15 (Funktion in Kurzform) und Etappe 16 (Quiz-Mix) sind am 2026-09-28 auf `main`
+  gemergt** (Branch `feat/etappe-16-quiz-mix`, CI gruen) und gehen ueber `deploy.yml` live.
 - Status: **Migration abgeschlossen (Etappen 0–6, `v1.0`). ETAPPE 7 KOMPLETT (7a–7f). ETAPPE 8
   KOMPLETT (8a–8f). ETAPPE 9 KOMPLETT (9a–9d). ETAPPE 10 KOMPLETT (10a–10f). ETAPPE 11 (Zeitdruck) — code-seitig. Offen ist
   nur noch, was den FACHMANN braucht: `docs/todo.md`.** Die Abrufhaerte waechst mit der Beherrschung,
