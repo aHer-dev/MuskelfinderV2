@@ -9,15 +9,17 @@ import { initGroups } from './groups'
 import { initPalpation, withPalpation } from './palpation'
 import { initCurriculum } from './curriculum'
 import { initSegments, withSegments } from './segments'
+import { initFunktionKurz, withFunktionKurz } from './funktion-kurz'
 
-/* Drei HANDGEPFLEGTE Ebenen kommen hier dazu, alle von ausserhalb `generated/` (das
+/* Vier HANDGEPFLEGTE Ebenen kommen hier dazu, alle von ausserhalb `generated/` (das
    ueberschreibt `npm run migrate:data`): die Herleitung des Namens (8d), die
-   Palpationshinweise (9d) und die nachgetragenen Segmente. Fehlt ein Eintrag, bleibt
+   Palpationshinweise (9d), die nachgetragenen Segmente und die Funktion in Kurzform (15). Fehlt ein Eintrag, bleibt
    der Muskel unveraendert — die Detailseite rendert dann wie vorher, ohne leeren Kasten. */
 const muscles = validateMuscles(musclesData as unknown)
   .map((muscle) => withEtymology(muscle))
   .map((muscle) => withPalpation(muscle))
   .map((muscle) => withSegments(muscle))
+  .map((muscle) => withFunktionKurz(muscle))
 const regions = validateRegions(regionsData as unknown)
 const movements = validateMovements(movementsData as unknown)
 /* Funktionelle Gruppen (9a), Palpation (9d) und die Kartenschluessel (ADR 0012) werden
@@ -28,6 +30,7 @@ initGroups(muscles)
 initPalpation(muscles)
 initCurriculum(muscles)
 initSegments(muscles)
+initFunktionKurz(muscles)
 
 const musclesById = new Map(muscles.map((muscle) => [muscle.id, muscle]))
 const musclesByCardKey = new Map(muscles.map((muscle) => [cardKey(muscle), muscle]))

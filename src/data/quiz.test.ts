@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { getMuscles } from './loader';
 import { createRng, generateQuiz, quizSeriesKey, readQuizHandoff } from './quiz';
+import { funktionAnzeige } from './funktion-kurz';
 import type { Muscle, QuizMode } from '../types';
 
 function m(partial: Partial<Muscle> & { id: string; nameLatin: string }): Muscle {
@@ -151,9 +152,10 @@ describe('generateQuiz', () => {
      Der Test rechnet die gueltigen Antworten UNABHAENGIG vom Generator nach — sonst pruefte er
      nur, dass die Funktion tut, was sie tut. */
   const GUELTIG: Partial<Record<QuizMode, { zeigt: (m: Muscle) => string; antwortet: (m: Muscle) => string }>> = {
-    'muscle-to-function': { zeigt: (m) => m.nameLatin, antwortet: (m) => m.functionDescription },
+    /* Beide Funktionsmodi stellen seit Etappe 15 die KURZFORM: gleiche Kurzform = gleiche Frage. */
+    'muscle-to-function': { zeigt: (m) => m.nameLatin, antwortet: funktionAnzeige },
     innervation: { zeigt: (m) => m.nameLatin, antwortet: (m) => m.innervation },
-    'function-to-muscle': { zeigt: (m) => m.functionDescription, antwortet: (m) => m.nameLatin },
+    'function-to-muscle': { zeigt: funktionAnzeige, antwortet: (m) => m.nameLatin },
     'origin-insertion': { zeigt: (m) => m.origin, antwortet: (m) => m.insertion },
     'insertion-origin': { zeigt: (m) => m.insertion, antwortet: (m) => m.origin },
   };
@@ -338,3 +340,30 @@ describe('Distraktoren kommen aus der Nachbarschaft', () => {
     );
   });
 })
+
+/* Beide Funktionsmodi stellen die Kurzform, nicht den langen Text (Etappe 15). Stuende
+   eine lange Option zwischen kurzen, verriete ihre Laenge die Antwort. */
+describe('Funktionsmodi stellen die Kurzform', () => {
+  const alle = getMuscles();
+  const byId = new Map(alle.map((x) => [x.id, x]));
+
+  it('Muskel → Funktion: jede Option ist die Kurzform ihres Muskels', () => {
+    for (let seed = 1; seed <= 10; seed++) {
+      for (const frage of generateQuiz(alle, 'muscle-to-function', 20, createRng(seed))) {
+        for (const o of frage.options) {
+          expect(o.label).toBe(funktionAnzeige(byId.get(o.muscleId!)!));
+          expect(o.label).not.toBe(byId.get(o.muscleId!)!.functionDescription);
+        }
+      }
+    }
+  });
+
+  it('Funktion → Muskel: der Fragetext ist die Kurzform', () => {
+    for (let seed = 1; seed <= 10; seed++) {
+      for (const frage of generateQuiz(alle, 'function-to-muscle', 20, createRng(seed))) {
+        expect(frage.prompt).toBe(funktionAnzeige(byId.get(frage.muscleId)!));
+      }
+    }
+  });
+});
+

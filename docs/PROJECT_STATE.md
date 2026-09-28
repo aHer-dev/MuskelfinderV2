@@ -5,8 +5,10 @@
 > docs/migration-plan.md (abgeschlossen), docs/architecture.md und den ADRs.
 
 ## Stand
-- Datum: 2026-09-27
+- Datum: 2026-09-28
 - Branch: `main` · **Remote: github.com/aHer-dev/MuskelfinderV2** · Live: `aher-dev.github.io/MuskelfinderV2/`
+- **Etappe 15 (Funktion in Kurzform) und Etappe 16 (Quiz-Mix) sind am 2026-09-28 auf `main`
+  gemergt** (Branch `feat/etappe-16-quiz-mix`, CI gruen) und gehen ueber `deploy.yml` live.
 - Status: **Migration abgeschlossen (Etappen 0–6, `v1.0`). ETAPPE 7 KOMPLETT (7a–7f). ETAPPE 8
   KOMPLETT (8a–8f). ETAPPE 9 KOMPLETT (9a–9d). ETAPPE 10 KOMPLETT (10a–10f). ETAPPE 11 (Zeitdruck) — code-seitig. Offen ist
   nur noch, was den FACHMANN braucht: `docs/todo.md`.** Die Abrufhaerte waechst mit der Beherrschung,
@@ -17,7 +19,8 @@
   niemandem mehr ungefragt Karten in den Kasten.**
   **ALLE VIER BRUECKEN STEHEN:** B1 (7d), B2 (7e), B3 (**9c**), B4 (8c).
   Statustafel: `docs/produkt-plan.md`. Offene Punkte: `docs/todo.md`.
-- Gate gruen: **`npm run verify`** — **801 Tests in 71 Dateien** (Stand 2026-09-27, Etappe 14a;
+- Gate gruen: **`npm run verify`** — **880 Tests in 74 Dateien** (Stand 2026-09-28, Etappe 16;
+  am 2026-09-27 nach Etappe 14a waren es 801 in 71;
   2026-08-14 nach der Abhaengigkeits-Aktualisierung waren es 782 in 69). Hier stand bis dahin „692" — die Zahl war seit den Handy- und
   PWA-Commits vom 2026-07-28 nicht nachgezogen worden.
   ⚠️ **Nach einem Playwright-Minorsprung faellt `check:oberflaeche` mit „Executable doesn't exist"**,
@@ -59,6 +62,57 @@ ausfuehrenden Rechner nicht existieren; der Fehler faellt nicht im Build, sonder
   soll das Abrufen messen, nicht die Bildschirmgroesse. Esc/Fokus-Falle/Scroll-Sperre/
   Fokus-Rueckgabe liegen jetzt in `hooks/useDialogVerhalten` — `Sheet` und die Vollansicht
   teilen sie sich, statt sie zweimal zu fuehren.
+- **Quiz-Mix als zweite Lernform (Etappe 16, 2026-09-28, ADR 0014).** Auf `/lernkarten`
+  waehlt man „Karteikarten" oder „Quiz-Mix"; auf `/heute` stehen „Los — 20 Karten lernen" und
+  „Los — 20 Karten als Quiz" **gleichwertig** nebeneinander (beide Primaerknopf, mittig).
+  ⚠️ **Das lockert ADR 0007, Invariante 2, fuer genau dieses Paar** (Projektinhaber,
+  2026-09-28). Es bleibt EIN Vorschlag: gleiche Zahl, gleiche Karten — ein Test und
+  `check:wege` 4c wachen darueber. Wer dem Quiz-Knopf eine eigene Auswahl gibt, baut einen
+  zweiten Tagesplan. Dieselbe Sitzung (`useSessionStore`, `SessionOptions.lernform`), dieselbe
+  Warteschlange, dieselbe Portion.
+  ⚠️ **ZWEIMAL RICHTIG, BEVOR EINE KARTE VORRUECKT** (Projektinhaber, 2026-09-28,
+  `FRAGEN_JE_KARTE` in `src/data/quiz-mix.ts`). Jede Karte kommt zweimal, in zwei
+  VERSCHIEDENEN Fragearten, mit einer ganzen Runde Abstand (Runde 1 alle Karten, Runde 2
+  dieselben). Erste richtige Antwort: nichts bewegt sich („1 von 2 richtig"). Zweite: `correct`.
+  Ein Fehler: sofort `wrong`, die zweite Frage bleibt als Uebung ohne Wirkung. Jede Karte wird
+  genau EINMAL verbucht (`verbuche()` im Store — dieselbe Stelle wie die Lernkarte), die
+  Tagesdosis zaehlt Karten, nicht Fragen. **Auf der Lernkarte reicht weiterhin einmal.**
+  Die Knopfzahl zaehlt darum KARTEN („20 Karten als Quiz" = 40 Fragen).
+  Die sieben Fragearten verteilt `verteileFormen` gleich oft und nie zweimal hintereinander.
+  **Fach 7 bleibt auch im Quiz-Mix Freitext** (ADR 0008), einmal, wie auf der Lernkarte.
+  Kein Eintrag in `mf.quizSeries`, kein neuer Speicherschluessel (ADR 0002 unberuehrt).
+  `check:wege` 4c antwortet ueber die Daten RICHTIG (Vites SSR-Lader, wie `check:oberflaeche`)
+  — nur so laesst sich „die erste richtige Antwort bewegt nichts" im Browser gehen.
+  ⚠️ **Bekannter Preis:** Wer nur den Quiz-Mix nutzt, bringt Karten per Multiple Choice bis
+  in Fach 7, also auch in „gemeistert" (Fach 5) und in die Abzeichen — seit der Zwei-Richtige-
+  Regel aber nur doppelt belegt. Der naechste Hebel waere „Quiz-Mix ab Fach 5 als Lernkarte",
+  nicht ihn aus dem Kasten zu nehmen. Die Namen der Lernformen: `LERNFORM_LABELS` — eine Stelle.
+  **Die Aktionsleiste des Quiz-Mix klebt auch auf dem Desktop** (`.fc-actions--quiz`):
+  „Weiter" lag gemessen bei y=1182 auf 1440 × 900. Gefunden hat das `check:oberflaeche`
+  Block 9 beim ersten Lauf. **Die Kartenzeile („M. … · weiter in Fach 3") steht IN dieser
+  Leiste**, nicht darueber — dort lag sie nach einer falschen Antwort verdeckt hinter ihr
+  (nur im Screenshot gesehen, keine Pruefung faengt „verdeckt von einem klebenden Element").
+  ⚠️ `npm run verify` fiel VOR Etappe 16 schon reproduzierbar: `MuscleDetailPage.test.tsx`
+  („JEDEN Muskel … dieselbe Reihenfolge", 150 Detailseiten) brauchte im vollen Lauf 5,9–6,3 s
+  bei 5 s Vorgabe. Der Test hat jetzt ein eigenes Budget (20 s), die Pruefung ist unveraendert.
+- **Funktion in Kurzform (Etappe 15, 2026-09-27, ADR 0013).** Unter „Funktion" steht je Gelenk
+  die Bewegung (`src/data/editorial/funktion-kurz.json`, Schluessel = id), der Text klappt als
+  „Funktionsbeschreibung" darunter auf. `fachfelder()` liefert die Kurzform — Detailseite,
+  Lernkarte und Quiz-Vergleichskarte folgen ohne eigene Regel; beide Funktionsmodi des Quiz
+  stellen sie ebenfalls. **Alle 150 sind KI-Entwuerfe, mit Quellen abgeglichen und am 2026-09-27
+  vom Projektinhaber abgenommen (status „geprueft", kein Stern).** Neue Eintraege ohne Abnahme
+  bekommen „ungeprueft" — dann erscheint der Stern wieder.
+  Abnahme erledigt (Pruefbogen fuer spaetere Aenderungen: `funktion-kurzform.csv`). Eine KI-Durchsicht (2026-09-27) fand 9 Stellen, an denen der
+  FUNKTIONSTEXT vom Lehrbuch abweicht; **5 davon hat der Projektinhaber bestaetigt, sie sind in
+  `generated/` korrigiert** (u. a. M. semimembranosus: Meniscus medialis statt lateralis). Die 4
+  schwaecheren und die Gelenk-Luecken sind per Quellenabgleich (DocCheck, Kenhub, Wikipedia)
+  ebenfalls korrigiert; Tabelle mit Quellen in `docs/todo.md`. **Neues Gelenk-Etikett
+  `Art. radioulnaris distalis`** (M. pronator quadratus), haengt an der Gruppe „Ellenbogen".
+  ⚠️ **Die V1-Quelle traegt noch die alten Texte** (lag nicht vor). `src/data/lehrbuch-korrekturen.test.ts`
+  haelt alle Lehrbuch-Korrekturen fest, auch den FPL-Fix — wer `migrate:data` aus einer
+  unkorrigierten Quelle laufen laesst, sieht ihn fallen, statt die Fehler still zurueckzuholen. **Die Kurzform verdichtet nur den Funktionstext — wer sie ergaenzt,
+  ergaenzt erst den Text.** Ein Muskel mit Funktionstext ohne Kurzform laesst den Loader werfen
+  (sonst verriete eine lange Quiz-Option durch ihre Laenge die Antwort).
 - **Bild gross auch auf der Lernkarte (Etappe 14a, 2026-09-27).** Dieselbe Vollansicht wie
   Quiz/Detailseite, mit Bildnachweis. Tastenkuerzel von Quiz UND Lernsitzung gehen durch
   `hooks/tastatur.ts` (`tasteGehoertDerSeite`): Eingabefelder behalten ihre Tasten, ein offener

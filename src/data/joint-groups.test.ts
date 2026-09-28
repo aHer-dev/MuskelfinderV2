@@ -93,8 +93,9 @@ describe('Gelenkgruppen — Zuschnitt', () => {
   });
 
   it('M. psoas minor liegt an der Hüfte, nicht im Beckenboden', () => {
-    /* Das Etikett `Becken` trägt der Psoas minor UND die vier Beckenbodenmuskeln. Darum
-       kommt „Bauchwand & Beckenboden" über die Subregion, nicht über `Becken`. */
+    /* Bis 2026-09-27 trug der Psoas minor das Etikett `Becken` wie die vier Beckenboden-
+       muskeln. Darum kommt „Bauchwand & Beckenboden" über die Subregion, nicht über `Becken` —
+       diese Zeile haelt das fest, auch seit er `LWS` traegt. */
     expect(getJointGroup('hueftgelenk')!.muscles).toContain('M. psoas minor');
     expect(getJointGroup('bauchwand-beckenboden')!.muscles).not.toContain('M. psoas minor');
   });

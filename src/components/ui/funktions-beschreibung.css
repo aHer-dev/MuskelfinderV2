@@ -1,0 +1,69 @@
+/* ---- Funktionsbeschreibung (Etappe 15) --------------------------------
+   Der lange Funktionstext, eingeklappt unter der Kurzform. Dieselbe Form wie die
+   Palpation (detail.css), damit beide Aufklapper gleich aussehen und gleich
+   bedient werden. */
+.funktions-beschreibung {
+  margin-top: var(--spacing-sm);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--surface-sunken);
+}
+
+.funktions-beschreibung__summary {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  /* Projektregel: Bedienflaechen ab 44 px — auch ein Aufklapper ist eine. */
+  min-height: var(--touch-min);
+  padding: var(--spacing-xs) var(--spacing-md);
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  list-style: none;
+}
+
+/* „Funktionsbeschreibung" ist EIN Wort mit 21 Zeichen. Bei doppelter Systemschrift auf
+   320 px ist es 311 px breit und drueckte die Seite quer (check:oberflaeche, 200 %).
+   Trennen statt ueberlaufen — `hyphens` greift, weil das Dokument `lang="de"` traegt;
+   `overflow-wrap` faengt den Rest, falls eine Engine kein Trennmuster hat. */
+.funktions-beschreibung__summary > span {
+  min-width: 0;
+  hyphens: auto;
+  overflow-wrap: anywhere;
+}
+
+.funktions-beschreibung__summary::-webkit-details-marker {
+  display: none;
+}
+
+.funktions-beschreibung__summary:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: -2px;
+  border-radius: var(--radius-lg);
+}
+
+.funktions-beschreibung__chev {
+  margin-left: auto;
+  color: var(--text-faint);
+  transition: var(--transition-smooth);
+}
+
+.funktions-beschreibung[open] .funktions-beschreibung__chev {
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .funktions-beschreibung__chev {
+    transition: none;
+  }
+}
+
+.funktions-beschreibung__text {
+  margin: 0;
+  padding: 0 var(--spacing-md) var(--spacing-md);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}

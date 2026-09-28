@@ -55,8 +55,10 @@ describe('MuscleDetailPage', () => {
 
   /* Die Reihenfolge wird am gerenderten DOM geprueft, nicht an `buildRows`: Was
      zaehlt, ist was der Lernende sieht. `buildRows` bleibt modulprivat. */
+  /* Ohne Stern: Die ungepruefte Kurzform heisst „Funktion *" (Etappe 15) — hier geht es
+     um die Reihenfolge, nicht um die Marke. */
   const labelsImDom = () => Array.from(document.querySelectorAll('.datalist__label'))
-    .map((el) => el.textContent ?? '');
+    .map((el) => (el.textContent ?? '').replace(/\s*\*$/, ''));
 
   it('zeigt die Fachfelder in der kanonischen Reihenfolge', () => {
     renderAt('/muskel/deltoideus');
@@ -81,5 +83,50 @@ describe('MuscleDetailPage', () => {
       expect(folgtReihenfolge(labels), `${m.nameLatin}: ${labels.join(' · ')}`).toBe(true);
       unmount();
     }
+    /* Eigenes Zeitbudget: 150 Detailseiten nacheinander. Allein laeuft das in ~2 s, im vollen
+       Lauf (74 Dateien parallel) gemessen 5,9–6,3 s — ueber der Vorgabe von 5 s, auch auf dem
+       Stand vor Etappe 16. Damit fiel `npm run verify` an einer Uhr, nicht an einem Fehler. */
+  }, 20_000);
+});
+
+/* ── Funktion in Kurzform (Etappe 15) ──
+   Oben Gelenk und Bewegung, der ausformulierte Text klappt direkt darunter auf. */
+describe('MuscleDetailPage — Funktion in Kurzform', () => {
+  const funktionsZeile = () =>
+    Array.from(document.querySelectorAll('.datalist__row'))
+      .find((row) => row.querySelector('.datalist__label')?.textContent?.startsWith('Funktion'))!;
+
+  it('zeigt unter „Funktion" die Kurzform mit deutschem Gelenknamen', () => {
+    renderAt('/muskel/rectus-femoris');
+    const text = funktionsZeile().querySelector('.datalist__text')?.textContent;
+    expect(text).toBe('Hüftgelenk (Art. coxae): Flexion\nKniegelenk (Art. genus): Extension');
+  });
+
+  it('der ausformulierte Text steht eingeklappt in derselben Zeile', () => {
+    renderAt('/muskel/rectus-femoris');
+    const muskel = getMuscles().find((m) => m.id === 'rectus-femoris')!;
+    const aufklapper = funktionsZeile().querySelector('details');
+    expect(aufklapper).not.toBeNull();
+    expect(aufklapper).not.toHaveAttribute('open');
+    expect(aufklapper?.querySelector('summary')?.textContent).toBe('Funktionsbeschreibung');
+    expect(aufklapper?.textContent).toContain(muskel.functionDescription);
+  });
+
+  it('in „Einfach" klappt der einfache Text auf — die Kurzform bleibt dieselbe', () => {
+    const id = 'nasalis-head-mimikmuskulatur-erweitert-blaht-nasenloch-pars-alaris';
+    const muskel = getMuscles().find((m) => m.id === id)!;
+    expect(muskel.easy?.functionDescription).not.toBe(muskel.functionDescription);
+
+    renderAt(`/muskel/${id}`);
+    const vorher = funktionsZeile().querySelector('.datalist__text')?.textContent;
+    fireEvent.click(screen.getByRole('button', { name: 'Einfach' }));
+    expect(funktionsZeile().querySelector('.datalist__text')?.textContent).toBe(vorher);
+    expect(funktionsZeile().querySelector('details')?.textContent).toContain(muskel.easy!.functionDescription);
+  });
+
+  it('abgenommene Kurzform: kein Stern, keine Legende (Abnahme 2026-09-27)', () => {
+    renderAt('/muskel/rectus-femoris');
+    expect(funktionsZeile().querySelector('.datalist__label')?.textContent).toBe('Funktion');
+    expect(screen.queryByText(/noch nicht im Lehrbuch gegengelesen/)).not.toBeInTheDocument();
   });
 });

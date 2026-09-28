@@ -8,6 +8,7 @@ import {
   useSessionStore,
 } from '../store/useSessionStore';
 import { useProgressStore } from '../store/useProgressStore';
+import { useStreakStore } from '../store/useStreakStore';
 
 describe('advanceQueue (rein)', () => {
   it('richtig/falsch entfernen die aktuelle Karte', () => {
@@ -96,7 +97,14 @@ describe('readSessionHandoff (Übergabe von /heute, 7b)', () => {
       limit: 0,
       scope: 'all',
       filter: 'all',
+      lernform: 'karten',
     });
+  });
+
+  it('nimmt die Lernform mit (Etappe 16) — Unbekanntes wird zur Lernkarte', () => {
+    expect(readSessionHandoff({ start: { names: ['A'], lernform: 'quiz' } })?.lernform).toBe('quiz');
+    expect(readSessionHandoff({ start: { names: ['A'], lernform: 'raten' } })?.lernform).toBe('karten');
+    expect(readSessionHandoff({ start: { names: ['A'] } })?.lernform).toBe('karten');
   });
 
   it('nimmt einen Filter mit, weist aber Unsinn zurück (8b)', () => {
@@ -173,5 +181,169 @@ describe('Sitzung überlebt die Navigation (7d)', () => {
 
     const again = renderHook(() => useFlashcardSession());
     expect(again.result.current.started).toBe(false);
+  });
+});
+
+/* ── Quiz-Mix (Etappe 16, ADR 0014) ──────────────────────────────────────────
+   Die zweite Lernform muss in den Kasten zaehlen, sonst ist sie keine Alternative fuer die
+   Tagesdosis — aber STRENGER als die Lernkarte: Eine Karte rueckt erst nach ZWEI richtigen
+   Antworten vor (Projektinhaber, 2026-09-28), ein Fehler schickt sie sofort zurueck. */
+describe('Quiz-Mix — zweimal richtig, bevor die Karte vorrückt', () => {
+  const A = 'M. deltoideus';
+  const B = 'M. soleus';
+
+  beforeEach(() => {
+    localStorage.clear();
+    useProgressStore.getState().clearProgress();
+    useStreakStore.getState().resetStreak();
+    useSessionStore.getState().exit();
+  });
+
+  function starteQuiz(names: string[], fach = 1) {
+    useProgressStore.getState().addCards(names);
+    useProgressStore.setState((s) => {
+      const cards = { ...s.flashcards.cards };
+      for (const n of names) cards[n] = { ...cards[n], fach };
+      return { flashcards: { ...s.flashcards, cards } };
+    });
+    const { result } = renderHook(() => useFlashcardSession());
+    act(() => result.current.start({ limit: 0, scope: 'all', lernform: 'quiz' }));
+    return result;
+  }
+
+  /** Die aktuelle Frage richtig oder falsch beantworten — und weiter. */
+  function antworte(result: { current: ReturnType<typeof useFlashcardSession> }, richtig: boolean) {
+    const frage = result.current.frage!;
+    const option = richtig ? frage.correctId : frage.options.find((o) => o.id !== frage.correctId)!.id;
+    act(() => result.current.beantworte(option));
+    const aufgedeckt = result.current.aufgedeckt!;
+    act(() => result.current.weiter());
+    return aufgedeckt;
+  }
+
+  const fach = (name: string) => useProgressStore.getState().getCardState(name)?.fach;
+
+  it('jede Karte kommt zweimal dran — der Fortschritt zählt Fragen, die Zusammenfassung Karten', () => {
+    const result = starteQuiz([A, B]);
+    expect(result.current.lernform).toBe('quiz');
+    expect(useSessionStore.getState().queue).toEqual([A, B, A, B]);
+    expect(result.current.frage?.muscleId).toBe('deltoideus');
+    expect(result.current.gesamt).toBe(4);
+    expect(result.current.erledigt).toBe(0);
+    expect(result.current.total).toBe(2);
+  });
+
+  it('die erste richtige Antwort bewegt die Karte NICHT — erst die zweite schiebt sie ein Fach weiter', () => {
+    const result = starteQuiz([A, B]);
+
+    const a1 = antworte(result, true);
+    expect(a1).toMatchObject({ name: A, wirkung: 'halb', richtigBisher: 1, fachVorher: 1, fachNachher: 1 });
+    expect(fach(A)).toBe(1);
+    expect(useProgressStore.getState().getCardState(A)?.lastSeen).toBeNull();
+    expect(result.current.xpEarned).toBe(0);
+    expect(result.current.reviewed).toBe(0);
+
+    antworte(result, true); // B, erste Frage
+
+    const a2 = antworte(result, true);
+    expect(a2).toMatchObject({ name: A, wirkung: 'hoch', richtigBisher: 2, fachVorher: 1, fachNachher: 2 });
+    expect(fach(A)).toBe(2);
+    expect(result.current.reviewed).toBe(1);
+    expect(result.current.correct).toBe(1);
+    expect(result.current.xpEarned).toBe(3); // dieselbe Regel wie `rate('correct')` in Fach 1
+  });
+
+  it('ein Fehler schickt die Karte SOFORT zurück (ADR 0011) — die zweite Frage ist nur noch Übung', () => {
+    const result = starteQuiz([A, B], 5);
+
+    const a1 = antworte(result, false);
+    expect(a1).toMatchObject({ name: A, wirkung: 'zurueck', fachVorher: 5, fachNachher: 2 });
+    expect(fach(A)).toBe(2);
+    expect(result.current.wrong).toBe(1);
+
+    antworte(result, true); // B
+    const a2 = antworte(result, true);
+    // Richtig, aber die Karte ist schon verbucht: kein zweiter Fachwechsel, keine XP, kein Zähler.
+    expect(a2).toMatchObject({ name: A, wirkung: 'uebung', fachNachher: 2 });
+    expect(fach(A)).toBe(2);
+    expect(result.current.reviewed).toBe(1);
+  });
+
+  it('erst richtig, dann falsch: zurück — einmal richtig genügt im Quiz-Mix nicht', () => {
+    const result = starteQuiz([A], 4);
+    expect(antworte(result, true).wirkung).toBe('halb');
+    expect(antworte(result, false)).toMatchObject({ wirkung: 'zurueck', fachVorher: 4, fachNachher: 2 });
+    expect(fach(A)).toBe(2);
+  });
+
+  it('die Tagesdosis zählt KARTEN, nicht Fragen', () => {
+    /* Zaehlte jede Frage, waere die Tagesdosis im Quiz-Mix nach der halben Arbeit „geschafft". */
+    const result = starteQuiz([A, B]);
+    for (let i = 0; i < 4; i++) antworte(result, true);
+    expect(useStreakStore.getState().streak.reviewedToday).toBe(2);
+  });
+
+  it('ein Doppelklick wertet einmal — der zweite trifft nicht die nächste Frage', () => {
+    /* Nach der ersten Antwort ist die Warteschlange schon weitergerueckt. Eine zweite Antwort
+       mit derselben Option darf B nicht beruehren: Die Option gehoert zur Frage von A. */
+    const result = starteQuiz([A, B]);
+    const frage = result.current.frage!;
+    act(() => {
+      result.current.beantworte(frage.correctId);
+      useSessionStore.getState().beantworte(frage.correctId);
+    });
+    expect(result.current.erledigt).toBe(1);
+    expect(useSessionStore.getState().quizStand[B]).toBeUndefined();
+  });
+
+  it('solange die Antwort aufgedeckt ist, wertet nichts — auch keine Antwort auf die nächste Frage', () => {
+    /* Der zweite Riegel. Ohne ihn liesse sich B beantworten, waehrend noch A's Ergebnis auf dem
+       Schirm steht — per Taste, bevor die Seite neu gezeichnet hat. */
+    const result = starteQuiz([A, B], 3);
+    act(() => result.current.beantworte(result.current.frage!.options.find((o) => o.id !== result.current.frage!.correctId)!.id));
+    const frageB = useSessionStore.getState().fragen[0]!;
+    act(() => useSessionStore.getState().beantworte(frageB.options.find((o) => o.id !== frageB.correctId)!.id));
+    expect(result.current.erledigt).toBe(1);
+    expect(fach(B)).toBe(3);
+    expect(useProgressStore.getState().getCardState(B)?.lastSeen).toBeNull();
+  });
+
+  it('fertig erst, wenn die letzte Antwort gelesen ist', () => {
+    const result = starteQuiz([A]);
+    antworte(result, true);
+    act(() => result.current.beantworte(result.current.frage!.correctId));
+    expect(result.current.current).toBeNull();
+    expect(result.current.done).toBe(false);
+    act(() => result.current.weiter());
+    expect(result.current.done).toBe(true);
+  });
+
+  it('eine Karte in Fach 7 ist auch im Quiz-Mix Freitext — EINMAL, und dort genügt einmal richtig', () => {
+    useProgressStore.getState().addCards([A, B]);
+    useProgressStore.setState((s) => ({
+      flashcards: { ...s.flashcards, cards: { ...s.flashcards.cards, [A]: { ...s.flashcards.cards[A], fach: 7 } } },
+    }));
+    const { result } = renderHook(() => useFlashcardSession());
+    act(() => result.current.start({ limit: 0, scope: 'all', lernform: 'quiz' }));
+    expect(useSessionStore.getState().queue).toEqual([A, B, B]);
+    expect(result.current.current).toBe(A);
+    expect(result.current.frage).toBeNull();
+
+    act(() => result.current.rate('correct')); // die Freitext-Karte bewertet sich selbst
+    expect(result.current.frage?.muscleId).toBe('soleus');
+    expect(result.current.erledigt).toBe(1);
+  });
+
+  it('in einer Karteikarten-Sitzung gibt es keine Fragen, und `beantworte` tut nichts', () => {
+    useProgressStore.getState().addCards([A]);
+    const { result } = renderHook(() => useFlashcardSession());
+    act(() => result.current.start({ limit: 0, scope: 'all' }));
+    expect(result.current.lernform).toBe('karten');
+    expect(result.current.frage).toBeNull();
+    act(() => result.current.beantworte('egal'));
+    expect(result.current.reviewed).toBe(0);
+    // Die Lernkarte bleibt bei EINER Bewertung: richtig = ein Fach weiter.
+    act(() => result.current.rate('correct'));
+    expect(fach(A)).toBe(2);
   });
 });

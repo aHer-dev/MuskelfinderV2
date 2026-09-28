@@ -7,6 +7,57 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Added
+- **Quiz-Mix: die fälligen Karten als gemischte Quizfragen** (Etappe 16, 2026-09-28, ADR 0014,
+  `src/data/quiz-mix.ts`, `src/pages/FlashcardsPage.tsx`, `src/pages/TodayPage.tsx`).
+
+  Auf `/lernkarten` gibt es jetzt zwei Lernformen: **Karteikarten** (wie bisher) und
+  **Quiz-Mix**. Im Quiz-Mix wird jede fällige Karte zu Fragen mit vier Antworten, und die
+  Fragearten wechseln sich ab: Bild → Muskel, Name → Bild, Ursprung ↔ Ansatz, Funktion ↔
+  Muskel, Innervation, je Sitzung gleich oft und nie zweimal hintereinander. Bereich, Auswahl
+  und Kartenlimit (5/10/20/50) gelten für beide Formen gleich. Auf „Heute" stehen
+  **„Los — 20 Karten lernen"** und **„Los — 20 Karten als Quiz"** gleichwertig nebeneinander:
+  dieselben Karten, zwei Formen.
+
+  **Im Quiz-Mix rückt eine Karte erst nach zwei richtigen Antworten vor.** Jede Karte kommt
+  zweimal dran, in zwei verschiedenen Fragearten und mit einer ganzen Runde Abstand; die erste
+  richtige Antwort zeigt „1 von 2 richtig", erst die zweite schiebt die Karte ein Fach weiter.
+  Ein Fehler schickt sie sofort zurück (die zweite Frage kommt dann als Übung). Auf der
+  Lernkarte reicht weiterhin einmal. XP und Tagesdosis zählen je Karte, nicht je Frage. Nach
+  jeder Antwort steht da, welche Karte es war und was mit ihr passiert. Karten in Fach 7
+  fragen auch im Quiz-Mix den Namen frei ab. Das freie Quiz
+  (`/quiz`) bleibt, wie es ist, und verschiebt weiterhin keine Karte; die Anleitung erklärt
+  jetzt den Unterschied.
+
+  `check:wege` geht den Weg von „Heute" aus (Station 4c): Sie beantwortet die Fragen über die
+  Daten richtig und prüft am Speicher, dass 20 richtige Antworten in Runde 1 keine Karte
+  bewegen, die zweite die Karte weiterschiebt und ein Fehler sofort verbucht.
+  `check:oberflaeche` misst die laufende Sitzung vor und nach der Antwort (Block 9). Gefunden hat Block 9 sofort, dass „Weiter" auf dem Desktop
+  unter der Falz lag (y=1182 auf 900 px); die Leiste klebt jetzt auch dort.
+
+- **Funktion in Kurzform, der Text klappt darunter auf** (Etappe 15, 2026-09-27, ADR 0013,
+  `src/data/funktion-kurz.ts`, `src/data/editorial/funktion-kurz.json`,
+  `src/components/ui/FunktionsBeschreibung.tsx`).
+
+  Unter „Funktion" steht jetzt je Gelenk kurz, was der Muskel tut, etwa
+  „Hüftgelenk (Art. coxae): Extension · Außenrotation · Abduktion (laterale Anteile)".
+  Der bisherige Text steht als aufklappbare „Funktionsbeschreibung" darunter: auf der
+  Detailseite in der Funktionszeile, auf der Lernkarte nach dem Aufdecken, in der
+  Quiz-Erklärung je Muskel. Beide Funktionsmodi des Quiz stellen die Kurzform statt der
+  Absätze. Die losen Bewegungs-Chips der Detailseite entfallen.
+
+  Die 150 Kurzformen sind KI-Entwürfe, die **nur den vorhandenen Funktionstext verdichten**,
+  mit Quellen abgeglichen und am 2026-09-27 vom Projektinhaber abgenommen (kein Stern).
+  Ein neuer Eintrag ohne Abnahme bekommt „ungeprueft" und damit wieder den Stern. Prüfbogen: `npm run export:csv` →
+  `funktion-kurzform.csv` (Kurzform und Text nebeneinander, dazu 14 Gelenke aus `joints`, zu
+  denen der Text nichts sagt, und 21 Orte außerhalb von `joints`). Eine erste Durchsicht durch
+  die KI fand 9 Stellen, an denen der **Funktionstext** vom Lehrbuch abweicht (z. B.
+  M. semimembranosus: Meniscus lateralis statt medialis) — Liste in `docs/todo.md`.
+
+  Lange Gelenknamen („Karpometakarpalgelenk") drückten bei doppelter Systemschrift auf 320 px
+  die Seite quer; sie trennen jetzt überall, wo die Kurzform steht. `check:oberflaeche` prüft
+  dafür zusätzlich die Muskelseite mit dem längsten Wort der Kurzform — aus den Daten gewählt,
+  sie wandert mit (gegengetestet: ohne Umbruch 369 px auf 320).
+
 - **Bild groß auch auf der Lernkarte** (Etappe 14a, 2026-09-27,
   `src/pages/FlashcardsPage.tsx`, `src/hooks/tastatur.ts`, `src/components/ui/BildNachweis.tsx`).
 
@@ -116,6 +167,44 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   Prüfungen mit, und die brechen einen Build, der `tsc -b` enthält.
 
 ### Fixed
+- **Weitere Funktionen per Quellenabgleich korrigiert** (2026-09-27, DocCheck Flexikon,
+  Kenhub, de.wikipedia; `src/data/generated/`).
+
+  M. psoas minor kippt das Becken **nicht** (so stand es im Text): Er ist schwach, beugt und
+  neigt die LWS und spannt die Fascia iliaca — `joints` jetzt LWS statt Becken. M. piriformis
+  wird ab etwa 80° Hüftbeugung zum Innenrotator. M. trapezius (Pars descendens) nennt jetzt
+  seine Kopf- und HWS-Wirkung statt „unterstützt HWS-Bewegungen". M. tensor fasciae latae
+  stabilisiert das gestreckte Knie; M. quadratus lumborum streckt beidseitig die LWS.
+  Gelenklisten: M. pronator quadratus wirkt im distalen Radioulnargelenk (neues Etikett,
+  Gelenkgruppe „Ellenbogen"), nicht im Ellenbogengelenk; M. gastrocnemius und M. soleus
+  bekommen das USG, M. geniohyoideus das Kiefergelenk. Festgehalten im zweiten Block von
+  `lehrbuch-korrekturen.test.ts` (gegengetestet).
+
+- **Fünf Funktionen korrigiert, die vom Lehrbuch abwichen** (2026-09-27, vom Projektinhaber
+  im Lehrbuch bestätigt; `src/data/generated/muscles.json`, `movements.json`).
+
+  M. semimembranosus zieht den Meniscus **medialis** nach dorsal (nicht lateralis).
+  M. abductor digiti minimi der Hand **beugt** im Grundgelenk und streckt in Mittel- und
+  Endgelenk (nicht „MCP-Extension"). M. sternocleidomastoideus rekliniert beidseitig den Kopf
+  und beugt die HWS (nicht „Inklination"). Die Mm. lumbricales des Fußes strecken die
+  Mittel- und Endgelenke und adduzieren zur Großzehe hin. Beim M. gluteus maximus abduzieren
+  die **kranialen** Anteile, die kaudalen adduzieren. Dazu fand die Suche nach
+  „Dorsalextension" den M. extensor carpi ulnaris nicht, obwohl sein Text sie nennt.
+  `joints`, Suchfilter und Kurzformen sind nachgezogen.
+
+  Die V1-Quelle, aus der `migrate:data` liest, lag nicht vor und trägt noch die alten Texte.
+  `src/data/lehrbuch-korrekturen.test.ts` hält die Korrekturen fest (mit dem FPL-Fix vom
+  2026-08-18, der bis dahin ungeschützt war) — ein Rück-Migrieren fällt dort auf
+  (gegengetestet).
+
+- **Die Freitext-Karte verriet in 31 Fällen die Antwort** (Etappe 15, 2026-09-27).
+
+  Ab Fach 7 zeigt die Lernkarte die Fakten und fragt nach dem lateinischen Namen. 31 lange
+  Funktionstexte nennen den Muskel aber selbst („Der M. masseter ist der kräftigste
+  Kaumuskel …"). Die Kurzform nennt ihn nie, und die aufklappbare Beschreibung erscheint
+  auf dieser Stufe nicht. Ein Test gegen den echten Bestand hält das fest (gegengetestet:
+  mit dem langen Text fällt er mit 31 Treffern).
+
 - **Lizenzlink in der Bild-Vollansicht nur 3:1 Kontrast** (2026-09-27,
   `src/components/ui/image-lightbox.css`).
 

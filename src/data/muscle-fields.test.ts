@@ -42,6 +42,18 @@ describe('muscle-fields — die kanonische Reihenfolge', () => {
     const mit = fachfelder(leer, true).map((f) => f.label);
     expect(mit).toEqual(['Ursprung', 'Ansatz', 'Funktion', 'Innervation', `Segmente${UNGEPRUEFT_MARKE}`]);
   });
+
+  /* Seit der Abnahme (2026-09-27) ist keine Kurzform mehr ungeprueft — der Bestand zeigt die
+     Regel also nicht mehr. Sie gilt weiter fuer jeden neuen Eintrag ohne Abnahme. */
+  it('Funktion: zeigt die Kurzform und setzt den Stern nur, solange sie ungeprüft ist', () => {
+    const quelle = { origin: '', insertion: '', functionDescription: 'Langer Text', innervation: '', segments: '' };
+    const funktionKurz = [{ orte: ['Art. coxae'], bewegungen: ['Extension'] }];
+    const ungeprueft = fachfelder(quelle, false, { funktionKurz, funktionKurzUngeprueft: true })[2];
+    const geprueft = fachfelder(quelle, false, { funktionKurz, funktionKurzUngeprueft: false })[2];
+    expect(ungeprueft).toEqual({ key: 'functionDescription', label: `Funktion${UNGEPRUEFT_MARKE}`, value: 'Hüftgelenk (Art. coxae): Extension' });
+    expect(geprueft.label).toBe('Funktion');
+    expect(fachfelder(quelle)[2].value).toBe('Langer Text');
+  });
 });
 
 describe('folgtReihenfolge — der Waechter selbst', () => {
@@ -120,7 +132,8 @@ describe('die Anzeigen halten sich daran — gegen den ECHTEN Bestand', () => {
 
   it('Lernkarte zeigt Ursprung vor Funktion — nicht mehr umgekehrt', () => {
     const mitAllem = getMuscles().find((m) => m.origin && m.functionDescription);
-    const labels = facts(mitAllem!).map((f) => f.label);
+    /* Ohne Stern vergleichen: Die ungepruefte Kurzform traegt „Funktion *" (Etappe 15). */
+    const labels = facts(mitAllem!).map((f) => f.label.replace(UNGEPRUEFT_MARKE, ''));
     expect(labels.indexOf('Ursprung')).toBeLessThan(labels.indexOf('Funktion'));
   });
 });

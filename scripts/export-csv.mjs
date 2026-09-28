@@ -39,6 +39,7 @@ const gruppenModul = await server.ssrLoadModule('/src/data/groups.ts');
 const berufe = await server.ssrLoadModule('/src/data/profession.ts');
 const labels = await server.ssrLoadModule('/src/data/labels.ts');
 const dreiD = await server.ssrLoadModule('/src/data/threeD.ts');
+const kurzform = await server.ssrLoadModule('/src/data/funktion-kurz.ts');
 await server.close();
 
 const { CARD_MUSCLES, cardKey, getMuscleByCardKey, getMuscles, isCardMuscle } = daten;
@@ -47,6 +48,7 @@ const { getGroups, groupsOf } = gruppenModul;
 const { PROFESSIONS, PROFESSION_LABELS } = berufe;
 const { regionLabel, movementLabel } = labels;
 const { isSupportedIn3D } = dreiD;
+const { funktionKurzText, funktionsLuecken } = kurzform;
 
 const MUSKELN = getMuscles();
 const GELENKGRUPPEN = getJointGroups();
@@ -101,7 +103,7 @@ function gelenkgruppenVon(muscle) {
 
 const FACH_SPALTEN = [
   'Muskel (lateinisch)', 'Deutsch', 'Region', 'Subregion', 'Gelenke', 'Gelenkgruppen',
-  'Ursprung', 'Ansatz', 'Funktion (Text)', 'Funktionen (Filter)', 'Innervation', 'Segmente',
+  'Ursprung', 'Ansatz', 'Funktion (Kurzform)', 'Funktion (Text)', 'Funktionen (Filter)', 'Innervation', 'Segmente',
   'Klinik', 'Palpation hinterlegt', 'Funktionelle Gruppen', 'Schwierigkeit', 'Bilder',
   'Eigene Karte', 'Kartenschlüssel', 'Detailseite (id)',
 ];
@@ -116,6 +118,7 @@ function fachZeile(m) {
     liste(gelenkgruppenVon(m)),
     m.origin,
     m.insertion,
+    m.funktionKurz ? funktionKurzText(m.funktionKurz) : '',
     m.functionDescription,
     liste((m.functions ?? []).map(movementLabel)),
     m.innervation,
@@ -226,6 +229,32 @@ schreibe(
     ]),
 );
 
+/* (6b) Funktion in Kurzform (Etappe 15) — der Pruefbogen. Die Kurzformen sind KI-Entwuerfe
+   aus dem Funktionstext; beide stehen hier nebeneinander. Was nicht passt, steht in den
+   Hinweis-Spalten: ein Gelenk aus `joints` ohne Zeile (der Text schweigt dazu — fehlt eine
+   Funktion, oder ist das Gelenk falsch?) und ein Ort ausserhalb von `joints` (fehlt dort ein
+   Gelenk?). Nach der Durchsicht in `src/data/editorial/funktion-kurz.json` den Status auf
+   "geprueft" setzen. */
+schreibe(
+  'funktion-kurzform.csv',
+  ['Muskel (lateinisch)', 'Region', 'Gelenke (joints)', 'Funktion (Kurzform)', 'Funktion (Text)',
+    'Status', 'Gelenk ohne Zeile', 'Ort ausserhalb joints', 'Detailseite (id)'],
+  MUSKELN.map((m) => {
+    const luecken = funktionsLuecken(m);
+    return [
+      m.nameLatin,
+      regionLabel(m.region),
+      liste(m.joints),
+      m.funktionKurz ? funktionKurzText(m.funktionKurz) : '',
+      m.functionDescription,
+      m.funktionKurz ? (m.funktionKurzUngeprueft ? 'ungeprüft' : 'geprüft') : 'fehlt',
+      liste(luecken.gelenkeOhneZeile),
+      liste(luecken.orteAusserhalb),
+      m.id,
+    ];
+  }),
+);
+
 /* (7) Doppelte Felder — dieselbe Frage, die `check:daten` als Bericht ausgibt,
    hier zum Sortieren. Zwei Muskeln mit woertlich gleichem Funktionstext sind
    kein Programmfehler, aber vielleicht ein Datenfehler; das weiss nur der
@@ -235,13 +264,15 @@ const FELDER = [
   ['origin', 'Ursprung'],
   ['insertion', 'Ansatz'],
   ['functionDescription', 'Funktion (Text)'],
+  /* Seit Etappe 15 fragt das Quiz mit der Kurzform — gleiche Kurzform = mehrdeutige Frage. */
+  [(m) => (m.funktionKurz ? funktionKurzText(m.funktionKurz) : ''), 'Funktion (Kurzform)'],
   ['innervation', 'Innervation'],
 ];
 const kollisionen = [];
 for (const [feld, titel] of FELDER) {
   const nach = new Map();
   for (const m of MUSKELN) {
-    const wert = (m[feld] ?? '').trim();
+    const wert = ((typeof feld === 'function' ? feld(m) : m[feld]) ?? '').trim();
     if (wert === '') continue;
     if (!nach.has(wert)) nach.set(wert, []);
     nach.get(wert).push(m);

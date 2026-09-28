@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { explainWrongAnswer } from './explain';
 import { confusionPairs, confusionText } from './confusions';
 import { getMuscleByCardKey, getMuscles } from './loader';
+import { funktionKurzText } from './funktion-kurz';
 import type { Muscle, QuizMode, QuizQuestion } from '../types';
 
 const SUPRA = getMuscleByCardKey('M. supraspinatus') as Muscle;
@@ -42,7 +43,11 @@ describe('explainWrongAnswer — es wird kontrastiert, wonach gefragt war', () =
 
     expect(result.aspect).toBe('function');
     expect(result.text).toContain('M. soleus');
-    expect(result.text).toContain(SOLEUS.functionDescription.replace(/[.;]+$/, ''));
+    /* Im Quiz steht die Kurzform (Etappe 15) — die Erklaerung spricht dieselbe Sprache
+       wie die Option, nicht den langen Text. Zeilen mit Semikolon, nicht mit Umbruch. */
+    expect(result.text).toContain(funktionKurzText(SOLEUS.funktionKurz!).replace(/\n/g, '; '));
+    expect(result.text).not.toContain(SOLEUS.functionDescription.replace(/[.;]+$/, ''));
+    expect(result.text).not.toContain('\n');
     expect(result.text).toContain('Gesucht war M. supraspinatus');
     expect(result.curated).toBe(false);
   });

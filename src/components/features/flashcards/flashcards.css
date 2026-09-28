@@ -241,6 +241,10 @@
 .flashcard__facts dd {
   margin: 0;
   line-height: 1.45;
+  /* Funktions-Kurzform: eine Zeile je Gelenk (Etappe 15); lange Gelenknamen trennen. */
+  white-space: pre-line;
+  hyphens: auto;
+  overflow-wrap: anywhere;
 }
 
 /* Stern-Legende: erscheint nur, wenn oben ein Wert die Marke traegt. Zurueckhaltend
@@ -718,4 +722,113 @@
   .fc-image-toggle {
     min-height: var(--touch-min);
   }
+}
+
+/* ---- Lernform + Quiz-Mix (Etappe 16, ADR 0014) ------------------------- */
+.fc-lernform {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+/* Zwei gleich breite Haelften ueber die ganze Spalte: Es ist EINE Entscheidung zwischen zwei
+   Formen, kein Zusatzschalter. `wrap` + `flex-basis` statt fester Breite, damit bei 200 %
+   Textzoom auf 320 px „Karteikarten" und „Quiz-Mix" untereinander rutschen, statt die Seite
+   quer zu druecken (UX-Review 2026-07-26, Regel 4). */
+.fc-lernform .segmented {
+  display: flex;
+  flex-wrap: wrap;
+}
+.fc-lernform .segmented__btn {
+  flex: 1 1 8em;
+  font-weight: 600;
+}
+.fc-lernform .fc-setup__hint {
+  max-width: var(--measure); /* Satzspiegel — der Quiz-Mix-Satz ist der laengste hier. */
+  line-height: 1.5;
+}
+
+/* Die Leiste der Lernkarte klebt nur unter 1024 px — darueber passt die Karte. Eine Quizfrage
+   passt nicht: Bild plus vier Antworten plus Kartenzeile, und „Weiter" lag auf 1440 × 900
+   gemessen bei y=1182 (`check:oberflaeche`, Quiz-Mix-Sitzung). Ohne Tab-Leiste reicht hier
+   der normale Abstand zum Rand. */
+@media (min-width: 1024px) {
+  .fc-actions--quiz {
+    position: sticky;
+    bottom: var(--spacing-md);
+    z-index: var(--z-base);
+    padding: var(--spacing-sm);
+    background: var(--glass-panel);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--glass-shadow);
+  }
+}
+
+/* Ergebnis-Fuss: Kartenzeile und „Weiter" als ein Paar, nebeneinander, sobald beide passen.
+   Auf dem Handy klebt die Leiste UEBER den Antworten — je hoeher sie ist, desto mehr verdeckt
+   sie genau die Stelle, an der Gruen und Rot stehen. `wrap` + `flex-basis` statt Breakpoint:
+   Bei 390 px bleibt es eine Zeile, bei 320 px oder 200 % Text rutscht der Knopf darunter.
+   `min-width: 0`: Die Kartenzeile traegt einen lateinischen Namen, und nur so darf sie
+   schmaler werden als dieses Wort. */
+.fc-quiz-ergebnis {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: var(--spacing-sm);
+}
+.fc-quiz-ergebnis .fc-quiz-karte {
+  flex: 999 1 12em;
+  min-width: 0;
+}
+.fc-quiz-ergebnis .btn--block {
+  flex: 1 1 7em;
+  width: auto;
+}
+@media (min-width: 640px) {
+  .fc-quiz-ergebnis .btn--block {
+    flex: 0 0 auto;
+    min-width: 200px;
+  }
+}
+
+/* Die Tastenkuerzel sind unter 1024 px (Tab-Leiste = Touch) nur Hoehe, die ueber den
+   Antworten liegt. Die Lernkarte behaelt ihren Hinweis — er nennt dort auch das Wischen. */
+@media (max-width: 1023.98px) {
+  .fc-actions--quiz .fc-controls-hint {
+    display: none;
+  }
+}
+
+/* Welche Karte die Frage war und wohin sie ging. Die Worte tragen die Aussage („weiter in
+   Fach 3" / „zurueck in Fach 1"); Gruen/Rot ist nur die Zugabe am Rand — `--success` als
+   Schrift schaffte auf dem hellen Grund keine 4.5:1. Spalte statt Zeile: Ein lateinischer
+   Name ist ein einziges langes Wort, und nur in der Spalte darf er umbrechen. */
+.fc-quiz-karte {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--surface-sunken);
+  border: 1px solid var(--hairline);
+  border-left: 4px solid var(--hairline-strong);
+  border-radius: var(--radius-md);
+  font-family: var(--font-ui);
+}
+.fc-quiz-karte--richtig {
+  border-left-color: var(--success);
+}
+.fc-quiz-karte--falsch {
+  border-left-color: var(--danger);
+}
+.fc-quiz-karte__name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.fc-quiz-karte__fach {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
 }

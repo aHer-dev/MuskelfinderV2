@@ -3,7 +3,8 @@
 
    Die App öffnet auf EINEM Vorschlag, nicht auf einem Katalog. Die Empfehlung
    selbst kommt getypt aus `data/today.ts`; hier entstehen nur die Sätze — und
-   in jedem der vier Zustände genau ein Primärbutton.
+   in jedem der vier Zustände genau ein Vorschlag. Seit Etappe 16 (ADR 0014) steht
+   er in zwei gleichwertigen Formen da: als Lernkarten und als Quiz-Mix.
    ========================================================================= */
 
 import { useEffect, useMemo, useRef } from 'react';
@@ -11,6 +12,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { getMuscleByCardKey } from '../data';
 import { regionLabel } from '../data/labels';
 import { lookupSuggestions } from '../data/lookups';
+import type { Lernform } from '../data/quiz-mix';
 import type { TodayPlan } from '../data/today';
 import { useTodayPlan } from '../hooks/useTodayPlan';
 import { useCompleteOnboarding } from '../hooks/useCompleteOnboarding';
@@ -32,6 +34,7 @@ function cardWord(n: number): string {
 function muscleWord(n: number): string {
   return n === 1 ? 'Muskel' : 'Muskeln';
 }
+
 
 /** Überschrift je Zustand. Keine Schuld-Botschaft, kein Jubel — nur die Lage. */
 function headline(plan: TodayPlan): string {
@@ -142,15 +145,24 @@ export function TodayPage() {
     );
   }
 
-  /** Sitzung mit einer bereits priorisierten Auswahl starten (Reihenfolge aus 7a). */
-  const startSession = (names: string[]) => {
-    navigate('/lernkarten', { state: { start: { names, limit: 0, scope: 'all' } } });
+  /**
+   * Sitzung mit einer bereits priorisierten Auswahl starten (Reihenfolge aus 7a).
+   *
+   * Die Lernform wird nur mitgeschickt, wenn sie vom Normalfall abweicht — die anderen
+   * Wege hierher (Statistik, Pruefung, Gruppenseite) schicken sie nie, und `/lernkarten`
+   * liest „keine Angabe" als Karteikarten.
+   */
+  const startSession = (names: string[], lernform: Lernform = 'karten') => {
+    const start = { names, limit: 0, scope: 'all' };
+    navigate('/lernkarten', {
+      state: { start: lernform === 'karten' ? start : { ...start, lernform } },
+    });
   };
 
   /** „Neue aus dem Pfad": erst in den Kasten, dann direkt lernen. */
-  const learnSuggestions = () => {
+  const learnSuggestions = (lernform: Lernform = 'karten') => {
     addCards(plan.newSuggestions);
-    startSession(plan.newSuggestions);
+    startSession(plan.newSuggestions, lernform);
   };
 
   /**
@@ -214,19 +226,54 @@ export function TodayPage() {
               ))}
             </ul>
 
-            {plan.kind === 'new' ? (
-              <button type="button" className="btn btn--primary btn--block" onClick={learnSuggestions}>
-                {plan.newSuggestions.length} neue {muscleWord(plan.newSuggestions.length)} lernen
-              </button>
-            ) : (
-              <button
-                type="button"
-                className="btn btn--primary btn--block"
-                onClick={() => startSession(plan.dueCards)}
-              >
-                Los — {plan.dueCards.length} {cardWord(plan.dueCards.length)} lernen
-              </button>
-            )}
+            {/* Zwei Wege zu DENSELBEN Karten (Etappe 16): als Lernkarten oder als Quiz-Mix.
+                Gleichwertig nebeneinander — Entscheidung des Projektinhabers (2026-09-28,
+                ADR 0014). Das lockert ADR 0007 (Invariante 2) fuer genau dieses Paar: Es bleibt
+                EIN Vorschlag, denn beide Knoepfe starten dieselben Karten mit derselben Zahl;
+                waehlbar ist nur die Form. Ein Test haelt das fest (`TodayPage.test.tsx`).
+                Die Zahl zaehlt KARTEN, nicht Fragen: Im Quiz-Mix kommt jede Karte zweimal
+                (`FRAGEN_JE_KARTE`) — „Los — 20 Quizfragen" waeren in Wahrheit 40 gewesen. */}
+            <div className="today__actions">
+              {plan.kind === 'new' ? (
+                <>
+                  <button
+                    type="button"
+                    className="btn btn--primary btn--block"
+                    onClick={() => learnSuggestions()}
+                  >
+                    <Icon name="icCards" size={18} />
+                    {plan.newSuggestions.length} neue {muscleWord(plan.newSuggestions.length)} lernen
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn--primary btn--block"
+                    onClick={() => learnSuggestions('quiz')}
+                  >
+                    <Icon name="icQuiz" size={18} />
+                    {plan.newSuggestions.length} neue als Quiz
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    className="btn btn--primary btn--block"
+                    onClick={() => startSession(plan.dueCards)}
+                  >
+                    <Icon name="icCards" size={18} />
+                    Los — {plan.dueCards.length} {cardWord(plan.dueCards.length)} lernen
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn--primary btn--block"
+                    onClick={() => startSession(plan.dueCards, 'quiz')}
+                  >
+                    <Icon name="icQuiz" size={18} />
+                    Los — {plan.dueCards.length} {cardWord(plan.dueCards.length)} als Quiz
+                  </button>
+                </>
+              )}
+            </div>
 
             {plan.kind === 'backlog' && (
               <p className="today__note">

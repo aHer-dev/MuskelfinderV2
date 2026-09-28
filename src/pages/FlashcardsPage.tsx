@@ -3,21 +3,31 @@ import { Link, useLocation } from 'react-router-dom';
 import { getMuscleByCardKey, getRegions } from '../data';
 import { regionLabel } from '../data/labels';
 import { recallStage } from '../data/recall';
+import { FRAGEN_JE_KARTE, LERNFORM_LABELS, LERNFORMEN, type Lernform } from '../data/quiz-mix';
 import type { CardFilter } from '../data/card-filter';
 import { Flashcard } from '../components/features/flashcards/Flashcard';
 import { LeitnerBoxes } from '../components/features/flashcards/LeitnerBoxes';
 import { RatingBar } from '../components/features/flashcards/RatingBar';
 import { TypeCard } from '../components/features/flashcards/TypeCard';
+import { QuestionCard } from '../components/features/quiz/QuestionCard';
 import { useFlashcardSession } from '../hooks/useFlashcardSession';
 import { modalOffen, tasteGehoertDerSeite } from '../hooks/tastatur';
-import { buildQueue, readSessionHandoff, type RegionScope } from '../store/useSessionStore';
+import {
+  buildQueue,
+  readSessionHandoff,
+  type QuizAufdeckung,
+  type RegionScope,
+} from '../store/useSessionStore';
 import { useProgressStore } from '../store/useProgressStore';
 import { BildNachweis } from '../components/ui/BildNachweis';
 import { Icon } from '../components/ui/Icon';
 import { ImageLightbox } from '../components/ui/ImageLightbox';
 import { EmptyState } from '../components/ui/EmptyState';
-import type { CardRating, Muscle, RegionId } from '../types';
+import { FunktionsBeschreibung } from '../components/ui/FunktionsBeschreibung';
+import { SegmentedControl } from '../components/ui/SegmentedControl';
+import type { CardRating, Muscle, QuizQuestion, RegionId } from '../types';
 import '../components/features/flashcards/flashcards.css';
+import '../components/features/quiz/quiz.css';
 
 const REGION_ORDER = getRegions().map((r) => r.id) as RegionId[];
 const LIMITS = [0, 5, 10, 20, 50];
@@ -29,6 +39,27 @@ const FILTERS: Array<{ value: CardFilter; label: string }> = [
   { value: 'unseen', label: 'Nur nie gesehene' },
   { value: 'difficult', label: 'Nur schwierig markierte' },
 ];
+
+const LERNFORM_OPTIONEN = LERNFORMEN.map((value) => ({ value, label: LERNFORM_LABELS[value] }));
+
+/**
+ * Was die Lernform tut — in dem Moment, in dem man sie waehlt. Der Quiz-Mix-Satz ist ein
+ * Versprechen in vier Teilen, und jeder Teil hat eine Pruefzeile: gemischte Fragearten
+ * (`quiz-mix.test.ts`), zweimal richtig bevor es weitergeht (`useFlashcardSession.test.ts`,
+ * `check:wege` 4c), ein Fehler schickt zurueck, und Fach 7 bleibt Freitext (ADR 0008 — sonst
+ * stimmte die Anleitung nicht mehr).
+ */
+const LERNFORM_HINWEIS: Record<Lernform, string> = {
+  karten:
+    'Karte aufdecken und dich selbst bewerten — einmal richtig schiebt sie ein Fach weiter. '
+    + 'In Fach 7 tippst du den Namen frei.',
+  /* „zweimal … beide" steht fuer `FRAGEN_JE_KARTE` — ein Test haelt Satz und Zahl zusammen. */
+  quiz:
+    'Jede Karte kommt zweimal als Frage mit vier Antworten, jedes Mal in einer anderen Art — '
+    + 'Bild, Ursprung & Ansatz, Funktion, Innervation, bunt gemischt. Ein Fach weiter geht es '
+    + 'erst, wenn beide sitzen; ein Fehler schickt die Karte zurück. Karten in Fach 7 fragen '
+    + 'weiter den Namen frei ab.',
+};
 
 /**
  * Bildbeschreibung auf der Lernkarte. Auf der Freitext-Stufe (Fach 7) ist der Name die
@@ -52,6 +83,7 @@ export function FlashcardsPage() {
   const [limit, setLimit] = useState(0);
   const [scope, setScope] = useState<RegionScope>('all');
   const [filter, setFilter] = useState<CardFilter>('all');
+  const [lernform, setLernform] = useState<Lernform>('karten');
 
   /* Übergabe von `/heute` (7b): der Tagesplan hat die Karten bereits ausgewählt und
      sortiert — die Sitzung startet dann ohne Umweg über den Setup-Screen. Pro
@@ -64,6 +96,10 @@ export function FlashcardsPage() {
     const handoff = readSessionHandoff(location.state);
     if (!handoff) return;
     consumedKey.current = location.key;
+    /* Die Wahl von `/heute` gilt auch fuer die Einrichtung dahinter: Wer dort „Als Quiz-Mix"
+       gestartet hat und die Sitzung abbricht, soll nicht wortlos wieder bei den
+       Karteikarten stehen. */
+    setLernform(handoff.lernform ?? 'karten');
     startSession(handoff);
   }, [location.key, location.state, startSession]);
 
@@ -133,18 +169,24 @@ export function FlashcardsPage() {
           limit={limit}
           scope={scope}
           filter={filter}
+          lernform={lernform}
           onLimit={setLimit}
           onScope={setScope}
           onFilter={setFilter}
-          onStart={() => session.start({ limit, scope, filter })}
+          onLernform={setLernform}
+          onStart={() => session.start({ limit, scope, filter, lernform })}
         />
       ) : session.done ? (
         <SummaryScreen
           session={session}
           byFach={byFach}
-          onContinue={() => session.start({ limit, scope, filter })}
+          onContinue={() => session.start({ limit, scope, filter, lernform: session.lernform })}
           canContinue={dueForScope > 0}
         />
+      ) : session.frage ? (
+        /* Quiz-Mix. Karten ohne Frage (Fach 7) fallen in den Zweig darunter und bleiben
+           Lernkarten — mitten in derselben Sitzung, mit demselben Fortschritt. */
+        <QuizMixScreen session={session} frage={session.frage} byFach={byFach} cards={cards} />
       ) : (
         <CardScreen session={session} byFach={byFach} cards={cards} />
       )}
@@ -217,9 +259,11 @@ function SetupScreen({
   limit,
   scope,
   filter,
+  lernform,
   onLimit,
   onScope,
   onFilter,
+  onLernform,
   onStart,
 }: {
   deckSize: number;
@@ -228,9 +272,11 @@ function SetupScreen({
   limit: number;
   scope: RegionScope;
   filter: CardFilter;
+  lernform: Lernform;
   onLimit: (n: number) => void;
   onScope: (s: RegionScope) => void;
   onFilter: (f: CardFilter) => void;
+  onLernform: (f: Lernform) => void;
   onStart: () => void;
 }) {
   if (deckSize === 0) {
@@ -252,6 +298,21 @@ function SetupScreen({
 
   return (
     <div className="fc-setup">
+      {/* Die Lernform zuerst: Sie ist die eine Entscheidung vor dem Start, die anderen drei
+          Felder grenzen nur ein, WAS drankommt. Beide Formen lernen dieselben Karten. */}
+      <div className="fc-lernform">
+        <span className="fc-field__label" aria-hidden="true">
+          Lernform
+        </span>
+        <SegmentedControl
+          options={LERNFORM_OPTIONEN}
+          value={lernform}
+          onChange={onLernform}
+          ariaLabel="Lernform"
+        />
+        <p className="fc-setup__hint">{LERNFORM_HINWEIS[lernform]}</p>
+      </div>
+
       <div className="fc-setup__due">
         <span className="fc-setup__due-num">{dueForScope}</span>
         <span className="fc-setup__due-label">
@@ -319,7 +380,7 @@ function SetupScreen({
            klebt auf dem Handy sichtbar am Rand. */
         <div className="fc-setup__start">
           <button type="button" className="btn btn--primary btn--block" onClick={onStart}>
-            Lernen starten
+            {lernform === 'quiz' ? `${LERNFORM_LABELS.quiz} starten` : 'Lernen starten'}
           </button>
         </div>
       )}
@@ -455,12 +516,12 @@ function CardScreen({
             <div
               className="flashcards__progress-fill"
               style={{
-                width: session.total > 0 ? `${(session.reviewed / session.total) * 100}%` : '0%',
+                width: session.gesamt > 0 ? `${(session.erledigt / session.gesamt) * 100}%` : '0%',
               }}
             />
           </div>
           <span className="flashcards__progress-label">
-            {session.reviewed}/{session.total}
+            {session.erledigt}/{session.gesamt}
             {session.unsure > 0 && (
               <span className="flashcards__progress-unsure">
                 {' '}
@@ -534,6 +595,15 @@ function CardScreen({
             <Flashcard muscle={muscle} revealed={revealed} onReveal={() => setRevealed(true)} />
           )}
 
+          {/* Die Rueckseite zeigt die Kurzform; der Text klappt darunter auf (Etappe 15).
+              Nicht in der Karte: Sie ist ein <button>, und ein Aufklapper darin waere ein
+              Knopf im Knopf. Nie auf der Freitext-Stufe — viele Texte nennen den Muskel beim
+              Namen („Der M. masseter ist …"), und der Name ist dort die gesuchte Antwort.
+              `key`: Jede Karte beginnt eingeklappt. */}
+          {!produce && revealed && muscle.funktionKurz?.length ? (
+            <FunktionsBeschreibung key={muscle.id} text={muscle.functionDescription} />
+          ) : null}
+
           <LeitnerBoxes counts={byFach} activeBox={activeBox} />
 
           {/* V1-Parität: erst aufdecken, dann bewerten — kein deaktivierter „Toter-Klick"-Zustand.
@@ -578,6 +648,153 @@ function CardScreen({
           <p>Karte „{current}" hat keinen Muskel-Datensatz.</p>
           <RatingBar onRate={rate} disabled={false} />
         </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Quiz-Mix (Etappe 16, ADR 0014) ───────────────────────────────────── */
+/**
+ * Der Satz unter einer beantworteten Frage: WELCHE Karte das war und was mit ihr passiert.
+ * Die Frage selbst nennt den Muskel oft nicht („Ursprung → Ansatz" zeigt nur einen Ursprung),
+ * und im Quiz-Mix bewegt eine richtige Antwort allein die Karte noch nicht — ohne diese Zeile
+ * saehe „Richtig!" ohne Fachwechsel wie ein Fehler aus.
+ */
+function wirkungSatz(a: QuizAufdeckung): string {
+  switch (a.wirkung) {
+    case 'halb':
+      return `${a.richtigBisher} von ${FRAGEN_JE_KARTE} richtig — kommt noch einmal dran`;
+    case 'hoch':
+      return `${FRAGEN_JE_KARTE} von ${FRAGEN_JE_KARTE} richtig — weiter in Fach ${a.fachNachher}`;
+    case 'zurueck':
+      return a.fachNachher === a.fachVorher
+        ? `bleibt in Fach ${a.fachNachher}`
+        : `zurück in Fach ${a.fachNachher}`;
+    case 'uebung':
+      return `zur Übung — die Karte steht schon in Fach ${a.fachNachher}`;
+  }
+}
+
+function QuizMixScreen({
+  session,
+  frage,
+  byFach,
+  cards,
+}: {
+  session: ReturnType<typeof useFlashcardSession>;
+  frage: QuizQuestion;
+  byFach: number[];
+  cards: Record<string, { fach: number; difficult: boolean }>;
+}) {
+  const toggleDifficult = useProgressStore((s) => s.toggleDifficult);
+  const { aufgedeckt, beantworte, weiter, current } = session;
+
+  /* Nach der Antwort zeigt die Warteschlange schon auf die NAECHSTE Karte (die Bewertung ist
+     verbucht). Markieren und Fach-Anzeige gehoeren aber zu der Karte, deren Frage noch auf
+     dem Schirm steht. */
+  const karte = aufgedeckt?.name ?? current;
+  const difficult = karte ? (cards[karte]?.difficult ?? false) : false;
+  const activeBox = aufgedeckt ? aufgedeckt.fachNachher : karte ? cards[karte]?.fach : undefined;
+  const letzte = aufgedeckt !== null && current === null;
+  const weiterText = letzte ? 'Zur Auswertung' : 'Weiter';
+
+  // Tastatur wie im Quiz: 1–4 antworten, Enter weiter, F markieren. Riegel aus `hooks/tastatur.ts`.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (!tasteGehoertDerSeite(e)) return;
+      if (e.key === 'f' || e.key === 'F') {
+        if (karte) toggleDifficult(karte);
+        return;
+      }
+      if (aufgedeckt) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          weiter();
+        }
+        return;
+      }
+      const nummer = Number(e.key);
+      if (Number.isInteger(nummer) && nummer >= 1 && nummer <= frage.options.length) {
+        e.preventDefault();
+        beantworte(frage.options[nummer - 1].id);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [aufgedeckt, frage, karte, beantworte, weiter, toggleDifficult]);
+
+  const muskel = aufgedeckt ? getMuscleByCardKey(aufgedeckt.name) : undefined;
+
+  return (
+    <div className="flashcards__session">
+      <div className="fc-session-head">
+        <button type="button" className="fc-icon-btn" onClick={session.exit} aria-label="Zur Übersicht">
+          ←
+        </button>
+        <div className="flashcards__progress" aria-label="Fortschritt">
+          <div className="flashcards__progress-track">
+            <div
+              className="flashcards__progress-fill"
+              style={{
+                width: session.gesamt > 0 ? `${(session.erledigt / session.gesamt) * 100}%` : '0%',
+              }}
+            />
+          </div>
+          <span className="flashcards__progress-label">
+            {session.erledigt}/{session.gesamt}
+          </span>
+        </div>
+        <button
+          type="button"
+          className={`fc-icon-btn fc-flag${difficult ? ' fc-flag--on' : ''}`}
+          onClick={() => karte && toggleDifficult(karte)}
+          aria-pressed={difficult}
+          aria-label="Als schwierig markieren"
+          title="Als schwierig markieren (F)"
+        >
+          <Icon name="icFlag" size={18} />
+        </button>
+      </div>
+
+      {/* `key`: jede Frage beginnt mit frischem Zustand (Fokus, Erklaerung, Vollansicht). */}
+      <QuestionCard
+        key={frage.id}
+        question={frage}
+        phase={aufgedeckt ? 'revealed' : 'answering'}
+        selectedId={aufgedeckt?.selectedId ?? null}
+        onAnswer={beantworte}
+      />
+
+      <LeitnerBoxes counts={byFach} activeBox={activeBox} />
+
+      {/* Klebt wie in der Lernkarten-Sitzung — und anders als dort auch auf dem Desktop
+          (`.fc-actions--quiz`): Eine Frage mit Bild und vier Antworten ist hoeher als eine
+          Lernkarte, „Weiter" lag auf 1440 × 900 gemessen bei y=1182. Vor der Antwort gibt es
+          hier nichts zu druecken: Die Antwort IST die Handlung. */}
+      {aufgedeckt ? (
+        <div className="fc-actions fc-actions--quiz">
+          {/* Die Kartenzeile steht IN der Leiste, nicht darueber: Nach einer falschen Antwort
+              (Erklaerung + „Beide vergleichen") lag sie auf dem Desktop genau hinter der
+              klebenden Leiste — sichtbar war „Weiter", verdeckt war, welche Karte gewandert ist. */}
+          <div className="fc-quiz-ergebnis">
+            <p className={`fc-quiz-karte fc-quiz-karte--${aufgedeckt.richtig ? 'richtig' : 'falsch'}`}>
+              <span className="fc-quiz-karte__name">{muskel?.nameLatin ?? aufgedeckt.name}</span>
+              <span className="fc-quiz-karte__fach">
+                {wirkungSatz(aufgedeckt)}
+              </span>
+            </p>
+            <button type="button" className="btn btn--primary btn--block" onClick={weiter}>
+              {weiterText}
+            </button>
+          </div>
+          <p className="fc-controls-hint">
+            <kbd>Enter</kbd> {letzte ? 'zur Auswertung' : 'weiter'} · <kbd>F</kbd> schwierig
+          </p>
+        </div>
+      ) : (
+        <p className="fc-controls-hint">
+          <kbd>1</kbd>–<kbd>{frage.options.length}</kbd> antworten · <kbd>F</kbd> schwierig
+        </p>
       )}
     </div>
   );

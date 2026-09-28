@@ -17,6 +17,47 @@
 | **Palpationstexte eintragen** | Ein falscher Landmarken-Hinweis wird auswendig gelernt und am Patienten angewandt. Die Texte kommen aus dem **Skript deiner Kollegen**. Am 2026-07-13 hast du alle 21 KI-Vorschläge gestrichen — zu Recht. Bis dahin steht auf **allen 150** Detailseiten ein Platzhalter. | [palpation-erfassen.md](palpation-erfassen.md) |
 | **Kursabschnitte eintragen** | Ein Kursabschnitt ist eine Behauptung darüber, was geprüft wird. Rät die KI ihn, lernt ein Schüler den falschen Stoff für die falsche Prüfung. Solange leer, zeigt der Erststart einen Platzhalter statt der Kursauswahl. | [curriculum-erfassen.md](curriculum-erfassen.md) |
 | **Ergo: obere Extremität und Rumpf nachschärfen** (dein Punkt vom 2026-07-27) | Zwei getrennte Fragen, beide fachlich: **(1)** Welche Gelenkgruppen stehen einem Ergo unter „Typisch für dich" oben? Heute sind es vier — `hand`, `ellenbogen`, `schultergelenk`, `schulterguertel` (`TYPICAL` in `src/data/joint-groups.ts`). Wirbelsäule/Rumpf ist bewusst **nicht** dabei; du sagtest, das stimmt so nicht. **(2)** Was steckt inhaltlich in „obere Extremität" und „Rumpf" für die Ergos — gehört etwas hinein oder heraus? Ein Agent rät das nicht: Die Reihenfolge ist eine Aussage darüber, womit dein Kurs anfängt. **Nichts ist versteckt** — alle elf Gruppen bleiben für jeden Beruf wählbar (Prüfzeile in `joint-groups.test.ts`), es geht nur um die Vorsortierung. Sag mir die Liste je Beruf, dann ist es ein Zweizeiler. | — |
+| ~~**Funktions-Kurzformen abnehmen**~~ **ERLEDIGT 2026-09-27** — vom Projektinhaber freigegeben, Stern entfernt. (Etappe 15) | Die 150 Kurzformen sind KI-Entwürfe aus dem Funktionstext, bis zur Abnahme mit Stern. Die KI hat sie am 2026-09-27 einmal selbst durchgesehen (Ergebnis unten) — das ersetzt kein Lehrbuch. Nach deiner Durchsicht setzt ein Agent `status` in `src/data/editorial/funktion-kurz.json` auf `"geprueft"`. | `npm run export:csv` → `funktion-kurzform.csv` |
+
+### Fachfragen aus der Durchsicht der Funktions-Kurzformen (2026-09-27)
+
+**Erledigt am 2026-09-27** — vom Projektinhaber im Lehrbuch bestätigt, in
+`src/data/generated/muscles.json` korrigiert (Text beider Niveaus, `joints`, `functions`),
+Kurzform nachgezogen, festgehalten in `src/data/lehrbuch-korrekturen.test.ts`:
+
+| Muskel | Vorher | Jetzt |
+|---|---|---|
+| M. semimembranosus | zieht den Meniscus **lateralis** nach dorsal | Meniscus **medialis** |
+| M. abductor digiti minimi (Hand) | unterstützt die MCP-Extension | Flexion im Grundgelenk, Extension in PIP/DIP (`joints` + PIP, DIP) |
+| M. sternocleidomastoideus | beidseitig Inklination | beidseitig Reklination des Kopfes + Flexion der HWS (`joints` + HWS) |
+| Mm. lumbricales (Fuß) | Adduktion zur zweiten Achse, keine IP-Extension | Flexion MTP, Extension IP, Adduktion zur Großzehe |
+| M. gluteus maximus | „laterale" Anteile abduzieren | kraniale abduzieren, kaudale adduzieren |
+| M. extensor carpi ulnaris | Suchfilter ohne Dorsalextension | Filter nachgetragen (der Text nannte sie schon) |
+
+⚠️ **Die V1-Quelle trägt noch die alten Texte** (sie lag nicht vor). Wird sie wieder
+gebraucht: dort ebenfalls korrigieren. Ein `migrate:data` aus der unkorrigierten Quelle lässt
+`lehrbuch-korrekturen.test.ts` fallen — genau dafür steht er da.
+
+**Ebenfalls erledigt am 2026-09-27 — per Quellenabgleich** (Auftrag „prüfe im internet";
+DocCheck Flexikon, Kenhub, de.wikipedia; festgehalten im zweiten Block von
+`lehrbuch-korrekturen.test.ts`):
+
+| Muskel | Vorher | Jetzt | Quellen |
+|---|---|---|---|
+| M. psoas minor | kippt das Becken nach dorsal, stabilisiert die LWS in Streckung | schwach: beugt/neigt die LWS, spannt die Fascia iliaca (`joints` Becken → LWS) | DocCheck, Kenhub, Wikipedia |
+| M. piriformis | bei 90° Flexion zusätzlich Abduktor | Außenrotation + Abduktion; ab ca. 80° Flexion Innenrotator | DocCheck (80°), Wikipedia (ohne Winkel) |
+| M. trapezius, Pars descendens | „unterstützt HWS-Bewegungen" | einseitig Seitneigung gleiche Seite + Kopfrotation zur Gegenseite, beidseitig Extension | DocCheck, Kenhub |
+| M. tensor fasciae latae | keine Kniefunktion | stabilisiert das gestreckte Knie über den Tractus | DocCheck |
+| M. quadratus lumborum | beidseitig „stabilisiert" | beidseitig Extension der LWS, fixiert die 12. Rippe (`joints` + Becken) | DocCheck |
+| M. pronator quadratus | `joints`: Art. cubiti | `joints`: Art. radioulnaris distalis (neues Etikett, Gelenkgruppe „Ellenbogen") | DocCheck |
+| M. gastrocnemius, M. soleus | `joints` ohne USG | `joints` + Art. subtalaris (Inversion des Rückfußes) | DocCheck |
+| M. geniohyoideus | `joints` ohne Kiefergelenk | `joints` + Kiefergelenk (wirkt bei der Kieferöffnung mit) | DocCheck |
+
+Wo nur **eine** Quelle steht, lohnt der Blick ins Lehrbuch.
+
+**Bewusst so gelassen:**
+- M. levator scapulae und M. trapezius (Pars descendens) wirken auf die HWS (DocCheck bestätigt: Seitneigung und Rotation), `joints` nennt sie aber **nicht** — sonst rutschten beide in die Gelenkgruppe „Wirbelsäule". Die Kurzform nennt die HWS trotzdem. Soll sich die Gruppe ändern, ist das eine Entscheidung über den Kartenumfang, keine Datenkorrektur.
+- 8 Unterarmmuskeln führen `Art. cubiti`, ihr Text nennt dort keine Funktion (sie überqueren den Ellenbogen, wirken dort kaum). Der Bericht listet sie trotzdem.
 
 ## Braucht dich (Deploy / Betrieb)
 

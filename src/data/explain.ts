@@ -14,6 +14,7 @@
 
 import { getMuscleById } from './loader';
 import { confusionText } from './confusions';
+import { funktionKurzText } from './funktion-kurz';
 import type { Muscle, QuizQuestion } from '../types';
 
 /** Das Merkmal, nach dem gefragt war — die Sheet-Gegenüberstellung hebt es hervor. */
@@ -34,6 +35,17 @@ export interface Explanation {
 /** Satzbaustein säubern: Leerraum weg, Schlusspunkt weg (wir setzen ihn selbst). */
 function clause(value: string | undefined): string {
   return (value ?? '').trim().replace(/[.;]+$/, '');
+}
+
+/**
+ * Die Funktion als Satzbaustein. Im Quiz steht die Kurzform (Etappe 15) — also auch hier,
+ * sonst erklaerte der Satz mit dem langen Text, was die Option kurz gezeigt hat. Ihre Zeilen
+ * werden mit Semikolon verbunden; ein Zeilenumbruch mitten im Satz waere keiner.
+ */
+function funktion(muscle: Muscle): string {
+  return muscle.funktionKurz?.length
+    ? clause(funktionKurzText(muscle.funktionKurz).replace(/\n/g, '; '))
+    : clause(muscle.functionDescription);
 }
 
 /** Lage in Worten, für die Bild-Modi („Schultergürtel"). */
@@ -82,8 +94,10 @@ function compose(question: QuizQuestion, correct: Muscle, chosen: Muscle | undef
           ? `Der Ursprung von ${correct.nameLatin} ist ${clause(correct.origin)}.`
           : `Gesucht war ${correct.nameLatin}.`;
       default:
-        return clause(correct.functionDescription)
-          ? `Gesucht war ${correct.nameLatin}: ${clause(correct.functionDescription)}.`
+        /* Gedankenstrich statt Doppelpunkt: Die Kurzform bringt ihren eigenen mit
+           („Hüftgelenk (Art. coxae): Extension"), zwei hintereinander lesen sich wie ein Fehler. */
+        return funktion(correct)
+          ? `Gesucht war ${correct.nameLatin} — ${funktion(correct)}.`
           : `Gesucht war ${correct.nameLatin}.`;
     }
   }
@@ -91,9 +105,9 @@ function compose(question: QuizQuestion, correct: Muscle, chosen: Muscle | undef
   switch (question.concreteMode) {
     case 'muscle-to-function': {
       // Gefragt war die Funktion — gewählt wurde die eines anderen Muskels.
-      const own = clause(correct.functionDescription);
+      const own = funktion(correct);
       const head = `Das ist die Funktion von ${chosen.nameLatin}.`;
-      return own ? `${head} ${correct.nameLatin} dagegen: ${own}.` : head;
+      return own ? `${head} ${correct.nameLatin} dagegen — ${own}.` : head;
     }
 
     case 'innervation': {
@@ -141,11 +155,11 @@ function compose(question: QuizQuestion, correct: Muscle, chosen: Muscle | undef
     case 'function-to-muscle':
     default: {
       // Gefragt war der Muskel zu einer Funktion — kontrastiert werden die Funktionen.
-      const chosenFn = clause(chosen.functionDescription);
-      const correctFn = clause(correct.functionDescription);
-      const head = chosenFn ? `${chosen.nameLatin}: ${chosenFn}.` : `Gewählt: ${chosen.nameLatin}.`;
+      const chosenFn = funktion(chosen);
+      const correctFn = funktion(correct);
+      const head = chosenFn ? `${chosen.nameLatin} — ${chosenFn}.` : `Gewählt: ${chosen.nameLatin}.`;
       const tail = correctFn
-        ? `Gesucht war ${correct.nameLatin}: ${correctFn}.`
+        ? `Gesucht war ${correct.nameLatin} — ${correctFn}.`
         : `Gesucht war ${correct.nameLatin}.`;
       return `${head} ${tail}`;
     }

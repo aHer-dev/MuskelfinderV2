@@ -15,6 +15,7 @@
 
 import { withApp } from './checks/harness.mjs';
 import { SEED, SEED_CARD_COUNT } from './checks/seed.mjs';
+import { createServer } from 'vite';
 
 /* Alle Routen. Die meisten brauchen einen befuellten Zustand (Seed); die leeren
    Zustaende pruefen wir separat mit frischem Browser. */
@@ -39,6 +40,35 @@ const ROUTES = [
   ['/datenschutz', 'datenschutz'],
   ['/gibtsnicht', '404'],
 ];
+
+/* Die Muskelseite, deren Funktions-Kurzform das LAENGSTE Wort traegt (Etappe 15).
+   „Funktionsbeschreibung" und „(Radioulnargelenke):" haben bei doppelter Systemschrift auf
+   320 px die Detailseite quer gedrueckt — gefunden wurde es nur, weil zufaellig die
+   Bizeps-Seite in ROUTES steht. Ein fest eingetragener Muskel prueft das Wort von heute;
+   hier wird er aus den Daten gewaehlt und wandert mit, wenn sich die Kurzformen aendern.
+   Geladen ueber Vites SSR-Lader, wie in `export-csv.mjs`: dieselbe Anzeige-Regel wie die
+   App (`funktionAnzeige`), keine zweite Deutung der JSON. */
+const LANGES_WORT = await (async () => {
+  const server = await createServer({
+    root: new URL('..', import.meta.url).pathname,
+    server: { middlewareMode: true },
+    appType: 'custom',
+    logLevel: 'warn',
+  });
+  try {
+    const { getMuscles } = await server.ssrLoadModule('/src/data/index.ts');
+    const { funktionAnzeige } = await server.ssrLoadModule('/src/data/funktion-kurz.ts');
+    let best = { id: '', wort: '' };
+    for (const m of getMuscles()) {
+      for (const wort of funktionAnzeige(m).split(/\s+/)) {
+        if (wort.length > best.wort.length) best = { id: m.id, wort };
+      }
+    }
+    return best;
+  } finally {
+    await server.close();
+  }
+})();
 
 /* Hover-Ziele: je Route eine Auswahl der Bedien-/Link-Klassen. */
 const HOVER = [
@@ -342,9 +372,10 @@ await withApp(async ({ page, goto, runAxe }) => {
      `/start` bei 375 px sauber sind und bei 320 px um 28 px ueberlaufen. Der enge
      Schirm UND die doppelte Schrift zusammen sind der schaerfste Fall — genau die
      Kombination, die ein Handy mit vergroesserter Systemschrift erzeugt. */
+  const zoomRouten = [...ROUTES.map(([r]) => r), `/muskel/${LANGES_WORT.id}`];
   for (const vp of HANDY) {
     await page.setViewportSize({ width: vp.width, height: vp.height });
-    for (const [route] of ROUTES) {
+    for (const route of zoomRouten) {
       await goto(route);
       await page.evaluate(() => { document.documentElement.style.fontSize = '32px'; });
       await page.waitForTimeout(250);
@@ -822,6 +853,112 @@ await withApp(async ({ page, goto, runAxe, setTheme }) => {
 }, { seed: SEED });
 /* ^ Seit 14a MIT Seed: Die Lernsitzung braucht Karten. Detailseite und Quiz („Alle
    Muskeln") haengen nicht am Kasten, ihre Messung aendert sich dadurch nicht. */
+
+/* =========================================================================
+   9. DIE QUIZ-MIX-SITZUNG (Etappe 16, ADR 0014)
+
+   Ein Zustand, den der Routen-Durchlauf NIE rendert: `/lernkarten` zeigt dort die
+   Einrichtung, nicht die Sitzung — und innerhalb der Sitzung gibt es zwei Phasen, von
+   denen die zweite (Antwort aufgedeckt, „Weiter" klebt unten) erst auf einen Klick
+   entsteht. Dieselbe Luecke, durch die die Aktionsleiste der Gelenkwahl gerutscht ist.
+
+   Gemessen je Phase: axe hell + dunkel, waagerechter Ueberlauf; nach der Antwort
+   zusaetzlich, ob „Weiter" im Bild liegt und NICHT unter der Tab-Leiste (die 96-px-Reserve
+   der Shell), und der Ueberlauf bei 200 % Text auf 320 px — die Kartenzeile traegt einen
+   lateinischen Namen, also ein einziges langes Wort.
+   ========================================================================= */
+await withApp(async ({ page, goto, runAxe, setTheme }) => {
+  const L = (s = '') => process.stdout.write(s + '\n');
+  L('\n──── Quiz-Mix-Sitzung (Desktop + 390 + 320 px) ────');
+
+  const ueberlauf = () => page.evaluate(() => {
+    const d = document.documentElement;
+    return d.scrollWidth > d.clientWidth + 1 ? `${d.scrollWidth} > ${d.clientWidth}` : null;
+  });
+  const axeBeide = async (wo) => {
+    for (const theme of ['light', 'dark']) {
+      await setTheme(theme);
+      await page.waitForTimeout(200);
+      for (const x of await runAxe()) record(wo, `axe ${theme}`, `[${x.impact}] ${x.id} ×${x.n} — ${x.target}`);
+    }
+    await setTheme('light');
+  };
+
+  for (const vp of [{ width: 1440, height: 900, label: 'Desktop' }, ...HANDY]) {
+    await page.setViewportSize({ width: vp.width, height: vp.height });
+    const wo = `/lernkarten Quiz-Mix @${vp.label}`;
+
+    await goto('/lernkarten');
+    const wahl = page.getByRole('button', { name: 'Quiz-Mix', exact: true }).first();
+    if (!(await wahl.count())) {
+      record(wo, 'INHALT', 'kein Umschalter „Quiz-Mix" — heisst die Lernform in quiz-mix.ts noch so?');
+      continue;
+    }
+    await wahl.click();
+    await page.getByRole('button', { name: /Quiz-Mix starten/i }).first().click();
+    await page.waitForTimeout(500);
+
+    /* Die Seed-Karten liegen in den Faechern 1–7 — eine Karte in Fach 7 ist auch im Quiz-Mix
+       eine Freitext-Lernkarte. Bis zur ersten Quizfrage weiterbewerten. */
+    for (let i = 0; i < 6 && !(await page.locator('.quiz-option').count()); i++) {
+      const feld = page.getByRole('textbox').first();
+      if (!(await feld.count())) break;
+      await feld.fill('probe');
+      await feld.press('Enter');
+      await page.waitForTimeout(300);
+      await page.getByRole('button', { name: /^Weiter$/ }).first().click().catch(() => {});
+      await page.waitForTimeout(300);
+    }
+    const optionen = await page.locator('.quiz-option').count();
+    if (optionen !== 4) {
+      record(wo, 'INHALT', `die Sitzung zeigt ${optionen} statt 4 Antworten — laeuft sie ueberhaupt als Quiz?`);
+      continue;
+    }
+
+    // Phase 1: Frage offen.
+    const vorher = await ueberlauf();
+    if (vorher) record(`${wo} (Frage)`, 'UEBERLAUF', vorher);
+    await axeBeide(`${wo} (Frage)`);
+
+    // Phase 2: Antwort aufgedeckt.
+    await page.locator('.quiz-option').first().click();
+    await page.waitForTimeout(300);
+    const nachher = await ueberlauf();
+    if (nachher) record(`${wo} (Antwort)`, 'UEBERLAUF', nachher);
+    await axeBeide(`${wo} (Antwort)`);
+
+    const lage = await page.evaluate(() => {
+      const knopf = document.querySelector('.fc-actions .btn--primary');
+      if (!knopf) return null;
+      const b = knopf.getBoundingClientRect();
+      const tabbar = document.querySelector('.tabbar');
+      const tb = tabbar ? tabbar.getBoundingClientRect() : null;
+      return { oben: Math.round(b.top), unten: Math.round(b.bottom), hoehe: Math.round(b.height),
+        vh: window.innerHeight, tabbarOben: tb && tb.height > 0 ? Math.round(tb.top) : null };
+    });
+    if (!lage) {
+      record(`${wo} (Antwort)`, 'INHALT', 'nach der Antwort kein „Weiter"-Knopf');
+    } else {
+      if (lage.unten > lage.vh || lage.oben < 0) {
+        record(`${wo} (Antwort)`, 'WEITER-UNTER-FALZ', `„Weiter" bei y=${lage.oben}–${lage.unten} auf ${lage.vh} px`);
+      }
+      if (lage.tabbarOben !== null && lage.unten > lage.tabbarOben) {
+        record(`${wo} (Antwort)`, 'UNTER-TABBAR', `„Weiter" endet bei y=${lage.unten}, die Tab-Leiste beginnt bei ${lage.tabbarOben}`);
+      }
+      if (vp.width < 1024 && lage.hoehe < 44) {
+        record(`${wo} (Antwort)`, 'ZIEL<44', `„Weiter" ist ${lage.hoehe} px hoch`);
+      }
+    }
+
+    if (vp.label === '320') {
+      await page.evaluate(() => { document.documentElement.style.fontSize = '32px'; });
+      await page.waitForTimeout(250);
+      const zoom = await ueberlauf();
+      if (zoom) record(`${wo} (Antwort) @200%`, 'UEBERLAUF-ZOOM', zoom);
+      await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
+    }
+  }
+}, { seed: SEED });
 
 /* ---- Urteil ---- */
 const L = (s = '') => process.stdout.write(s + '\n');

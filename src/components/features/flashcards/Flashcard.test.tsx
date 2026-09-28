@@ -7,8 +7,10 @@ import { getMuscles } from '../../../data'
 import type { Muscle } from '../../../types'
 
 const base = getMuscles()[0]
-const withSegments: Muscle = { ...base, nameLatin: 'M. testus', segments: 'C5, C6' }
-const withoutSegments: Muscle = { ...base, nameLatin: 'M. testus', segments: '' }
+/* Kurzform als geprueft: Diese Tests handeln von den Segmenten — der Funktions-Stern
+   (Etappe 15) hat seine eigenen Tests in `facts.test.ts`. */
+const withSegments: Muscle = { ...base, nameLatin: 'M. testus', segments: 'C5, C6', funktionKurzUngeprueft: false }
+const withoutSegments: Muscle = { ...base, nameLatin: 'M. testus', segments: '', funktionKurzUngeprueft: false }
 
 describe('Flashcard — Fakten der Rückseite', () => {
   it('blendet leere Felder aus (Segmente fehlen bei 48 von 150 Muskeln)', () => {
@@ -36,8 +38,8 @@ describe('Flashcard — Fakten der Rückseite', () => {
 })
 
 describe('Flashcard — die Stern-Legende', () => {
-  const ungeprueft: Muscle = { ...base, nameLatin: 'M. testus', segments: 'C5, C6', segmentsUngeprueft: true }
-  const geprueft: Muscle = { ...base, nameLatin: 'M. testus', segments: 'C5, C6', segmentsUngeprueft: false }
+  const ungeprueft: Muscle = { ...base, nameLatin: 'M. testus', segments: 'C5, C6', segmentsUngeprueft: true, funktionKurzUngeprueft: false }
+  const geprueft: Muscle = { ...base, nameLatin: 'M. testus', segments: 'C5, C6', segmentsUngeprueft: false, funktionKurzUngeprueft: false }
 
   /* Der eigentliche Defekt: Die Karte TRUG den Stern, erklaerte ihn aber nie — nur
      die Detailseite tat das. Auf der Lernkarte ist das teurer: Hier wird der Wert

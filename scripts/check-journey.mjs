@@ -13,6 +13,56 @@
    ========================================================================= */
 
 import { withApp } from './checks/harness.mjs';
+import { createServer } from 'vite';
+
+/* Der Muskelbestand fuer Station 4c — ueber Vites SSR-Lader, wie in `check-surface.mjs` und
+   `export-csv.mjs`: dieselben Module wie die App, keine zweite Deutung der JSON. Die Station
+   braucht ihn, um RICHTIG antworten zu koennen; sonst liesse sich die Regel „zweimal richtig,
+   bevor die Karte vorrueckt" im Browser gar nicht gehen. */
+const BESTAND = await (async () => {
+  const server = await createServer({
+    root: new URL('..', import.meta.url).pathname,
+    server: { middlewareMode: true },
+    appType: 'custom',
+    logLevel: 'warn',
+  });
+  try {
+    const { getMuscles } = await server.ssrLoadModule('/src/data/index.ts');
+    const { funktionAnzeige } = await server.ssrLoadModule('/src/data/funktion-kurz.ts');
+    return getMuscles().map((m) => ({ ...m, funktion: funktionAnzeige(m) }));
+  } finally {
+    await server.close();
+  }
+})();
+
+const norm = (t) => (t ?? '').replace(/\s+/g, ' ').trim();
+
+/**
+ * Welche Antworten auf eine Quizfrage richtig waeren — aus den DATEN, nicht aus der Seite.
+ * `art` ist der Modusname (mode-labels.ts), `prompt` der Fragetext, `bild` die Bildquelle.
+ * Liefert Texte (Optionen mit Beschriftung) oder Bildpfade (Optionen mit Bild).
+ */
+const gueltigeAntworten = (art, prompt, bild) => {
+  const mit = (feld, wert) => BESTAND.filter((m) => norm(m[feld]) === wert);
+  switch (art) {
+    case 'Bild → Muskel':
+      return { texte: BESTAND.filter((m) => m.images.some((b) => bild?.endsWith(b.url))).map((m) => norm(m.nameLatin)) };
+    case 'Name → Bild':
+      return { bilder: mit('nameLatin', prompt).map((m) => m.images[0]?.url).filter(Boolean) };
+    case 'Ursprung → Ansatz':
+      return { texte: mit('origin', prompt).map((m) => norm(m.insertion)) };
+    case 'Ansatz → Ursprung':
+      return { texte: mit('insertion', prompt).map((m) => norm(m.origin)) };
+    case 'Funktion → Muskel':
+      return { texte: mit('funktion', prompt).map((m) => norm(m.nameLatin)) };
+    case 'Muskel → Funktion':
+      return { texte: mit('nameLatin', prompt).map((m) => norm(m.funktion)) };
+    case 'Innervation':
+      return { texte: mit('nameLatin', prompt).map((m) => norm(m.innervation)) };
+    default:
+      return { texte: [] };
+  }
+};
 
 /* Die sechs Modi, die dieser Durchlauf GEHT — eine Auswahl, keine zweite Fassung der
    Tabelle: „Gemischt" und die Gruppenfrage bleiben absichtlich draussen, sie brauchen
@@ -333,6 +383,102 @@ await withApp(async ({ page, goto, errors }) => {
     await page.waitForTimeout(300);
     pruefe((await bewertet()) === vorBild + 1, 'Danach bewertet Taste [3] wieder');
   }
+
+  /* ---- STATION 4c: Quiz-Mix von /heute (Etappe 16, ADR 0014) ----
+     Die zweite Lernform zaehlt in den Kasten, aber strenger als die Lernkarte: Eine Karte
+     rueckt erst nach ZWEI richtigen Antworten vor (Projektinhaber, 2026-09-28), ein Fehler
+     verbucht sofort. Die Unit-Tests pruefen den Store; diese Station geht den Weg, den eine
+     Schuelerin geht: Knopf auf /heute, antworten, Enter.
+     Gemessen wird am SPEICHER (`mf.progress`), nicht an der Anzeige: Eine Anzeige kann
+     „weiter in Fach 2" sagen, ohne dass etwas verbucht wurde. */
+  L('\n4c. Quiz-Mix von /heute — zweimal richtig, bevor eine Karte vorrueckt');
+  await goto('/heute');
+  const quizMix = page.getByRole('button', { name: /als Quiz$/ }).first();
+  pruefe(await quizMix.count() > 0, '/heute bietet den Quiz-Mix neben dem Vorschlag an');
+  /* Gleichwertig daneben (Projektinhaber, 2026-09-28) — aber EIN Vorschlag: Beide Knoepfe
+     nennen dieselbe Zahl. Ein Quiz-Knopf mit eigener Zahl waere ein zweiter Tagesplan. */
+  const zahlen = (await page.locator('.today__actions .btn--primary').allInnerTexts())
+    .map((t) => t.match(/\d+/)?.[0]);
+  pruefe(zahlen.length === 2 && zahlen[0] === zahlen[1],
+    `Zwei gleichwertige Knoepfe, dieselbe Zahl (${zahlen.join(' / ')}) — ein Vorschlag, zwei Formen`);
+  await quizMix.click();
+  await page.waitForTimeout(600);
+
+  const kasten = () => page.evaluate(
+    () => JSON.parse(localStorage.getItem('mf.progress')).state.flashcards.cards,
+  );
+  const geaenderteKarten = (vorher, nachher) => Object.keys(nachher)
+    .filter((k) => JSON.stringify(nachher[k]) !== JSON.stringify(vorher[k]));
+  const textVon = async (loc) => ((await loc.count()) ? norm(await loc.first().textContent()) : '');
+
+  /** Beantwortet die offene Frage richtig oder falsch. `false`, wenn die Daten keine Option decken. */
+  const beantworte = async (richtig) => {
+    const art = await textVon(page.locator('.quiz-card__category'));
+    const prompt = await textVon(page.locator('.quiz-card__prompt'));
+    const bildLoc = page.locator('.quiz-card__media img');
+    const bild = (await bildLoc.count()) ? await bildLoc.first().getAttribute('src') : null;
+    const g = gueltigeAntworten(art, prompt, bild);
+    const opts = page.locator('.quiz-option');
+    for (let i = 0; i < (await opts.count()); i++) {
+      const o = opts.nth(i);
+      const text = await textVon(o.locator('.quiz-option__label'));
+      const imgLoc = o.locator('.quiz-option__img');
+      const src = (await imgLoc.count()) ? await imgLoc.getAttribute('src') : null;
+      const passt = g.bilder ? g.bilder.some((u) => src?.endsWith(u)) : g.texte.includes(text);
+      if (passt === richtig) {
+        await o.click();
+        await page.waitForTimeout(250);
+        return true;
+      }
+    }
+    return false;
+  };
+
+  /* Runde 1 komplett richtig beantworten: Keine einzige Antwort darf eine Karte bewegen.
+     Sobald die erste Karte wiederkommt (Runde 2), muss ihre zweite richtige Antwort sie genau
+     ein Fach weiter schieben. Die naechste Frage danach wird absichtlich falsch beantwortet:
+     Das verbucht sofort. */
+  const arten = new Set();
+  /* Die Runde steht im Zaehler („7/40"): Die erste Haelfte ist Runde 1. Nicht am Namen —
+     Hand- und Fussmuskel heissen gleich, und beide liegen in diesem Kasten (Station 2c). */
+  const zaehler = async () => (await textVon(page.locator('.flashcards__progress-label')))
+    .split('/').map((z) => Number.parseInt(z, 10));
+  let runde1 = 0, runde1Still = true, orakel = true, vierOptionen = true;
+  let befoerdert = null, falschVerbucht = null;
+  for (let i = 0; i < 45 && falschVerbucht === null; i++) {
+    if (!(await page.locator('.quiz-option').count())) break;
+    if ((await page.locator('.quiz-option').count()) !== 4) vierOptionen = false;
+    arten.add(await textVon(page.locator('.quiz-card__category')));
+
+    const [erledigt, gesamt] = await zaehler();
+    const vorher = await kasten();
+    const absichtlichFalsch = befoerdert !== null;
+    if (!(await beantworte(!absichtlichFalsch))) { orakel = false; break; }
+    const nachher = await kasten();
+    const geaendert = geaenderteKarten(vorher, nachher);
+    const satz = await textVon(page.locator('.fc-quiz-karte__fach'));
+
+    if (absichtlichFalsch) {
+      falschVerbucht = geaendert.length === 1 && /zurück|bleibt/.test(satz);
+    } else if (erledigt >= gesamt / 2) {
+      const [k] = geaendert;
+      befoerdert = geaendert.length === 1 && nachher[k].fach === vorher[k].fach + 1
+        && /2 von 2 richtig/.test(satz);
+    } else {
+      runde1++;
+      if (geaendert.length !== 0 || !/1 von 2 richtig/.test(satz)) runde1Still = false;
+    }
+    await page.keyboard.press('Enter');
+    await page.waitForTimeout(250);
+  }
+  pruefe(orakel, 'Zu jeder Frage fand sich die richtige Antwort in den Daten (sonst misst die Station nichts)');
+  pruefe(vierOptionen, 'Jede Frage hat vier Antworten');
+  pruefe(runde1 >= 5 && runde1Still,
+    `Runde 1: ${runde1} richtige Antworten, keine bewegt eine Karte („1 von 2 richtig")`);
+  pruefe(befoerdert === true,
+    'Die zweite richtige Antwort zur ersten Karte schiebt sie genau ein Fach weiter („2 von 2 richtig")');
+  pruefe(falschVerbucht === true, 'Eine falsche Antwort verbucht sofort — genau eine Karte, zurueck');
+  pruefe(arten.size >= 4, `Die Fragearten wechseln (${[...arten].join(' · ')})`);
 
   /* ---- STATION 5: Jeder Quizmodus — 4 Optionen, keine Doppel, Rueckmeldung ---- */
   L('\n5. Jeder Quizmodus — vier Optionen, keine Doppelung, Rueckmeldung');
