@@ -83,7 +83,10 @@ describe('MuscleDetailPage', () => {
       expect(folgtReihenfolge(labels), `${m.nameLatin}: ${labels.join(' · ')}`).toBe(true);
       unmount();
     }
-  });
+    /* Eigenes Zeitbudget: 150 Detailseiten nacheinander. Allein laeuft das in ~2 s, im vollen
+       Lauf (74 Dateien parallel) gemessen 5,9–6,3 s — ueber der Vorgabe von 5 s, auch auf dem
+       Stand vor Etappe 16. Damit fiel `npm run verify` an einer Uhr, nicht an einem Fehler. */
+  }, 20_000);
 });
 
 /* ── Funktion in Kurzform (Etappe 15) ──
