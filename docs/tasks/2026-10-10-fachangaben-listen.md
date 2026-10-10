@@ -18,9 +18,14 @@ einer langen Aufzählung. Muskelköpfe und Gelenke dienen als Gruppenüberschrif
 
 ## Nicht-Ziele
 - Anatomische Inhalte ändern, neue Funktionen ergänzen, Quiz-Auswertung oder Speicherformat ändern.
-- Veröffentlichung und Merge.
 
 ## Definition of Done
 - [x] Einzelne Listenpunkte und Gruppenzuordnung im Browser geprüft, Desktop und Handy.
 - [x] Neue Prüfungen gegengetestet; `npm run verify` grün (902 Tests in 75 Dateien).
 - [x] CHANGELOG und PROJECT_STATE aktualisiert.
+
+## Anschlussauftrag
+Am 2026-10-10 hat der Projektinhaber nach der lokalen Vorschau erst Commit und Push
+und anschließend die Übernahme nach `main` und Veröffentlichung für alle Nutzer
+beauftragt. Diese Integration erfolgt über einen Pull Request; Gate und GitHub-Pages-
+Deploy werden kontrolliert.

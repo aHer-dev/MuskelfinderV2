@@ -6,7 +6,7 @@
 
 ## Stand
 - Datum: 2026-10-10
-- Branch: `feat/fachangaben-untereinander` (Umsetzung abgeschlossen, für GitHub-Review vorbereitet; Merge ausstehend) · **Remote: github.com/aHer-dev/MuskelfinderV2** · Live: `aher-dev.github.io/MuskelfinderV2/`
+- Branch: `main` (Fachangaben als Listen; Übernahme und Veröffentlichung am 2026-10-10 im Chat freigegeben) · **Remote: github.com/aHer-dev/MuskelfinderV2** · Live: `aher-dev.github.io/MuskelfinderV2/`
 - **Fachangaben als Listen (2026-10-10):** Ursprung und Ansatz als einzelne Stellen,
   Funktion als einzelne Bewegungen. Dieselbe `Fachangabe` auf Detailseite (beide Niveaus),
   Lernkarte und Quiz-Vergleichskarte; Muskelköpfe/-anteile und Gelenke als Überschriften.
@@ -27,9 +27,10 @@
   (weitere 3 Kontrastbefunde). Er verwendet jetzt `--success-on-surface` (#237a48 in Hell,
   vorhandenes Grün in Dunkel). Die Flächenfarbe `--success` bleibt erhalten.
   **Vollständiges lokales Gate grün: `npm run verify` (902 Tests in 75 Dateien,
-  Datenprüfung, Build, PWA, Oberfläche und Schüler-Durchlauf).** Nächster Schritt:
-  Review des Task-Branches und Merge durch den Projektinhaber. Commit und Push sind
-  am 2026-10-10 im Chat beauftragt; das vollständige lokale Gate ist vor dem Commit erneut grün durchgelaufen.
+  Datenprüfung, Build, PWA, Oberfläche und Schüler-Durchlauf).** Feature-Commit: `6ecfd14`.
+  Nach Commit und Push hat der Projektinhaber am 2026-10-10 auch die Übernahme nach
+  `main` und Veröffentlichung freigegeben. Integration über Pull Request; `verify.yml`
+  prüft das vollständige Gate, `deploy.yml` veröffentlicht den Stand über GitHub Pages.
 - **Etappe 15 (Funktion in Kurzform) und Etappe 16 (Quiz-Mix) sind am 2026-09-28 auf `main`
   gemergt** (Branch `feat/etappe-16-quiz-mix`, CI gruen) und gehen ueber `deploy.yml` live.
   Danach, ebenfalls 2026-09-28: `feat/etappe-16b-quiz-portion` (Quiz-Portion = 20 Antworten,
