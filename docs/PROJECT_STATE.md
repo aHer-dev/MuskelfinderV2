@@ -31,6 +31,11 @@
   Nach Commit und Push hat der Projektinhaber am 2026-10-10 auch die Übernahme nach
   `main` und Veröffentlichung freigegeben. Integration über Pull Request; `verify.yml`
   prüft das vollständige Gate, `deploy.yml` veröffentlicht den Stand über GitHub Pages.
+  Vor dem Merge zeigte die CI einen Fehler in der neuen Layoutprüfung: 450 ms Wartezeit
+  waren kürzer als die 550-ms-Kartendrehung. Die Prüfung wartet jetzt auf `Animation.finished`;
+  ein 1,5-s-Prüffall und die Kontrolle auf laufende Animationen sichern den Messzeitpunkt.
+  Gegenprobe mit der alten Wartezeit: Befunde auf allen drei Breiten. Browserabbrüche
+  sichern zusätzlich Screenshot, URL, Seiteninhalt und Konsolenfehler zur Diagnose.
 - **Etappe 15 (Funktion in Kurzform) und Etappe 16 (Quiz-Mix) sind am 2026-09-28 auf `main`
   gemergt** (Branch `feat/etappe-16-quiz-mix`, CI gruen) und gehen ueber `deploy.yml` live.
   Danach, ebenfalls 2026-09-28: `feat/etappe-16b-quiz-portion` (Quiz-Portion = 20 Antworten,

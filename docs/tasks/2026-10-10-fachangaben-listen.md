@@ -29,3 +29,8 @@ Am 2026-10-10 hat der Projektinhaber nach der lokalen Vorschau erst Commit und P
 und anschließend die Übernahme nach `main` und Veröffentlichung für alle Nutzer
 beauftragt. Diese Integration erfolgt über einen Pull Request; Gate und GitHub-Pages-
 Deploy werden kontrolliert.
+
+Dabei fiel in der CI die Layoutmessung während der Kartendrehung auf: feste 450 ms
+bei einer 550-ms-Animation. Die Prüfung wartet auf das Animationsende und prüft eine
+absichtlich auf 1,5 s verlangsamte Drehung. Die Gegenprobe mit 450 ms fällt auf allen
+drei Breiten. Browserabbrüche sichern Screenshot und die betroffene Seite zur Diagnose.

@@ -14,6 +14,8 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   bleiben beim zugehörigen Eintrag; Originaltexte und anatomische Daten bleiben erhalten.
   Tests prüfen die Aufteilung gegen alle 150 Muskeln; `check:oberflaeche` misst die Listen
   auf Desktop, 390 und 320 px, einschließlich der aufgedeckten Lernkarte.
+  Die Layoutmessung wartet auf das tatsächliche Ende der Kartendrehung; ein verlangsamter
+  Prüffall verhindert Fehlbefunde durch noch laufende Animationen. Browserabbrüche sichern Diagnosedaten.
   Bei langen Lernkarten bleiben „Aufdecken“ und die Bewertung jetzt auch auf dem Desktop
   erreichbar. Zusätzlich korrigiert: Textkontrast der „Falsch“- und „Richtig“-Knöpfe im hellen Theme.
 

@@ -1,9 +1,19 @@
 /** Layout-Prüfung am gebauten Ergebnis; geteilte Listen auch in der Lernkarte messen. */
+async function warteAufDrehung(page) {
+  await page.locator('.flashcard__inner').evaluate(async (el) => {
+    await Promise.all(el.getAnimations().map((animation) => animation.finished));
+  });
+}
+
 export async function pruefeFachangaben({ page, goto, runAxe, setTheme }, record) {
   const viewport = page.viewportSize();
   const messen = async (wo, root, erwarteteUrspruenge) => {
     const befunde = await page.locator(root).evaluate((el, anzahl) => {
       const out = [];
+      if (el.closest('.flashcard')?.querySelector('.flashcard__inner')?.getAnimations()
+        .some((animation) => animation.playState === 'running')) {
+        out.push('Lernkarte dreht noch während der Layoutmessung');
+      }
       const angaben = [...el.querySelectorAll('.fachangabe')];
       if (angaben.length < 3) out.push('Ursprung, Ansatz oder Funktion fehlen als Liste');
       if (anzahl !== undefined && angaben[0]?.querySelectorAll('li').length !== anzahl) {
@@ -46,9 +56,13 @@ export async function pruefeFachangaben({ page, goto, runAxe, setTheme }, record
 
     await goto('/lernkarten');
     await page.locator('.btn--primary').first().click();
+    /* Langsame Drehung: Die Messung muss auf das Ende warten, unabhängig von CI-Tempo. */
+    if (vp.width === 1440) {
+      await page.addStyleTag({ content: '.flashcard__inner { transition-duration: 1.5s !important; }' });
+    }
     await page.getByRole('button', { name: 'Karte aufdecken', exact: true }).click();
     await page.locator('.flashcard--revealed').waitFor();
-    await page.waitForTimeout(450); // Drehung beenden, bevor die Geometrie gemessen wird.
+    await warteAufDrehung(page);
     await messen(`/lernkarten (aufgedeckt) @${vp.width}`, '.flashcard__facts');
   }
   await page.setViewportSize(viewport);
@@ -73,7 +87,7 @@ export async function pruefeLangeLernkarte({ page, goto, runAxe, setTheme }, rec
       if (phase === 'Bewerten') {
         await page.keyboard.press('Space'); // Kein Klick, der die Leiste automatisch hinscrollt.
         await page.locator('.flashcard--revealed').waitFor();
-        await page.waitForTimeout(450);
+        await warteAufDrehung(page);
       }
       const wo = `/lernkarten (lange Karte, ${phase}) @${vp.width}`;
       const lage = await page.locator('.fc-actions').evaluate((el) => {
