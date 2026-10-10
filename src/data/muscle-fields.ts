@@ -27,7 +27,8 @@
    ========================================================================= */
 
 import { funktionKurzText } from './funktion-kurz';
-import type { Muscle, MuscleEasyFields } from '../types';
+import { funktionsAbschnitte, ursprungAnsatzAbschnitte } from './fachangaben';
+import type { LabeledValue, Muscle, MuscleEasyFields } from '../types';
 
 /** Ein Fachfeld: Datenschluessel und deutsches Label, in kanonischer Ordnung. */
 export const FACHFELDER = [
@@ -40,10 +41,8 @@ export const FACHFELDER = [
 
 export type FachfeldKey = (typeof FACHFELDER)[number]['key'];
 
-export interface Fachfeld {
+export interface Fachfeld extends LabeledValue {
   key: FachfeldKey;
-  label: string;
-  value: string;
 }
 
 /**
@@ -113,12 +112,16 @@ export function fachfelder(
         key,
         label: funktion?.funktionKurzUngeprueft ? `${label}${UNGEPRUEFT_MARKE}` : label,
         value: funktionKurzText(kurz),
+        abschnitte: funktionsAbschnitte(kurz),
       };
     }
     return {
       key,
       label: key === 'segments' && ungepruefteSegmente ? `${label}${UNGEPRUEFT_MARKE}` : label,
       value: quelle[key],
+      ...(key === 'origin' || key === 'insertion'
+        ? { abschnitte: ursprungAnsatzAbschnitte(quelle[key]) }
+        : {}),
     };
   });
 }

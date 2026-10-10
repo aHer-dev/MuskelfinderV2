@@ -5,8 +5,31 @@
 > docs/migration-plan.md (abgeschlossen), docs/architecture.md und den ADRs.
 
 ## Stand
-- Datum: 2026-09-28
-- Branch: `main` · **Remote: github.com/aHer-dev/MuskelfinderV2** · Live: `aher-dev.github.io/MuskelfinderV2/`
+- Datum: 2026-10-10
+- Branch: `feat/fachangaben-untereinander` (Umsetzung abgeschlossen, für GitHub-Review vorbereitet; Merge ausstehend) · **Remote: github.com/aHer-dev/MuskelfinderV2** · Live: `aher-dev.github.io/MuskelfinderV2/`
+- **Fachangaben als Listen (2026-10-10):** Ursprung und Ansatz als einzelne Stellen,
+  Funktion als einzelne Bewegungen. Dieselbe `Fachangabe` auf Detailseite (beide Niveaus),
+  Lernkarte und Quiz-Vergleichskarte; Muskelköpfe/-anteile und Gelenke als Überschriften.
+  Die Struktur liefert `src/data/fachangaben.ts` über `fachfelder().abschnitte`, der bisherige
+  `value` bleibt unverändert. Klammern, Ortszusätze und Nummerierungen bleiben zusammen;
+  „und“ und Schrägstriche werden ohne redaktionelle Zuordnung nicht blind aufgetrennt.
+  Anatomische Daten, Quiz-Auswertung und Speicherformat unverändert.
+  Aufteilung gegen alle 150 Muskeln geprüft; Browserprüfung für Desktop + 390 + 320 px,
+  beide Detailniveaus, Hell/Dunkel und aufgedeckte Lernkarte. Gegenproben: Rohtext statt
+  Listen (6 Datenprüfungen rot), Bewegungen zusammengezogen (1 rot), Anzeigen ohne Listen
+  (5 rot); nebeneinander gesetzte Listenpunkte erzeugen 87 Browserbefunde.
+  Zusätzlicher Browserfall: lange Lernkarte (`M. gluteus maximus`, Fach 1). Aufdecken lag
+  bei y=1089, Bewerten bei y=1167 auf 1440 × 900; `.fc-actions` klebt jetzt auch auf dem
+  Desktop in beiden Lernformen. Der „Falsch“-Knopf verwendet `--danger-on-surface`:
+  `--danger` hatte auf Weiß nur 4,44:1. Beide Fehler fallen in der neuen Browserprüfung
+  vor dem Fix (2 Geometrie- und 3 Kontrastbefunde).
+  Danach wurde auch der „Richtig“-Knopf sichtbar: `--success` hatte 3,39:1 auf Weiß
+  (weitere 3 Kontrastbefunde). Er verwendet jetzt `--success-on-surface` (#237a48 in Hell,
+  vorhandenes Grün in Dunkel). Die Flächenfarbe `--success` bleibt erhalten.
+  **Vollständiges lokales Gate grün: `npm run verify` (902 Tests in 75 Dateien,
+  Datenprüfung, Build, PWA, Oberfläche und Schüler-Durchlauf).** Nächster Schritt:
+  Review des Task-Branches und Merge durch den Projektinhaber. Commit und Push sind
+  am 2026-10-10 im Chat beauftragt; das vollständige lokale Gate ist vor dem Commit erneut grün durchgelaufen.
 - **Etappe 15 (Funktion in Kurzform) und Etappe 16 (Quiz-Mix) sind am 2026-09-28 auf `main`
   gemergt** (Branch `feat/etappe-16-quiz-mix`, CI gruen) und gehen ueber `deploy.yml` live.
   Danach, ebenfalls 2026-09-28: `feat/etappe-16b-quiz-portion` (Quiz-Portion = 20 Antworten,
@@ -21,7 +44,8 @@
   niemandem mehr ungefragt Karten in den Kasten.**
   **ALLE VIER BRUECKEN STEHEN:** B1 (7d), B2 (7e), B3 (**9c**), B4 (8c).
   Statustafel: `docs/produkt-plan.md`. Offene Punkte: `docs/todo.md`.
-- Gate gruen: **`npm run verify`** — **891 Tests in 74 Dateien** (Stand 2026-09-28, Etappe 16;
+- Gate gruen: **`npm run verify`** — **902 Tests in 75 Dateien** (Stand 2026-10-10, Fachangaben als Listen;
+  am 2026-09-28 nach Etappe 16 waren es 891 in 74;
   am 2026-09-27 nach Etappe 14a waren es 801 in 71;
   2026-08-14 nach der Abhaengigkeits-Aktualisierung waren es 782 in 69). Hier stand bis dahin „692" — die Zahl war seit den Handy- und
   PWA-Commits vom 2026-07-28 nicht nachgezogen worden.

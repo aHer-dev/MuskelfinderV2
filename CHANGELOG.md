@@ -7,6 +7,16 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [Unreleased]
 
 ### Changed
+- **Ursprung, Ansatz und Funktion als Listen** (2026-10-10). Jede Stelle bzw. Bewegung
+  steht untereinander als eigener Punkt — auf der Detailseite in „Fachlich" und „Einfach",
+  auf der Lernkarte und in der Quiz-Vergleichskarte. Muskelköpfe/-anteile und Gelenke
+  stehen als Gruppenüberschriften darüber. Klammern, Nummerierungen und Ortszusätze
+  bleiben beim zugehörigen Eintrag; Originaltexte und anatomische Daten bleiben erhalten.
+  Tests prüfen die Aufteilung gegen alle 150 Muskeln; `check:oberflaeche` misst die Listen
+  auf Desktop, 390 und 320 px, einschließlich der aufgedeckten Lernkarte.
+  Bei langen Lernkarten bleiben „Aufdecken“ und die Bewertung jetzt auch auf dem Desktop
+  erreichbar. Zusätzlich korrigiert: Textkontrast der „Falsch“- und „Richtig“-Knöpfe im hellen Theme.
+
 - **„Heute" ohne Stau-Satz** (2026-09-28, `src/pages/TodayPage.tsx`). Die Überschrift „Wir holen
   den Stau in Etappen auf" und der Hinweis „Der Rest bleibt liegen und wartet. Eine Sitzung am
   Stück ist mehr wert als eine, die du abbrichst." sind gestrichen (auch die Variante für frisch

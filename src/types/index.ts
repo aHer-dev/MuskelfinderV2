@@ -279,4 +279,11 @@ export type Theme = 'light' | 'dark';
 export interface LabeledValue {
   label: string;
   value: string;
+  /** Strukturierte Anzeige; der Originaltext bleibt für Vergleiche unverändert. */
+  abschnitte?: FachangabenAbschnitt[];
+}
+
+export interface FachangabenAbschnitt {
+  label?: string;
+  eintraege: string[];
 }

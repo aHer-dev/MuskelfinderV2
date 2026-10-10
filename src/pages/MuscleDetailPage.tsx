@@ -36,9 +36,8 @@ function buildRows(muscle: Muscle, mode: DetailMode): DataRow[] {
      Unter „Funktion" steht die Kurzform; der Text des gewaehlten Niveaus klappt
      direkt darunter auf (Etappe 15). */
   return [
-    ...fachfelder(src, segmenteUngeprueft, muscle).map(({ key, label, value }) => ({
-      label,
-      value,
+    ...fachfelder(src, segmenteUngeprueft, muscle).map(({ key, ...feld }) => ({
+      ...feld,
       zusatz: key === 'functionDescription' && muscle.funktionKurz?.length
         ? <FunktionsBeschreibung text={src.functionDescription} />
         : undefined,

@@ -12,6 +12,7 @@ import { fachfelder, nichtLeer } from '../../../data/muscle-fields';
 import type { FachfeldKey } from '../../../data/muscle-fields';
 import type { Explanation, ExplainAspect } from '../../../data/explain';
 import { FunktionsBeschreibung } from '../../ui/FunktionsBeschreibung';
+import { Fachangabe } from '../../ui/Fachangabe';
 import { Sheet } from '../../ui/Sheet';
 import type { LabeledValue, Muscle } from '../../../types';
 
@@ -42,9 +43,9 @@ const ASPEKT: Partial<Record<FachfeldKey, ExplainAspect>> = {
  */
 function rows(muscle: Muscle): Row[] {
   return [
-    ...fachfelder(muscle, false, { funktionKurz: muscle.funktionKurz }).flatMap(({ key, label, value }) => {
+    ...fachfelder(muscle, false, { funktionKurz: muscle.funktionKurz }).flatMap(({ key, ...feld }) => {
       const aspect = ASPEKT[key];
-      return aspect ? [{ label, value, aspect }] : [];
+      return aspect ? [{ ...feld, aspect }] : [];
     }),
     { label: 'Lage', value: muscle.subregion, aspect: 'location' },
   ];
@@ -88,7 +89,7 @@ function CompareCard({
               className={`explain-row${row.aspect === aspect ? ' explain-row--asked' : ''}`}
             >
               <dt>{row.label}</dt>
-              <dd>{row.value}</dd>
+              <dd><Fachangabe {...row} /></dd>
             </div>
           ))}
       </dl>
