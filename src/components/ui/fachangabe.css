@@ -1,0 +1,35 @@
+.fachangabe {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  text-align: left;
+  white-space: normal;
+  hyphens: auto;
+  overflow-wrap: anywhere;
+}
+
+.fachangabe__abschnitt {
+  display: block;
+  min-width: 0;
+}
+
+.fachangabe__gruppe {
+  display: block;
+  margin-bottom: 0.25em;
+  font-weight: 600;
+}
+
+.fachangabe__liste {
+  margin: 0;
+  padding-left: 1.1em;
+  list-style: disc;
+}
+
+.fachangabe__liste > li {
+  display: list-item;
+  padding-left: 0.15em;
+}
+
+.fachangabe__liste > li + li {
+  margin-top: 0.25em;
+}

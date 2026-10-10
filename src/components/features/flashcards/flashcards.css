@@ -223,7 +223,7 @@
   gap: var(--spacing-sm);
 }
 
-.flashcard__facts div {
+.flashcard__facts > div {
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -333,11 +333,11 @@
 }
 
 .rating-btn--wrong:not(:disabled) {
-  color: var(--danger);
+  color: var(--danger-on-surface);
 }
 
 .rating-btn--correct:not(:disabled) {
-  color: var(--success);
+  color: var(--success-on-surface);
 }
 
 /* =========================================================================
@@ -748,12 +748,11 @@
   line-height: 1.5;
 }
 
-/* Die Leiste der Lernkarte klebt nur unter 1024 px — darueber passt die Karte. Eine Quizfrage
-   passt nicht: Bild plus vier Antworten plus Kartenzeile, und „Weiter" lag auf 1440 × 900
-   gemessen bei y=1182 (`check:oberflaeche`, Quiz-Mix-Sitzung). Ohne Tab-Leiste reicht hier
-   der normale Abstand zum Rand. */
+/* Auch die Lernkarte kann mit vielen Stellen/Bewegungen höher als der Desktop sein:
+   beim Gluteus maximus lag „Aufdecken“ bei y=1089 und Bewerten bei y=1167 auf 900 px.
+   Beide Lernformen kleben deshalb; ohne Tab-Leiste reicht der normale Randabstand. */
 @media (min-width: 1024px) {
-  .fc-actions--quiz {
+  .fc-actions {
     position: sticky;
     bottom: var(--spacing-md);
     z-index: var(--z-base);

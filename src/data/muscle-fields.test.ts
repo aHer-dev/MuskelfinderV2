@@ -50,7 +50,11 @@ describe('muscle-fields — die kanonische Reihenfolge', () => {
     const funktionKurz = [{ orte: ['Art. coxae'], bewegungen: ['Extension'] }];
     const ungeprueft = fachfelder(quelle, false, { funktionKurz, funktionKurzUngeprueft: true })[2];
     const geprueft = fachfelder(quelle, false, { funktionKurz, funktionKurzUngeprueft: false })[2];
-    expect(ungeprueft).toEqual({ key: 'functionDescription', label: `Funktion${UNGEPRUEFT_MARKE}`, value: 'Hüftgelenk (Art. coxae): Extension' });
+    expect(ungeprueft).toEqual({
+      key: 'functionDescription', label: `Funktion${UNGEPRUEFT_MARKE}`,
+      value: 'Hüftgelenk (Art. coxae): Extension',
+      abschnitte: [{ label: 'Hüftgelenk (Art. coxae)', eintraege: ['Extension'] }],
+    });
     expect(geprueft.label).toBe('Funktion');
     expect(fachfelder(quelle)[2].value).toBe('Langer Text');
   });

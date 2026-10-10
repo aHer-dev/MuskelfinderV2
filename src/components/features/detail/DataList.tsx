@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { nichtLeer } from '../../../data/muscle-fields';
 import type { LabeledValue } from '../../../types';
+import { Fachangabe } from '../../ui/Fachangabe';
 
 /**
  * Detailseiten-Zeile: eine `LabeledValue`, optional mit einem `zusatz` unter dem Wert —
@@ -19,7 +20,7 @@ export function DataList({ rows }: { rows: DataRow[] }) {
         <div key={row.label} className="datalist__row">
           <dt className="datalist__label">{row.label}</dt>
           <dd className="datalist__value">
-            <span className="datalist__text">{row.value}</span>
+            <div className="datalist__text"><Fachangabe {...row} /></div>
             {row.zusatz}
           </dd>
         </div>

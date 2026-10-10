@@ -145,6 +145,8 @@
      knapp unter AA (gemessen am „Zurücksetzen"-Knopf). Als Fläche/Markierung bleibt
      `--danger` unverändert; nur wo Rot als Schrift steht, gilt dieser dunklere Ton (5.1:1). */
   --danger-on-surface: #c43e2e;
+  /* Grün als Schrift braucht ebenfalls mehr Kontrast als die Flächenfarbe. */
+  --success-on-surface: #237a48;
   /* Text AUF getönter Akzentfläche (--accent-tint). Der Tint hebt den Untergrund an,
      dadurch fiel --accent-on-surface dort auf 4.47:1 — knapp unter AA. */
   --accent-on-tint:    #b34400;
@@ -220,6 +222,7 @@
   --danger:  #f2705f;
   /* Auf Schwarz ist das Rot als Schrift schon hell genug — kein eigener Ton noetig. */
   --danger-on-surface: #f2705f;
+  --success-on-surface: var(--success);
 
   /* Medien-Fenster ist im Dark-Modus ohnehin dunkel — gleiche Werte */
   --media-well:      radial-gradient(120% 100% at 50% 4%, #20232a 0%, #0b0c0e 70%);

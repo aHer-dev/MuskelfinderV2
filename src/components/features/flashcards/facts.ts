@@ -21,6 +21,6 @@ export { UNGEPRUEFT_MARKE } from '../../../data/muscle-fields';
 export function facts(muscle: Muscle): Fact[] {
   return nichtLeer(
     fachfelder(muscle, muscle.segmentsUngeprueft === true, muscle)
-      .map(({ label, value }) => ({ label, value })),
+      .map(({ key: _key, ...feld }) => feld),
   );
 }

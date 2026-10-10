@@ -98,8 +98,11 @@ describe('MuscleDetailPage — Funktion in Kurzform', () => {
 
   it('zeigt unter „Funktion" die Kurzform mit deutschem Gelenknamen', () => {
     renderAt('/muskel/rectus-femoris');
-    const text = funktionsZeile().querySelector('.datalist__text')?.textContent;
-    expect(text).toBe('Hüftgelenk (Art. coxae): Flexion\nKniegelenk (Art. genus): Extension');
+    const zeile = funktionsZeile();
+    expect(Array.from(zeile.querySelectorAll('.fachangabe__gruppe')).map((el) => el.textContent))
+      .toEqual(['Hüftgelenk (Art. coxae)', 'Kniegelenk (Art. genus)']);
+    expect(Array.from(zeile.querySelectorAll('li')).map((el) => el.textContent))
+      .toEqual(['Flexion', 'Extension']);
   });
 
   it('der ausformulierte Text steht eingeklappt in derselben Zeile', () => {
@@ -128,5 +131,22 @@ describe('MuscleDetailPage — Funktion in Kurzform', () => {
     renderAt('/muskel/rectus-femoris');
     expect(funktionsZeile().querySelector('.datalist__label')?.textContent).toBe('Funktion');
     expect(screen.queryByText(/noch nicht im Lehrbuch gegengelesen/)).not.toBeInTheDocument();
+  });
+});
+
+describe('MuscleDetailPage — Fachangaben als Liste', () => {
+  it.each(['Fachlich', 'Einfach'])('zeigt jeden Bizeps-Ansatz und jede Bewegung einzeln in %s', (modus) => {
+    renderAt('/muskel/biceps-brachii');
+    fireEvent.click(screen.getByRole('button', { name: modus }));
+    const zeile = (label: string) => Array.from(document.querySelectorAll('.datalist__row'))
+      .find((row) => row.querySelector('dt')?.textContent === label)!;
+    expect(Array.from(zeile('Ursprung').querySelectorAll('.fachangabe__gruppe')).map((el) => el.textContent))
+      .toEqual(['Caput longum', 'Caput breve']);
+    expect(Array.from(zeile('Ansatz').querySelectorAll('li')).map((el) => el.textContent))
+      .toEqual(['Tuberositas radii', 'Lacertus fibrosus / Fascia antebrachii']);
+    const schulter = Array.from(zeile('Funktion').querySelectorAll('.fachangabe__abschnitt'))
+      .find((el) => el.querySelector('strong')?.textContent === 'Schultergelenk (Art. humeri)')!;
+    expect(Array.from(schulter.querySelectorAll('li')).map((el) => el.textContent))
+      .toEqual(['Flexion', 'Abduktion oder Adduktion (je nach Kopf)']);
   });
 });

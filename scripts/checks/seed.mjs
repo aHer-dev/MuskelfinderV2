@@ -98,3 +98,22 @@ export function SEED() {
 
 /** Die 24 Namen des Seeds — Skripte, die die Zahl gegenchecken, lesen sie hier. */
 export const SEED_CARD_COUNT = 24;
+
+/** Eine echte Karte mit vielen Stellen/Bewegungen — der normale Seed beginnt mit einer kürzeren. */
+export function SEED_LONG_CARD() {
+  localStorage.setItem('mf.profile', JSON.stringify({
+    state: { profession: 'physio', examDate: null }, version: 0,
+  }));
+  localStorage.setItem('mf.progress', JSON.stringify({
+    state: {
+      flashcards: { version: 2, cards: {
+        'M. gluteus maximus': {
+          fach: 1, nextDue: new Date(Date.now() - 86400000).toISOString(),
+          totalCorrect: 0, totalWrong: 0, lastSeen: null, difficult: false,
+        },
+      } },
+      xp: { version: 2, totalXP: 0, lastDailyBonus: null },
+    },
+    version: 0,
+  }));
+}

@@ -2,6 +2,7 @@ import type { Muscle } from '../../../types';
 import { regionLabel } from '../../../data/labels';
 import { UNGEPRUEFT_ERKLAERUNG, brauchtLegende } from '../../../data/muscle-fields';
 import { facts } from './facts';
+import { Fachangabe } from '../../ui/Fachangabe';
 
 interface FlashcardProps {
   muscle: Muscle;
@@ -42,10 +43,10 @@ export function Flashcard({ muscle, revealed, onReveal }: FlashcardProps) {
           </span>
 
           <dl className="flashcard__facts">
-            {rueckseite.map(({ label, value }) => (
+            {rueckseite.map(({ label, ...feld }) => (
               <div key={label}>
                 <dt>{label}</dt>
-                <dd>{value}</dd>
+                <dd><Fachangabe {...feld} /></dd>
               </div>
             ))}
           </dl>

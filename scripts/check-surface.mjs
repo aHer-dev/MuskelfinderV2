@@ -14,7 +14,8 @@
    ========================================================================= */
 
 import { withApp } from './checks/harness.mjs';
-import { SEED, SEED_CARD_COUNT } from './checks/seed.mjs';
+import { SEED, SEED_CARD_COUNT, SEED_LONG_CARD } from './checks/seed.mjs';
+import { pruefeFachangaben, pruefeLangeLernkarte } from './checks/fachangaben.mjs';
 import { createServer } from 'vite';
 
 /* Alle Routen. Die meisten brauchen einen befuellten Zustand (Seed); die leeren
@@ -117,6 +118,9 @@ await withApp(async ({ page, goto, runAxe, setTheme, errors }) => {
     }
   }
 
+  /* Einzelne Stellen/Bewegungen müssen wirklich untereinander stehen (2026-10-10). */
+  await pruefeFachangaben({ page, goto, runAxe, setTheme }, record);
+
   /* ---- 1. Jede Route: axe (Hell+Dunkel), Ueberlauf, Satzspiegel ---- */
   for (const [route] of ROUTES) {
     await goto(route);
@@ -189,6 +193,8 @@ await withApp(async ({ page, goto, runAxe, setTheme, errors }) => {
 
   if (errors.length) for (const e of [...new Set(errors)]) record('(global)', 'KONSOLE', e);
 }, { seed: SEED });
+
+await withApp((ctx) => pruefeLangeLernkarte(ctx, record), { seed: SEED_LONG_CARD });
 
 /* =========================================================================
    4. DAS HANDY (UX-Review 2026-07-26)

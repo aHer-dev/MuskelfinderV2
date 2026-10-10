@@ -13,6 +13,15 @@ const withSegments: Muscle = { ...base, nameLatin: 'M. testus', segments: 'C5, C
 const withoutSegments: Muscle = { ...base, nameLatin: 'M. testus', segments: '', funktionKurzUngeprueft: false }
 
 describe('Flashcard — Fakten der Rückseite', () => {
+  it('zeigt die vier Latissimus-Ursprünge als einzelne Listeneinträge', () => {
+    const muscle = getMuscles().find((m) => m.id === 'latissimus-dorsi')!
+    render(<Flashcard muscle={muscle} revealed onReveal={() => {}} />)
+    const ursprung = document.querySelector('.flashcard__facts > div dd')!
+    expect(Array.from(ursprung.querySelectorAll('li')).map((el) => el.textContent)).toEqual([
+      'Procc. spinosi Th7–Th12', 'Fascia thoracolumbalis', 'Crista iliaca (hinterer Teil)', '10.–12. Rippe',
+    ])
+  })
+
   it('blendet leere Felder aus (Segmente fehlen bei 48 von 150 Muskeln)', () => {
     const labels = facts(withoutSegments).map((f) => f.label)
     expect(labels).not.toContain('Segmente')

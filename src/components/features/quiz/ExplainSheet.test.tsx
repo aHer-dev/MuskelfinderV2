@@ -30,6 +30,17 @@ function labelsDerKarte(): string[] {
 }
 
 describe('ExplainSheet', () => {
+  it('zeigt Listen auf beiden Vergleichskarten und jeden Latissimus-Ursprung einzeln', () => {
+    const muscle = muskeln.find((m) => m.id === 'latissimus-dorsi')!;
+    render(<ExplainSheet open explanation={erklaerung({ correct: muscle, chosen: correct })} onClose={() => {}} />);
+    const ursprung = document.querySelector('.explain-card .explain-row dd')!;
+    expect(Array.from(ursprung.querySelectorAll('li')).map((el) => el.textContent)).toEqual([
+      'Procc. spinosi Th7–Th12', 'Fascia thoracolumbalis', 'Crista iliaca (hinterer Teil)', '10.–12. Rippe',
+    ]);
+    const zweiteKarte = document.querySelectorAll('.explain-card')[1];
+    expect(zweiteKarte.querySelectorAll('.explain-row .fachangabe__liste').length).toBeGreaterThanOrEqual(3);
+  });
+
   it('zeigt beide Muskeln und den Erklärsatz', () => {
     render(<ExplainSheet open explanation={erklaerung()} onClose={() => {}} />);
     expect(screen.getByText('Testsatz.')).toBeInTheDocument();

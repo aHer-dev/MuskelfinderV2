@@ -101,6 +101,14 @@ export async function withApp(fn, opts = {}) {
 
   try {
     return await fn({ page, goto, runAxe, setTheme, errors, BASE, AXE_TAGS, shot });
+  } catch (error) {
+    await shot('browser-fehler.png');
+    console.error('Browser-Prüfung abgebrochen:', {
+      url: page.url(),
+      inhalt: await page.evaluate(() => document.querySelector('main')?.textContent?.slice(0, 1500) ?? null).catch(() => null),
+      errors,
+    });
+    throw error;
   } finally {
     await browser.close();
     srv.kill();
